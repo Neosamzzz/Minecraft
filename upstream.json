@@ -1,0 +1,12 @@
+{
+  "GalaxySpace": {
+    "url": "https://github.com/BlesseNtumble/GalaxySpace.git",
+    "branch": "dev_1.12.2",
+    "imported_commit": "e599d0d3746a10ba74b59dfddeca50da166f1785"
+  },
+  "Galacticraft-Legacy": {
+    "url": "https://github.com/TeamGalacticraft/Galacticraft-Legacy.git",
+    "branch": "master-1.12",
+    "imported_commit": "acec4429525eb30452298c2034d1e5d5d4b41046"
+  }
+}

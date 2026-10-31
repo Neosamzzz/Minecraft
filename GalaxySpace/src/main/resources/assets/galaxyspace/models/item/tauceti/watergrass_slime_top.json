@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "galaxyspace:blocks/taucetisystem/tauceti_f/watergrass_slime_top"
+    }
+}

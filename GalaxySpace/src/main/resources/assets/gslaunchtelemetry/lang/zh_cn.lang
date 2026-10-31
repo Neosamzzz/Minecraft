@@ -1,0 +1,5 @@
+gslc.dimension.line=所在维度：%s
+gslc.dimension.unavailable=目标未加载
+gslc.dimension.overworld=主世界
+gslc.dimension.nether=下界
+gslc.dimension.end=末地

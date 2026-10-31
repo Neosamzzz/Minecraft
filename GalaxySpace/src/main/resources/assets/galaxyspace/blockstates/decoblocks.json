@@ -1,0 +1,14 @@
+{ 
+	"variants": { 
+		"type=deco_cobaltum_1": { "model": "galaxyspace:deco_cobaltum_1"}, 
+		"type=deco_magnesium_1": { "model": "galaxyspace:deco_magnesium_1"}, 
+		"type=deco_nickel_1": { "model": "galaxyspace:deco_nickel_1"}, 
+		"type=deco_copper_1": { "model": "galaxyspace:deco_copper_1"},
+		"type=deco_cobaltum_2": { "model": "galaxyspace:deco_cobaltum_2"}, 
+		"type=deco_magnesium_2": { "model": "galaxyspace:deco_magnesium_2"}, 
+		"type=deco_nickel_2": { "model": "galaxyspace:deco_nickel_2"}, 
+		"type=deco_copper_2": { "model": "galaxyspace:deco_copper_2"},
+		"type=deco_aluminum_1": { "model": "galaxyspace:deco_aluminum_1"},
+		"type=deco_aluminum_2": { "model": "galaxyspace:deco_aluminum_2"}
+	} 
+}

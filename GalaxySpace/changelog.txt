@@ -1,0 +1,50 @@
+///Changelog///
+e.-----------------------2.2.0----------------------------
+e.1. Added Barnarda C1.
+e.2. The storage of oxygen tanks is now configured.
+e.3. Added mixin in EntityCreeperBoss for change rewards logic.
+e.4. Added configurable strength gravity in gravity module gui.
+e.5. Added Deco ALuminum blocks.
+e.6. Now get first registered planet for moons if disabled planet from GS.
+e.7. New config file (config/GalaxySpace/world.conf) with new OREGEN_SETTINGS (beta).
+e.8. Disabled right click with bucket ice in hand.
+e.9. Updated some blocks, ores textures.
+e.10. Changed base generation mars spacestation.
+e.11. Fix double drop plants.
+e.-----------------------2.1.5----------------------------
+e.1. Changed anti-radiation to a positive effect.
+e.2. Added Phobos ores in OreDict.
+e.3. Now Mixins. Disabled hooklib.
+e.4. Added config for ignore sufocation damage for entities.
+e.5. Changed method for update blocks.
+e.6. Moved geological scanner and gas extractor in armor tab.
+e.7. Fixed: Sublight/Ion engine is voided after removing rocket from launch pad.
+e.8. Fixed: Hydroponic Farm's growing animation is in reverse
+e.9. Fixed: Hydroponic Farm uses 3x more resources regardless of how many farms are attached.
+e.10. Try fix: IndexOutOfBoundsException when loading into Main Menu.
+e.11. Added module stabilization in avaiable list gravity module
+e.12. Fixed the ability to place plants on all blocks.
+e.13. Fixed a rocket rendering issue that was breaking shadows.
+e.14. Fixed triton geysers. Again.
+e.15. Removed jetpack module from light spacesuit.
+e.-----------------------2.1.4----------------------------
+e.1. Fixed Io freezes.
+e.2. Removed plasma tools from loot in dungeons.
+e.3. Updated item models for fauna.
+e.4. Fixed recipes for metal blocks and ingots.
+e.5. Fixed enableOresGeneration=false config.
+e.6. Disabled glow textures with optifine (conflict).
+e.7. Added atmosphere components on Tau Ceti F.
+e.8. Added missing locals.
+e.9. Gas Extractor is now electric and modifiable
+e.10. Fixed stet sound for Evolved Cold Blaze
+e.-----------------------2.1.3----------------------------
+e.1. Fixed startup crash on server.
+e.2. Fixed crash if clicked bucket on entity.
+e.-----------------------2.1.2----------------------------
+e.1. Fixed tick geyser blocks, fixed dirt harvest tool on Barnarda C.
+e.2. Fixed generate energy in fuel generator (gen = max input).
+e.3. Fixed crash assembler on 4.0.6 GC Legacy.
+e.-----------------------2.1.1----------------------------
+e.1. Fixed crash on servers.
+e.2. Fixed crash on Tau Ceti F.

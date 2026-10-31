@@ -1,0 +1,5 @@
+gslc.dimension.line=Dimension: %s
+gslc.dimension.unavailable=Target unavailable
+gslc.dimension.overworld=Overworld
+gslc.dimension.nether=Nether
+gslc.dimension.end=The End

@@ -1,0 +1,12 @@
+# Local build and runtime data
+.DS_Store
+**/.gradle/
+**/build/
+**/run/
+**/logs/
+**/__pycache__/
+*.pyc
+.vscode/
+.idea/
+.local/
+# Preserve upstream tool exclusions

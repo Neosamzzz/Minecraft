@@ -1,0 +1,578 @@
+package galaxyspace.systems.SolarSystem.planets.overworld.items;
+
+import java.rmi.registry.Registry;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import asmodeuscore.core.utils.ACAttributePlayer;
+import galaxyspace.GalaxySpace;
+import galaxyspace.core.GSFluids;
+import galaxyspace.core.GSItems;
+import galaxyspace.core.GSPotions;
+import galaxyspace.core.configs.GSConfigCore;
+import galaxyspace.core.configs.GSConfigSchematics;
+import galaxyspace.core.network.packet.GSPacketSimple;
+import galaxyspace.core.network.packet.GSPacketSimple.GSEnumSimplePacket;
+import galaxyspace.core.util.GSCreativeTabs;
+import galaxyspace.core.util.GSUtils;
+import micdoodle8.mods.galacticraft.core.GCBlocks;
+import micdoodle8.mods.galacticraft.core.GCItems;
+import micdoodle8.mods.galacticraft.core.items.IClickableItem;
+import micdoodle8.mods.galacticraft.core.items.ISortableItem;
+import micdoodle8.mods.galacticraft.core.items.ItemCanisterGeneric;
+import micdoodle8.mods.galacticraft.core.util.EnumColor;
+import micdoodle8.mods.galacticraft.core.util.EnumSortCategoryItem;
+import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
+import micdoodle8.mods.galacticraft.planets.asteroids.blocks.AsteroidBlocks;
+import micdoodle8.mods.galacticraft.planets.asteroids.items.AsteroidsItems;
+import micdoodle8.mods.galacticraft.planets.asteroids.tile.TileEntityShortRangeTelepad;
+import micdoodle8.mods.galacticraft.planets.mars.blocks.MarsBlocks;
+import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemDye;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.ItemHandlerHelper;
+
+public class ItemBasicGS extends Item implements ISortableItem{
+
+	public enum BasicItems {
+
+		MODULE_SMALLCANISTER(0),
+		PART_SOLARFLARES(1),
+		SOLARFLARES(2),
+		DOLOMITE_CRYSTAL(3),
+		DOLOMITE_MEAL(4),
+		WAFER_MODERN(5),
+		HEMATITE(6),
+		SULFUR(7),
+		UNKNOW_CRYSTAL(8),
+		ANTIRADIATION_TABLETS(9),
+		SCHEMATIC_BOX(10),
+		MODULE_BASE(11),
+		VOLCANIC_STONE(12),
+		METEORIC_IRON_FRAGMENTS(13),
+		BLANK_SCHEMATIC(14),
+		URANIUM_FRAGMENTS(15),
+		TEMP_SHIELD_CONTROL(16, 1),
+		ICE_BUCKET(17, 1),
+		EMERGENCY_PORTABLE_TELEPORT(18, 1),
+		GUIDE_BOOK(19, 1),
+		ADVANCED_EMERGENCY_KIT(20),
+		THERMAL_CLOTH_T3(21),
+		THERMAL_CLOTH_T4(22),
+		OXYGEN_ICE_CRYSTAL(23),
+		NITROGEN_ICE_CRYSTAL(24),
+		METHANE_ICE_CRYSTAL(25),
+		HYDROGEN_ICE_CRYSTAL(26),
+		DRY_ICE_CRYSTAL(27),
+		COLONIST_KIT(28),
+		EMPTY_PLASMA_CELL(29),
+		FILLED_PLASMA_CELL(30),
+		WOLF_THERMAL_SUIT(31, 1),
+		ANIMAL_CAGE(32, 1),
+		IRON_FAN(33, 1),
+		STEEL_FAN(34, 1),
+		PLASTIC_FAN(35, 1),
+		CARBON_FAN(36, 1),
+		RAW_PLASTIC(37),
+		PLASTIC(38),
+		GAS_EXTRACTOR(39, 1); //EMPTY SLOT
+
+		private int meta;
+		private int stacksize;
+
+		BasicItems(int meta) {
+			this(meta, 64);
+		}
+
+		BasicItems(int meta, int stacksize) {
+			this.meta = meta;
+			this.stacksize = stacksize;
+		}
+
+		public String getName() {
+			return this.name().toLowerCase();
+		}
+
+		public ItemStack getItemStack() {
+			return getItemStack(1);
+		}
+
+		public ItemStack getItemStack(int count) {
+			return new ItemStack(GSItems.BASIC, count, meta);
+		}
+
+		public int getMeta() {
+			return this.meta;
+		}
+
+		public int getMaxStackSize() {
+			return this.stacksize;
+		}
+	}
+
+	public static String[] getEnumNames() {
+
+		String[] s = new String[BasicItems.values().length];
+		for(int i = 0; i < BasicItems.values().length; i++) {
+			s[i] = BasicItems.values()[i].getName();
+		}
+
+		return s;
+	}
+
+	public static final int SHIELD_TIME = 10 * 60;
+	private static final int SIZE = 9;
+	public static final int[] FANS_DURABILITY = new int[] {
+			600 * 3,
+			1800 * 3,
+			7200 * 3,
+			21600 * 3};
+
+	public ItemBasicGS() {
+		this.setMaxDamage(0);
+		this.setHasSubtypes(true);
+		this.setMaxStackSize(64);
+		this.setTranslationKey("gs_basic");
+		this.setCreativeTab(GSCreativeTabs.GSItemsTab);
+	}
+
+	@Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)    
+    {
+		if (tab == GSCreativeTabs.GSItemsTab || tab == CreativeTabs.SEARCH)
+        {
+			for (int i = 0; i < BasicItems.values().length; i++) {
+				if(BasicItems.values()[i].getMeta() == BasicItems.GAS_EXTRACTOR.getMeta())
+					continue;
+
+				if(!BasicItems.values()[i].getName().equals("null")) {
+					list.add(new ItemStack(this, 1, i));
+				}
+			}
+        }
+    }
+
+	@Override
+	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+		int n = stack.getItemDamage();
+
+		if(n == BasicItems.GAS_EXTRACTOR.getMeta()) {
+
+			stack.shrink(1);
+			worldIn.spawnEntity(new EntityItem(worldIn, entityIn.posX, entityIn.posY, entityIn.posZ, new ItemStack(GSItems.GAS_EXTRACTOR, 1, GSItems.GAS_EXTRACTOR.getMaxDamage())));
+
+		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flagIn) {
+		int n = stack.getItemDamage();
+
+		if (n == BasicItems.DOLOMITE_MEAL.getMeta())
+			list.add(GCCoreUtil.translate("gui.bonemeal.desc"));
+		else if (n == BasicItems.SCHEMATIC_BOX.getMeta())
+			list.add(GCCoreUtil.translate("gui.schematic_box.desc"));
+		else if (n == BasicItems.BLANK_SCHEMATIC.getMeta() && !GSConfigSchematics.enableDuplicateSchematic) {
+			list.add(EnumColor.DARK_RED + "Disabled in config.");
+		} else if (n == BasicItems.TEMP_SHIELD_CONTROL.getMeta()) {
+			int time = this.SHIELD_TIME;
+			if (stack.hasTagCompound())
+            {
+                int shieldtime = stack.getTagCompound().getInteger("shieldtime");
+                time = shieldtime;
+            }
+            else
+            {
+				time = this.SHIELD_TIME;
+            }
+			list.add(GCCoreUtil.translate("gui.temp_shield_control.desc"));
+			list.add(GCCoreUtil.translate("gui.message.can_find_in_dungeon"));
+			list.add(GCCoreUtil.translate("gui.charge") + " " + time + " " + GCCoreUtil.translate("gui.seconds"));
+
+		} else if(n == BasicItems.EMERGENCY_PORTABLE_TELEPORT.getMeta()) {
+			list.add(GCCoreUtil.translate("gui.emergency_portable_teleport.desc"));
+			list.add(GCCoreUtil.translate("gui.message.can_find_in_dungeon"));
+			list.add("");
+			if(stack.hasTagCompound()) {
+				if(stack.getTagCompound().getIntArray("position").length <= 0)
+					list.add(GCCoreUtil.translate("gui.not_attached.desc"));
+				else {
+					int[] pos = stack.getTagCompound().getIntArray("position");
+					list.add(GCCoreUtil.translate("gui.attached.desc") + " DIM:" + pos[3] + " X:" + pos[0] + ", Y:" + pos[1] + ", Z:" + pos[2]);
+				}
+
+				if(stack.getTagCompound().getBoolean("turnonoff")) {
+					list.add(GCCoreUtil.translate("gui.enabled.desc"));
+				}
+			}
+		} else if(n == BasicItems.EMPTY_PLASMA_CELL.getMeta() || n == BasicItems.FILLED_PLASMA_CELL.getMeta()) {
+			list.add(EnumColor.DARK_RED + "[WIP] Content");
+		} else if(n == BasicItems.ANIMAL_CAGE.getMeta()) {
+			list.add(GCCoreUtil.translate("gui.animal_cage.desc"));
+
+			if(stack.hasTagCompound()) {
+				if(stack.getTagCompound().hasKey("entityData")) {
+					Entity entity = EntityList.createEntityFromNBT(stack.getTagCompound().getCompoundTag("entityData"), world);
+					list.add(GCCoreUtil.translate("gui.animal_cage_stored.desc") + " " + EnumColor.BRIGHT_GREEN + entity.getDisplayName().getFormattedText());
+				}
+
+                /*if(stack.getTagCompound().hasKey("destroyedLvl"))
+				{
+					list.add(stack.getTagCompound().getInteger("destroyedLvl") + "");
+				}*/
+			}
+		} else if(n >= 33 && n <= 36) {
+			if(stack.hasTagCompound()) {
+				if(stack.getTagCompound().hasKey("destroyedLvl")) {
+					list.add("Durability: " + (FANS_DURABILITY[n-33] - stack.getTagCompound().getInteger("destroyedLvl")) + " / " + FANS_DURABILITY[n-33]);
+				}
+			}
+		}
+
+
+	}
+
+    @Override
+    public String getTranslationKey(ItemStack stack)
+    {
+		if(stack.getItemDamage() == BasicItems.THERMAL_CLOTH_T3.getMeta() || stack.getItemDamage() == BasicItems.THERMAL_CLOTH_T4.getMeta()) return "item.thermal_cloth";
+
+		int meta = stack.getItemDamage() > BasicItems.values().length-1 ? 0 : stack.getItemDamage();
+		return "item." + BasicItems.values()[meta].getName();
+    }
+
+    @Override
+    public int getMetadata(int par1)
+    {
+        return par1;
+    }
+
+	@Override
+	public EnumSortCategoryItem getCategory(int meta) {
+		return EnumSortCategoryItem.GENERAL;
+	}
+
+	@Override
+	public int getItemStackLimit(ItemStack stack) {
+		int n = stack.getItemDamage();
+
+		for(BasicItems item : BasicItems.values())
+			if(item.getMeta() == n)
+				return item.getMaxStackSize();
+
+
+		return this.getItemStackLimit();
+	}
+
+	@Override
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		ItemStack stack = player.getHeldItem(hand);
+
+		if(world.isRemote)
+			return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+
+        /*
+		if(stack.getItemDamage() == 28)
+		{
+			RayTraceResult ray = this.getRay(world, player, true);
+			Map<IBlockState, Integer> blocks = new HashMap<IBlockState, Integer>();
+			
+			if(ray != null) {		
+				for(BlockPos scan : ray.getBlockPos().getAllInBox(ray.getBlockPos().add(-2, -2, -2), ray.getBlockPos().add(2, 2, 2))) {
+					IBlockState block = world.getBlockState(scan);				
+					if(world.isAirBlock(scan)) continue;				
+					
+					if(blocks.containsKey(block)) {
+						blocks.put(block, blocks.get(block) + 1);
+						continue;
+					}
+					
+					blocks.put(block, 1);
+				}
+				
+				for(Entry<IBlockState, Integer> block : blocks.entrySet()) {
+					ItemStack item = new ItemStack(Item.getItemFromBlock(block.getKey().getBlock()), 1, block.getKey().getBlock().getMetaFromState(block.getKey()));				
+						
+					player.sendMessage(new TextComponentString(TextFormatting.GREEN + item.getDisplayName() + " x" + block.getValue()));
+				}//GalaxySpace.debug("" + blocks);
+				player.sendMessage(new TextComponentString(TextFormatting.GREEN + "#################################"));
+				
+			}
+			
+		}*/
+		if(stack.getItemDamage() == BasicItems.ICE_BUCKET.getMeta()) {
+		/*	RayTraceResult ray = this.rayTrace(world, player, false);
+			if(ray != null && !world.isRemote) {
+				if(stack.hasTagCompound() && stack.getTagCompound().hasKey("current_block")) {
+
+					Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(stack.getTagCompound().getString("current_block")));
+
+					if(block != null && world.isAirBlock(ray.getBlockPos().up())) {
+						world.setBlockState(ray.getBlockPos().up(), block.getDefaultState());
+
+						return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, new ItemStack(Items.BUCKET));
+					}
+				}
+
+			}*/
+
+			return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+		}
+
+		if(stack.getItemDamage() == BasicItems.DOLOMITE_MEAL.getMeta()) {
+			RayTraceResult ray = GSUtils.getRay(world, player, true);
+			if (ray != null && ItemDye.applyBonemeal(stack, world, ray.getBlockPos(), player, hand)) {
+				if (!world.isRemote) {
+					world.playEvent(2005, ray.getBlockPos(), 0);
+				}
+
+				return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+			}
+			return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+		} else if(stack.getItemDamage() == 6) {
+            /*StatsCapability gs_stats = GSStatsCapability.get(player);
+			gs_stats.setKnowledgeResearch(1, 6);
+			GalaxySpace.packetPipeline.sendTo(new GSPacketSimple(GSEnumSimplePacket.C_UPDATE_RESEARCH, player.world, new Object[] {1, 6}), (EntityPlayerMP) player);
+			*/
+
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		} else if(stack.getItemDamage() == BasicItems.GUIDE_BOOK.getMeta()) {
+			player.openGui(GalaxySpace.MODID, GSConfigCore.guiIDGuideBook, world, 0, 0, 0);
+
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		} else if(stack.getItemDamage() == BasicItems.ANTIRADIATION_TABLETS.getMeta()) {
+			IAttributeInstance lvl = player.getEntityAttribute(ACAttributePlayer.RADIATION_LVL);
+			if(lvl.getAttributeValue() > 0) {
+				player.addPotionEffect(new PotionEffect(GSPotions.antiradiation, 20*10));
+				stack.shrink(1);
+				return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+			} else {
+				player.sendMessage(new TextComponentString(TextFormatting.DARK_GREEN + GCCoreUtil.translate(("gui.message.noradiation"))));
+				return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+			}
+		} else if(stack.getItemDamage() == BasicItems.SCHEMATIC_BOX.getMeta()) {
+
+			for (int i = 0; i < 5; i++)
+				if (player.inventory.getFirstEmptyStack() != -1)
+					player.inventory.addItemStackToInventory(new ItemStack(GSItems.SCHEMATICS, 1, i));
+				else
+					world.spawnEntity(new EntityItem(world, player.posX, player.posY, player.posZ,
+							new ItemStack(GSItems.SCHEMATICS, 1, i)));
+
+			stack.shrink(1);
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		} else if(stack.getItemDamage() == BasicItems.EMERGENCY_PORTABLE_TELEPORT.getMeta()) {
+			if(!player.isSneaking())
+				return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+
+			if(!stack.hasTagCompound())
+				stack.setTagCompound(new NBTTagCompound());
+
+			RayTraceResult ray = player.rayTrace(5, player.ticksExisted);
+			Block block = world.getBlockState(ray.getBlockPos()).getBlock();
+
+			if(block == AsteroidBlocks.shortRangeTelepad) {
+				TileEntityShortRangeTelepad tile = (TileEntityShortRangeTelepad) world.getTileEntity(ray.getBlockPos());
+
+				if(tile.hasEnoughEnergyToRun && tile.addressValid) {
+					stack.getTagCompound().setIntArray("position", new int[] {ray.getBlockPos().getX(), ray.getBlockPos().getY(), ray.getBlockPos().getZ(), world.provider.getDimension()});
+				} else {
+					player.sendMessage(new TextComponentString(TextFormatting.DARK_RED + GCCoreUtil.translate(("gui.message.invalid_teleport_conf"))));
+				}
+			} else {
+				stack.getTagCompound().setBoolean("turnonoff", !stack.getTagCompound().getBoolean("turnonoff"));
+			}
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		} else if(stack.getItemDamage() == BasicItems.ADVANCED_EMERGENCY_KIT.getMeta()) {
+			if (player instanceof EntityPlayerMP) {
+
+				for (int i = 0; i < SIZE; i++) {
+					ItemStack newGear = getContents(i);
+					if (newGear.getItem() instanceof IClickableItem) {
+						newGear = ((IClickableItem)newGear.getItem()).onItemRightClick(newGear, world, player);
+					}
+					if (newGear.getCount() >= 1) {
+						ItemHandlerHelper.giveItemToPlayer(player, newGear, 0);
+					}
+				}
+
+				stack.shrink(1);
+				return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+			}
+		} else if(stack.getItemDamage() == BasicItems.COLONIST_KIT.getMeta()) {
+			if (player instanceof EntityPlayerMP) {
+				ItemStack[] stacks = new ItemStack[] {
+						new ItemStack(GCBlocks.oxygenDistributor, 1), new ItemStack(GCBlocks.oxygenCollector, 1), new ItemStack(GCBlocks.oxygenCompressor, 1),
+						new ItemStack(GCBlocks.solarPanel, 1, 4),  new ItemStack(GSItems.BASIC, 1, 20),  new ItemStack(GCBlocks.solarPanel, 1, 4),
+						new ItemStack(GCBlocks.machineTiered, 1, 0), new ItemStack(MarsBlocks.machine, 1, 0), new ItemStack(GCBlocks.machineBase2, 1, 8)
+				};
+
+				for(ItemStack items : stacks)
+					ItemHandlerHelper.giveItemToPlayer(player, items, 0);
+
+				stack.shrink(1);
+				return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+			}
+		} else if(stack.getItemDamage() == BasicItems.ANIMAL_CAGE.getMeta()) {
+			if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+
+			if(!stack.getTagCompound().hasKey("hasMob")) stack.getTagCompound().setBoolean("hasMob", false);
+			if(!stack.getTagCompound().hasKey("destroyedLvl")) stack.getTagCompound().setInteger("destroyedLvl", 0);
+
+			if(!stack.getTagCompound().getBoolean("hasMob")) {
+
+				//RayTraceResult ray = player.rayTrace(5, player.ticksExisted);//this.getRay(world, player, false);
+				if(player instanceof EntityPlayerMP) {
+					GalaxySpace.packetPipeline.sendTo(new GSPacketSimple(GSEnumSimplePacket.C_GET_CAGE_ENTITY, GCCoreUtil.getDimensionID(player.world)), (EntityPlayerMP) player);
+				}
+				return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+
+			} else {
+				RayTraceResult result = GSUtils.getRay(world, player, false);
+				if(result != null && result.typeOfHit != null) {
+					if(result.typeOfHit == Type.BLOCK && stack.getTagCompound().hasKey("entityData")) {
+
+						Entity entity = EntityList.createEntityFromNBT(stack.getTagCompound().getCompoundTag("entityData"), player.world);
+
+						if(entity instanceof EntityAnimal) {
+							BlockPos pos = result.getBlockPos();
+							entity.dimension = player.dimension;
+							entity.world = player.world;
+							entity.setPosition(pos.getX(), pos.getY() + 1.0D, pos.getZ());
+							if(!world.isRemote) {
+								world.spawnEntity(entity);
+							}
+							entity = null;
+
+							stack.getTagCompound().setBoolean("hasMob", false);
+							stack.getTagCompound().removeTag("entityData");
+							if(stack.getTagCompound().getInteger("destroyedLvl") < 2)
+								stack.getTagCompound().setInteger("destroyedLvl", stack.getTagCompound().getInteger("destroyedLvl") + 1);
+							else
+								stack.splitStack(1);
+
+							return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+						}
+					}
+				}
+			}
+		}
+
+		return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+	}
+
+
+	@Override
+	public boolean showDurabilityBar(ItemStack stack) {
+
+		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("destroyedLvl")) {
+			return stack.getTagCompound().getInteger("destroyedLvl") >= 0;
+		}
+
+		return stack.isItemDamaged();
+	}
+
+	@Override
+	public double getDurabilityForDisplay(ItemStack stack) {
+
+		if(stack.getItemDamage() == BasicItems.ANIMAL_CAGE.getMeta()) {
+			if(stack.hasTagCompound()) {
+				return (stack.getTagCompound().getInteger("destroyedLvl") / 10D) / 0.31D;
+			}
+		}
+		if(stack.getItemDamage() >= 33 && stack.getItemDamage() < 37 ) {
+			if(stack.hasTagCompound()) {
+				return (double)stack.getTagCompound().getInteger("destroyedLvl") / (double)FANS_DURABILITY[stack.getItemDamage()-33];
+			}
+		}
+
+		return (double) stack.getItemDamage() / (double) stack.getMaxDamage();
+	}
+
+	public static Object[] getColonistKitRecipe() {
+		ItemStack[] stacks = new ItemStack[] {
+				new ItemStack(GCBlocks.oxygenDistributor, 1), new ItemStack(GCBlocks.oxygenCollector, 1), new ItemStack(GCBlocks.oxygenCompressor, 1),
+				new ItemStack(GCBlocks.solarPanel, 1, 4), new ItemStack(GSItems.BASIC, 1, 20), new ItemStack(GCBlocks.solarPanel, 1, 4),
+				new ItemStack(GCBlocks.machineTiered, 1, 0), new ItemStack(MarsBlocks.machine, 1, 0), new ItemStack(GCBlocks.machineBase2, 1, 8)
+		};
+
+		Object[] result = new Object[]{ "ABC", "DEF", "GHI", 'A', null, 'B', null, 'C', null, 'D', null, 'E', null, 'F', null, 'G', null, 'H', null, 'I', null };
+		for (int i = 0; i < stacks.length; i++)
+        {
+			result [i * 2 + 4] = stacks[i];
+        }
+
+		return result;
+	}
+
+	//EMERGENCY KIT
+	public static ItemStack getContents(int slot)
+    {
+        switch (slot)
+        {
+			case 0: return new ItemStack(GSItems.SPACE_SUIT_HELMET, 1, GSItems.SPACE_SUIT_HELMET.getMaxDamage());
+			case 1: return new ItemStack(GSItems.SPACE_SUIT_BODY, 1, GSItems.SPACE_SUIT_BODY.getMaxDamage());
+			case 2: return new ItemStack(GSItems.SPACE_SUIT_LEGGINS, 1, GSItems.SPACE_SUIT_LEGGINS.getMaxDamage());
+			case 3: return new ItemStack(GSItems.SPACE_SUIT_BOOTS, 1, GSItems.SPACE_SUIT_BOOTS.getMaxDamage());
+			case 4: return new ItemStack(AsteroidsItems.thermalPadding, 1, 0);
+			case 5: return new ItemStack(AsteroidsItems.thermalPadding, 1, 1);
+			case 6: return new ItemStack(AsteroidsItems.thermalPadding, 1, 2);
+			case 7: return new ItemStack(AsteroidsItems.thermalPadding, 1, 3);
+			case 8: return new ItemStack(GCItems.emergencyKit, 1, 0);
+			default: return null;
+        }
+    }
+
+    public static Object[] getRecipe()
+    {
+        Object[] result = new Object[]{ "EAB", "CID", "FGH", 'A', null, 'B', null, 'C', null, 'D', null, 'E', null, 'F', null, 'G', null, 'H', null, 'I', null };
+        for (int i = 0; i < SIZE; i++)
+        {
+            result [i * 2 + 4] = getContents(i);
+        }        
+        return result;
+    }
+	//END
+    
+    @Override
+    public int getItemBurnTime(ItemStack itemStack)
+    {
+		if(itemStack.getItemDamage() == BasicItems.VOLCANIC_STONE.getMeta()) return 128000;
+        return -1;
+    }
+    
+
+}
