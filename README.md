@@ -1,5 +1,14 @@
 # 开发指南
 
+## 源码来源
+
+本仓库基于以下两个上游项目，保留其源码并集中维护本项目的修改：
+
+- [GalaxySpace](https://github.com/BlesseNtumble/GalaxySpace)：对应 `GalaxySpace/`，基于 `dev_1.12.2` 分支。
+- [Galacticraft-Legacy](https://github.com/TeamGalacticraft/Galacticraft-Legacy)：对应 `Galacticraft-Legacy/`，参考源码来自 `master-1.12` 分支。
+
+源码来源及导入提交记录见 [upstream.json](upstream.json)。开发时直接使用本仓库，无需另外克隆上游项目。
+
 ## 目录
 
 ```text
