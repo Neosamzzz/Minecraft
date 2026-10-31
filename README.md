@@ -101,3 +101,15 @@ Windows 将 `python3` 替换为 `py -3`。
 - 提交源码、资源及必要脚本，不提交个人配置、缓存、日志、存档和构建产物。
 - PR 附改动说明、测试结果及客户端／服务端要求；有对应 Linear issue 时关联。
 - 可以自行打包并在自己的客户端或测试服验证；正式版本发布由主维护者负责。
+
+## 从 ZIP 下载后接入仓库
+
+ZIP 包不含 `.git`，需要先初始化并连接远端：
+
+```sh
+git init -b main
+git remote add origin https://github.com/Neosamzzz/Minecraft.git
+git fetch --depth=1 origin main
+```
+
+之后按上文「Git 同步」使用分支与 PR。
