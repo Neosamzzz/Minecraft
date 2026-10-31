@@ -1,11 +1,16 @@
 """Extend the 1.3 addon; preserve every previous binary patch and add telemetry."""
-import json, sys, zipfile
+import json, re, sys, zipfile
 from pathlib import Path
-base, compiled, output = map(Path, sys.argv[1:])
+if len(sys.argv) not in (4, 5):
+    sys.exit('Usage: build_addon.py BASE_1_3_ADDON COMPILED_JAR OUTPUT_JAR [VERSION]')
+base, compiled, output = map(Path, sys.argv[1:4])
+version = sys.argv[4] if len(sys.argv) == 5 else (Path(__file__).resolve().parents[3] / 'version.txt').read_text(encoding='utf-8').strip()
+if not re.fullmatch(r'\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?', version):
+    sys.exit('Invalid addon version: ' + version)
 with zipfile.ZipFile(base) as old, zipfile.ZipFile(compiled) as gs, zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as out:
     for name in old.namelist():
         if name not in ('mixins.gslaunchcompat.json','META-INF/MANIFEST.MF','mixins.galaxyspace.refmap.json'):out.writestr(name,old.read(name))
-    manifest=old.read('META-INF/MANIFEST.MF').decode().rstrip('\r\n')+'\r\nFMLCorePluginContainsFMLMod: true\r\nImplementation-Version: 1.4.8\r\n\r\n'
+    manifest=old.read('META-INF/MANIFEST.MF').decode().rstrip('\r\n')+'\r\nFMLCorePluginContainsFMLMod: true\r\nImplementation-Version: '+version+'\r\n\r\n'
     out.writestr('META-INF/MANIFEST.MF',manifest)
     out.writestr('pack.mcmeta',json.dumps({'pack':{'pack_format':3,'description':'GSLaunchCompat telemetry resources'}}))
     config=json.loads(old.read('mixins.gslaunchcompat.json'))

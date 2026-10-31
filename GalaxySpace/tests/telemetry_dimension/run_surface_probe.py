@@ -1,19 +1,16 @@
-"""Run real GC/Minecraft surface-map integration in a headless client loader."""
+"""Run isolated GC/Minecraft map probes; this does not cover full Forge startup."""
 from pathlib import Path
 import subprocess
 import sys
 
-runtime, addon, work = (Path(value).resolve() for value in sys.argv[1:])
-work.mkdir(exist_ok=True)
-java = Path('/Users/hyberiid/Library/Java/JavaVirtualMachines/corretto-1.8.0_442/Contents/Home/bin')
+from probe_runtime import prepare
+
+java, javac, cp, work = prepare(*sys.argv[1:])
 sources = Path(__file__).resolve().parent
-paths = [path for path in (runtime / 'classpath-runtime.txt').read_text().strip().split(':')
-         if 'GSLaunchCompat-' not in path]
-cp = ':'.join([str(work), str(addon)] + paths)
-subprocess.run([str(java / 'javac'), '-proc:none', '-cp', cp, '-d', str(work),
+subprocess.run([javac, '-proc:none', '-cp', cp, '-d', str(work),
                 str(sources / 'SurfaceMapProbe.java'), str(sources / 'TelemetryTweaker.java')], check=True)
 with (work / 'surface.log').open('w') as log:
-    result = subprocess.run([str(java / 'java'), '-Djava.awt.headless=true', '-Dprobe.client=true',
+    result = subprocess.run([java, '-Djava.awt.headless=true', '-Dprobe.client=true',
                              '-Dprobe.target=diagnostic.SurfaceMapProbe', '-Dmixin.debug.export=true',
                              '-cp', cp, 'net.minecraft.launchwrapper.Launch',
                              '--tweakClass', 'bootstrap.TelemetryTweaker',

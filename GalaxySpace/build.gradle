@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-		mavenCentral()
+		maven { url = 'https://repo.maven.apache.org/maven2/' }
 		maven { url = "https://plugins.gradle.org/m2" }
 		maven { url = 'https://maven.minecraftforge.net/' }
 		maven { url = "https://repo.spongepowered.org/maven" }
@@ -8,7 +8,7 @@ buildscript {
 		//maven { url = 'https://maven.daporkchop.net/' }
     }
     dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.0.+', changing: true
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.0.23'
 		classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
 	}
 }
@@ -33,14 +33,13 @@ group = "main" // http://maven.apache.org/guides/mini/guide-naming-conventions.h
 archivesBaseName = "All"
 
 repositories {	
-	mavenLocal()
 	maven { url = "https://repo.spongepowered.org/maven" }
     maven { url "https://www.cursemaven.com" }
 	maven {
         name = "chickenbones"
         url = "https://maven.covers1624.net/" //"https://chickenbones.net/maven" //or https://maven.covers1624.net/
     }
-	mavenCentral()
+	maven { url = 'https://repo.maven.apache.org/maven2/' }
 	
 	flatDir {
 		dir 'libs'
