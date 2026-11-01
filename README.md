@@ -163,10 +163,12 @@ py -3 -m unittest discover -s tools/tests
 
 macOS / Linux 使用 `python3 -m unittest discover -s tools/tests`。这些检查不代替实际 Gradle 编译和游戏测试。
 
-- [FTB 开发说明](FTB-Quests/DEVELOPMENT.md)：依赖版本、兼容修复、任务功能、数据保存和编辑入口。
+- [FTB 开发说明](FTB-Quests/DEVELOPMENT.md)：依赖版本、直接调用 Gradle、兼容修复、任务功能、数据保存和编辑入口。
+- [FTB 资料区](docs/README.md)：FTB 接入的主基调、工作路线，以及团队方案、内容方向和星球依据。
 - [FTB 公共团队方案](docs/ftb-shared-team-plan.md)与[任务内容方向](docs/ftb-content-direction.md)：已对齐、尚未实现或部署的熟人服规则与内容边界。
 - [星球现状审计](docs/planet-gameplay-audit.md)与[玩法详解](docs/planet-gameplay-guide.md)：配置、源码层面的目的地与制造关系，含待运行验证事项。
-- [遥感补丁说明与专项检查](GalaxySpace/tests/telemetry_dimension/README.md)：遥感功能实现及验证记录，历史版本说明按对应版本阅读。
+- [开发记录](changelog/README.md)：GSLC 更新历史、整合包基线、FTB Quests 本地改动。
+- [遥感补丁说明与专项检查](GalaxySpace/tests/telemetry_dimension/README.md)：遥感功能实现、构建方式与验证手段，版本历史见开发记录。
 - [公共控制器补丁检查](GalaxySpace/tests/public_controller/README.md)：控制器兼容探针与验证方式。
 
 在根目录统一操作 Git；修改前保护已有工作，使用功能分支和 PR。提交信息、PR 标题和描述使用中文，附必要的验证结果；只提交源码、资源、必要构建材料和文档。正式版本发布由主维护者负责。
