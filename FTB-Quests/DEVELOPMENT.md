@@ -1,5 +1,7 @@
 # 1.12.2 开发环境
 
+核对日期：2026-11-02。本文兼顾当前本机开发包与构建方式；公共团队版本演进见[开发记录](../changelog/ftb-quests.md)。本次文档分支源码仍为 1202.9.1，1202.9.2 / 1202.9.3 代码在另一开发线程的工作区，未随文档提交。
+
 ## 工具版本
 
 - 上游分支：`1.12`。
@@ -24,9 +26,9 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk1.8.0_8u202_x64'
 py -3 tools/build.py --target ftbquests
 ```
 
-依赖缓存完整后可添加 `--offline`；macOS / Linux 将 `py -3` 替换为 `python3`。最终模组包输出到主仓库的 `build/libs/FTBQuests-1202.9.1.jar`。
+依赖缓存完整后可添加 `--offline`；macOS / Linux 将 `py -3` 替换为 `python3`。最终模组包输出到主仓库的 `build/libs/FTBQuests-<mod_version>.jar`，版本读取本目录 `gradle.properties`，以构建日志的 `Built:` 为准。
 
-如需直接调用 Gradle，在本子目录执行 `./gradlew`（Windows 使用 `.\gradlew.bat`），任务为 `build`。子项目原生输出在本目录的 `build/libs/`，包括模组 JAR 和 `FTBQuests-1202.9.1-sources.jar` 源码包。
+如需直接调用 Gradle，在本子目录执行 `./gradlew`（Windows 使用 `.\gradlew.bat`），任务为 `build`。子项目原生输出在本目录的 `build/libs/`，包括模组 JAR 和对应版本的 `-sources.jar` 源码包。
 
 设置 `BUILD_NUMBER` 时版本会追加构建编号，统一入口会复制对应版本的模组包。完整用法、环境准备和测试流程见主仓库 [README](../README.md)。编译成功后，仍需在独立的游戏实例中验证运行行为。
 
@@ -64,7 +66,16 @@ py -3 tools/build.py --target ftbquests
 
 玩家进度和领奖记录通过 FTB Library 的团队数据文件 `team.getDataFile("ftbquests")` 保存，与上述任务定义分开。具体存档绝对路径由 Library 决定；只复制任务配置不会带走团队进度。删除团队的事件处理会删除该队任务数据，因此保留进度的公共团队方案不能通过删除旧团队直接实现。
 
-编辑入口为 `/ftbquests editing_mode true`，结束编辑用 `/ftbquests editing_mode false`；不带参数时切换状态。公共团队模式下所有玩家可用，任务书也提供开关；关闭公共团队模式后恢复上游权限规则（单人允许，联机要求权限等级 2）。正常完成任务无需开启编辑模式。
+本机 1202.9.2 / 1202.9.3 的公共团队模式隐藏任务编辑入口，禁用 `/ftbquests editing_mode`，旧的已保存编辑状态不生效；1202.9.1 基线仍保留编辑能力。后续版本的任务由 `config/ftbquests/<当前模式>/` 内的配置文件维护，停服修改后启动加载；已有团队进度另行保存。关闭公共团队模式后恢复上游编辑入口和权限规则（单人允许，联机要求权限等级 2）。
+
+### 维护与部署任务
+
+1. 退出游戏或停服，备份实际使用的任务定义目录和存档；确认 `questfile` 游戏规则及 PackMode 没有切到其他目录。
+2. 修改章节、任务和索引。增加章节时，同时维护 `chapters/index.snbt`；保留既有 UID、全局设置与奖励表。不要用空模板覆盖已有目录。
+3. 重启后检查日志中实际加载目录、章节和任务数量，再打开任务书核对布局与条件。先用[三个节点小样](../quest-config/preview/README.md)验证基础读入流程。
+4. 验证物品检测、到达检测、共享进度及退出重进；正式修改时保持节点 ID 稳定。修改完成目标可能影响既有进度，任务定义备份与团队进度备份都应保留。
+
+新增内容按[任务内容稿](../docs/ftb-quest-manuscript.md)分批转配置；不新增任务奖励，不用普通物品或维度检测冒充设备运行、当地采集或完整返航。运行证据统一记录在[玩法详解](../docs/research/planet-gameplay-guide.md#十三2026-11-02-运行日志补记)。
 
 源码入口：
 

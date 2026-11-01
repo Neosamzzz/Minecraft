@@ -1,1 +1,3 @@
 先查看完所有的文档和GitHub相关issue和project
+
+做完issue相关的记得更新issue

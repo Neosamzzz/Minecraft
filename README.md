@@ -1,8 +1,25 @@
-# Minecraft 1.12.2 · GSLC & FTB Quests
+# Minecraft 1.12.2 · 航天玩法与共享任务
 
-用于开发和测试 Minecraft 1.12.2 模组的源码仓库，集中维护 Galacticraft / GalaxySpace 拓展与 FTB Quests。通过 `tools/build.py` 统一构建，输出 GSLaunchCompat 补丁和 FTB Quests 模组；`Galacticraft-Legacy/` 保留为参考源码。
+用于开发和测试 Minecraft 1.12.2 模组的源码仓库，集中维护 Galacticraft / GalaxySpace 拓展与 FTB Quests。通过 `tools/build.py` 统一构建，输出 GSLaunchCompat 补丁和 FTB Quests 模组；`Galacticraft-Legacy/` 与 `ExtraPlanets/` 保留为参考源码。
 
 [快速开始](#快速开始) · [构建目标](#构建目标) · [安装与测试](#安装与测试) · [源码结构](#源码结构) · [开发说明](#开发说明)
+
+## 当前进展
+
+文档核对日期：**2026-11-02**。本仓库集中管理源码、研究资料与任务配置，不是可直接启动的完整客户端或服务端整合包。
+
+| 开发线 | 已有内容 | 尚待完成 |
+| --- | --- | --- |
+| GSLC | 1.4.8 发射兼容、维度遥感、地图与时钟补丁 | 对应游戏画面、性能及多人场景验收 |
+| FTB 功能 | 公共团队与共享进度；本机开发包 1202.9.3 关闭游戏内编辑并简化无奖励详情 | 双人联机、重启后进度与旧队数据验收 |
+| FTB 内容 | 七章、53 个候选节点及终章占位；三个节点小样已部署本机并被日志读入 | 完整文稿转配置；小样显示、判定与共享进度验收 |
+| 星球资料 | GC / GS / EP 静态调查、EP 0.8.0 源码快照与部分运行日志核对 | 正常飞行、资源加工、防护与返航验证 |
+| 新地球 | 火箭物品、新维度分别建立 Git 分支与方向文档 | 两线实现尚未开始，基础 FTB 内容独立推进 |
+
+> [!IMPORTANT]
+> **文档描述的本机开发状态与已提交源码分开记录。** 本次文档分支的 FTB 源码基线为 `48f727d`（1202.9.1）；1202.9.2 / 1202.9.3 的源码仍由 FTB 代码线程维护，未纳入此次文档提交。从本分支构建得到 1202.9.1，不具备后续关闭编辑、精简奖励栏的全部变化。安装已有本机 1202.9.3 包前，先核对客户端和服务端版本。
+
+文档入口见 [FTB 资料区](docs/README.md)，当前本机模组清单见[整合包基线](changelog/modpack.md)。玩法与任务资料含作者侧终章设定，不直接作为玩家可见文本发布。
 
 | 产物 | 用途 |
 | --- | --- |
@@ -45,12 +62,12 @@ python3 tools/build.py --target all
 > [!NOTE]
 > 首次构建需要联网下载工具、依赖并处理 Minecraft 开发类库。已安装的游戏实例与这套开发缓存分开管理；缓存默认位于用户目录的 `.gradle/`，后续构建会复用。
 
-成功后，按命令打印的 `Built:` 路径取包。当前默认版本输出为：
+成功后，按命令打印的 `Built:` 路径取包。GSLC 当前为 1.4.8；FTB 文件名跟随所检出分支的 `mod_version`，不以本文的本机安装版本推定：
 
 ```text
 build/libs/
 ├── GSLaunchCompat-1.4.8.jar
-└── FTBQuests-1202.9.1.jar
+└── FTBQuests-<mod_version>.jar
 ```
 
 ## 构建目标
@@ -104,21 +121,23 @@ GSLC 编译并重混淆 GalaxySpace，再使用 `dev-tools/GSLaunchCompat-1.3-pu
 
 | 模组 | 版本 | 客户端 | 服务端 |
 | --- | --- | --- | --- |
-| FTB Quests | 本项目生成的 `1202.9.1`，或带构建编号的对应版本，两端同步更新 | 必需 | 必需 |
+| FTB Quests | 同一源码版本生成的包；本机已安装 1202.9.3，本次文档分支源码为 1202.9.1 | 必需 | 必需 |
 | [FTB Library](https://www.curseforge.com/minecraft/mc-mods/ftb-library-legacy-forge/files/2985811) | 5.4.7.2 | 必需 | 必需 |
 | [Item Filters](https://www.curseforge.com/minecraft/mc-mods/item-filters/files/3003364) | 1.0.4.2 | 必需 | 必需 |
 
 FTB Utilities、KubeJS、JEI 等属于可选兼容项；是否安装取决于整合包和任务内容的需要。
 
-本仓库尚未包含整合包任务配置。物品提交、到达维度等基础任务可以用现有任务类型配置，控制器绑定、遥感扫描等特殊行为按需开发适配。已有任务定义需要部署到服务器，默认目录为 `config/ftbquests/normal/`；单人游戏使用本机实例的对应目录。
+仓库已包含[三个节点任务小样](quest-config/preview/README.md)，以及[完整内容稿](docs/ftb-quest-manuscript.md)。小样不消耗物品、没有奖励，已加入本机实例；七章文稿尚未整体转成配置。已有全局配置和章节索引需要保留，按小样说明增量加入，不能整目录覆盖现有任务书。默认部署目录是 `config/ftbquests/normal/`，单人游戏使用本机实例目录；游戏规则或 PackMode 可改变该子目录。
 
-本地 `1202.9.1` 默认启用熟人服公共团队：自动同队、共享进度，并向所有玩家开放任务编辑。配置与旧存档处理见[公共团队方案](docs/ftb-shared-team-plan.md#最小版的使用方式)。
+物品、维度等基础目标优先使用现有任务类型；控制器绑定、遥感扫描等特殊行为另行适配。物品检测不证明设备已运行或装备已正确穿戴，到达检测不证明使用了正常生存路线。
+
+本机 `1202.9.3` 默认启用熟人服公共团队：自动同队、共享进度，游戏内隐藏并禁用任务编辑，由配置文件维护任务。1202.9.1 基线仍保留公共团队编辑功能，部署前注意版本差异。配置与旧存档处理见[公共团队方案](docs/ftb-shared-team-plan.md#最小版的使用方式)。
 
 安装后至少验证任务书打开、条件判定、奖励领取，以及退出重进后的进度保存。联机时同时检查客户端和服务端日志。
 
 ### GSLaunchCompat
 
-沿用项目记录的参考运行组合，实际兼容性仍需在对应实例中验证：
+本机 2026-11-02 的运行文件组合如下；历史专项探针主要使用 MixinBooter 10.7，两者的验证范围分别记录：
 
 | 组件 | 版本 |
 | --- | --- |
@@ -126,7 +145,7 @@ FTB Utilities、KubeJS、JEI 等属于可选兼容项；是否安装取决于整
 | Galacticraft | 4.0.6 |
 | GalaxySpace | 2.2.0，与项目对应的 flight-fix 包 |
 | AsmodeusCore | 1.0.5 |
-| MixinBooter | 10.7 |
+| MixinBooter | 12.2；历史探针为 10.7 |
 
 按修改内容验证发射控制、遥感或显示功能；涉及服务端行为时同步部署到测试服。日志中搜索 `[GSLC]`、`ERROR` 和异常堆栈。
 
@@ -139,6 +158,12 @@ Minecraft/
 ├── GalaxySpace/             # GC / GS 拓展源码、编译依赖和专项检查
 ├── Galacticraft-Legacy/     # GC 参考源码
 ├── FTB-Quests/              # FTB Quests 源码与构建配置
+├── ExtraPlanets/            # EP 1.12.2 / 0.8.0 上游源码快照，用于调查与对照
+├── NewEarth/                # 新地球支线，分物品/火箭与新维度两条开发线
+├── quest-config/preview/    # 已部署本机的三个节点小样，不是完整任务书
+├── docs/                    # FTB 方案、内容稿与星球研究
+├── changelog/               # 各开发线改动记录与本机基线
+├── planning/                # 旧规划入口，转向 NewEarth
 ├── dev-tools/               # GSLC 打包底包
 ├── tools/build.py           # 统一构建入口
 ├── tools/tests/             # 构建与打包工具测试
@@ -152,8 +177,11 @@ Minecraft/
 | [GalaxySpace](https://github.com/BlesseNtumble/GalaxySpace) | `dev_1.12.2` | `GalaxySpace/` |
 | [Galacticraft-Legacy](https://github.com/TeamGalacticraft/Galacticraft-Legacy) | `master-1.12` | `Galacticraft-Legacy/` |
 | [FTB Quests](https://github.com/FTBTeam/FTB-Quests) | `1.12` | `FTB-Quests/` |
+| [ExtraPlanets](https://github.com/MJRLegends/ExtraPlanets) | `dev_1.12.2` | `ExtraPlanets/` |
 
 精确的导入提交见 [upstream.json](upstream.json)。源码已包含在主仓库中，无需另行克隆上游或初始化子模块；更新上游时应审阅本地修改。
+
+ExtraPlanets 当前作为源码参考导入，未接入 `tools/build.py`，也未替换游戏中的 EP JAR。版本声明、与实际安装包的核对范围及源码入口见 [EP 源码说明](docs/research/extraplanets-source-notes.md)；上游文件与许可说明保持原样。
 
 ## 开发说明
 
@@ -167,8 +195,10 @@ macOS / Linux 使用 `python3 -m unittest discover -s tools/tests`。这些检�
 
 - [FTB 开发说明](FTB-Quests/DEVELOPMENT.md)：依赖版本、直接调用 Gradle、兼容修复、任务功能、数据保存和编辑入口。
 - [FTB 资料区](docs/README.md)：FTB 接入的主基调、工作路线，以及团队方案、内容方向和星球依据。
-- [FTB 公共团队方案](docs/ftb-shared-team-plan.md)与[任务内容方向](docs/ftb-content-direction.md)：已对齐、尚未实现或部署的熟人服规则与内容边界。
-- [星球现状审计](docs/planet-gameplay-audit.md)与[玩法详解](docs/planet-gameplay-guide.md)：配置、源码层面的目的地与制造关系，含待运行验证事项。
+- [新地球支线](NewEarth/README.md)：物品/火箭与新维度分别使用 Git 分支推进，优先复用现有星球材料；对应 [Project「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1)。
+- [FTB 公共团队方案](docs/ftb-shared-team-plan.md)与[任务内容方向](docs/ftb-content-direction.md)：公共团队实现、版本边界、维护方式及轻量无奖励的内容规则。
+- [任务内容稿](docs/ftb-quest-manuscript.md)与[任务小样](quest-config/preview/README.md)：作者侧完整候选内容，以及可增量试用的三个节点。
+- [星球现状审计](docs/research/planet-gameplay-audit.md)与[玩法详解](docs/research/planet-gameplay-guide.md)：配置、源码层面的目的地与制造关系，含待运行验证事项。
 - [开发记录](changelog/README.md)：GSLC 更新历史、整合包基线、FTB Quests 本地改动。
 - [遥感补丁说明与专项检查](GalaxySpace/tests/telemetry_dimension/README.md)：遥感功能实现、构建方式与验证手段，版本历史见开发记录。
 - [公共控制器补丁检查](GalaxySpace/tests/public_controller/README.md)：控制器兼容探针与验证方式。

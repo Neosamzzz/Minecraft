@@ -1,0 +1,10 @@
+{
+  "title": "仰望星空",
+  "icon": "galacticraftcore:rocket_t1",
+  "description": [
+    "带上空气，造好火箭，去月球留下第一个脚印。"
+  ],
+  "always_invisible": false,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

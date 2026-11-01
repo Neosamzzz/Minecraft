@@ -1,0 +1,36 @@
+# 新地球：两条独立开发线
+
+记录日期：2026-11-02。
+
+对应 [Project #4「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1) 与 [Issue #8「自建星球」](https://github.com/Neosamzzz/Minecraft/issues/8)。新维度是独立且复杂的工程，与火箭、物品内容分别使用 Git 分支推进。
+
+## 目录与 Git 分支
+
+| 开发线 | 方向文档 | Git 分支 |
+| --- | --- | --- |
+| 火箭与相关物品 | [items/README.md](items/README.md) | [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) |
+| 终章新维度 | [dimension/README.md](dimension/README.md) | [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension) |
+
+两分支从同一 `main` 基线建立，共同方向初始提交为 `65c3fe1`，本次文档更新同步推送到 GitHub。分支存在只表示已建立开发位置；当前没有新维度、火箭或装配台实现。
+
+两条线分别维护内容与验证状态。物品线可以利用已有星球推进七八阶，不等待新维度完成；维度线可以独立研究地形与世界生成，不等待新火箭完成。
+
+## 共同方向
+
+- 延续现有 GC / GS T1～T6 发展，七阶复用 EP 现有火箭，八阶制作全新火箭相关内容。
+- 既有系外目的地计划统一最低 T7，沿用星球等级机制，不另按火箭来自 GS 还是 EP 设门槛。
+- 原料、方块、生态和其他内容优先复用原版、GC、GS、EP。新增物品与设备集中在火箭所需部分，不另建一套矿物、装备或通用工业体系。
+- 终章保留独立拟地球行星及意外发现的方向；是否需要八阶抵达尚未固定。
+- 先记录方向与边界，不预排具体开发任务、配方数量或实现架构。当前文档不代表火箭、维度或航行规则已经实施。
+
+## 两条线的对接
+
+新维度的最终维度 ID、星图归属、最低火箭等级和发现时机，在各自方案明确后共同对接。先保持两条线可独立推进，不提前绑定为一项必须同时完成的工程。
+
+Git 分支是开发隔离方式，不预设最后一定打包成两个模组；工程与产物组织后续确定。
+
+## 与 FTB 的关系
+
+[FTB 资料区](../docs/README.md)继续维护团队机制与基础任务书。终章的「似曾相识」与 H01 文稿由 `docs/ftb-quest-manuscript.md` 维护，维度与物品的开发方向分别记录在本目录的两条线中。
+
+基础任务书不等待本支线全部完成，任务完成状态不代替实际制造或航行条件；继续采用轻量、不设任务奖励的内容方向。已有玩法依据见[星球玩法详解](../docs/research/planet-gameplay-guide.md)。

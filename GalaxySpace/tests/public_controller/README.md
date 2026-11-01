@@ -1,5 +1,7 @@
 # Public launch controller GUI addon
 
+本页描述已合入 GSLC 1.3 底包的公共控制器专项补丁与历史探针。当前统一产物为 GSLC 1.4.8：在仓库根目录执行 `py -3 tools/build.py --target gslc`，无需再单独叠加一个公共控制器 JAR。下方打包命令用于理解或维护专项底包；日常构建与安装见[根目录说明](../../../README.md)，版本记录见[GSLC 开发记录](../../../changelog/gslc.md)。
+
 The two client-only mixins replace PlayerUtil.getName only inside the selected
 GUI permission checks. The real tile owner and foreground title rendering are
 unchanged; cooldown branches and non-owner-independent logic are preserved.
