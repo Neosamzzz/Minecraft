@@ -1,0 +1,32 @@
+{
+  "result": {
+    "item": "extraplanets:advanced_battery",
+    "data": 100
+  },
+  "pattern": [
+    " T ",
+    "TRT",
+    "TCT"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "batteries"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "R": {
+      "item": "galacticraftcore:battery",
+      "data": 100
+    },
+    "C": {
+      "item": "galacticraftplanets:mars",
+      "data": 8
+    },
+    "T": {
+      "item": "galacticraftplanets:item_basic_asteroids",
+      "data": 6
+    }
+  }
+}

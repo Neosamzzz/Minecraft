@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:uranium_legings"
+  },
+  "pattern": [
+    "MMM",
+    "M M",
+    "M M"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "uraniumtools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:ingot_uranium",
+      "data": 0
+    }
+  }
+}

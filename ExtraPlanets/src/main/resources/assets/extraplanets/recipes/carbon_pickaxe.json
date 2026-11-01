@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:carbon_pickaxe"
+  },
+  "pattern": [
+    "XXX",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "carbontools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier4_items",
+      "data": 5
+    }
+  }
+}

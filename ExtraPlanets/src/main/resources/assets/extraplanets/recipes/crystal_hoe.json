@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:crystal_hoe"
+  },
+  "pattern": [
+    "XX ",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "crystaltools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier7_items",
+      "data": 5
+    }
+  }
+}

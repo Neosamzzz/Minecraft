@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:orange_sandstone"
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:orange_sand"
+    },
+    {
+      "item": "extraplanets:orange_sand"
+    },
+    {
+      "item": "extraplanets:orange_sand"
+    },
+    {
+      "item": "extraplanets:orange_sand"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "jupiter"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

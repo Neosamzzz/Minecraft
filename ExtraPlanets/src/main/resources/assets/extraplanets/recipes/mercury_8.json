@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "extraplanets:mercury",
+    "data": 8,
+    "count": 4
+  },
+  "pattern": [
+    "   ",
+    "SS ",
+    "SS "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "mercury"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": {
+      "item": "extraplanets:mercury",
+      "data": 2
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:red_diamond_shovel"
+  },
+  "pattern": [
+    " X ",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "reddiamondtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier11_items",
+      "data": 1
+    }
+  }
+}

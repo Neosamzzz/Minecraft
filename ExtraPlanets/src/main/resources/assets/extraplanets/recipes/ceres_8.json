@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "extraplanets:ceres",
+    "data": 8,
+    "count": 4
+  },
+  "pattern": [
+    "   ",
+    "SS ",
+    "SS "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "ceres"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": {
+      "item": "extraplanets:ceres",
+      "data": 2
+    }
+  }
+}

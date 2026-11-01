@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:blue_diamond_axe"
+  },
+  "pattern": [
+    "XX ",
+    "XS ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "bluediamondtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier11_items",
+      "data": 0
+    }
+  }
+}

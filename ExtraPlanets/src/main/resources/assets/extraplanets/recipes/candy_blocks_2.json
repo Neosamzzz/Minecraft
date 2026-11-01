@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "extraplanets:candy_blocks",
+    "data": 2
+  },
+  "pattern": [
+    " D ",
+    "DCD",
+    " D "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "C": {
+      "item": "extraplanets:candy_blocks",
+      "data": 0
+    },
+    "D": {
+      "item": "#DYEBLUE"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "result": {
+    "item": "extraplanets:basic_smasher"
+  },
+  "pattern": [
+    "MAM",
+    "PPP",
+    "MAM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "radiation"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "A": {
+      "item": "minecraft:anvil",
+      "data": 0
+    },
+    "M": {
+      "item": "extraplanets:compressed_mercury",
+      "data": 0
+    }
+  }
+}

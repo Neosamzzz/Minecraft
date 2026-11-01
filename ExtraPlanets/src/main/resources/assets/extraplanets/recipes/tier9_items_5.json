@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "extraplanets:tier9_items",
+    "data": 5,
+    "count": 9
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:pluto",
+      "data": 7
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "pluto"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "extraplanets:electric_parts",
+    "data": 3
+  },
+  "pattern": [
+    " W ",
+    "WXW",
+    " W "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "rovers"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "W": {
+      "item": "#INGOTDESH"
+    },
+    "X": {
+      "item": "extraplanets:electric_parts",
+      "data": 2
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "extraplanets:dense_ice"
+  },
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "uranus"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": {
+      "item": "minecraft:ice"
+    }
+  }
+}

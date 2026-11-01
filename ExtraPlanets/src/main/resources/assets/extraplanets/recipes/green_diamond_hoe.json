@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:green_diamond_hoe"
+  },
+  "pattern": [
+    "XX ",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "greendiamondtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier11_items",
+      "data": 4
+    }
+  }
+}

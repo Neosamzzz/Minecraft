@@ -1,0 +1,30 @@
+{
+  "result": {
+    "item": "extraplanets:decorative_blocks",
+    "data": 5
+  },
+  "pattern": [
+    "BSW",
+    "SBS",
+    "BSW"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "mercury"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "B": {
+      "item": "#DYEWHITE"
+    },
+    "S": {
+      "item": "extraplanets:mercury",
+      "data": 2
+    },
+    "W": {
+      "item": "#DYEBLACK"
+    }
+  }
+}

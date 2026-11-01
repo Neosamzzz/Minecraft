@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:tungsten_legings"
+  },
+  "pattern": [
+    "MMM",
+    "M M",
+    "M M"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "tungstentools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:tier9_items",
+      "data": 5
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:red_sandstone"
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:red_sand"
+    },
+    {
+      "item": "extraplanets:red_sand"
+    },
+    {
+      "item": "extraplanets:red_sand"
+    },
+    {
+      "item": "extraplanets:red_sand"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "kepler22b"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

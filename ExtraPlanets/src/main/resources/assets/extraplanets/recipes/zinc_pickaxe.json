@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:zinc_pickaxe"
+  },
+  "pattern": [
+    "XXX",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "zinctools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier8_items",
+      "data": 5
+    }
+  }
+}

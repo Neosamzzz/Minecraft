@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:mercury_axe"
+  },
+  "pattern": [
+    "XX ",
+    "XS ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "mercurytools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:ingot_mercury",
+      "data": 0
+    }
+  }
+}
