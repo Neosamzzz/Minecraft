@@ -8,5 +8,10 @@
     "url": "https://github.com/TeamGalacticraft/Galacticraft-Legacy.git",
     "branch": "master-1.12",
     "imported_commit": "acec4429525eb30452298c2034d1e5d5d4b41046"
+  },
+  "FTB-Quests": {
+    "url": "https://github.com/FTBTeam/FTB-Quests.git",
+    "branch": "1.12",
+    "imported_commit": "85b7652bd69f3bc4c03ba9ba24909ddea0605a53"
   }
 }
