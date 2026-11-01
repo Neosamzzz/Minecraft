@@ -1,0 +1,32 @@
+{
+  "title": "石头里的钛",
+  "description": "获得钛铁矿",
+  "icon": "galacticraftplanets:asteroids_block 1 4",
+  "x": -3.0,
+  "y": -3.0,
+  "text": [
+    "用途：建立钛材料的采集来源。",
+    "操作：在小行星中寻找钛铁矿，按配方进行冶炼和进一步加工。",
+    "提示：钛锭、压缩钛与 T3 强化板是不同材料，制造时按具体配方取用。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210302",
+      "title": "获得钛铁矿",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:asteroids_block",
+          "Count": 1,
+          "Damage": 4
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

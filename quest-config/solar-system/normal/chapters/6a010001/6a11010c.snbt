@@ -1,0 +1,32 @@
+{
+  "title": "慢点落地",
+  "description": "获得任意颜色降落伞",
+  "icon": "galacticraftcore:parachute 1 0",
+  "x": 6.0,
+  "y": 3.0,
+  "text": [
+    "用途：准备返回大气环境时使用的降落装备。",
+    "操作：在 GC 装备界面安装降落伞，出发前检查装备位置。",
+    "提示：仅记录获得物品，不检测是否已装备；不要用降落伞代替所有天体的移动与着陆准备。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a21010c",
+      "title": "获得任意颜色降落伞",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:parachute",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

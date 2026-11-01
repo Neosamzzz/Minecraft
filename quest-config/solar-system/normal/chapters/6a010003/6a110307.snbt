@@ -1,0 +1,32 @@
+{
+  "title": "白色的线索",
+  "description": "获得白云石晶体",
+  "icon": "galaxyspace:gs_basic 1 3",
+  "x": -3.0,
+  "y": 6.0,
+  "text": [
+    "用途：取得高级板材加工所用的原料。",
+    "操作：开采谷神星白云石矿，收集晶体并带回加工设备。",
+    "提示：晶体与白云石粉不同，取得晶体后仍需加工。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210307",
+      "title": "获得白云石晶体",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:gs_basic",
+          "Count": 1,
+          "Damage": 3
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

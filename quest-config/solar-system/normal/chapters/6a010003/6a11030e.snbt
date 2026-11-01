@@ -1,0 +1,32 @@
+{
+  "title": "矿工不用下班",
+  "description": "获得自动采矿机",
+  "icon": "galacticraftplanets:astro_miner 1 0",
+  "x": 0.0,
+  "y": -3.0,
+  "text": [
+    "用途：准备自动采矿玩法。",
+    "操作：解锁对应图纸，在 NASA 工作台制造，并准备配套采矿机基地。",
+    "提示：持有设备不代表已部署；并非所有维度或地点都允许使用。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a21030e",
+      "title": "获得自动采矿机",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:astro_miner",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

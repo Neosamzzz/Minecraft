@@ -1,0 +1,42 @@
+{
+  "title": "此冰非彼冰",
+  "description": "获得氧冰、氮冰或干冰晶体之一",
+  "icon": "galaxyspace:gs_basic 1 23",
+  "x": 3.0,
+  "y": 3.0,
+  "text": [
+    "用途：区分不同冰类的采集产物。",
+    "操作：开采对应地层获得晶体，再查询回收机或其他加工配方。",
+    "提示：晶体名称不等于已经获得可用气体；加工产物和数量以当前配方为准。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210605",
+      "title": "获得氧冰、氮冰或干冰晶体之一",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:gs_basic",
+          "Count": 1,
+          "Damage": 23
+        },
+        {
+          "id": "galaxyspace:gs_basic",
+          "Count": 1,
+          "Damage": 24
+        },
+        {
+          "id": "galaxyspace:gs_basic",
+          "Count": 1,
+          "Damage": 27
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

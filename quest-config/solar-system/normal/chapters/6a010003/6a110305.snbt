@@ -1,0 +1,32 @@
+{
+  "title": "镁中不足？",
+  "description": "获得镁板",
+  "icon": "galaxyspace:compressed_plates 1 2",
+  "x": -3.0,
+  "y": 0.0,
+  "text": [
+    "用途：准备 GS HDP:0 的结构材料。",
+    "操作：将镁原料冶炼为锭，再通过对应压缩配方加工成板。",
+    "提示：首次四级制造可利用水星来源，不需要先前往要求四级的木卫三。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210305",
+      "title": "获得镁板",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:compressed_plates",
+          "Count": 1,
+          "Damage": 2
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

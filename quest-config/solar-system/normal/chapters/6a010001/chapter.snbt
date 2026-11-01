@@ -1,0 +1,12 @@
+{
+  "title": "仰望星空",
+  "icon": "galacticraftcore:rocket_t1",
+  "description": [
+    "海洋吞没了大部分陆地。留在海岸上的基地，是第一次太空远行的起点。",
+    "建立供电、材料加工、燃料与氧气供应，完成首次登月。",
+    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+  ],
+  "always_invisible": false,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

@@ -1,0 +1,21 @@
+{
+  "title": "火山旁边",
+  "description": "抵达木卫一",
+  "icon": "minecraft:packed_ice",
+  "x": -6.0,
+  "y": 0.0,
+  "text": [
+    "用途：寻找后续板材需要的 GS 火山材料。",
+    "操作：留意岩浆湖附近的地形与矿物，保证安全距离和返回路线。",
+    "提示：不要将名称相近的金星方块当作 GS 火山石。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210401",
+      "title": "抵达木卫一",
+      "type": "ftbquests:dimension",
+      "dim": -1014
+    }
+  ]
+}

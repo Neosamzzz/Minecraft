@@ -1,0 +1,32 @@
+{
+  "title": "双脚暂时离线",
+  "description": "获得电动喷气背包",
+  "icon": "galaxyspace:jetpack 1 0",
+  "x": 0.0,
+  "y": -3.0,
+  "text": [
+    "用途：增加地表探索中的机动能力。",
+    "操作：制造并充电，装备后在安全地点熟悉启用与起落。",
+    "提示：持续使用会消耗电力，不代替氧气、温度防护或返航设备。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210409",
+      "title": "获得电动喷气背包",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:jetpack",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

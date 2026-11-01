@@ -1,0 +1,42 @@
+{
+  "title": "带上空气",
+  "description": "获得任一种普通氧气罐",
+  "icon": "galacticraftcore:oxygen_tank_light_full 1 0",
+  "x": 6.0,
+  "y": 0.0,
+  "text": [
+    "用途：为不可呼吸的环境准备随身氧气。",
+    "操作：使用氧气压缩机充氧，并在 GC 装备界面配好氧气面罩、供氧装置和氧气罐。",
+    "提示：本目标不检查罐内余量或穿戴状态；每次出发仍需自行确认。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a010201",
+      "title": "获得任一种普通氧气罐",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:oxygen_tank_light_full",
+          "Count": 1,
+          "Damage": 0
+        },
+        {
+          "id": "galacticraftcore:oxygen_tank_med_full",
+          "Count": 1,
+          "Damage": 0
+        },
+        {
+          "id": "galacticraftcore:oxygen_tank_heavy_full",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

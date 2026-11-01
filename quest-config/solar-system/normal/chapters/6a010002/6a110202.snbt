@@ -1,0 +1,32 @@
+{
+  "title": "戴斯登场",
+  "description": "获得戴斯锭",
+  "icon": "galacticraftplanets:item_basic_mars 1 2",
+  "x": -3.0,
+  "y": 0.0,
+  "text": [
+    "用途：取得后续火箭和设备使用的材料。",
+    "操作：采集戴斯原料并冶炼，根据当前配方继续加工。",
+    "提示：戴斯不限定必须来自火星；任务记录物品获得，不证明当地采矿。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210202",
+      "title": "获得戴斯锭",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:item_basic_mars",
+          "Count": 1,
+          "Damage": 2
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

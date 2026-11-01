@@ -1,0 +1,21 @@
+{
+  "title": "远方的冰原",
+  "description": "抵达海卫一",
+  "icon": "minecraft:packed_ice",
+  "x": -6.0,
+  "y": 0.0,
+  "text": [
+    "用途：记录外太阳系的极寒地貌探索。",
+    "操作：先确认防护与设备能源，再开展地表勘察。",
+    "提示：此处不预设尚未确认的独占矿物或下一阶图纸。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210601",
+      "title": "抵达海卫一",
+      "type": "ftbquests:dimension",
+      "dim": -1021
+    }
+  ]
+}

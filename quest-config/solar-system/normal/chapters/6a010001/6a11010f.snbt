@@ -1,0 +1,32 @@
+{
+  "title": "空气也要收集",
+  "description": "获得氧气收集器",
+  "icon": "galacticraftcore:collector 1 0",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "用途：建立可补充的氧气来源。",
+    "操作：连接电力，放置在能够收集氧气的环境，检查产出后接入供氧管线。",
+    "提示：无可呼吸大气的环境通常还需植物等供氧条件；以设备实际产出为准。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a21010f",
+      "title": "获得氧气收集器",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:collector",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "title": "打成一片",
+  "description": "获得压缩机",
+  "icon": "galacticraftcore:machine 1 12",
+  "x": -3.0,
+  "y": -3.0,
+  "text": [
+    "用途：将金属加工为后续制造使用的压缩材料。",
+    "操作：向压缩机放入对应原料和燃料，按当前配方加工板材。",
+    "提示：压缩机与氧气压缩机用途不同；配方以物品查询界面为准。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210102",
+      "title": "获得压缩机",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:machine",
+          "Count": 1,
+          "Damage": 12
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

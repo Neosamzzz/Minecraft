@@ -1,0 +1,22 @@
+{
+  "title": "这声嘶嘶不太妙",
+  "description": "击败火星进化苦力怕 Boss",
+  "icon": "minecraft:iron_sword",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "用途：探索火星地牢及其特殊战利品。",
+    "操作：准备战斗装备、照明和氧气，进入地牢并完成首领挑战。",
+    "提示：预留撤离与补给条件；击杀不保证取得某一张指定图纸。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210203",
+      "title": "击败火星进化苦力怕 Boss",
+      "type": "ftbquests:kill",
+      "entity": "galacticraftplanets:creeper_boss",
+      "value": 1
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "title": "再加一道料",
+  "description": "获得 HDP:1 板材",
+  "icon": "galaxyspace:hdp 1 1",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "用途：准备 GS 五级火箭的结构材料。",
+    "操作：在 HDP:0 基础上，加入钴板、镍板和白云石粉，按实际配方加工。",
+    "提示：钴镍和白云石已有较早来源，不要求先到 T5 天体才能制造第一艘 T5。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210406",
+      "title": "获得 HDP:1 板材",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:hdp",
+          "Count": 1,
+          "Damage": 1
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

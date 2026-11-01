@@ -1,0 +1,12 @@
+{
+  "title": "木星的邻居们",
+  "icon": "minecraft:packed_ice",
+  "description": [
+    "四颗卫星各有不同的地形和资源。",
+    "取得火山石，发展高级板材、工具与五级火箭。",
+    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+  ],
+  "always_invisible": false,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

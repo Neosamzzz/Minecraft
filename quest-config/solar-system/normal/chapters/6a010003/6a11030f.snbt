@@ -1,0 +1,32 @@
+{
+  "title": "关门，留点空气",
+  "description": "获得氧气密封器",
+  "icon": "galacticraftcore:sealer 1 0",
+  "x": 6.0,
+  "y": 3.0,
+  "text": [
+    "用途：为长期停留的房间准备供氧。",
+    "操作：建造封闭空间，为密封器接入电力和氧气，并观察设备的密封检查结果。",
+    "提示：任务不自动验收房间；确认供氧实际有效后再调整随身氧气安排。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a21030f",
+      "title": "获得氧气密封器",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:sealer",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

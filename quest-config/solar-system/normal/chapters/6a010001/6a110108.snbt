@@ -1,0 +1,32 @@
+{
+  "title": "天外来客",
+  "description": "获得原始陨铁",
+  "icon": "galacticraftcore:meteoric_iron_raw 1 0",
+  "x": 9.0,
+  "y": 0.0,
+  "text": [
+    "用途：收集用于后续加工和制造的陨铁。",
+    "操作：在月面留意陨石，采集原始陨铁并根据配方加工。",
+    "提示：不要求一次登陆收集全部材料；安排好氧气余量和返回路线。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210108",
+      "title": "获得原始陨铁",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:meteoric_iron_raw",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

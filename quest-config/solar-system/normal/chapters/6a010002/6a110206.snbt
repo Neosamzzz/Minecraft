@@ -1,0 +1,21 @@
+{
+  "title": "邻居家的矿",
+  "description": "抵达 GS 火卫一",
+  "icon": "minecraft:end_stone",
+  "x": -3.0,
+  "y": 3.0,
+  "text": [
+    "用途：增加火星阶段的材料来源选择。",
+    "操作：在星图确认目标来源后前往，按需要采集戴斯、镍或其他资源。",
+    "提示：整合包另有 EP 同名实现；本目标只记录 GS 火卫一。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210206",
+      "title": "抵达 GS 火卫一",
+      "type": "ftbquests:dimension",
+      "dim": -1012
+    }
+  ]
+}

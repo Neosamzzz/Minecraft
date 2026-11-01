@@ -1,0 +1,32 @@
+{
+  "title": "月球驾照",
+  "description": "获得月球车",
+  "icon": "galacticraftcore:buggy 1 0",
+  "x": 12.0,
+  "y": 3.0,
+  "text": [
+    "用途：增加地表移动与探索方式。",
+    "操作：解锁月球车图纸，在 NASA 工作台组装，并为车辆准备燃料。",
+    "提示：使用前熟悉驾驶与补给；不要求所有玩家都制造一辆。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a21010e",
+      "title": "获得月球车",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:buggy",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

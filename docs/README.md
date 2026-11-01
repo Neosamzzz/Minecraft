@@ -9,8 +9,9 @@ FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 
 ## 当前进展
 
 - 公共团队最小实现已提交为 1202.9.1。本机已构建并安装 1202.9.3，包含关闭游戏内编辑、无奖励详情精简；后两版代码仍在代码线程工作区，未随此次文档推送提交。版本边界见[根目录说明](../README.md#当前进展)。
-- 本机最新日志两次读取到 3 章、3 任务、3 条件、0 奖励，并记录公共团队 `singleplayer`。这能证明小样加载和单人选队，不能代替实际双人共享与 GUI 验收。
-- 内容稿共 74 个节点：66 个既有玩法候选、7 个后期待接入节点及 H01 终章占位。后期顺序为多人八阶飞船 → 开普勒特殊材料 → 最终能源核心 → 终章；安装与资格、终章正常多人过夜后的结尾演出由模组负责。只有三个节点小样转成配置并部署，完整任务书尚未部署。
+- 六章部署前的日志曾读入 3 章、3 任务、3 条件、0 奖励，并记录公共团队 `singleplayer`；这是旧小样证据，不能用于证明本次六章加载或双人共享。
+- A01～F05 已转为六章、60 个目标、0 奖励的任务配置，并部署本机。配套玩家说明书使用正式、简洁的用途、操作与提示，任务详情同步采用这份正文。Minecraft NBT 解析、ID 与部署哈希检查通过，游戏显示、判定与联机验收待补。
+- 原任务稿保留为作者侧草稿，共 74 个候选和预留节点；F06 起的 14 个节点不部署。后期路线与终章设定不写入本次玩家版说明书。
 - 星球研究保留完整细节。GS 系外当前注册 T6、EP Kepler 当前 T10；常规系外 T7、开普勒 T8、七阶复用与八阶全新属于[新地球物品线](../NewEarth/items/README.md)规划。
 - 新地球拆为 `codex/newearth-items` 与 `codex/newearth-dimension`。常规系外最低 T7、开普勒最低 T8，终章要求八阶飞船与已安装有效核心；均为目标设计，载具、准入适配与新维度尚未实现。完整基调见 [NewEarth 总览](../NewEarth/README.md)。
 
@@ -33,7 +34,7 @@ FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 
 | 1. 摸清现状 | 核对全部入口、面板及服务端既有数据；源码能力已整理，实际界面与远程数据待补 | 功能清单：玩家用 / 管理用 / 用不上 | [#9](https://github.com/Neosamzzz/Minecraft/issues/9) |
 | 2. 定用法 | 已定公共团队、配置维护与无奖励内容；其他入口按用途核对 | 改动清单：配置、代码、不做 | [#10](https://github.com/Neosamzzz/Minecraft/issues/10) |
 | 3. 落地 | 最小实现、构建与隔离检查已有；补双人联机和旧存档验收 | 两人自动同队、同步并保存进度 | [#11](https://github.com/Neosamzzz/Minecraft/issues/11)、[方案](ftb-shared-team-plan.md) |
-| 4. 照资料铺内容 | 从 GC 基础起步，按实际材料关系组织并行分支；已有文稿与三节点小样 | 一套能跑的任务书 | [#12](https://github.com/Neosamzzz/Minecraft/issues/12)、[内容方向](ftb-content-direction.md) |
+| 4. 照资料铺内容 | 六章、60 个目标已配置并部署，玩家说明同步任务正文；后期内容继续保留草稿 | 配置可加载、目标与文字一致，并补游戏验收 | [#12](https://github.com/Neosamzzz/Minecraft/issues/12)、[玩家手册](ftb-player-guide.md) |
 | 5. 验证与说明 | 继续核对界面、判定、共享与重启保存；维护说明已补，验收未完成 | 实测记录 + 操作说明 | [#13](https://github.com/Neosamzzz/Minecraft/issues/13) |
 
 阶段 1、2 主要服务维护者与协作者；阶段 3 起是玩家能感知的部分。阶段 3 与阶段 4 可以并行，但真正开玩要等阶段 3。每阶段验收后立即进游戏验证，不攒到最后补。
@@ -44,9 +45,11 @@ FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 
 | --- | --- | --- |
 | [ftb-shared-team-plan.md](ftb-shared-team-plan.md) | 团队系统怎么做：固定公共团队、自动归队、共享进度、分别领奖 | 最小代码与 GUI 已实现，构建及隔离探针通过，待游戏内联机验收 |
 | [ftb-content-direction.md](ftb-content-direction.md) | 任务书内容做成什么样：轻量、有推进感、不设奖励 | 已对齐原版进度式目标与轻量主线；具体节点见内容稿 |
-| [ftb-quest-manuscript.md](ftb-quest-manuscript.md) | 任务内容稿：节点标题、短文案、完成目标与编排备注 | 7 章既有内容及 2 章后期预留、终章；共 74 个节点，完整内容尚未转配置或验收 |
+| [ftb-player-guide.md](ftb-player-guide.md) | 正式玩家说明书：用途、操作与必要提醒 | 太阳系六章、60 个目标，正文已同步任务配置；待游戏验收 |
+| [太阳系任务配置](../quest-config/solar-system/README.md) | 实际 SNBT、ID 映射、部署与恢复说明 | 六章已部署，解析及文件检查通过；运行验收待补 |
+| [ftb-quest-manuscript.md](ftb-quest-manuscript.md) | 作者侧草稿、后期预备内容与编排备注 | 共 74 个节点；A01～F05 已落地，F06 起继续保留，不作为玩家说明书 |
 | [research/quest-item-notes.md](research/quest-item-notes.md) | 新增目标的物品注册、配方与筛选依据 | 已核对本地源码及相关 EP 配置，未作物品游戏验收 |
-| [任务小样](../quest-config/preview/README.md) | 三节点配置、增量部署与恢复说明 | 已部署本机；日志确认加载，显示与完成判定待验 |
+| [历史任务小样](../quest-config/preview/README.md) | 三节点配置与当时的部署记录 | 已被六章配置接替，原三个条件 ID 保留 |
 | [research/planet-gameplay-audit.md](research/planet-gameplay-audit.md) | 星球与玩法的静态总览：配置、维度、共存问题 | 静态调查完成，待游戏内实测 |
 | [research/planet-gameplay-guide.md](research/planet-gameplay-guide.md) | 逐个目的地的详细玩法和内容依据 | 静态调查完成，待游戏内实测 |
 | [research/extraplanets-source-notes.md](research/extraplanets-source-notes.md) | EP 源码来源、版本对应、字节码核对与源码入口 | 已导入 0.8.0 上游快照，未接入构建 |
