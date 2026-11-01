@@ -41,7 +41,7 @@
 
 当前主世界的 GS 钴、镍等矿物生成开关开启。它们关系到后续火箭材料，因此不能把外太阳系同类矿物都写成唯一来源。生成开关也不会把已经生成的旧区块自动变成新矿区。
 
-参考：[GC 基础配方源码](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/recipe/RecipeManagerGC.java)、[GS 主世界配方](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。[GC 官方入门教程](https://galacticraft.mods.wiki/wiki/Tutorials/Galacticraft_Getting_Started_Guide)可用于理解供电、加工、燃料、氧气的关系，页面里的旧版本配方和第三方模组组合需另行筛选。
+参考：[GC 基础配方源码](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/recipe/RecipeManagerGC.java)、[GS 主世界配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。[GC 官方入门教程](https://galacticraft.mods.wiki/wiki/Tutorials/Galacticraft_Getting_Started_Guide)可用于理解供电、加工、燃料、氧气的关系，页面里的旧版本配方和第三方模组组合需另行筛选。
 
 ### 2. 出发准备分成“短途勘察”和“建立据点”
 
@@ -93,7 +93,7 @@
 
 因此，本资料把气压、辐射列作待验机制，不把“开关 true”翻译为某颗星球上一定发生的伤害。此次不修复代码，也不调整防护平衡。
 
-依据：[GS 环境事件处理](../GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。实际 JAR 的 `javap` 输出已保留在本机调查临时目录。
+依据：[GS 环境事件处理](../../GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../../GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。实际 JAR 的 `javap` 输出已保留在本机调查临时目录。
 
 ## 二、GC 基础探索：T1～T3
 
@@ -117,7 +117,7 @@
 
 **待验证：** 月球实际氧气/温度/EP 环境效果；当前地牢池；图纸解锁和制造；落地载具物资回收及返航。
 
-依据：[GC 月球 Provider](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/dimension/WorldProviderMoon.java)、[GC 初始化与一级地牢池](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/GalacticraftCore.java)、[GS 地牢池扩展](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
+依据：[GC 月球 Provider](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/dimension/WorldProviderMoon.java)、[GC 初始化与一级地牢池](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/GalacticraftCore.java)、[GS 地牢池扩展](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
 
 ### 2. 火星 Mars：戴斯、地牢与生态支线
 
@@ -140,7 +140,7 @@
 
 **待验证：** 新区块的 WE 火星地貌、矿脉和地牢；Slimeling/细菌泥实际生成；T3 图纸在当前完整地牢池中的取得方式。
 
-依据：[当前火星 WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mars/dimension/WorldProviderMars_WE.java)、[GC 火星模块](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/MarsModule.java)、[火星图纸类型](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/items/ItemSchematicTier2.java)。
+依据：[当前火星 WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mars/dimension/WorldProviderMars_WE.java)、[GC 火星模块](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/MarsModule.java)、[火星图纸类型](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/items/ItemSchematicTier2.java)。
 
 ### 3. 小行星带 Asteroids：钛材料与立体探索
 
@@ -158,7 +158,7 @@
 
 **待验证：** 当前补丁下的移动和着陆表现、矿物产出、废弃基地、采矿设备、回程操作。
 
-依据：[GC 小行星 Provider](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/asteroids/dimension/WorldProviderAsteroids.java)、[GS 小行星混入](../GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinWorldProviderAsteroids.java)、[GS 火箭板材配方](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+依据：[GC 小行星 Provider](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/asteroids/dimension/WorldProviderAsteroids.java)、[GS 小行星混入](../../GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinWorldProviderAsteroids.java)、[GS 火箭板材配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 ### 4. 金星 Venus：恶劣环境与高级装备材料
 
@@ -176,7 +176,7 @@
 
 **待验证：** 两套环境系统的实际结果、最低可用装备、具体资源加工、地牢奖励和 GS 金星空间站。
 
-依据：[GC 金星 Provider](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/venus/dimension/WorldProviderVenus.java)、[GS 金星参数及空间站注册](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GS 温控材料配方](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+依据：[GC 金星 Provider](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/venus/dimension/WorldProviderVenus.java)、[GS 金星参数及空间站注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GS 温控材料配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 ## 三、GS 在 T2～T3 开放的补充目的地
 
@@ -196,7 +196,7 @@
 
 **待验证：** 星图是否与 EP 重名、实际选中哪一套、矿物和返航表现。
 
-依据：[GS 火卫一 Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/dimension/WorldProviderPhobos.java)、[矿物生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/world/gen/BiomeDecoratorPhobos.java)。
+依据：[GS 火卫一 Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/dimension/WorldProviderPhobos.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/world/gen/BiomeDecoratorPhobos.java)。
 
 ### 6. 水星 Mercury（GS）：T4 板材的早期镁来源
 
@@ -214,7 +214,7 @@
 
 **待验证：** 矿石实际生成和掉落、压缩机配方、GS 镁矿至板材的全链，以及首次落地所需温控。
 
-依据：[GS 水星 Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/dimension/WorldProviderMercury.java)、[矿物生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/world/gen/BiomeDecoratorMercury.java)、[板材与火箭配方](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+依据：[GS 水星 Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/dimension/WorldProviderMercury.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/world/gen/BiomeDecoratorMercury.java)、[板材与火箭配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 ### 7. 谷神星 Ceres（GS）：白云石与独立地牢
 
@@ -234,7 +234,7 @@
 
 **待验证：** 矿物与地牢实际生成、回收机配方、Boss 与宝箱开启、随机池内容、两个特殊工具的使用和返回位置。
 
-依据：[谷神星 Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/dimension/WorldProviderCeres.java)、[矿物生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/world/gen/BiomeDecoratorCeres.java)、[Boss 与特殊奖励选择](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/entities/EntityBossBlaze.java)、[普通战利品表](../GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_4.json)。实际 JAR 中的两个 GS 宝箱表已按 JSON 内容复核。
+依据：[谷神星 Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/dimension/WorldProviderCeres.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/world/gen/BiomeDecoratorCeres.java)、[Boss 与特殊奖励选择](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/entities/EntityBossBlaze.java)、[普通战利品表](../../GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_4.json)。实际 JAR 中的两个 GS 宝箱表已按 JSON 内容复核。
 
 ## 四、GS T4：木星的四颗卫星
 
@@ -258,7 +258,7 @@
 
 **待验证：** 岩浆湖与火山矿实际分布、掉落、最低可用防护、Boss 战斗、模块安装与作用、返航。
 
-依据：[当前 Io Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/dimension/WorldProviderIo.java)、[湖泊及矿物生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/world/gen/BiomeDecoratorIo.java)、[Io 方块掉落](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/blocks/IoBlocks.java)、[Boss 奖励](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/entities/EntityBossGhast.java)、[普通战利品表](../GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_5.json)。
+依据：[当前 Io Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/dimension/WorldProviderIo.java)、[湖泊及矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/world/gen/BiomeDecoratorIo.java)、[Io 方块掉落](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/blocks/IoBlocks.java)、[Boss 奖励](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/entities/EntityBossGhast.java)、[普通战利品表](../../GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_5.json)。
 
 ### 9. 木卫二 Europa：冰地貌与硅铝补给
 
@@ -276,7 +276,7 @@
 
 **待验证：** WE 地形、采集与冰类处理、供电和移动表现、火箭实际燃料行为。
 
-依据：[Europa WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/europa/dimension/WorldProviderEuropa_WE.java)。
+依据：[Europa WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/europa/dimension/WorldProviderEuropa_WE.java)。
 
 ### 10. 木卫三 Ganymede：镁与钛铁矿的补充来源
 
@@ -294,7 +294,7 @@
 
 **待验证：** 矿物实际产出、与既有材料的配方匹配、出行成本与补给条件。
 
-依据：[Ganymede Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/dimension/WorldProviderGanymede.java)、[矿物生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/world/gen/BiomeDecoratorGanymede.java)。
+依据：[Ganymede Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/dimension/WorldProviderGanymede.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/world/gen/BiomeDecoratorGanymede.java)。
 
 ### 11. 木卫四 Callisto：陨石坑、洞穴与冰资源
 
@@ -312,7 +312,7 @@
 
 **待验证：** 实际地层、冰类掉落与加工、洞穴内容和基地适用性。
 
-依据：[Callisto Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/dimension/WorldProviderCallisto.java)、[当前装饰器](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/world/gen/BiomeDecoratorCallisto.java)。
+依据：[Callisto Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/dimension/WorldProviderCallisto.java)、[当前装饰器](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/world/gen/BiomeDecoratorCallisto.java)。
 
 ## 五、GS T5：土星与天王星卫星
 
@@ -334,7 +334,7 @@
 
 **待验证：** WE 冰雪地形、煤矿、温控和基地供电。
 
-依据：[Enceladus WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/enceladus/dimension/WorldProviderEnceladus_WE.java)。
+依据：[Enceladus WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/enceladus/dimension/WorldProviderEnceladus_WE.java)。
 
 ### 13. 土卫六 Titan：氮气大气与宝石资源
 
@@ -352,7 +352,7 @@
 
 **待验证：** 宝石掉落、材料用途、气体相关设备是否可采集该大气、实际防护要求。
 
-依据：[Titan Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/dimension/WorldProviderTitan.java)、[矿物生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/world/gen/BiomeDecoratorTitan.java)、[大气注册](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
+依据：[Titan Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/dimension/WorldProviderTitan.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/world/gen/BiomeDecoratorTitan.java)、[大气注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
 
 ### 14. 天卫五 Miranda：多矿种与复杂地层
 
@@ -370,7 +370,7 @@
 
 **待验证：** 新区块矿脉、各矿物母岩、产出、岩浆风险和运输成本。
 
-依据：[Miranda Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/dimension/WorldProviderMiranda.java)、[矿物及地层生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/world/gen/BiomeDecoratorMiranda.java)。
+依据：[Miranda Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/dimension/WorldProviderMiranda.java)、[矿物及地层生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/world/gen/BiomeDecoratorMiranda.java)。
 
 ## 六、GS T6：外太阳系
 
@@ -390,7 +390,7 @@
 
 **待验证：** 地表特征、可采集物、防护和能源条件。
 
-依据：[Triton WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/triton/dimenson/WorldProviderTriton_WE.java)。
+依据：[Triton WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/triton/dimenson/WorldProviderTriton_WE.java)。
 
 ### 16. 冥王星 Pluto（GS）：极寒地层，避免混用 EP 攻略
 
@@ -408,7 +408,7 @@
 
 **待验证：** 实际地形、可采集地层、基地设备和返航。
 
-依据：[GS Pluto Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/dimension/WorldProviderPluto.java)、[当前矿物装饰器](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/world/gen/BiomeDecoratorPluto.java)。
+依据：[GS Pluto Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/dimension/WorldProviderPluto.java)、[当前矿物装饰器](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/world/gen/BiomeDecoratorPluto.java)。
 
 ### 17. 柯伊伯带 Kuiper Belt：小天体与废弃基地
 
@@ -426,7 +426,7 @@
 
 **待验证：** 星图入口、着陆位置、矿核与遗迹生成、移动装备和返回流程。
 
-依据：[Kuiper Belt Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/WorldProviderKuiperBelt.java)、[区块生成](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/ChunkProviderKuiperBelt.java)。
+依据：[Kuiper Belt Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/WorldProviderKuiperBelt.java)、[区块生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/ChunkProviderKuiperBelt.java)。
 
 ### 18. 妊神星 Haumea（GS）：冰类资源的极寒世界
 
@@ -444,7 +444,7 @@
 
 **待验证：** 冰类掉落、采集方式、加工配方、装备和基地运行。
 
-依据：[Haumea WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
+依据：[Haumea WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
 
 ## 七、GS T6：系外探索
 
@@ -466,7 +466,7 @@
 
 **待验证：** 当前星图的跨系选择、发动机要求、太阳能表现、植物采集和补种、实际呼吸与温控。
 
-依据：[半人马座天体注册](../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/ACentauriSystemBodies.java)、[Proxima b WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/planets/proxima_b/dimension/WorldProviderProxima_B_WE.java)。
+依据：[半人马座天体注册](../../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/ACentauriSystemBodies.java)、[Proxima b WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/planets/proxima_b/dimension/WorldProviderProxima_B_WE.java)。
 
 ### 20. 巴纳德 C Barnarda C：生态丰富的长期探索候选
 
@@ -484,7 +484,7 @@
 
 **待验证：** 跨系抵达、实际可呼吸性、天气、植物与农业、矿物、定居设备和返回地球。
 
-依据：[巴纳德天体注册](../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/BarnardsSystemBodies.java)、[Barnarda C WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
+依据：[巴纳德天体注册](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/BarnardsSystemBodies.java)、[Barnarda C WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
 
 ### 21. 巴纳德 C1 Barnarda C1：冰雪、缟玛瑙与待验地牢
 
@@ -502,7 +502,7 @@
 
 **待验证：** 冷热与呼吸、矿物加工、地牢结构完整性和实际奖池、跨系与母星/卫星选择。
 
-依据：[Barnarda C1 WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
+依据：[Barnarda C1 WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
 
 ### 22. 鲸鱼座 τ f Tau Ceti f：水下探索主题
 
@@ -520,7 +520,7 @@
 
 **待验证：** 登陆位置、水面与水下呼吸、移动和采集、温控、基地密封及回程。
 
-依据：[Tau Ceti 注册](../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/TauCetiSystemBodies.java)、[Tau Ceti f WE Provider](../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/planets/tauceti_f/dimensions/WorldProviderTauCeti_F_WE.java)。
+依据：[Tau Ceti 注册](../../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/TauCetiSystemBodies.java)、[Tau Ceti f WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/planets/tauceti_f/dimensions/WorldProviderTauCeti_F_WE.java)。
 
 ## 八、EP 仍开启的两个地表实现
 
@@ -569,7 +569,7 @@
 
 建设内容可以与星球采矿并行。要验收“建立可用空间站”，至少要验证供能、供氧、物资和往返；只进入一次维度不能证明这些条件。
 
-依据：[GS 空间站注册](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GC 世界与空间站工具](../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/util/WorldUtil.java)。
+依据：[GS 空间站注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GC 世界与空间站工具](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/util/WorldUtil.java)。
 
 ### 2. 展示天体用于理解星系，不安排登陆任务
 
@@ -676,7 +676,7 @@ Boss 的特殊奖励池与宝箱 JSON 普通池分别记录，不能将其中任
 
 `ItemTask` 有是否消耗、元数据和 NBT 匹配等配置。GS 多个关键物品复用相同物品 ID、依靠元数据区分；随意忽略元数据可能把火山石、空白图纸或不同许可混在一起。火箭的货舱和 NBT 匹配也需按目标单独处理。
 
-依据：[任务类型](../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/FTBQuestsTasks.java)、[维度任务](../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/DimensionTask.java)、[物品任务](../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/ItemTask.java)。
+依据：[任务类型](../../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/FTBQuestsTasks.java)、[维度任务](../../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/DimensionTask.java)、[物品任务](../../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/ItemTask.java)。
 
 ### 2. 区分必要制造、资源选择和自由探索
 

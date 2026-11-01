@@ -252,14 +252,14 @@ GS 火星、金星空间站开关为 true；EP 对应两种空间站开关为 fa
 
 ## 源码定位
 
-- [GS 太阳系天体注册](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)：Provider、等级、展示卫星、空间站与火星地形替换。
-- [GS 半人马座/比邻星注册](../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/ACentauriSystemBodies.java)。
-- [GS 巴纳德注册](../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/BarnardsSystemBodies.java)。
-- [GS 鲸鱼座 τ 注册](../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/TauCetiSystemBodies.java)。
-- [GS 火箭配方](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
-- [GS 冥王星矿物装饰器](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/world/gen/BiomeDecoratorPluto.java)。
-- [GS 妊神星地形与资源](../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
-- [GS 巴纳德 C 地形与矿物](../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
-- [GS 巴纳德 C1 地形与矿物](../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
+- [GS 太阳系天体注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)：Provider、等级、展示卫星、空间站与火星地形替换。
+- [GS 半人马座/比邻星注册](../../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/ACentauriSystemBodies.java)。
+- [GS 巴纳德注册](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/BarnardsSystemBodies.java)。
+- [GS 鲸鱼座 τ 注册](../../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/TauCetiSystemBodies.java)。
+- [GS 火箭配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+- [GS 冥王星矿物装饰器](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/world/gen/BiomeDecoratorPluto.java)。
+- [GS 妊神星地形与资源](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
+- [GS 巴纳德 C 地形与矿物](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
+- [GS 巴纳德 C1 地形与矿物](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
 
 EP 没有导入主项目源码，本轮对应证据来自本机 `ExtraPlanets-1.12.2-0.8.0.jar` 的 `ExtraPlanets_Planets`、`ExtraPlanets_Moons`、`ExtraPlanets_Items`、`GCRegisterUtilities` 及 Kepler-22b Provider 字节码。AsmodeusCore 的 `BodiesRegistry.setProviderData` 用于核对注册参数中的等级含义。
