@@ -765,4 +765,4 @@ Boss 的特殊奖励池与宝箱 JSON 普通池分别记录，不能将其中任
 
 ### 当前实现与新地球规划
 
-本文仍按实际注册的 GS 系外 T6 与 EP Kepler T10 说明现状。既有系外最低 T7、七阶复用 EP、八阶全新为 [NewEarth 物品线](../../NewEarth/items/README.md)规划；独立终章行星为[维度线](../../NewEarth/dimension/README.md)规划，二者尚未实现。文稿中的系外节点按现状留作条件启用内容，终章 H01 暂不部署。
+本文仍按实际注册的 GS 系外 T6 与 EP Kepler T10 说明现状。既有系外最低 T7、七阶复用 EP、八阶全新为 [NewEarth 物品线](../../NewEarth/items/README.md)规划；独立终章行星为[维度线](../../NewEarth/dimension/README.md)规划，终章最低准入等级确定为 T8、使用八阶火箭抵达。火箭与新维度尚未实现；文稿中的系外节点按现状留作条件启用内容，终章 H01 暂不部署。
