@@ -1,0 +1,32 @@
+{
+  "title": "下一张蓝图",
+  "description": "获得二级火箭图纸",
+  "icon": "galacticraftcore:schematic 1 1",
+  "x": 12.0,
+  "y": -3.0,
+  "text": [
+    "用途：解锁后续火箭制造页面。",
+    "操作：在月球地牢宝箱中寻找图纸，取得后到 NASA 工作台解锁二级火箭页面。",
+    "提示：完成击杀不等于取得图纸；未找到时可继续探索其他地牢。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a21010a",
+      "title": "获得二级火箭图纸",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:schematic",
+          "Count": 1,
+          "Damage": 1
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

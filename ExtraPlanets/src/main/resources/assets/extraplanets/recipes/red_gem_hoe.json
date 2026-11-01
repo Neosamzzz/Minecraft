@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:red_gem_hoe"
+  },
+  "pattern": [
+    "XX ",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "redgemtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier5_items",
+      "data": 8
+    }
+  }
+}

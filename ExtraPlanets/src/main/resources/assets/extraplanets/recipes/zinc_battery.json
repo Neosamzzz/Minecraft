@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "extraplanets:zinc_battery",
+    "data": 100
+  },
+  "pattern": [
+    " T ",
+    "TRT",
+    "TCT"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "neptune/batteries"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "R": {
+      "item": "#DUSTREDSTONE"
+    },
+    "C": {
+      "item": "minecraft:coal",
+      "data": 0
+    },
+    "T": {
+      "item": "extraplanets:tier8_items",
+      "data": 5
+    }
+  }
+}

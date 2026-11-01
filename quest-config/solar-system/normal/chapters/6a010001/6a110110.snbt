@@ -1,0 +1,32 @@
+{
+  "title": "把空气装起来",
+  "description": "获得氧气压缩机",
+  "icon": "galacticraftcore:oxygen_compressor 1 0",
+  "x": 3.0,
+  "y": 0.0,
+  "text": [
+    "用途：向随身氧气罐补充氧气。",
+    "操作：将设备接入电力和氧气供应，放入需要补充的氧气罐，完成后取回。",
+    "提示：出发前检查罐内实际余量，空罐也会满足获得物品目标。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210110",
+      "title": "获得氧气压缩机",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:oxygen_compressor",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

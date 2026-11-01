@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "extraplanets:electric_parts",
+    "data": 0
+  },
+  "pattern": [
+    "XWX",
+    "WXW",
+    "XWX"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "rovers"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "W": {
+      "item": "galacticraftplanets:item_basic_mars",
+      "data": 3
+    },
+    "X": {
+      "item": "#INGOTLEAD"
+    }
+  }
+}

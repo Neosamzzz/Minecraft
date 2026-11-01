@@ -1,5 +1,7 @@
 # Telemetry dimension display
 
+This is the historical plan from 2026-10-31. Its connector availability and validation notes describe that session, not the current environment. The implemented baseline and test commands are maintained in [telemetry documentation](../../../tests/telemetry_dimension/README.md); subsequent releases through GSLC 1.4.8 are recorded in the [project development log](../../../../changelog/gslc.md).
+
 Approved behavior: players, living mobs and rockets show the tracked entity's
 actual dimension. Replace living pulse display; keep health/hunger/oxygen and
 rocket countdown/height/speed/fuel. Keep owner GUI and flight compatibility.

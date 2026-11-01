@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:zinc_chest"
+  },
+  "pattern": [
+    "M M",
+    "MMM",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "zinctools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:tier8_items",
+      "data": 5
+    }
+  }
+}

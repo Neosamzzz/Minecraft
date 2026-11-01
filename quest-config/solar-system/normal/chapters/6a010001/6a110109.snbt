@@ -1,0 +1,22 @@
+{
+  "title": "骨头也能上太空",
+  "description": "击败月球进化骷髅 Boss",
+  "icon": "minecraft:iron_sword",
+  "x": 12.0,
+  "y": 0.0,
+  "text": [
+    "用途：挑战月球地牢，探索宝箱内容。",
+    "操作：准备照明、战斗装备和氧气补给，寻找地下地牢并击败首领。",
+    "提示：本目标记录配置启用后的有效击杀；宝箱中指定图纸并非每次必定出现。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210109",
+      "title": "击败月球进化骷髅 Boss",
+      "type": "ftbquests:kill",
+      "entity": "galacticraftcore:evolved_skeleton_boss",
+      "value": 1
+    }
+  ]
+}

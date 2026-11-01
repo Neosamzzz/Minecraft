@@ -1,0 +1,21 @@
+{
+  "title": "换个地方开矿",
+  "description": "抵达木卫三",
+  "icon": "minecraft:packed_ice",
+  "x": -3.0,
+  "y": 3.0,
+  "text": [
+    "用途：增加镁和钛材料的补给来源。",
+    "操作：根据制造消耗安排采矿，记录可再次到访的位置。",
+    "提示：木卫三是取得四级后的补充来源，不作为首次四级制造的唯一镁源。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210404",
+      "title": "抵达木卫三",
+      "type": "ftbquests:dimension",
+      "dim": -1016
+    }
+  ]
+}

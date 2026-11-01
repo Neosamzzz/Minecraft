@@ -1,0 +1,32 @@
+{
+  "title": "加点油",
+  "description": "获得精炼机",
+  "icon": "galacticraftcore:refinery 1 0",
+  "x": 3.0,
+  "y": -3.0,
+  "text": [
+    "用途：将原油加工为火箭燃料。",
+    "操作：接入电力与原油，取得燃料后通过燃料装载机给发射台上的火箭加注。",
+    "提示：氧气与火箭燃料用途不同；同时为返航预留燃料和供电。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210105",
+      "title": "获得精炼机",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:refinery",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

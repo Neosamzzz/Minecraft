@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "extraplanets:eris_stairs_stone_bricks",
+    "count": 4
+  },
+  "pattern": [
+    "M  ",
+    "MM ",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "erisslabsandstairs"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:eris",
+      "data": 8
+    }
+  }
+}

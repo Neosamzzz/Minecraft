@@ -1,0 +1,16 @@
+[
+{
+	"modid": "extraplanets",
+	"name": "Extra Planets",
+	"description": "A Galacticraft Addon.",
+	"version": "${version}",
+	"mcversion": "${mcversion}",
+	"url": "https://minecraft.curseforge.com/projects/extraplanets",
+	"updateUrl": "https://minecraft.curseforge.com/projects/extraplanets",
+	"authors": [
+	"MJRLegends"
+	],
+	"credits": "Micdoodle8 & Radfast for creating galacticraft mod",
+	"logoFile": ""
+}
+]

@@ -1,0 +1,32 @@
+{
+  "title": "再画大一点",
+  "description": "获得三级火箭图纸",
+  "icon": "galacticraftplanets:schematic 1 0",
+  "x": 3.0,
+  "y": 0.0,
+  "text": [
+    "用途：解锁三级火箭制造页面。",
+    "操作：探索火星地牢宝箱，取得图纸后到 NASA 工作台解锁。",
+    "提示：图纸、材料和制造设备需分别准备，货运与采矿机图纸不能代替三级火箭图纸。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210204",
+      "title": "获得三级火箭图纸",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:schematic",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "extraplanets:decorative_blocks",
+    "data": 11
+  },
+  "pattern": [
+    "   ",
+    "FF ",
+    "FF "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "mercury"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "F": {
+      "item": "extraplanets:tier4_items",
+      "data": 5
+    }
+  }
+}

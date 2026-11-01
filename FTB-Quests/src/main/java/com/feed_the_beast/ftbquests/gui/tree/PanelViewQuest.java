@@ -117,19 +117,12 @@ public class PanelViewQuest extends Panel
 			}
 		}
 
-		if (!canEdit && panelRewards.widgets.isEmpty())
-		{
-			TextFieldDisabledButton noRewards = new TextFieldDisabledButton(panelRewards, I18n.format("ftbquests.gui.no_rewards"));
-			noRewards.setSize(noRewards.width + 8, bsize);
-			noRewards.setColor(ThemeProperties.DISABLED_TEXT_COLOR.get(quest));
-			panelRewards.add(noRewards);
-		}
-
 		if (gui.file.canEdit())
 		{
 			panelTasks.add(new ButtonAddTask(panelTasks, quest));
 			panelRewards.add(new ButtonAddReward(panelRewards, quest));
 		}
+		boolean showRewards = !panelRewards.widgets.isEmpty();
 
 		Color4I borderColor = ThemeProperties.WIDGET_BORDER.get(gui.selectedChapter);
 
@@ -199,7 +192,7 @@ public class PanelViewQuest extends Panel
 			}
 		};
 
-		textFieldTasks.setPosAndSize(2, 2, w2 - 3, 13);
+		textFieldTasks.setPosAndSize(2, 2, showRewards ? w2 - 3 : panelContent.width - 4, 13);
 		textFieldTasks.addFlags(Theme.CENTERED | Theme.CENTERED_V);
 		textFieldTasks.setText(I18n.format("ftbquests.tasks"));
 		textFieldTasks.setColor(ThemeProperties.TASKS_TEXT_COLOR.get(quest));
@@ -218,9 +211,12 @@ public class PanelViewQuest extends Panel
 		textFieldRewards.addFlags(Theme.CENTERED | Theme.CENTERED_V);
 		textFieldRewards.setText(I18n.format("ftbquests.rewards"));
 		textFieldRewards.setColor(ThemeProperties.REWARDS_TEXT_COLOR.get(quest));
-		panelContent.add(textFieldRewards);
+		if (showRewards)
+		{
+			panelContent.add(textFieldRewards);
+		}
 
-		panelTasks.setPosAndSize(2, 16, w2 - 3, 0);
+		panelTasks.setPosAndSize(2, 16, showRewards ? w2 - 3 : panelContent.width - 4, 0);
 		panelRewards.setPosAndSize(w2 + 2, 16, w2 - 3, 0);
 
 		int at = panelTasks.align(new CompactGridLayout(bsize + 2));
@@ -280,13 +276,19 @@ public class PanelViewQuest extends Panel
 
 		if (panelText.widgets.isEmpty())
 		{
-			panelContent.add(new ColorWidget(panelContent, borderColor, null).setPosAndSize(w2, 0, 1, h + 40));
+			if (showRewards)
+			{
+				panelContent.add(new ColorWidget(panelContent, borderColor, null).setPosAndSize(w2, 0, 1, h + 40));
+			}
 			panelText.setHeight(0);
 			setHeight(Math.min(panelContent.getContentHeight(), parent.height - 10));
 		}
 		else
 		{
-			panelContent.add(new ColorWidget(panelContent, borderColor, null).setPosAndSize(w2, 0, 1, 16 + h + 6));
+			if (showRewards)
+			{
+				panelContent.add(new ColorWidget(panelContent, borderColor, null).setPosAndSize(w2, 0, 1, 16 + h + 6));
+			}
 			panelContent.add(new ColorWidget(panelContent, borderColor, null).setPosAndSize(1, 16 + h + 6, panelContent.width - 2, 1));
 			panelText.setHeight(panelText.align(new WidgetLayout.Vertical(0, 0, 1)));
 			setHeight(Math.min(panelContent.getContentHeight() + 20, parent.height - 10));

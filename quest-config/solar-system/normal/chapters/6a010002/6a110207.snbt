@@ -1,0 +1,47 @@
+{
+  "title": "多穿一层",
+  "description": "获得任一部位保暖衬垫",
+  "icon": "galacticraftplanets:thermal_padding 1 0",
+  "x": -6.0,
+  "y": -3.0,
+  "text": [
+    "用途：开始准备独立于氧气系统的温度防护。",
+    "操作：按当前配方制作，并在对应装备位置安装。",
+    "提示：一个部位不代表完整防护；不同天体所需防护须结合当前版本的实际效果确认。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210207",
+      "title": "获得任一部位保暖衬垫",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:thermal_padding",
+          "Count": 1,
+          "Damage": 0
+        },
+        {
+          "id": "galacticraftplanets:thermal_padding",
+          "Count": 1,
+          "Damage": 1
+        },
+        {
+          "id": "galacticraftplanets:thermal_padding",
+          "Count": 1,
+          "Damage": 2
+        },
+        {
+          "id": "galacticraftplanets:thermal_padding",
+          "Count": 1,
+          "Damage": 3
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

@@ -431,3 +431,6 @@ commands.ftbquests.export_rewards_to_chest.usage=/ftbquests export_rewards_to_ch
 commands.ftbquests.export_rewards_to_chest.text=Exported %s / %s items from '%s'
 commands.ftbquests.auto_pin.usage=/ftbquests auto_pin
 commands.ftbquests.generate_chapter_with_all_items_in_game.usage=/ftbquests generate_chapter_with_all_items_in_game
+ftbquests.shared_team.fixed=Everyone uses the public team. Team membership changes are disabled.
+ftbquests.shared_team.editing.on=Edit quests
+ftbquests.shared_team.editing.off=Finish editing

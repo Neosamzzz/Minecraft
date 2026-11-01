@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:vehicle_charger"
+  },
+  "pattern": [
+    "WXW",
+    "WXW",
+    "WXW"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "vehiclecharger"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "W": {
+      "item": "#INGOTDESH"
+    },
+    "X": {
+      "item": "galacticraftcore:battery",
+      "data": 100
+    }
+  }
+}

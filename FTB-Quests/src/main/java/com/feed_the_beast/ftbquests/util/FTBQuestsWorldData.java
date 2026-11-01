@@ -65,6 +65,7 @@ public class FTBQuestsWorldData implements IConfigCallback
 		FTBQuests.LOGGER.info(String.format("Loaded %d chapters, %d quests, %d tasks and %d rewards. In total, %d objects", c, q, t, r, ServerQuestFile.INSTANCE.getAllObjects().size()));
 
 		NBTTagCompound nbt = event.getData(FTBQuests.MOD_ID);
+		INSTANCE.sharedTeamId = nbt.getString("SharedTeam");
 		INSTANCE.extraFiles.clear();
 
 		NBTTagList list = nbt.getTagList("ExtraFiles", Constants.NBT.TAG_STRING);
@@ -106,6 +107,7 @@ public class FTBQuestsWorldData implements IConfigCallback
 		}
 
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setString("SharedTeam", INSTANCE.sharedTeamId);
 
 		if (!INSTANCE.extraFiles.isEmpty())
 		{
@@ -138,6 +140,7 @@ public class FTBQuestsWorldData implements IConfigCallback
 	}
 
 	public final Universe universe;
+	public String sharedTeamId = "";
 	public final List<String> extraFiles;
 
 	private FTBQuestsWorldData(Universe u)

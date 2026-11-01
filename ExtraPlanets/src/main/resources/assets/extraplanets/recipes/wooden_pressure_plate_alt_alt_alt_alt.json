@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "minecraft:wooden_pressure_plate",
+    "count": 8
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:kepler22b_planks",
+      "data": 4
+    },
+    {
+      "item": "extraplanets:kepler22b_planks",
+      "data": 4
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "kepler22b"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

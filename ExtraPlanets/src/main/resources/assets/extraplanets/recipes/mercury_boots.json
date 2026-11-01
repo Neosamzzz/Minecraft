@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:mercury_boots"
+  },
+  "pattern": [
+    "   ",
+    "M M",
+    "M M"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "mercurytools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:ingot_mercury",
+      "data": 0
+    }
+  }
+}

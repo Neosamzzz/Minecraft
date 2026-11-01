@@ -1,0 +1,12 @@
+{
+  "title": "太阳还在身后",
+  "icon": "minecraft:packed_ice",
+  "description": [
+    "外太阳系的冰原与小天体，记录着更远的航程。",
+    "选择外太阳系目的地，采集冰类样本。",
+    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+  ],
+  "always_invisible": false,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

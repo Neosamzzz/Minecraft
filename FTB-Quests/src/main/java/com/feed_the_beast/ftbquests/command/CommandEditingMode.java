@@ -2,6 +2,7 @@ package com.feed_the_beast.ftbquests.command;
 
 import com.feed_the_beast.ftblib.lib.util.NBTUtils;
 import com.feed_the_beast.ftbquests.net.MessageSyncEditingMode;
+import com.feed_the_beast.ftbquests.util.SharedTeamManager;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -27,7 +28,7 @@ public class CommandEditingMode extends CommandFTBQuestsBase
 	@Override
 	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
 	{
-		return server.isSinglePlayer() || super.checkPermission(server, sender);
+		return !SharedTeamManager.isActive() && (server.isSinglePlayer() || super.checkPermission(server, sender));
 	}
 
 	@Override

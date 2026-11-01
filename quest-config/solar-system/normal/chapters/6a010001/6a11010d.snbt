@@ -1,0 +1,32 @@
+{
+  "title": "我们来过",
+  "description": "获得旗帜",
+  "icon": "galacticraftcore:flag 1 0",
+  "x": 9.0,
+  "y": 3.0,
+  "text": [
+    "用途：为探索地点留下标记。",
+    "操作：取得旗帜后，可在合适位置放置，作为着陆点或据点附近的标识。",
+    "提示：此目标只检查物品获得，不要求统一的旗帜位置或基地样式。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a21010d",
+      "title": "获得旗帜",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftcore:flag",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

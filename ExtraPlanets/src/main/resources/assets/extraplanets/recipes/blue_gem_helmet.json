@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:blue_gem_helmet"
+  },
+  "pattern": [
+    "   ",
+    "MMM",
+    "M M"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "bluegemtools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:tier8_items",
+      "data": 6
+    }
+  }
+}

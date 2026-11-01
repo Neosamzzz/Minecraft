@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "extraplanets:kepler22b_planks",
+    "data": 2,
+    "count": 4
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:kepler22b_maple_logs",
+      "data": 2
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "kepler22b"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "extraplanets:saturn",
+    "data": 8,
+    "count": 4
+  },
+  "pattern": [
+    "   ",
+    "SS ",
+    "SS "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "saturn"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": {
+      "item": "extraplanets:saturn",
+      "data": 2
+    }
+  }
+}

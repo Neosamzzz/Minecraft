@@ -1,0 +1,21 @@
+{
+  "title": "满地旧伤",
+  "description": "抵达木卫四",
+  "icon": "minecraft:packed_ice",
+  "x": 0.0,
+  "y": 3.0,
+  "text": [
+    "用途：观察陨石坑、洞穴与冰质地层。",
+    "操作：完成地表勘察后，按自己的采集或建造需求继续探索。",
+    "提示：该节点是可选旅行记录，不附加未经确认的 Boss 或独占矿物目标。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210405",
+      "title": "抵达木卫四",
+      "type": "ftbquests:dimension",
+      "dim": -1022
+    }
+  ]
+}

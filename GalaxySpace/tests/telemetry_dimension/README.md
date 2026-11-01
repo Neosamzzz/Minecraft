@@ -1,4 +1,8 @@
-# Dimension telemetry addon (1.4.1)
+# Dimension telemetry addon
+
+当前 GSLC 版本为 1.4.8，日常构建从仓库根目录执行 `py -3 tools/build.py --target gslc`；Windows 之外使用 `python3`。统一入口负责重编译、重混淆及打包，最终产物位于根目录 `build/libs/`。以下英文技术说明保留 1.4.1 基线，不能视为最新全部显示行为；1.4.2～1.4.8 的火箭变换、地图、时钟和缓存变化见[开发记录](../../../changelog/gslc.md)。
+
+历史专项验证使用 MixinBooter 10.7。本机当前文件为 12.2，尚未据此重跑全部探针；日志进入世界不代表 GPU 画面或多人行为全部验收。当前实例基线见[整合包基线](../../../changelog/modpack.md)。
 
 Requirements: MC1.12.2, GC4.0.6, existing GS flight-fix and MixinBooter.
 Replace the earlier GSLaunchCompat addon on both client and server. The new

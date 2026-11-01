@@ -16,6 +16,7 @@ import com.feed_the_beast.ftbquests.item.FTBQuestsItems;
 import com.feed_the_beast.ftbquests.net.FTBQuestsNetHandler;
 import com.feed_the_beast.ftbquests.quest.reward.RewardType;
 import com.feed_the_beast.ftbquests.quest.task.TaskType;
+import com.feed_the_beast.ftbquests.util.SharedTeamManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -25,6 +26,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 		name = FTBQuests.MOD_NAME,
 		version = FTBQuests.VERSION,
 		dependencies = FTBLib.THIS_DEP + ";required-after:itemfilters;before:kubejs;after:gamestages;after:ic2;after:ftbutilities;after:botania;after:buildcraftcore;after:projecte;after:customnpcs;after:reskillable",
-		acceptableRemoteVersions = "*"
+		acceptableRemoteVersions = "[1202.9.2,1202.10)"
 )
 public class FTBQuests
 {
@@ -115,6 +118,19 @@ public class FTBQuests
 	{
 		TaskType.createRegistry();
 		RewardType.createRegistry();
+		SharedTeamManager.simplifyTeamActions();
+	}
+
+	@Mod.EventHandler
+	public void onServerAboutToStart(FMLServerAboutToStartEvent event)
+	{
+		SharedTeamManager.start();
+	}
+
+	@Mod.EventHandler
+	public void onServerStopped(FMLServerStoppedEvent event)
+	{
+		SharedTeamManager.stop();
 	}
 
 	@Mod.EventHandler
@@ -125,6 +141,6 @@ public class FTBQuests
 
 	public static boolean canEdit(EntityPlayer player)
 	{
-		return NBTUtils.getPersistedData(player, false).getBoolean("ftbquests_editing_mode");
+		return !SharedTeamManager.isActive() && NBTUtils.getPersistedData(player, false).getBoolean("ftbquests_editing_mode");
 	}
 }

@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:white_gem_axe"
+  },
+  "pattern": [
+    "XX ",
+    "XS ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "whitegemtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier7_items",
+      "data": 7
+    }
+  }
+}

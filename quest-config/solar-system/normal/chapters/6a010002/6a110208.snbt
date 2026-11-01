@@ -1,0 +1,47 @@
+{
+  "title": "今天吃罐头",
+  "description": "获得任一种罐头食品",
+  "icon": "extraplanets:canned_food 1 0",
+  "x": -3.0,
+  "y": -3.0,
+  "text": [
+    "用途：准备远行补给的一种选择。",
+    "操作：按配方将熟食与空罐加工为食品，出发前按行程分配食物。",
+    "提示：普通食物仍可使用；罐头不是出发的强制门槛。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210208",
+      "title": "获得任一种罐头食品",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:canned_food",
+          "Count": 1,
+          "Damage": 0
+        },
+        {
+          "id": "extraplanets:canned_food",
+          "Count": 1,
+          "Damage": 1
+        },
+        {
+          "id": "extraplanets:canned_food",
+          "Count": 1,
+          "Damage": 2
+        },
+        {
+          "id": "extraplanets:canned_food",
+          "Count": 1,
+          "Damage": 3
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

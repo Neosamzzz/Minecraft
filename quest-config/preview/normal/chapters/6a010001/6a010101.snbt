@@ -1,0 +1,38 @@
+{
+  "title": "带上空气",
+  "icon": "galacticraftcore:oxygen_tank_light_full",
+  "x": -3.0,
+  "y": 0.0,
+  "text": [
+    "月球没有可供呼吸的空气。记得给氧气罐充氧，并配好随身氧气装备。"
+  ],
+  "tasks": [
+    {
+      "uid": "6a010201",
+      "type": "ftbquests:item",
+      "title": "获得任意一种普通氧气罐",
+      "items": [
+        {
+          "Count": 1,
+          "Damage": 0,
+          "id": "galacticraftcore:oxygen_tank_light_full"
+        },
+        {
+          "Count": 1,
+          "Damage": 0,
+          "id": "galacticraftcore:oxygen_tank_med_full"
+        },
+        {
+          "Count": 1,
+          "Damage": 0,
+          "id": "galacticraftcore:oxygen_tank_heavy_full"
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

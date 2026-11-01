@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "extraplanets:neptune",
+    "data": 8,
+    "count": 4
+  },
+  "pattern": [
+    "   ",
+    "SS ",
+    "SS "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "neptune"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": {
+      "item": "extraplanets:neptune",
+      "data": 2
+    }
+  }
+}

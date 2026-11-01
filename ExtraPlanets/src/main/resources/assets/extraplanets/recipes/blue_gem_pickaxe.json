@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:blue_gem_pickaxe"
+  },
+  "pattern": [
+    "XXX",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "bluegemtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier8_items",
+      "data": 6
+    }
+  }
+}

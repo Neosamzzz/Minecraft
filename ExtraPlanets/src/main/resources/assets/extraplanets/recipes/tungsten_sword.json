@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:tungsten_sword"
+  },
+  "pattern": [
+    " X ",
+    " X ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "tungstentools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier9_items",
+      "data": 5
+    }
+  }
+}

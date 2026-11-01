@@ -1,0 +1,802 @@
+﻿========================================Not Released Updates==========================================
+
+======================================================================================================
+
+
+
+===========================================Released Updates===========================================
+v0.8.0
+*Fixed moons still be visible in the selection list when hiding a moon via CustomCelestialGUIEvent.PreLoadingCelestialBodies event
+
+v0.7.9
+*Fixed issue #777 - Crash on dedicated server with Unlock & Remove Schematic Commands due to client code not found
+
+v0.7.8
+*WIP: Added 3 new events for CustomCelestialSelection to allow api style support for ignoringCustom Galaxies, Celestial Body Events and Post Rendering Event
+*Fixed issue #773 - Keys Burning, Added IItemInvulnerable interface to api package so other mods can use this when ExtraPlanets is installed
+*Add Galaxy Space's Light SpaceSuit to the spacesuit list (Suggested in pull request https://github.com/MJRLegends/ExtraPlanets/pull/771/commits/0e359bd937ab3e71dff4aad909ca986ff742e0d9)
+*Fixed a rare chance of ConcurrentModificationException in Custom Celestial Selection Screen during rendering (GuiCelestialSelection#drawCircles) and updating bodiesToRender list (Fixes issue #767)
+*Fixed issue #756 - Unable to Craft Electric Rocket using Tier 10 Rockets that have storage applied
+*Fixed Venus Rover being registered as Mars Rover Instead (Somehow doesn't actually matter?)
+*Added 6 new commands
+	- /epGetRadiation <playerName> - Get Player's Radiation Level
+	- /epSetRadiation<playerName> - Set Radiation Level for Player
+	- /epGiveDungeonLoot <playerName> <0-100> - Give Player All Items for Loot Level specified
+	- /epGiveSpaceSuit<playerName> <0-4> - Give Players Space Suit for Level specified
+	- /epRemoveSchematic <playerName> <schematic> - Removed specified schematic from Player (Doesn't work fully when in a Space Race Team)
+	- /epUnlockSchematic <playerName> <schematic> - Adds specified schematic to Player
+
+v0.7.7
+*Fixed a possible issue that could teleport you to the incorrect place when getting to low on all planets space stations
+*Renamed Frozen Water to Icy Water
+*Improved the Icy Water (Old Frozen Water) Texture
+*Fixed certain instances where when teleporting to a planet/moon with large liquid biomes you could land under the liquid not on a surface block or on top of the Jupiter floating blocks in the upper atmosphere
+*Improved the Ash Block Texture to be less blocky and repeatable 
+*Fixed the rendering of the General Lander being to high on player, making it less visible to see the player inside
+*Fixed issue #765 - MachineMuse Modular Powersuits Mod compact not working post v1.12.2-1.1.048
+	*Removed pre v1.12.2-1.1.048 support due to unable to keep both
+	*Added a minimum mod requirement of v1.12.2-1.1.048 for MachineMuse Modular Powersuits if exists
+*Fixed Thermal Padding config toggle, not being used for Saturn, Uranus, and Neptune
+*Made Jupiter Lander Entity immune to lighting strikes
+
+v0.7.6
+*Fixed issue #749 - Basic Densifier output doesn't work
+*Fixed issue #752 - Kepler22b Green & Brown Leaves drops Blue & Red Sa… 
+*Fixed issue #751 - Kepler22b Green & Brown Trees grow with opposite leaves colours
+*Fixed a bunch of grammar errors in all translation files (Suggested changes by weeJman #745)
+*Fixed issue with Open Pre Launch Checklist keybind missing the GUI part at the end
+*Fixed not needed ##NEEDS TRANSLATE## in en_GB & en_US & pl_pl translation files
+*Fixed issue with anti_radiation.desc placeholder of {PERCENT} in de_DE & en_GB translation files
+*Fixed a few issues with cs_CZ & fr_FR & zh_CH translations missing a entries
+*Fixed a few issues with en_GB translation missing a entry
+*Fixed two config typos in config option names
+*Fixed a bunch of typos in config option comments
+*Fixed some typos in config variables names for Jupiter content
+*Update ru_RU.lang(Thanks to Romz24)
+
+v0.7.5
+*Fixed issue #708 - Fixed compact issue with Wumpleutil/Food Funk with right clicking VehicleChanger due to slots issues
+*Fixed issue #417 - Sledge Hammer Acts As Item, Not Tool, Used Up In Every Recipe
+*Fixed issue #716 - Other planet/moon radiation values config resets upon loading game
+*Fixed issue #705 & #631 - Extreme Tick Lag with space suits due to model creation issue, that can be highlighted when Electroblob77 Wizardry Mod is present
+
+v0.7.4
+*Fixed issue #668 (Crash when disabling certain Tools/Items config options but not others.)
+*Fixed Default DIM ID comments typo (Thanks to ROMVoid95)
+*Fixed weird issue with single biome dimensions mainly Mercury having weird cut outs/floating land due to Craters generation, also added a way to generate the craters after Biome replace for broken terrain affect (Not yet used)
+*Added furnace smelting xp for all ores (Suggestion #673)
+*Fixed a few typos in config file
+*Fixed Mercury Carbon Ore not having the 'Mercury' Prefix on its name, to match other dimension ores
+*Fixed a few rare possible world gen issues with Ganymede & Europa
+*Fixed issue #633 - Missing Language Localizations for Solar Panels Modules for Space Suits
+*Fixed issue #689 - Kepler 22b Tall Grass and cookies rocks blocks drop invalid items
+*Improved the Cookies Rocks block texture
+*Updated zh_CN.lang(Thanks to G-hostfox)
+*Fixed issue #694 - Basic Decontamination Unit radiation tooltip not reflecting config
+*Fixed an issue with checking space suits power where it would only check helmet for non helmet modules, maybe fixed issue #688 ?
+*Fixed possible crash issue when config has blank lines for supported space suit items config option
+*Temp fixed issue #674 (Empty Chests in Mercury & Jupiter dungeons) by using Venus loot table
+*Added log output messages for when a bunch of compact with other mods have been successfully completed
+*Fixed issue with Missing Modules in Modular Power Suits mod
+*Fixed Haumea planet overriding planet from Galaxy Space when compatibility to enabled
+
+v0.7.3
+*Added Polish Language file (Thanks toKruczyslaw)
+*Fixed issue #647 - Densifier not outputting to hopper
+*Fixed issue #658 - Densifier NBT Saving Crashing Server
+*Updated Pluto Celestial Map texture to match latest NASA images (Suggestion #598 )
+*Fixed Ceres, Jupiter, Neptune, Saturn, Uranus having incorrect liquid at the bottom of Ravines sometimes (Issue #640  - Lava spawning underground on Uranus)
+*Fixed issue #637 - Space stations always dump the player in the overworld
+*Fixed MatterOverdrive android exclusion from pressure & radiation checks not working if not wearing any suit of armour (Issue #522 - MatterOverdrive android support not working after adding)
+*Fixed issue #662 - Tier 1/2 batteries not taking ore dict lead
+*Changed requirement of MJRLegendsLib to 1.12.2-1.2.1 & above
+
+v0.7.2
+*Fixed a crash with the BasicDensifier when restarting world during a machine operating
+*Updated comments on some config sections to outline the importance of there usage
+*Added IC2 nano armour and Galaxy Space Space suit to be default entered for "List of armour items to be considered as a space suit" in config (Will only work for new generated configs)
+*Added IC2 quantum armour to be default entered for "List of armour items to be considered as a space suit" in config (Will only work for new generated configs) & tweaked nano armour values
+*Added support to use ExtraPlanets Radiation System on other addon planets/moons
+*Fixed issue #302 - Unable to Install Module, After Uninstalling with requirement items already in inventory
+*Fixed inventory being full when uninstalling a module causing a crash
+*Fixed issue #597 - Space Suit Breaking at 0 Power
+*Fixed issue #621 - Iapetus has tier 6, but Saturn and its other moons have 5
+*Updated ru_RU.lang(Thanks to Romz24)
+
+v0.7.1
+*Added a Environment Emergency Kit with a temporary Space Suit
+*Fixed Geiger Counter output being old style of radiation display output
+*Changed Temp Space Suit ticks & Modules Tick for Space Suits to not run during certain gamemodes
+*Added support for /gckit command to give Environment Emergency Kit item aswell
+*Added Basic/Advanced Solar Panel modules for space suit
+*Improved the Evolved Magma Cube Boss Texture
+*Changed Evolved Magma Cube Boss to be immune from fire
+*Bit of code clean up for Evolved Magma Cube Boss rendering
+*Added a Evolved Magma Cube Mob for use in Mercury Dungeons
+*Improved/Added more content to the Mercury Dungeons
+*Added Evolved Ancient Magma Cubes for use in Jupiter Dungeons 
+*Improved/Added more content to the Jupiter Dungeons
+*Added logWood ore dict for all Kepler22b Log Blocks
+*Added plankWood ore dict for all Kepler22b Plank Blocks
+*Added tooltip to Space suits regarding power being only needed for space suits
+*Fixed issue #595 - Kepler22b Planks > Vanilla Pressure Plates Crafting issue
+*Fixed All Axes, Hoes, Shovels, Swords, Pickaxes tools holding and inventory displays for MC 1.10.2+ (Fixes issue #596)
+*Added a config (on by default) of "Use Realistic Atmosphere Sky Colous for Planets/Moons" which will disable colour sky/fog for phobos, deimos, callisto, ganymede, titania, ceres and oberon & more (#585)
+*Added fire affect to when a player is in magma (Currently doesnt work fully but looks better than no fire)
+*Fixed lava effect overlay, when in lava not rendering due to fog rendering, (Issue #500)
+*Fixed issue #604 - Crafttweaker Rocket Recipes adds recipes for rocket parts
+
+v0.7.0
+*Fixed NullPointerException error spam when hovering over a non ExtraPlanets body on ExtraPlanets Galaxy Map
+*Fixed cast error with GalaxySpace Planets/Moons that dont override the WorldProviderSpace class for GC API support
+*Added support for Galacticraft Planets/Moons with ExtraPlanets Galaxy Map Material list feature
+*Fixed issue #587 - Space suit Jetpack Bug while landing on the Planets
+*Fixed issue #588 - Wrong sound for kepler 22b dirt
+*Fixed false tool tip on potash about where its found
+*Fixed missing entries in ja_JP & es_ES lang files
+*Fixes for wrong planets/moons tool tips on liquid buckets
+	-Removed false Triton from Frozen Water
+	-Add missing Callisto to Crystalized Water
+	-Add missing Saturn to Methane
+	-Add missing Neptune to Radio Active Water
+*Fixed possible crash with Custom Celestial Galaxy Map when a body doesn't have a icon texture
+
+v0.6.9
+*Fixed other Oberon biomes not generating
+*Fixed double amount radiation being slowly reduced on planets
+*Fixed sounds for Kepler22b Saplings, Kepler22b Tall Grass, Red/Orange Sand, and all Grass blocks issue #586
+*Increased Copper & Tin ore generation on Ganymede and Callisto
+*Increased Iron Ore generation for Europa 
+*Improved GanyMede ~Surface, Sub Surface, Stone textures to look less grid effect
+*Improved Iapetus Surface, Sub Surface, Stone, Ores textures to look less grid effect
+*Improved Rhea Surface, Sub Surface, Stone, Ores textures to look less grid effect
+*Improved Titan main Surface, Sub Surface, Stone, textures to look less grid effect
+*Improved Titania Surface textures to look less grid effect
+*Improved Neptunes Surface, Sub Surface, Stone, Ores textures to look less grid effect
+*Added materials hover info for all planets and moon to extended info on custom Celestial Galaxy Screen (Only when using ExtraPlanets Celestial Galaxy Screen!)
+*Added an API registry system for the material list feature for Custom Galaxy Map in ExtraPlanets for other devs to use in their addons
+*Changed requirement of MJRLegendsLib to 1.12.2-1.2.0 & above
+
+v0.6.8
+*Fixed a bug where if MachineMusePowersuits mod is installed space suit got picked up as 0 tier in radiation calculation
+*Fixed gained radiation going negative in certain instances
+
+v0.6.7
+*Allow MatterOverdrive android to bypass radiation/pressure systems #522
+*Fixed issue #583 - Suns smaller than should be on Moons
+*Added custom sun sizes/scales for all space stations (Suggestion from #448)
+*Fixed parent planets not scaling correctly on moon dimensions (Suggestion from #448)
+*Added a custom Sky Provider for Kepler22b  (Suggestion from #448)
+*Changed chat message for showing current amount of radiation to show in the format AMOUNT / 100 rather than a % which caused confusion
+*Renamed "Custom Galaxies on Celestaial Selection Screen" config option to "Enable showing of Custom Galaxies on the Custom Celestial Selection Screen" due to confusion when reading the config
+*Added natural slowly reducing of players radiation levels (with 1.5x speed on Planets/Moons)
+*Improved the planet/moon/station arrival message to be more clear
+*Lowered the amount of radiation gained on planets/moons (Radiation for dimensions with below 10/100% radiation is lowered by 25% and dimensions with 10+/100% radiation is lowered by 75%)
+*Fixed a bunch of Celestial word typos in config options
+
+v0.6.6
+*Updated ru_RU.lang (Thanks to Romz24)
+*Fixed issue #568
+*Fixed issue #569
+
+v0.6.5
+*Fixed cascading worldgen lag issue with kepler22b
+*Small fix for Kepler22b Biome decorator 
+*Fixed issue #556
+*Fixed issue #545
+*Fixed issue #548
+
+v0.6.4
+*Fixed issue #541
+*Updated custom celestial selection screen with GC changes in build 255
+*Changed Galacticraft minimum version to Build 255
+*Removed onUseWrench for machines since GC no longer requires this as of build 247
+*Bunch of code cleanup and removing not needed code
+*Updated Item Models to use GC new method of getClientTimeTotal and not getMilliseconds
+*Removed some not needed meta uses, removed not needed overriding of getPickBlock method
+*Started removing use of getStateFromMeta in world gen structures
+
+v0.6.3
+*Small amount of code cleanup
+*Fixed All rocket models when rendering in item frames
+*Fixed Mars/Venus rovers & Decontamination Unit rendering in item frames
+*Fixed issue #535 (Spelling error in EP Settings/Config under Items section)
+*Fixed issue #537 (Decontamination Unit scale in first person offhand too big)
+*Fixed issue #534 (Unable to set radiation reducing methods to 0 affect in config file)
+*Added forced crash for any space stations that the parent planet already has one for
+*Added Important message to Custom Celestial Selection screen for Planet Progressions
+*Small improvement to important message to Custom Celestial Selection screen for Planet Progressions
+*Added config option to disable Legacy Dimension ID Migration by default
+*Updated ru_RU.lang (Thanks to Smollet777)
+*Updated ko_KR.lang (Thanks to mindy15963)
+
+v0.6.2
+*Fixed issue #516 - List of Armour to be considered config not working when more than one entry made
+*Updated ru_RU.lang (Thanks to Smollet777)
+*Updated lang files to match MC 1.7.10
+*Added missing Eris 2.0 language localization
+*Fixed Advanced & Ultimate Fuel Loaders having the wrong texture for fuel input
+
+v0.6.1
+*Updated ru_RU.lang (Thanks to Smollet777)
+*Updated ru_RU.lang (Thanks to Romz24)
+*Updated zh_CN.lang (Thanks to mcBegins2Snow)
+*Fixed issue #510
+*Added back durability bar on Space Suit & made Space Suit Corrosion Resistant (For GC's Venus)
+*Added a model for the Jetpack on the Space Suit
+*Fdded Flame particles for the Jetpack on the Space Suit
+
+v0.6.0
+*Fixed issue #499
+*Fixed issue #487
+
+v0.5.9
+*Fixed issue #493
+*Fixed issue #492
+*Updated zh_CN.lang (Thanks to mcBegins2Snow)
+*Added ja_JP.lang (Thanks to ShinoShino-pavlichenko)
+
+v0.5.8
+*Fixed issue #479
+
+v0.5.7
+*Added Pressure/Radiation modules for MachineMusePowersuits (Mod Compatibility)
+*Updated es_ES.Lang (Thanks to Yataro-Ibuza)
+*Fixed issue #475
+*Fixed batteries and Tier 1 - 4 Space Suit items not showing in Creative Tab when searching, Fixes half of issue #472
+*Fixed possible crash issue on redstone activation for Nuclear Bomb/Fire Bomb
+*Updated zh_CN.lang (Thanks to mcBegins2Snow)
+*Should hopefully fix issue #476
+*Small fix for disabling jei support via config
+*Fixed api change with Galacticraft
+*Changes to make robust spawning of landers on servers
+*Fixed issue #467
+*Fixed issue with jei overlapping module manager screen, fixes issue #402
+*Clean up of GUI Module Manager code
+*Fixed space suit having the wrong texture on one of the bottles on the back
+*Set minimum version of MJRLegendsLib requirement to v1.1.9
+*Set required GC version requirement to Build 237
+
+v0.5.6
+*Fixed missing lang for titan moon when galaxyspace compact is enabled
+*Added support for ExtraPlanets Celestial Map to support PlanetProgressions research system
+*Set minimum version for an optional dependency of PlanetProgression, so things dont break if older version of PlanetProgression is used
+*Added PlanetProgression API jar to build.gradle
+*Fixed issue with names sometimes going weird on the Galaxy/Celestial Map
+*Added tooltip to Potash to help players find its location
+*Fixed Purifier, Crystallizer and Densifier not working with multiple Capabilities, Fixes issue #466
+
+v0.5.5
+*Fixed decontamination unit inventory null pointer error, Fixed issue #458
+*Updated ko_KR.lang (Thanks to mindy15963)
+*Updated de_DE.lang (Thanks to Rumspringa90)
+*Fix possible init issues due to network packets delay with Custom Celestial Selection screen
+*Use block state already provided in planet/moon blocks getBlockHardness
+*Fixed sensor glasses picking up wrong/missing out valuable blocks on planets/moons
+*Added Volcanic Rock, Frozen Nitrogen, Lead ore, Potash to be detected by sensor glasses
+*Fixed issue #423
+*Fixed Saturn Slime Ore Explosion Resistance, Block Hardness being incorrect
+
+v0.5.4
+*Improvements to output messages for mod compact not working, Fixed #440
+*Improvement towards #439
+*Tweaks/improvements to reduced radiation message Fixed #445
+*Fixed Anti Rad tooltip not supporting config changes
+*Match Galacticraft API changes
+*Changed Galacticraft minimum version to Build 212
+*Set minimum version of MJRLegendsLib requirement to v1.1.8
+
+v0.5.3
+*Added config option to disable unreachable moons on galaxy map screen #422
+*Two possible fixes towards issue #425
+*Fixed Custom galaxies not getting auto disabled when custom celestial selection screen is used, issue #420
+
+v0.5.2
+*Fixed issue #418 / #406
+
+v0.5.1
+*Fixed issue #406
+*Fixed issue #416
+*Small amount of clean up for TileEntitySolar class
+*Removed not needed imports
+*Fixed issue #415
+*Fixes for Basic Densifier/Purifier machines
+*Added/Improved config options for issue #412
+
+v0.5.0
+*Fixed issue #407
+*Fixed config option comment being backwards in its explaining.
+*Few tweaks that could fix some rover crash issues...
+*Attempt to fix issue #409
+*Fixed default/creeper bosses for Mercury, Jupiter, Saturn, Uranus, Neptune, Pluto not rendering correctly
+
+v0.4.9
+*Fixed issue #404
+*Added GalaxySpace compact config option, Added config option to disable Extended info panel on Custom Galaxy Map/Celestaial Selection Screen
+*Fixed crash issue in first fix for issue #404
+*Fixed issue #405 (Commented out pointless code that needs fixing for real seems to be left over from porting from 1.7.10)
+
+v0.4.8
+*Fixed issue #390
+*Missing Dehydrated Beef lang (Thanks to spannerman79)
+*Added french language support (Thanks to divergnight) #398
+*Fixed issue #399
+*Added More Planets Rocket Crusher Machine Compatibility
+*Added error logging for ExtremeReactors/MC Multipart compact
+*Fixed Lime Medium Oxygen Tank recipe
+*Added CraftTweaker support for Tier 4 - 10 rockets recipe changing
+*Added ability to bone meal kepler22b grass
+*Added Support for other armour to be used a space suit style armor via config option, #341
+*Added try catch around the custom CelestialSelection screen features rendering, to allow the gui to render in event of a error
+*Fixed Uranus & Saturn Ring rendering
+*Fixed/Clean up of formatting
+
+v0.4.7
+*Fixed issue #389
+
+v0.4.6
+*Fixed issue #379
+*Fixed issue with getting false message when installing a space suit module for a armour item you dont have
+*Fixed possible crash with other GC addons when using Galaxy Map
+*Force crash game with custom crash log if GalaxyMap from Galaxy Space/AsmodeusCore is still enabled to stop possible conflicts
+*Added a temp fix to stop issues being caused on Galaxy map by GalaxySpace addon, not registering unreachable planets correctly
+
+v0.4.5
+*Fixed issue #363
+
+v0.4.4
+*Changed network system to use a base class from MJRLegendsLib
+*Increased the max amount power a electric rocket can hold, fixes issue #352
+*Removed not needed old code
+*Fixed issue #350
+*Removed not needed code from the Electric Armour class
+*Removed not needed variable from Module class
+*Updated tr_TR.lang (Thanks to kralrindo)
+*Changed to use ConfigGuiFactoryBase from MJRLegendsLib
+*Another small tweak towards issue #350
+*Fixed issue #361
+*Removed not needed arraylist
+*Added support for Forge Energy, RF, Mekanism, IC2 energy systems for Tier 1 - 4 Space suits (Fixes issue #319 )
+*Updated lang files to support fix for issue #319
+*Set minimum version of MJRLegendsLib requirement to v1.1.6
+*Fixed issue #360
+
+v0.4.3
+*Fixed a few typos in Space Suit tooltips
+*Added large amounts of Ice generation below the surface of Ganymede, with config option to disable
+*Added large amounts of Ice generation to all layers of Europa, with config option to disable
+*Added config option to disabled Iron Chunks under the surface of Europa
+*Fixed Titan not generating its two other biomes
+*Updated ko_KR.lang (Thanks to mindy15963)
+
+v0.4.2
+*Fixed issue #336
+*Fixed issue #337
+*Fixed issue #340
+*Updated ru_RU.lang (Thanks to rykllan)
+
+v0.4.1
+*Fixed issue #335
+*Added ko_KR.lang (Thanks to mindy15963)
+*Updated ru_RU.lang (Thanks to kellixon)
+
+v0.4.0
+*Changes to Celestial Selection screen to match GC changes
+*Set required GC version requirement to Build 178
+
+v0.3.9
+*Clean up/Small Fixing/Refactoring of code
+*Fixed issue #316
+*Fixed issue #318
+*Fixed issue #315
+*Added Tooltip to Tier 1 - 4 Space Suits to explain current charging abilities, related to issue #319
+
+v0.3.8
+*Added a Space Ship(Rocket) structure to Jupiter
+*Added a Satellite Tower Structure to Ceres
+*Added config option for Jupiter Space Ship Structure
+*Added config option for Ceres Satellite Tower Structure
+*Fixed issue #310
+
+v0.3.7
+*Migrate All Moons Dimension to new IDs of 1500+
+*Fixed issue #299
+*Allowed the Sensor Glasses Module to fully work now we have a GC hook for it
+*Removed Thermal Armour not needed/unused sub items
+*Fixed getting radiation when in spectator mode
+*Added the ability to install modules in creative mode without the requirements
+*Added Meteoric Iron & Desh Meteors to Mercury
+*Fixed typo in a config option
+*Fixed issue #309
+*Temp fixed for Corrosive damage causing space suit to get deleted at max damage
+*Fixed issue #300
+*Changes to Celestial Selection screen to match GC changes
+*Fixed issue #306
+*Tier 4 - 10 Rocket Launch particle performance improvements
+*Fixed crash issue with having certain parts of the space suit on at a time
+*Fixed issue with rendering Celestial Bodies names on Celestial Selection Screen
+*Set required GC version requirement to Build 177
+*Set required MJRLegendsLib version requirement to v1.1.4
+
+v0.3.6
+*Fixed issue #292
+*Fixed issue #295
+*Fixed Yellow Diamond Pickaxe texture being the wrong texture
+*Tweaks to Radiation/Pressure HUD messages
+
+v0.3.5
+*Fixed crash from Custom key binds
+*Added missing lang entries
+
+v0.3.4
+*Fixed issue #288
+*Fixed some dimension type issues, including issue #291
+*Fixed some dimension type issues part 2
+*Added Medium/Low Radiation Messages
+*Few tweaks location of Radiation/Pressure bars
+*More tweaks to Radiation/Pressure HUD messages
+*Fixed Radiation showing planet/moon not player amount
+
+v0.3.3
+*Added Radiation & Pressure to Space Stations
+*Added Config for Amount of Radiation on Space Stations
+*Tweaks to comments for Radiation Config options
+*Allowed 0 to be used as a Radiation amount for disabling
+*Added Config option to unhide Pressure & Radiation HUD when when not needed
+*Added Debug outputs for Radiation & Pressure system for when Debug Mode is active
+*Added Tier 1 - 4 Space Suit chest with Jet Pack (WIP)
+*Added Space Suit Module System, See controls for the key to use
+*Fixed wrong armour slots on pressure and radiation checks
+*Added Sensor Glasses Module
+*Added enabling/disabling modules in Module Manager GUI
+*Updated lang files
+*Added function to install/uninstall modules in Module Manager GUI
+*Enabled ability to add modules to all Space Suit Tiers
+*Added Module Manager GUI texture
+*Added requirements for installing a module in Module Manager GUI
+*Added No Fall Damage Module & Item
+*Added Geiger Counter Module
+*Added ability to show item stack count in requirements
+*Added name/description info to Module Manager GUI
+*Improved the API section of the mod/Moved classes around
+*Added/Finished a few currently unused base classes
+*Added Module Type info to the Module Manager GUI
+*Added Pre Launch Checklist Module
+*Added Portable NASA Workbench Module
+*Changes to Celestial Selection screen to match GC changes
+*Added comments & removed not needed code from Celestial Selection screen
+*Fixed issue of Celestial Selection screen breaking if changing galaxy when selected/zoom on a body
+*Added Names on Moons in the Celestial Selection screen
+*Fixed issue #284
+*Added Oxygen Tank Auto Swapper Module
+*Added Auto Space Gear Equip Module
+*Added Power System for Modules/Tier 1 - 4 Space Suits
+*Tweaks to Module Manager GUI for Power System info
+*Changed texture of Un-Prepared Tier 1 - 4 Space Suits
+*Fixed a few Server/Client packet handling issues
+*Set required GC version requirement to Build 174
+*Fixed player spawning in liquid when re-spawning after death
+
+v0.3.2
+*Fixed issue #274
+*Fixed missing checklist entries from Kepler22b Space Station
+*Updated ru_RU.lang (Thanks to kellixon)
+*Fixed Celestial Selection screen not displaying correct info when GC Planets & Moons Radiation amounts are changed
+*Changes to Celestial Selection screen to match GC changes
+*Fixed issue with Custom Celestial Selection launch button not working at first
+*Fixed issue #278
+*Fix various edge-case Launch/Charging Pad building issues
+*Fixed fog not rendering correctly at all heights
+*Fixed radiation/pressure info message not showing for GC planets/moons
+*Clean up/Fix Formatting
+*Set required GC version requirement to Build 169
+
+v0.3.1
+*Updated ru_RU.lang (Thanks to rykllan)
+*Updated zh_TW.lang (Thanks to sfs131010)
+*Updated de_DE.lang (Thanks to DerMilchkarton)
+*Updated zh_CN.lang (Thanks to SihenZhang)
+*Changed Space Suit tool tips to be more helpful and not give false sense of you need to use upgraded space suits
+*Simplify Treasure Chests rendering.
+*Fix various battery slot issues. Match GC Changes
+*Removed Canned Beef as now added by GC
+*Removed Canned Beef recipe
+*Removed bugged symbol from Celestial body temperature text on Celestial Selection screen
+*Fixed issue with Kepler22b Brown & Green Leaves when picking the block in creative mode
+*Fixed issue with Kepler22b Tall Grass when picking the block in creative mode
+*Fixed using bone meal on Kepler22b Tall Grass
+
+v0.3.0
+*Fixed Space Suit Helmet being rendered backwards on Armour Stands
+*Added more uses for Kepler22b Planks, towards suggestion #163
+*Fixed some blocks not showing in search & mod creative tabs
+*Clean up for some block classes
+*Fixed spreading of Kepler22b grass
+*Fixed missing information for Tier 1 Space Suit Tool tip
+*Made pressure and radiation damage be performed less often
+
+v0.2.9
+*Fixed issue #258
+*Space Suit model changes to match GC changes
+*Changes to Rocket, Lander, Vehicles rendering for improving performance
+*More changes to Rocket, Lander, Vehicles rendering (MC 1.12 only)
+*Fix Custom GC Batteries not craftable in AE2 due to stacking
+*Resized all celestial body textures to 16 x 16
+*Clean up/Fix Formatting
+
+v0.2.8
+*Fixed recipe crash issue when disabling certain config options, found via issue #255
+*Added erroring field to the crash message with message about reporting the bug
+*Fixed crash issue when disabling Basic Purifier via config
+*Fixed a few recipe errors when disabling certain config options found through when testing for issue #256
+
+v0.2.7
+*Fixed for landing properly on Space Stations for any future Electric Launch controlled rockets
+*Added missing machine descriptions
+*Updated lang file for missing entries and duplicate entries
+*Updated ru_RU.lang (Thanks to rykllan)
+*Fix torch placement on a few blocks for MC 1.12+
+*Removed not needed console logging, Fixed issue #254
+*Fixed issue #253
+*Moved entries around in lang files
+
+v0.2.6
+*Changes to blocks to match GC changes
+*Converted Callisto over to multi biome system
+*Added Callisto Large Shale Mountain Biome
+*Added Callisto Small Shale Mountain Biome
+*Added Callisto Salt Sea Biome
+*Added Callisto Dried Oil & Shale Oil blocks
+*Fixed issue #247
+*Updated lang files
+*Fixed missing world gen on Saturn and IO due to GC bug
+*Reduced dimension size for some textures, to a smaller size
+*Set required GC version requirement to Build 144
+
+v0.2.5
+*Fix player getting stuck inside newly built Launch Pads
+*Changes to Celestial Selection screen to match GC changes
+*Changes to Rockets to improve FPS in rocket launch sequence
+*Added support for Radiation & Pressure for Galacticraft Planets & Moons
+*Fixed networking issue
+*Updated de_DE.lang (Thanks to DerMilchkarton)
+*Moved Radiation & Pressure config options to be section
+*Tweaks for some comments
+*Fixed spelling error in comment for config option, Cleaned up Config class a bit
+*Added config options to change Radiation reduce amounts
+*Added config options to change Radiation amounts for Planets & Moons
+*Added Radiation & Pressure to Phobos/Deimos moons
+*Converted remaining addChatMessage methods over to MJRLegendsLib code
+*Fixed/Improved compatibility with JourneyMap and other teleporting mods.
+*Fix compatibility with Finder Compass mod
+*Set required GC version requirement to Build 142
+*Set required MJRLegendsLib version requirement to v1.1.1
+
+v0.2.4
+*NASA workbench slots now accept valid items from all recipes
+*Changes to Celestial Selection screen to match GC changes
+*Added config option for Electric Rocket
+*Set required GC version requirement to Build 139
+*Set required MJRLegendsLib version requirement to v1.1.0
+
+v0.2.3
+*Tweaks to some model textures
+*Refactored some rendering code to MJRLegendsLib
+*Tweaks to Custom Celestial Selection screen to match GC changes
+*Changed JEI Support Icons from being letters to item icons
+*Fixed missing code for Densifier JEI Support
+*Added Tool tips for Kits to say purpose & use
+*Added da_DK.lang (Thanks to Jin16)
+*Updated lang files for some entries that were missing planet name prefix, Removed WIP tags
+*Converted more hard coded text to have language file support
+*Clean up/Fixed formatting
+*Fixed issue to where all tools had a high amount of damage
+*Fixed a key binding having a language key including uppercase letters
+*Fixed small bug with custom celestial selection screen
+*Tweaks for Custom Galaxies selection
+*Added colour to Mars/Venus Rover tool tips
+*Improved Electric Rocket Schematic Texture
+*Added ability to hang Electric Rocket, Mars/Venus rover schematics, Renamed some classes
+*Changes to Rockets/Vehicles JEI Support to match GC changes
+*Fixed some missing json errors
+*Changes for Circuit Fabricator recipe code to match GC changes
+*Fixed Mercury Spawner unlocalized name
+*Set required GC version requirement to Build 138
+*Set required MJRLegendsLib version requirement to v1.0.8
+
+v0.2.2
+*Fixed issue #239
+*Fixed issue #240
+*Fixed issue #241
+*Added missing ore dict entries
+*Fixed issue #232
+*Add Condition recipes for Fire Bomb, Chemical Injector Machine recipes
+*Added config options for ore generation on planets/moons
+*Fixed missing gravel generation on Rhea
+*Fixed null pointer on tile entities for getDisplayName
+*Clean up/Fixes/Removed uneeded code
+*Fixed custom name with Advanced Fuel Loader
+*Refactoring of more code to MJRLegendsLib (1/2)
+*Refactoring of more code to MJRLegendsLib (2/2)
+*Clean up/Fixed Formatting
+*Fixed missing machine for commit, Fixed null pointer on tile entities for getDisplayName
+*Refactor code in a few Item classes to MJRLegendsLib
+*Refactor some code from ClientProxy class in to MJRLegendsLib
+*Renamed Decontamination Unit model file
+*Set required GC version requirement to Build 133
+
+v0.2.1
+NOTE: THERES WAS A LITTLE ISSUE WITH SOME DIMENSIONS, IF YOUR STILL GETTING THE PLAINS BIOME NAMING ISSUE, PLEASE USE THIS VERSION AND DELETE THAT DIMENSION. SORRY FOR ANY TROUBLE CAUSED
+*Fixed issue #233
+
+v0.2.0
+NOTE: MAKE SURE TO CHECK OUT V0.1.9 CHANGE LOG IF YOU UPDATING FROM A VERSION BEFORE V0.1.9
+
+*Work towards issue #231 & Few biome fixes
+*Few more biome fixes
+*Fixed issue #231
+*Clean up unneeded biome register code
+*Clean up/Fix Formatting
+*Fixed error with Basic Purifier JEI Support
+*Fixed error with Creative Tab sorting for Custom Batteries
+*Few more fixes for Basic Purifier JEI Support
+
+v0.1.9
+NOTE: YOU WILL GET A MESSAGE SAYING 51 EXTRA PLANETS BIOMES ON OLD WORLDS, IT WILL CHANGE BIOME NAMES ALL IN EXTRA PLANETS DIMENSIONS TO PLAINS BIOMES
+
+TO FIX DELETE ALL EXTRA PLANETS DIMENSIONS FILES!!!! PLEASE DON'T REPORT AS A BUG ITS INTENDED
+
+*Fixed issue #226
+*Fixed issue #227
+*Updated de_DE.lang
+*Fixed issue #224
+*Changed all Biome types for all biomes
+*Added config option to disable them
+*Fixes for a few biomes
+*Fixed crash on load up for biomes due to recent commit
+*Fixed Electric rocket rotation from player controlling
+*Small fix for Custom Celestial Selection screen
+*Fixed Creative Rocket Electric Rocket not having 100% power
+*Fixes for Electric Rocket rotation/rendering
+*Fixed missing rendering of side bar for the Electric Rocket
+*Clean up/Fix Formatting
+*Converted over to use GC new API Biome System
+*Changed Galacticraft minimum version to Build 132
+*Few fixes for Moon registering for Biome & Mob info methods
+*More work on Converting over to use GC new API Biome System
+
+v0.1.8
+*Fixed issue #222
+*Fixed issue #221
+*Fixed issue #220
+
+v0.1.7
+*Fixed issue #209
+*Fixed issue #216
+*Updated de_DE.lang (Thanks to DerMilchkarton)
+*Fixed issue #215
+*Fixed issue #217
+*Fixed issue #218
+*Changed implements for World providers classes to be added in the parent class
+
+v0.1.6
+*Removed not needed code from the Giant Zombie Boss
+*Tweaks to the Snowman Boss moving speed
+*Added Evolved Spaceman boss to Pluto Dungeons
+*Tweaks for Spaceman boss
+*Fixed missing registering of tile entities for Default Boss Pluto/Eris Dungeon Spawners
+*Updated lang files
+*Fixed Spaceman Boss sounds
+*Added nl_NL.lang (Thanks to BB889)
+*Updated lang files to match below 1.12
+*Fixed Saturn Slime ore dropping the wrong meta data for slime balls
+*Added Fingerprint Violation Jar Signing
+*Fixed issue #207
+*Fixed packet error with vehicle charger
+*Clean up
+*Fixed Galacticraft Version Checker for dev workspace
+*Fixed Electric Rocket not exploding when hitting the ground
+*Fixed Chat text to show power not fuel for when getting in Electric Rocket
+*Fixes for double "will" in comments in Config options
+*Added Config option for the Vehicle Charger
+*Changed Mars Rover to be added to the Mars Dungeon now that GC has fixed the boss issue for Mars
+*Updated Galacticraft Version checker to a minimum version of build #128
+*Tile Entity tweaks to match GC changes
+*Changed requirement of MJRLegendsLib to 1.12.2-1.0.6 & above
+
+v0.1.5
+*Converted Basic Block Smasher over to a general list of recipes
+*Added CraftTweaker Support for Basic Smasher
+*Few fixes for Block Smasher Recipe System
+*Converted Basic Solar Evaporation Chamber over to a general list of recipes
+*Fixed a few automation issues with some machines
+*Added CraftTweaker Support for Basic Solar Evaporation Chamber
+*Changes to timing of registering machine recipes
+*Fixes for CraftTweaker dependency requirement
+*Changes for latest Galacticraft API changes
+*Fixed Triton Ice Sea Biome
+*Refactor more code/classes to MJRLegendsLib
+*Added Json Recipe for Anti Radiation Drink
+*Fixed OpenGL Error spam
+*Added Diamond, Gold, Coal, Iron, Emerald Grit Blocks
+*Added Kepler22b Diamond Plains Biome
+*Added Diamond Trees to the Diamond Plains Biome
+*Added Diamond Ore Spheres to the Diamond Plains Biome
+*Added Kepler22b Coal, Iron, Gold, Emerald Plains Biome
+*Added Coal, Iron, Gold, Emerald Trees to the Coal, Iron, Gold, Emerald Plains Biome
+*Added Coal, Iron, Gold, Emerald Ore Spheres to the Coal, Iron, Gold, Emerald Plains Biome
+*Changed Kepler22b Rare biomes rate
+*Fixed Emerald Grit having the wrong name
+*Converted Europa over to multi biome system
+*Added Europa Salt Sea Biome
+*Added Europa Valleys Biome
+*Added Spheres of Iron ore generation between y 20 & 40
+*Added Caves full of Liquid Crystallized Water to Europa
+*Added Config options for 90% of the world gen features
+*Removed the Config option for Ceres Rocket Tier requirement
+*Updated lang files
+*Fixes names for Eris Bosses
+*Added/Tweaks to comments on all Config options
+*Changed requirement of MJRLegendsLib to 1.12.2-1.0.5 & above
+
+v0.1.4
+*Updated lang files
+*Fixed crash when placing the Vehicle Charger (1.11+)
+*Added config option for adding of other items to the ore dict
+*Tweaks to the comment of the Enable Ore Generation of Lead Config option
+*Moved the registering of Ore dict entries to register item event
+*Fixed issue with crafting batteries and using them for crafting
+*Fixed recipe issue with Tier 2 Full Protection kit
+*Disabled dev only option of generating recipe json files
+*Made biome names more user friendly
+*Fixed biome server crash due to client only method
+*Changed Kepler22b World gen classes to match others
+*Fixed Evolved Snowman Boss sounds
+*Added Evolved Giant Zombie boss to Eris Dungeons
+*Added loot back to Mercury, Jupiter, Saturn, Uranus, Neptune, Eris,
+*Update es_ES.lang (Thanks to Spellkaze)
+
+v0.1.3
+*Added the ability for recipes to not be enabled when certain config options are turned off
+*Fixed crash with shift clicking in custom vehicles
+*Added tool tips to Mars and Venus Rover to say how to use them
+*Fixed the issue with fog staying after traveling to a planet or moon that has fog
+*Removed not needed TODO tag comments within code
+*Converted all hardcoded items/blocks such as sticks & dyes in recipes to ore dict versions
+*Converted system for adding ore dict for Lead ingots to same system as other ore dict recipes
+*Removed Biome ID Category from config
+*Added Config option for Custom Fog Effect on Jupiter, Uranus, Saturn, Neptune
+*Updated zh_CH.lang (Thanks to sdjnmxd)
+*Added Extra information to the Electric Rocket Tool tip
+*Added Config GUI Factory, for ingame config editing
+*Added missing Densifier GUI Fluid textures
+*Few more tweaks for missing Densifier GUI Fluid textures
+*Fixed certain kits giving free parachutes and shield controllers
+*Changed requirement of MJRLegendsLib to 1.12.2-1.0.4 & above
+
+v0.1.2
+*Refactoring to use Model Utilities & Translate Utilities classes from MJRLegends Lib
+*Changed requirement of MJRLegendsLib to 1.12.2-1.0.3 & above
+*Added class containing all current recipes for future possible json generation
+*Added Block of Nickel &* Platinum
+*Fixed spelling error for Kepler22b Ore Platinum
+*Changed Mars/ Venus Rover Schematics textures
+*Added Tool tips for Custom Wafers to tell the player where they are used
+*Updated lang files
+*Added Block of Nickel & Platinum recipes (in Generation Class)
+*Updated JEI Support from JEI 4.5 to 4.8
+*Fixed warning with JEI Support classes
+*Fixed some raw type warnings
+*Fixed a few deprecated methods
+*Clean up/Fix formatting
+
+
+v0.1.1
+*Fixed creative tabs issue, removed tools and armour tabs
+*Fixed double registering of the Callisto biome
+*Tweaks to registering of items & blocks
+*Fixed broken recipe for Tier 1 Pressure Layer
+
+v0.1.0
+*Port from MC 1.11.2 version
+======================================================================================================

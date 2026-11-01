@@ -1,0 +1,32 @@
+{
+  "title": "留一点火种",
+  "description": "获得 GS 火山石",
+  "icon": "galaxyspace:gs_basic 1 12",
+  "x": -3.0,
+  "y": 0.0,
+  "text": [
+    "用途：准备 HDP:2 等后续材料。",
+    "操作：从木卫一火山矿取得火山石并保留库存，按后续配方使用。",
+    "提示：不要求首次登陆立即完成全部加工；宝箱产出与矿物来源分开看待。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210402",
+      "title": "获得 GS 火山石",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:gs_basic",
+          "Count": 1,
+          "Damage": 12
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

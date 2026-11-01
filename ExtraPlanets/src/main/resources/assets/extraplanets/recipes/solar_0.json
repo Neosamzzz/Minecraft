@@ -1,0 +1,28 @@
+{
+  "result": {
+    "item": "extraplanets:solar",
+    "data": 0
+  },
+  "pattern": [
+    "ZYZ",
+    "YZY",
+    "ZYZ"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "solarpanels"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "Y": {
+      "item": "galacticraftcore:solar",
+      "data": 4
+    },
+    "Z": {
+      "item": "extraplanets:tier6_items",
+      "data": 4
+    }
+  }
+}

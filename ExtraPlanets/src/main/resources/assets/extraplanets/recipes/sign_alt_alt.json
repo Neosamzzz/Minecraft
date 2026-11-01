@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "minecraft:sign",
+    "count": 6
+  },
+  "pattern": [
+    "DDD",
+    "DDD",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "kepler22b"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "D": {
+      "item": "extraplanets:kepler22b_planks",
+      "data": 2
+    }
+  }
+}
