@@ -1,0 +1,1 @@
+先查看完所有的文档和GitHub相关issue和project
