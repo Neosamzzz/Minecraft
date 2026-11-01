@@ -8,8 +8,10 @@
 
 | 开发线 | 方向文档 | Git 分支 |
 | --- | --- | --- |
-| 火箭与相关物品 | [items/README.md](items/README.md) | `codex/newearth-items` |
-| 终章新维度 | [dimension/README.md](dimension/README.md) | `codex/newearth-dimension` |
+| 火箭与相关物品 | [items/README.md](items/README.md) | [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) |
+| 终章新维度 | [dimension/README.md](dimension/README.md) | [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension) |
+
+两分支从同一 `main` 基线建立，共同方向初始提交为 `65c3fe1`，本次文档更新同步推送到 GitHub。分支存在只表示已建立开发位置；当前没有新维度、火箭或装配台实现。
 
 两条线分别维护内容与验证状态。物品线可以利用已有星球推进七八阶，不等待新维度完成；维度线可以独立研究地形与世界生成，不等待新火箭完成。
 

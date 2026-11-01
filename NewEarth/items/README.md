@@ -1,6 +1,6 @@
 # 火箭与相关物品
 
-Git 分支：`codex/newearth-items`。
+Git 分支：[codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items)。核对日期：2026-11-02。
 
 本开发线维护后期航天与火箭相关内容，新行星维度由[维度线](../dimension/README.md)独立推进。整体关系见[支线总览](../README.md)。当前仅记录方向，尚未实施新火箭或配方。
 
@@ -27,6 +27,8 @@ Git 分支：`codex/newearth-items`。
 太阳系内保留原有 T1～T6 要求；既有系外行星、卫星等目的地统一按最低 T7 接入，七阶及以上可前往。开普勒原有 T10 门槛随此方向适配。
 
 沿用既有的星球阶数限制，保持天体等级、星图显示与实际通行一致，不额外按 GS / EP 火箭来源划分资格。以上为规划，尚未改写当前实例。
+
+现状仍为 GS 系外注册 T6、EP Kepler T10；当前 EP 七阶组没有正常开放，不能仅凭本方向文档认定已可制造七阶。材料与路线依据见[星球玩法详解](../../docs/research/planet-gameplay-guide.md)，具体配方和准入调整留给本线后续设计。
 
 ## 与新维度的关系
 
