@@ -2,7 +2,7 @@
 
 FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 GC 玩法，加上为完善体验做的自行修补；FTB 负责把已有玩法的发展过程可视化，让一起玩的朋友共同推进、看得见全服进度。
 
-本目录只管 FTB 这一块，对应 [Issue #7：梳理并配置好游戏内的 FTB 相关功能](https://github.com/Neosamzzz/Minecraft/issues/7) 和看板 [FTB移植](https://github.com/users/Neosamzzz/projects/3)。GSLC 补丁与本目录无关，其记录见 [`../changelog/`](../changelog/README.md)。
+本目录维护 FTB 资料，以及供整合包和 NewEarth 共用的星球研究。FTB 对应 [Issue #7](https://github.com/Neosamzzz/Minecraft/issues/7) 与看板 [FTB移植](https://github.com/users/Neosamzzz/projects/3)；星球资源、环境和既有制造关系优先查 [planet-gameplay-guide.md](research/planet-gameplay-guide.md)。GSLC 记录见 [`../changelog/`](../changelog/README.md)。
 
 核对日期：2026-11-02。本文集中记录文档、内容与实现状态；运行观察统一回填[玩法详解](research/planet-gameplay-guide.md#十三2026-11-02-运行日志补记)。
 
@@ -51,7 +51,7 @@ FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 
 | [research/quest-item-notes.md](research/quest-item-notes.md) | 新增目标的物品注册、配方与筛选依据 | 已核对本地源码及相关 EP 配置，未作物品游戏验收 |
 | [历史任务小样](../quest-config/preview/README.md) | 三节点配置与当时的部署记录 | 已被六章配置接替，原三个条件 ID 保留 |
 | [research/planet-gameplay-audit.md](research/planet-gameplay-audit.md) | 星球与玩法的静态总览：配置、维度、共存问题 | 静态调查完成，待游戏内实测 |
-| [research/planet-gameplay-guide.md](research/planet-gameplay-guide.md) | 逐个目的地的详细玩法和内容依据 | 静态调查完成，待游戏内实测 |
+| [research/planet-gameplay-guide.md](research/planet-gameplay-guide.md) | 共用的星球资源、采集限制、既有加工与玩法依据 | 已补此前遗漏和新定方向；以 GC / GS 为主，EP 临时测试开关不作定案，运行验收待补 |
 | [research/extraplanets-source-notes.md](research/extraplanets-source-notes.md) | EP 源码来源、版本对应、字节码核对与源码入口 | 已导入 0.8.0 上游快照，未接入构建 |
 
 依据资料用来查，不需要通读。真正对接任务设计的是详解的[第十一节「交给 FTB 与向导文本线程的使用规则」](research/planet-gameplay-guide.md#十一交给-ftb-与向导文本线程的使用规则)，先看那一节即可。
