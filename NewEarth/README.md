@@ -4,6 +4,8 @@
 
 对应 [Project #4「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1) 与 [Issue #8「自建星球」](https://github.com/Neosamzzz/Minecraft/issues/8)。本支线连接后期航天、多人宇宙飞船与独立拟地球行星，为共同旅程安排一次自然的收尾。
 
+**资源与玩法的重要资料入口：[planet-gameplay-guide.md](https://github.com/Neosamzzz/Minecraft/blob/codex/project-docs-20261102/docs/research/planet-gameplay-guide.md)。** 各星球现有资源、环境和制造关系在 guide 中查阅；本目录只维护开发方向，不复制资源清单或具体用法。链接以统一资料分支为准。
+
 > [!NOTE]
 > 本目录记录已确定的设计及协作边界。新载具、工作台、能源核心、终章维度与演出尚未实现；文档中的目标等级不代表已修改当前实例。
 
@@ -23,13 +25,13 @@
 
 基础八阶飞船与装配台不能依赖开普勒阶段才能取得的材料，最终核心也不能依赖终章资源，避免制造与航行前置循环。
 
-最终能源核心的材料组合已确定为五种彩色钻石全部加铂制品，不是任选颜色；具体数量、铂制品形式与配方布局待核算。FTB 的彩钻样本任务仍可接受任一种颜色，五色齐备由核心制作配方落实，不为每种颜色另加必做节点。
+最终能源核心的材料组合已确定为五种彩色钻石全部加铂制品，不是任选颜色；具体数量、铂制品形式与配方布局待核算。
 
 ## 目录与 Git 分支
 
 | 开发线 | 方向文档 | Git 分支 |
 | --- | --- | --- |
-| 火箭与相关物品 | [items/README.md](items/README.md) | [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) |
+| 载具、系外物品与专用工具 | [items/README.md](items/README.md) | [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) |
 | 终章新维度 | [dimension/README.md](dimension/README.md) | [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension) |
 
 两分支从同一 `main` 基线建立，共同方向初始提交为 `65c3fe1`，后续独立推进。本总览记录共同基调，物品、维度的具体范围分别由子目录维护；两个开发分支不预设最后必须打包为两个模组。
@@ -38,7 +40,8 @@
 
 ## 共同方向
 
-- 原料、方块、生态和素材优先复用原版、GC、GS、EP；新增物品和设备集中服务飞船，不另建矿物、装备或通用工业体系。
+- 每个可登陆的系外目的地都应有可利用的特色材料，以及支撑当地玩法的专用工具或采集、处理能力；具体资源查 guide，用途与工具设计留给物品线细化。
+- 原料、方块、生态和素材优先复用原版、GC、GS、EP；必要的新增内容围绕系外专用工具、飞船及能源升级，不另建庞大的通用工业或装备体系。
 - 终章近景熟悉、远景宏伟，与海洋地球开篇呼应；角色视角不知道终点存在，不提前承担“寻找新地球”的使命。朋友实际知道设定不妨碍按此叙事。
 - 保留已有生态星球的森林、海洋和探索价值，不把它们写成寻找家园失败；抵达后先观察和探索，不强制定居。
 - 睡眠沿用主世界正常集体过夜语义。结尾由成功过夜触发，不按每名玩家第一次躺床分别播放，也不另设集合观看、参与名单或投票机制。
@@ -52,8 +55,4 @@
 
 ## 与 FTB 的关系
 
-[FTB 资料区](../docs/README.md)继续维护团队机制与基础任务书。终章的「似曾相识」与 H01 文稿由 `docs/ftb-quest-manuscript.md` 维护，维度与物品的开发方向分别记录在本目录的两条线中。
-
-FTB 可先完成任务文案、布局和目标说明，现有内容按可用范围配置验证。后期按“获得装配台和八阶飞船 → 开普勒材料 → 获得核心 → 实际抵达终章”预留接入，待物品和维度存在后补 ID 与验证，不等待本支线全部完成。
-
-继续采用轻量、不设任务奖励的内容方向。普通组件不逐一设任务，安装核心与多人航行由载具机制负责；不增加睡觉、放床或看完演出的勾选任务。玩法依据见[星球玩法详解](../docs/research/planet-gameplay-guide.md)。
+[FTB](../docs/README.md) 后续根据实际资源、工具与成品补充轻量任务，不作为两条开发线的前置。任务不逐项覆盖所有部件，也不承担核心安装、航行或睡眠演出判定；文案仍由 `docs/ftb-quest-manuscript.md` 维护。
