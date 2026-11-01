@@ -163,7 +163,9 @@ py -3 -m unittest discover -s tools/tests
 
 macOS / Linux 使用 `python3 -m unittest discover -s tools/tests`。这些检查不代替实际 Gradle 编译和游戏测试。
 
-- [FTB 开发说明](FTB-Quests/DEVELOPMENT.md)：依赖版本、直接调用 Gradle 和兼容修复。
+- [FTB 开发说明](FTB-Quests/DEVELOPMENT.md)：依赖版本、兼容修复、任务功能、数据保存和编辑入口。
+- [FTB 公共团队方案](docs/ftb-shared-team-plan.md)与[任务内容方向](docs/ftb-content-direction.md)：已对齐、尚未实现或部署的熟人服规则与内容边界。
+- [星球现状审计](docs/planet-gameplay-audit.md)与[玩法详解](docs/planet-gameplay-guide.md)：配置、源码层面的目的地与制造关系，含待运行验证事项。
 - [遥感补丁说明与专项检查](GalaxySpace/tests/telemetry_dimension/README.md)：遥感功能实现及验证记录，历史版本说明按对应版本阅读。
 - [公共控制器补丁检查](GalaxySpace/tests/public_controller/README.md)：控制器兼容探针与验证方式。
 

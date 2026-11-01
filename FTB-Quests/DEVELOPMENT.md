@@ -46,3 +46,30 @@ py -3 tools/build.py --target ftbquests
 首次构建需要联网。项目仍使用 ForgeGradle 2.3、旧发布插件及远程 changelog 脚本；Gradle 的旧版本警告不等于编译失败。
 
 旧 ForgeGradle 的资源下载使用 HTTP 且会忽略下载失败；`gradle/legacy-assets.gradle` 将该步骤改为 Mojang 官方 HTTPS 地址，并校验每个文件的大小和 SHA-1。离线模式缺少资源时会明确报错。
+
+## 任务功能与数据位置
+
+以下依据仓库当前源码，供配置任务与后续适配时查阅；不代表已在整合包中配置或完成游戏验收。
+
+| 内容 | 当前实现 |
+| --- | --- |
+| 内容结构 | `QuestFile → Chapter → Quest → Task / Reward`；任务有布局坐标、前置关系、可选与显示设置，奖励可以为空 |
+| 完成关系 | 默认汇总任务条件进度；`orTasks` 可改为任一条件完成。没有条件的任务在前置满足后即完成，需玩家手动确认时应添加勾选条件 |
+| 前置条件 | 支持全部/任一前置开始或完成，以及至少完成指定数量的前置；隐藏连线不等于取消前置 |
+| 基础条件 | 物品、流体、FE 能量、经验、维度、统计、击杀、地点、勾选、原版进度、观察、交互、群系和自定义条件 |
+| 共享进度 | 按玩家所属的 FTB Library 团队取得 `ServerQuestData`；同队使用同一份任务进度，不会自动把全服设为一个团队 |
+| 奖励归属 | 默认 `default_reward_team=false`；单项 `team_reward` 可覆盖。个人奖励按玩家 UUID 记录，团队奖励共用记录；可重复任务强制按团队奖励处理 |
+
+任务定义默认读取 `config/ftbquests/normal/`。若世界有 `questfile` 游戏规则，则优先使用该值作为子目录；否则在安装 PackMode 时使用其当前模式名称，最后才回退到 `normal`。定义包含 `file.snbt`、`chapters/index.snbt`、各章节及任务文件，以及 `reward_tables/`。
+
+玩家进度和领奖记录通过 FTB Library 的团队数据文件 `team.getDataFile("ftbquests")` 保存，与上述任务定义分开。具体存档绝对路径由 Library 决定；只复制任务配置不会带走团队进度。删除团队的事件处理会删除该队任务数据，因此保留进度的公共团队方案不能通过删除旧团队直接实现。
+
+编辑入口为 `/ftbquests editing_mode true`，结束编辑用 `/ftbquests editing_mode false`；不带参数时切换状态。该子命令在单人服务器允许使用，联机默认要求权限等级 2。任务编辑和进度管理属于管理操作，不是普通玩家完成任务的前置步骤。
+
+源码入口：
+
+- [Quest](src/main/java/com/feed_the_beast/ftbquests/quest/Quest.java)：布局、前置和完成关系。
+- [任务注册](src/main/java/com/feed_the_beast/ftbquests/FTBQuestsEventHandler.java)：基础条件类型。
+- [ServerQuestFile](src/main/java/com/feed_the_beast/ftbquests/quest/ServerQuestFile.java)、[QuestFile](src/main/java/com/feed_the_beast/ftbquests/quest/QuestFile.java)：定义目录选择及 SNBT 读写。
+- [ServerQuestData](src/main/java/com/feed_the_beast/ftbquests/util/ServerQuestData.java)、[QuestData](src/main/java/com/feed_the_beast/ftbquests/quest/QuestData.java)、[Reward](src/main/java/com/feed_the_beast/ftbquests/quest/reward/Reward.java)：团队进度、持久化与领奖归属。
+- [CommandEditingMode](src/main/java/com/feed_the_beast/ftbquests/command/CommandEditingMode.java)：编辑模式与权限。

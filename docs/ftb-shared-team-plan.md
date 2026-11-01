@@ -31,6 +31,10 @@
 
 团队与公共界面主要由 FTB Library 提供，仓库当前包含的是 FTB Quests 源码。具体修改位置、接入方式及兼容性尚未验证；目前不能断言只修改某一个模组即可覆盖全部行为。
 
+补充源码依据：`ServerQuestFile.getData(UUID)` 通过 `FTBLibAPI.getTeamID` 查找玩家团队，`ServerQuestData` 将任务进度和领奖记录保存到该团队的数据文件。因此同队共享进度已有基础，固定团队与自动归队仍需接入 Library 的团队规则；当前源码没有实现本方案的全服自动归队。
+
+`Reward.isTeamReward()` 对可重复任务直接返回 true；普通任务才使用单项 `team_reward` 或全局 `default_reward_team`。因此个人领奖约定适用于普通奖励，不能直接推广到可重复任务。团队删除事件还会删除对应任务数据，迁移时应保留原队数据。数据与源码入口见 [FTB 开发说明](../FTB-Quests/DEVELOPMENT.md#任务功能与数据位置)。
+
 ## 最低验收范围
 
 - 两名玩家自动进入同一团队，其中一人完成任务后双方进度同步。
