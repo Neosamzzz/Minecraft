@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | [gslc.md](gslc.md) | GSLaunchCompat 补丁的版本历史（发射控制器权限、遥感显示器、地图与时钟） | 1.4.8 |
 | [modpack.md](modpack.md) | 整合包基线：模组清单、版本、配置入口 | — |
-| [ftb-quests.md](ftb-quests.md) | FTB Quests 相对上游的本地改动 | 1202.9.1 |
+| [ftb-quests.md](ftb-quests.md) | FTB Quests 相对上游的本地改动 | 1202.9.3 |
 
 ## 用法
 

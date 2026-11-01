@@ -10,6 +10,8 @@ import com.feed_the_beast.ftblib.lib.data.TeamAction;
 import com.feed_the_beast.ftblib.lib.data.TeamType;
 import com.feed_the_beast.ftblib.lib.data.Universe;
 import com.feed_the_beast.ftbquests.SharedTeamConfig;
+import com.feed_the_beast.ftbquests.FTBQuests;
+import com.feed_the_beast.ftbquests.command.CommandEditingMode;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
@@ -83,6 +85,8 @@ public class SharedTeamProbe
 		progress.claimedTeamRewards.add(42);
 		SharedTeamManager.onLoaded(new UniverseLoadedEvent.Finished(universe));
 		check(SharedTeamManager.isActive(), "single existing team selected");
+		check(!FTBQuests.canEdit(null), "shared-team mode denies editing even with persisted editing state");
+		check(!new CommandEditingMode().checkPermission(null, null), "editing command unavailable in shared-team mode");
 		check(FTBQuestsWorldData.INSTANCE.sharedTeamId.equals("friends"), "selected identity retained for save");
 		NBTTagCompound saved = new NBTTagCompound();
 		FTBQuestsWorldData.onUniverseSaved(new UniverseSavedEvent(universe, saved));

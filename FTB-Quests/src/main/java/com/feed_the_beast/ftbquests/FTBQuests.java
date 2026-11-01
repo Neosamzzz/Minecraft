@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 		name = FTBQuests.MOD_NAME,
 		version = FTBQuests.VERSION,
 		dependencies = FTBLib.THIS_DEP + ";required-after:itemfilters;before:kubejs;after:gamestages;after:ic2;after:ftbutilities;after:botania;after:buildcraftcore;after:projecte;after:customnpcs;after:reskillable",
-		acceptableRemoteVersions = "[1202.9.1,1202.10)"
+		acceptableRemoteVersions = "[1202.9.2,1202.10)"
 )
 public class FTBQuests
 {
@@ -141,6 +141,6 @@ public class FTBQuests
 
 	public static boolean canEdit(EntityPlayer player)
 	{
-		return NBTUtils.getPersistedData(player, false).getBoolean("ftbquests_editing_mode");
+		return !SharedTeamManager.isActive() && NBTUtils.getPersistedData(player, false).getBoolean("ftbquests_editing_mode");
 	}
 }

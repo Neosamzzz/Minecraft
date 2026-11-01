@@ -231,3 +231,7 @@ commands.ftbquests.import_rewards_from_chest.text=将 %d 物品导入 %s 中
 ftbquests.shared_team.fixed=全服共用公共团队，无需建队、退队或换队。
 ftbquests.shared_team.editing.on=编辑任务
 ftbquests.shared_team.editing.off=结束编辑
+ftbquests.gui.view_dependencies=查看前置任务
+ftbquests.gui.view_dependants=查看后续任务
+ftbquests.gui.no_dependencies=没有前置任务
+ftbquests.gui.no_dependants=没有后续任务

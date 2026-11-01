@@ -24,9 +24,9 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk1.8.0_8u202_x64'
 py -3 tools/build.py --target ftbquests
 ```
 
-依赖缓存完整后可添加 `--offline`；macOS / Linux 将 `py -3` 替换为 `python3`。最终模组包输出到主仓库的 `build/libs/FTBQuests-1202.9.1.jar`。
+依赖缓存完整后可添加 `--offline`；macOS / Linux 将 `py -3` 替换为 `python3`。最终模组包输出到主仓库的 `build/libs/FTBQuests-1202.9.3.jar`。
 
-如需直接调用 Gradle，在本子目录执行 `./gradlew`（Windows 使用 `.\gradlew.bat`），任务为 `build`。子项目原生输出在本目录的 `build/libs/`，包括模组 JAR 和 `FTBQuests-1202.9.1-sources.jar` 源码包。
+如需直接调用 Gradle，在本子目录执行 `./gradlew`（Windows 使用 `.\gradlew.bat`），任务为 `build`。子项目原生输出在本目录的 `build/libs/`，包括模组 JAR 和 `FTBQuests-1202.9.3-sources.jar` 源码包。
 
 设置 `BUILD_NUMBER` 时版本会追加构建编号，统一入口会复制对应版本的模组包。完整用法、环境准备和测试流程见主仓库 [README](../README.md)。编译成功后，仍需在独立的游戏实例中验证运行行为。
 
@@ -64,7 +64,7 @@ py -3 tools/build.py --target ftbquests
 
 玩家进度和领奖记录通过 FTB Library 的团队数据文件 `team.getDataFile("ftbquests")` 保存，与上述任务定义分开。具体存档绝对路径由 Library 决定；只复制任务配置不会带走团队进度。删除团队的事件处理会删除该队任务数据，因此保留进度的公共团队方案不能通过删除旧团队直接实现。
 
-编辑入口为 `/ftbquests editing_mode true`，结束编辑用 `/ftbquests editing_mode false`；不带参数时切换状态。公共团队模式下所有玩家可用，任务书也提供开关；关闭公共团队模式后恢复上游权限规则（单人允许，联机要求权限等级 2）。正常完成任务无需开启编辑模式。
+公共团队模式隐藏任务编辑入口，禁用 `/ftbquests editing_mode`，旧的已保存编辑状态不生效。任务由 `config/ftbquests/<当前模式>/` 内的配置文件维护，停服修改后启动加载；已有团队进度另行保存。关闭公共团队模式后恢复上游编辑入口和权限规则（单人允许，联机要求权限等级 2）。
 
 源码入口：
 
