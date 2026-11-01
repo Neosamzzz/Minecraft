@@ -1,5 +1,7 @@
 package com.feed_the_beast.ftbquests.command;
 
+import com.feed_the_beast.ftbquests.util.SharedTeamManager;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 
@@ -17,6 +19,6 @@ public abstract class CommandFTBQuestsBase extends CommandBase
 	@Override
 	public int getRequiredPermissionLevel()
 	{
-		return 2;
+		return SharedTeamManager.isActive() ? 0 : 2;
 	}
 }

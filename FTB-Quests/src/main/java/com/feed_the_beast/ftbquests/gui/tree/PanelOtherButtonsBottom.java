@@ -17,7 +17,14 @@ public class PanelOtherButtonsBottom extends PanelOtherButtons
 	public void addWidgets()
 	{
 		add(new ButtonAutopin(this));
-		add(new ButtonSupport(this));
+		if (treeGui.file.sharedTeam)
+		{
+			add(new ButtonSharedTeamEditing(this));
+		}
+		else
+		{
+			add(new ButtonSupport(this));
+		}
 
 		if (treeGui.file.canEdit())
 		{

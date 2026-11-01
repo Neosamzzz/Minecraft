@@ -106,6 +106,7 @@ public class MessageSyncQuests extends MessageToClient
 	public short team;
 	public Collection<TeamInst> teamData;
 	public boolean editingMode;
+	public boolean sharedTeam;
 	public UUID[] playerIDs;
 	public short[] playerTeams;
 	public int[] favorites;
@@ -123,6 +124,7 @@ public class MessageSyncQuests extends MessageToClient
 		data.writeShort(team);
 		data.writeCollection(teamData, TeamInst.SERIALIZER);
 		data.writeBoolean(editingMode);
+		data.writeBoolean(sharedTeam);
 		data.writeVarInt(playerIDs.length);
 
 		for (int i = 0; i < playerIDs.length; i++)
@@ -147,6 +149,7 @@ public class MessageSyncQuests extends MessageToClient
 		team = data.readShort();
 		teamData = data.readCollection(TeamInst.DESERIALIZER);
 		editingMode = data.readBoolean();
+		sharedTeam = data.readBoolean();
 
 		playerIDs = new UUID[data.readVarInt()];
 		playerTeams = new short[playerIDs.length];

@@ -50,7 +50,7 @@ python3 tools/build.py --target all
 ```text
 build/libs/
 ├── GSLaunchCompat-1.4.8.jar
-└── FTBQuests-1202.9.0.jar
+└── FTBQuests-1202.9.1.jar
 ```
 
 ## 构建目标
@@ -104,13 +104,15 @@ GSLC 编译并重混淆 GalaxySpace，再使用 `dev-tools/GSLaunchCompat-1.3-pu
 
 | 模组 | 版本 | 客户端 | 服务端 |
 | --- | --- | --- | --- |
-| FTB Quests | 本项目生成的 `1202.9.0`，或带构建编号的对应版本 | 必需 | 必需 |
+| FTB Quests | 本项目生成的 `1202.9.1`，或带构建编号的对应版本，两端同步更新 | 必需 | 必需 |
 | [FTB Library](https://www.curseforge.com/minecraft/mc-mods/ftb-library-legacy-forge/files/2985811) | 5.4.7.2 | 必需 | 必需 |
 | [Item Filters](https://www.curseforge.com/minecraft/mc-mods/item-filters/files/3003364) | 1.0.4.2 | 必需 | 必需 |
 
 FTB Utilities、KubeJS、JEI 等属于可选兼容项；是否安装取决于整合包和任务内容的需要。
 
 本仓库尚未包含整合包任务配置。物品提交、到达维度等基础任务可以用现有任务类型配置，控制器绑定、遥感扫描等特殊行为按需开发适配。已有任务定义需要部署到服务器，默认目录为 `config/ftbquests/normal/`；单人游戏使用本机实例的对应目录。
+
+本地 `1202.9.1` 默认启用熟人服公共团队：自动同队、共享进度，并向所有玩家开放任务编辑。配置与旧存档处理见[公共团队方案](docs/ftb-shared-team-plan.md#最小版的使用方式)。
 
 安装后至少验证任务书打开、条件判定、奖励领取，以及退出重进后的进度保存。联机时同时检查客户端和服务端日志。
 

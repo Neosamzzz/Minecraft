@@ -46,6 +46,7 @@ public class ClientQuestFile extends QuestFile
 	public GuiQuestTree questTreeGui;
 	public GuiBase questGui;
 	public boolean editingMode;
+	public boolean sharedTeam;
 	public final Object2ShortOpenHashMap<UUID> playerTeams;
 	public final IntOpenHashSet pinnedQuests;
 
@@ -103,6 +104,7 @@ public class ClientQuestFile extends QuestFile
 
 		self = message.team == 0 ? null : teamData.get(message.team);
 		editingMode = message.editingMode;
+		sharedTeam = message.sharedTeam;
 
 		playerTeams.clear();
 

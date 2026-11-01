@@ -34,7 +34,7 @@ FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 
 
 | 文件 | 作用 | 状态 |
 | --- | --- | --- |
-| [ftb-shared-team-plan.md](ftb-shared-team-plan.md) | 团队系统怎么做：固定公共团队、自动归队、共享进度、分别领奖 | 已对齐方向，未改代码 |
+| [ftb-shared-team-plan.md](ftb-shared-team-plan.md) | 团队系统怎么做：固定公共团队、自动归队、共享进度、分别领奖 | 最小代码与 GUI 已实现，构建及隔离探针通过，待游戏内联机验收 |
 | [ftb-content-direction.md](ftb-content-direction.md) | 任务书内容做成什么样：轻量、有推进感、不设奖励 | 已对齐方向，未设计章节 |
 | [research/planet-gameplay-audit.md](research/planet-gameplay-audit.md) | 星球与玩法的静态总览：配置、维度、共存问题 | 静态调查完成，待游戏内实测 |
 | [research/planet-gameplay-guide.md](research/planet-gameplay-guide.md) | 逐个目的地的详细玩法和内容依据 | 静态调查完成，待游戏内实测 |

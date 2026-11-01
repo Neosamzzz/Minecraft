@@ -220,6 +220,7 @@ public class ServerQuestData extends QuestData implements NBTDataStorage.Data
 		}
 
 		m.editingMode = FTBQuests.canEdit(player);
+		m.sharedTeam = SharedTeamManager.isActive();
 		m.playerIDs = new UUID[event.getUniverse().getPlayers().size()];
 		m.playerTeams = new short[m.playerIDs.length];
 

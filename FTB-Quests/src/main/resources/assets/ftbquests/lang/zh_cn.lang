@@ -228,3 +228,6 @@ commands.ftbquests.change_consumable.text=将 %d 物品任务消耗设置修改�
 commands.ftbquests.import_rewards_from_chest.usage=/ftbquests import_rewards_from_chest <奖励表> [权重]
 commands.ftbquests.import_rewards_from_chest.invalid_id=非法的奖励表！
 commands.ftbquests.import_rewards_from_chest.text=将 %d 物品导入 %s 中
+ftbquests.shared_team.fixed=全服共用公共团队，无需建队、退队或换队。
+ftbquests.shared_team.editing.on=编辑任务
+ftbquests.shared_team.editing.off=结束编辑
