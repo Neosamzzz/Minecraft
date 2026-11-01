@@ -11,6 +11,5 @@
 .local/
 # Preserve upstream tool exclusions
 
-# Maintainer-only server export tools
-/tools/client-export/
-/导出客户端包.command
+# Local-only server management
+/server/
