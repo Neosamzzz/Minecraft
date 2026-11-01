@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:tier4_space_suit_gravity_boots"
+  },
+  "pattern": [
+    " G ",
+    "GRG",
+    " G "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "pressureandradiation"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "R": {
+      "item": "extraplanets:tier4_space_suit_boots"
+    },
+    "G": {
+      "item": "extraplanets:gravity_controller",
+      "data": 0
+    }
+  }
+}

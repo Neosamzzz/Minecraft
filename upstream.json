@@ -13,5 +13,10 @@
     "url": "https://github.com/FTBTeam/FTB-Quests.git",
     "branch": "1.12",
     "imported_commit": "85b7652bd69f3bc4c03ba9ba24909ddea0605a53"
+  },
+  "ExtraPlanets": {
+    "url": "https://github.com/MJRLegends/ExtraPlanets.git",
+    "branch": "dev_1.12.2",
+    "imported_commit": "fc4a4cb830897da032477210db458a0567948957"
   }
 }

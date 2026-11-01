@@ -1,0 +1,32 @@
+{
+  "title": "借个着力点",
+  "description": "获得抓钩",
+  "icon": "galacticraftplanets:grapple 1 0",
+  "x": -3.0,
+  "y": -6.0,
+  "text": [
+    "用途：增加复杂地形中的移动选择。",
+    "操作：制作抓钩后，在安全位置熟悉瞄准、挂接和移动方式。",
+    "提示：抓钩可以提前制作，不是小行星带唯一可用的移动工具。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a21030d",
+      "title": "获得抓钩",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:grapple",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

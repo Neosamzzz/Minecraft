@@ -1,0 +1,34 @@
+{
+  "title": "向太阳系的远端",
+  "description": "获得 GS 六级火箭",
+  "icon": "galaxyspace:rocket_tier_6 1 0",
+  "x": 6.0,
+  "y": 0.0,
+  "text": [
+    "用途：准备前往外太阳系目的地。",
+    "操作：制造部件和六级许可，完成组装后检查环境防护与返航补给。",
+    "提示：六级火箭不等于已具备未来七阶路线的跨系资格。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210505",
+      "title": "获得 GS 六级火箭",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_tier_6",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.3,
+  "shape": "square"
+}

@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:decorative_blocks",
+    "data": 4
+  },
+  "pattern": [
+    "MMM",
+    "MBM",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "jupiter"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "minecraft:lava_bucket"
+    },
+    "M": {
+      "item": "extraplanets:volcanic_rock"
+    }
+  }
+}

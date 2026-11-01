@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "extraplanets:tier1_radiation_layer",
+    "data": 0
+  },
+  "pattern": [
+    "LCL",
+    "LCL",
+    "LCL"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "pressureandradiation"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "C": {
+      "item": "extraplanets:cloth",
+      "data": 0
+    },
+    "L": {
+      "item": "#INGOTLEAD"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "一层又一层",
+  "description": "抵达天卫五",
+  "icon": "minecraft:packed_ice",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "用途：探索多种含矿地层。",
+    "操作：观察不同母岩并按需要寻找白云石、钴、镍等材料。",
+    "提示：不同矿物分布在不同地层，不保证任意挖掘即可取得所有资源。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210503",
+      "title": "抵达天卫五",
+      "type": "ftbquests:dimension",
+      "dim": -1024
+    }
+  ]
+}

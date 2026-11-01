@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:magnesium_pickaxe"
+  },
+  "pattern": [
+    "XXX",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "magnesiumtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier6_items",
+      "data": 5
+    }
+  }
+}

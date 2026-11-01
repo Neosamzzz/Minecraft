@@ -1,0 +1,32 @@
+{
+  "title": "多带一点电",
+  "description": "获得 EP 高级电池",
+  "icon": "extraplanets:advanced_battery 1 0",
+  "x": 3.0,
+  "y": -3.0,
+  "text": [
+    "用途：准备可携带的备用电力。",
+    "操作：按配方制造并充电，使用时确认设备支持该电池。",
+    "提示：与 GS 同名电池分开；任务不检查满电，也不要求升级到所有 EP 电池。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210310",
+      "title": "获得 EP 高级电池",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:advanced_battery",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

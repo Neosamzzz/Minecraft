@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "extraplanets:uranus",
+    "data": 5,
+    "count": 4
+  },
+  "pattern": [
+    "   ",
+    "SS ",
+    "SS "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "uranus"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": {
+      "item": "extraplanets:uranus",
+      "data": 2
+    }
+  }
+}

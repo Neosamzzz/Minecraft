@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "extraplanets:tier3_kit",
+    "data": 1
+  },
+  "pattern": [
+    "M G",
+    "TPT",
+    "   "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "galacticraftcore:parachute",
+      "data": 0
+    },
+    "T": {
+      "item": "galacticraftcore:oxygen_tank_heavy_full"
+    },
+    "G": {
+      "item": "galacticraftcore:oxygen_gear"
+    },
+    "M": {
+      "item": "galacticraftcore:oxygen_mask"
+    }
+  }
+}

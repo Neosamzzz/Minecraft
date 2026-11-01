@@ -1,0 +1,21 @@
+{
+  "title": "又见漂浮的石头",
+  "description": "抵达柯伊伯带",
+  "icon": "minecraft:packed_ice",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "用途：探索外太阳系的小天体世界。",
+    "操作：确认落脚位置和移动方法，再调查附近小天体。",
+    "提示：注意定位、氧气与返航；不保证每处都有特殊矿核或遗迹。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210603",
+      "title": "抵达柯伊伯带",
+      "type": "ftbquests:dimension",
+      "dim": -1009
+    }
+  ]
+}

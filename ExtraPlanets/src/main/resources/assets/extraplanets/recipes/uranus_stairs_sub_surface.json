@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "extraplanets:uranus_stairs_sub_surface",
+    "count": 4
+  },
+  "pattern": [
+    "M  ",
+    "MM ",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "uranusslabsandstairs"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:uranus",
+      "data": 1
+    }
+  }
+}

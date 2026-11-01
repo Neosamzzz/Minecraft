@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:yellow_diamond_sword"
+  },
+  "pattern": [
+    " X ",
+    " X ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "yellowdiamondtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier11_items",
+      "data": 3
+    }
+  }
+}

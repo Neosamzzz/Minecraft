@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "extraplanets:tier6_items",
+    "data": 5,
+    "count": 9
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:saturn",
+      "data": 7
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "saturn"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

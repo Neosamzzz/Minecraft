@@ -1,0 +1,33 @@
+{
+  "result": {
+    "item": "extraplanets:tier4_kit",
+    "data": 1
+  },
+  "pattern": [
+    "M G",
+    "TPT",
+    "   "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "oxygentanks"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "galacticraftcore:parachute",
+      "data": 0
+    },
+    "T": {
+      "item": "extraplanets:oxygen_tank_very_heavy_full"
+    },
+    "G": {
+      "item": "galacticraftcore:oxygen_gear"
+    },
+    "M": {
+      "item": "galacticraftcore:oxygen_mask"
+    }
+  }
+}

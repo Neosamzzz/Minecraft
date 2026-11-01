@@ -1,6 +1,6 @@
 # FTB 熟人服公共团队代码方案
 
-记录日期：2026-11-01。
+记录日期：2026-11-01；核对更新：2026-11-02。
 关联：[Issue #7：梳理并配置好游戏内的 FTB 相关功能](https://github.com/Neosamzzz/Minecraft/issues/7)。
 
 ## 目标与已确定方向
@@ -25,13 +25,13 @@
 
 ## 当前依据与边界
 
-本轮只读调查确认，本机实例安装 FTB Library 5.4.7.2、FTB Quests 1202.9.0、Item Filters 1.0.4.2，未发现 FTB Utilities。Library 的 JAR 文件名标为 5.4.7.0，但内部元数据和启动日志为 5.4.7.2。
+初始调查时 FTB Quests 为 1202.9.0；当前本机文件和日志为 1202.9.3，FTB Library 5.4.7.2、Item Filters 1.0.4.2，未发现 FTB Utilities。Library 的 JAR 文件名标为 5.4.7.0，但内部元数据和启动日志为 5.4.7.2。
 
-本机最近一次已检查的启动日志记录 0 章节、0 任务、0 条件、0 奖励；本机存档已有单人团队及任务数据。上述结果不代表远程服务器状态，远程服务器尚未核实。
+“0 章节、0 任务”属于部署前的历史记录。最新本机日志已加载三个节点小样，并选择原有 `singleplayer` 团队，证据与限制见[运行日志补记](research/planet-gameplay-guide.md#十三2026-11-02-运行日志补记)。远程服务器的数据与部署状态尚未核实。
 
 团队与公共界面主要由 FTB Library 提供，仓库当前包含的是 FTB Quests 源码。本次通过 Library 的登录事件、团队接口与 GUI action 注册表接入，只修改 Quests 工程；尚未完成实际游戏与第三方模组共存验收。
 
-补充源码依据：`ServerQuestFile.getData(UUID)` 通过 `FTBLibAPI.getTeamID` 查找玩家团队，`ServerQuestData` 将任务进度和领奖记录保存到该团队的数据文件。因此同队共享进度已有基础，本地 `SharedTeamManager` 已接入 Library 生命周期，负责固定团队和登录自动归队；构建与隔离检查已有，真实双人联机尚待验收。
+源码依据：`ServerQuestFile.getData(UUID)` 通过 `FTBLibAPI.getTeamID` 查找玩家团队，`ServerQuestData` 将任务进度和领奖记录保存到该团队的数据文件。在此基础上，本地 `SharedTeamManager` 已接入 Library 生命周期，负责固定团队和登录自动归队；构建与隔离检查已有，真实双人联机尚待验收。
 
 `Reward.isTeamReward()` 对可重复任务直接返回 true；普通任务才使用单项 `team_reward` 或全局 `default_reward_team`。因此个人领奖约定适用于普通奖励，不能直接推广到可重复任务。团队删除事件还会删除对应任务数据，迁移时应保留原队数据。数据与源码入口见 [FTB 开发说明](../FTB-Quests/DEVELOPMENT.md#任务功能与数据位置)。
 
@@ -47,6 +47,9 @@
 ## 最小版的使用方式
 
 客户端和服务端都换用本项目 `1202.9.3`。默认启用公共团队，配置见 `config/ftbquests-shared-team.cfg`，修改后重启。
+
+> [!IMPORTANT]
+> 代码与任务文档统一维护在 `codex/ftb-public-team`，源码为 1202.9.3。该分支包含关闭公共团队编辑和空奖励栏精简；构建与配置一致，不再从旧文档分支单独构建。游戏内联机和界面结果仍需按验收范围核对。
 
 - 新世界创建固定的 `ftb_public` 团队；已有世界优先复用唯一有任务数据的团队，只有一个现有团队时直接复用。
 - 选中的团队 ID 写入该存档的 FTB universe 数据，后续启动继续使用；任务进度与领奖记录仍保存在原团队中。

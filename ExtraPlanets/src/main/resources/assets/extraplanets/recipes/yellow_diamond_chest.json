@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:yellow_diamond_chest"
+  },
+  "pattern": [
+    "M M",
+    "MMM",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "yellowdiamondtools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:tier11_items",
+      "data": 3
+    }
+  }
+}

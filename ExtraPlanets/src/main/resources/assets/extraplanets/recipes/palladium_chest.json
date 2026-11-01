@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:palladium_chest"
+  },
+  "pattern": [
+    "M M",
+    "MMM",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "palladiumtools"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:tier5_items",
+      "data": 5
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "result": {
+    "item": "extraplanets:tier3_thermal_padding",
+    "data": 1
+  },
+  "pattern": [
+    "XYX",
+    "XXX",
+    "XXX"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "thermalpadding"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": {
+      "item": "extraplanets:thermal_cloth",
+      "data": 0
+    },
+    "Y": {
+      "item": "galacticraftplanets:item_basic_mars",
+      "data": 5
+    }
+  }
+}

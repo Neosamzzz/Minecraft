@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "extraplanets:tier5_items",
+    "data": 9
+  },
+  "ingredients": [
+    {
+      "item": "extraplanets:tier5_items",
+      "data": 10
+    },
+    {
+      "item": "extraplanets:tier5_items",
+      "data": 10
+    },
+    {
+      "item": "extraplanets:tier5_items",
+      "data": 10
+    },
+    {
+      "item": "extraplanets:tier5_items",
+      "data": 10
+    }
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "jupiter"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

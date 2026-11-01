@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "extraplanets:decorative_blocks",
+    "data": 15
+  },
+  "pattern": [
+    "MMM",
+    "MMM",
+    "MMM"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "mercury"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "extraplanets:ash_rock"
+    }
+  }
+}

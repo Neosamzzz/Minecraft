@@ -1,0 +1,34 @@
+{
+  "title": "月球留不住我",
+  "description": "获得二级火箭",
+  "icon": "galacticraftplanets:rocket_t2 1 0",
+  "x": 15.0,
+  "y": -3.0,
+  "text": [
+    "用途：具备火星阶段的基础载具。",
+    "操作：解锁对应页面，按配方备齐材料并在 NASA 工作台组装。",
+    "提示：更换火箭后仍需重新检查燃料、氧气与目标环境防护。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a21010b",
+      "title": "获得二级火箭",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galacticraftplanets:rocket_t2",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.3,
+  "shape": "square"
+}

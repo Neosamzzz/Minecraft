@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "extraplanets:palladium_shovel"
+  },
+  "pattern": [
+    " X ",
+    " S ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "palladiumtools"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "#STICKWOOD"
+    },
+    "X": {
+      "item": "extraplanets:tier5_items",
+      "data": 5
+    }
+  }
+}

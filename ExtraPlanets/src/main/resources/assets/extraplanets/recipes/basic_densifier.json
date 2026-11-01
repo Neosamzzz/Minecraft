@@ -1,0 +1,35 @@
+{
+  "result": {
+    "item": "extraplanets:basic_densifier"
+  },
+  "pattern": [
+    "FMF",
+    "ESE",
+    "FMF"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "radiation"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": {
+      "item": "galacticraftcore:basic_item",
+      "data": 9
+    },
+    "E": {
+      "item": "extraplanets:tier4_items",
+      "data": 4
+    },
+    "F": {
+      "item": "extraplanets:tools",
+      "data": 3
+    },
+    "M": {
+      "item": "extraplanets:tools",
+      "data": 0
+    }
+  }
+}

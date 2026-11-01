@@ -1,0 +1,32 @@
+{
+  "title": "脚下有数",
+  "description": "获得地质扫描仪",
+  "icon": "galaxyspace:geo_scanner 1 0",
+  "x": -3.0,
+  "y": -3.0,
+  "text": [
+    "用途：辅助调查周围地层与地下内容。",
+    "操作：在装配机制造并充电，对方块使用扫描功能，按工具说明切换模式。",
+    "提示：扫描范围与内容由工具实现决定，不表示会标出所有矿物。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210408",
+      "title": "获得地质扫描仪",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:geo_scanner",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "冰的另一种模样",
+  "description": "抵达 GS 妊神星",
+  "icon": "minecraft:packed_ice",
+  "x": 3.0,
+  "y": 0.0,
+  "text": [
+    "用途：观察冰类资源与极寒地层。",
+    "操作：采集所需冰类样本，并为设备和返程保留补给。",
+    "提示：当前目标是 GS 可登陆实现，不是 EP 星图展示天体。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210604",
+      "title": "抵达 GS 妊神星",
+      "type": "ftbquests:dimension",
+      "dim": -1023
+    }
+  ]
+}

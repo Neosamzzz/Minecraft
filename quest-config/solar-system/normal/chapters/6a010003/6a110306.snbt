@@ -1,0 +1,21 @@
+{
+  "title": "小世界，大用处",
+  "description": "抵达 GS 谷神星",
+  "icon": "minecraft:end_stone",
+  "x": -6.0,
+  "y": 6.0,
+  "text": [
+    "用途：寻找白云石，并选择是否探索当地地牢。",
+    "操作：优先建立白云石来源，战斗与地牢探索可另行安排。",
+    "提示：采矿与首领挑战分开，不要求先击败 Boss 才能采集材料。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a210306",
+      "title": "抵达 GS 谷神星",
+      "type": "ftbquests:dimension",
+      "dim": -1007
+    }
+  ]
+}

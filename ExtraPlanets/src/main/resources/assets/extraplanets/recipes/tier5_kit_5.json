@@ -1,0 +1,40 @@
+{
+  "result": {
+    "item": "extraplanets:tier5_kit",
+    "data": 5
+  },
+  "pattern": [
+    "ABC",
+    " D ",
+    " S "
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "thermalpadding"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": {
+      "item": "extraplanets:tier5_thermal_padding",
+      "data": 0
+    },
+    "B": {
+      "item": "extraplanets:tier5_thermal_padding",
+      "data": 1
+    },
+    "C": {
+      "item": "extraplanets:tier5_thermal_padding",
+      "data": 2
+    },
+    "S": {
+      "item": "galacticraftplanets:basic_item_venus",
+      "data": 0
+    },
+    "D": {
+      "item": "extraplanets:tier5_thermal_padding",
+      "data": 3
+    }
+  }
+}

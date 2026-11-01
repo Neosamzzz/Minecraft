@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "extraplanets:nickel_battery",
+    "data": 100
+  },
+  "pattern": [
+    " T ",
+    "TRT",
+    "TCT"
+  ],
+  "conditions": [
+    {
+      "type": "extraplanets:recipe_enabled",
+      "value": "jupiter/batteries"
+    }
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "R": {
+      "item": "#DUSTREDSTONE"
+    },
+    "C": {
+      "item": "minecraft:coal",
+      "data": 0
+    },
+    "T": {
+      "item": "extraplanets:tier5_items",
+      "data": 6
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "title": "出门在外",
+  "icon": "minecraft:packed_ice",
+  "description": [
+    "远行需要稳定的装备与补给，也需要新的制造材料。",
+    "探索土星和天王星的卫星，制造六级火箭。",
+    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+  ],
+  "always_invisible": false,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

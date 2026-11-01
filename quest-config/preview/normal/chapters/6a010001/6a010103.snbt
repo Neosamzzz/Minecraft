@@ -1,0 +1,17 @@
+{
+  "title": "月面足迹",
+  "icon": "minecraft:end_stone",
+  "x": 3.0,
+  "y": 0.0,
+  "text": [
+    "一小步，也是一段新旅程的开始。"
+  ],
+  "tasks": [
+    {
+      "uid": "6a010203",
+      "type": "ftbquests:dimension",
+      "title": "到达月球",
+      "dim": -28
+    }
+  ]
+}

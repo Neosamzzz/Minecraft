@@ -4,17 +4,17 @@
 
 逐个目的地的资源、探索理由、准备、加工关系、地牢内容和 FTB 使用边界，见[星球玩法详解与 FTB 内容依据](planet-gameplay-guide.md)。本页保留配置、注册、共存和进度问题总览。
 
-调查日期：2026-11-01。范围是本机当前整合包的星球、到达条件和玩法内容；暂不修改游戏配置或设计 FTB 任务线。
+首次调查：2026-11-01；文档复核：2026-11-02。范围是本机整合包的星球、到达条件和玩法内容。主体保留首轮配置与源码快照；最新运行观察统一见[玩法详解](planet-gameplay-guide.md#十三2026-11-02-运行日志补记)，本页不重复维护实测结论。
 
 ## 调查依据与验证边界
 
 - 实例目录：`C:\Users\qq106\Desktop\游戏\Release\.minecraft\versions\1.12.2-Forge_14.23.5.2864`。
 - 读取重新导入后的 `config/GalaxySpace/`、`config/ExtraPlanets.cfg`、`config/AsmodeusCore/core.conf` 和 Galacticraft 配置。
-- 对照本仓库 GalaxySpace、Galacticraft-Legacy 源码；对本机实际安装的 GalaxySpace、ExtraPlanets、AsmodeusCore JAR 使用 `javap` 读取关键注册与等级判断逻辑。
+- 首轮对照本仓库 GalaxySpace、Galacticraft-Legacy 源码；对本机实际安装的 GalaxySpace、ExtraPlanets、AsmodeusCore JAR 使用 `javap` 读取关键注册与等级判断逻辑。2026-11-02 补充导入 ExtraPlanets 0.8.0 上游源码快照，来源与核对范围见 [EP 源码说明](extraplanets-source-notes.md)。
 - 当前相关 JAR：Galacticraft 4.0.6、GalaxySpace 2.2.0 flight-fix、ExtraPlanets 0.8.0、AsmodeusCore 文件名版本 1.0.5、Galacticraft Compatibility 1.1.2、GSLaunchCompat 1.4.8。
-- 用户确认：改配置后已退出并重新导入，尚未重新启动游戏。因此下文“开启”表示磁盘配置，不表示本次配置已在游戏中验证。
-- `latest.log` 对应 18:41 启动、19:27 退出的旧会话。它早于本次配置生效，不能用旧注册清单证明新配置的星球状态。
-- 本轮未启动游戏、修改存档、改写模组或配置。源码中的资源与结构属于实现层面的依据，生成效果和实际到达仍需游戏验证。
+- 首轮调查时用户确认重新导入后尚未启动；当时的 18:41～19:27 日志属于改配置前会话。此描述只适用于 11 月 1 日快照，不能继续代表当前启动状态。
+- 11 月 2 日已有新日志与模组变化，当前文件基线见[整合包基线](../../changelog/modpack.md)。后续若再改配置，需重新核对；下文的“开启”仍只表示已读取的磁盘开关。
+- 本文整理过程不主动启动游戏或修改存档、模组与配置。源码中的资源与结构属于实现依据，生成效果和实际到达仍需单独验证。
 
 ## 当前整体情况
 
@@ -207,7 +207,7 @@ GS 多颗目的地明确返回地牢间距 0、宝箱类型 null，玩法偏资�
 
 GS 火星、金星空间站开关为 true；EP 对应两种空间站开关为 false。EP 还保留若干其他母星的空间站开关，但这些开关与母星注册有联动，不能仅看该值就断言可创建。空间站属于建造/轨道玩法，实际创建、配方、维度和返回路径另列验证。
 
-## 新配置首次启动后的检查
+## 新配置的运行核对清单
 
 - [ ] 确认启动时读取的确实是本次实例及其配置，记录新的模组列表和维度注册清单。
 - [ ] 星图中逐一核对 GS 实际目的地、展示天体、Kepler 系统与两个 Phobos 的显示和选中结果。
@@ -220,6 +220,10 @@ GS 火星、金星空间站开关为 true；EP 对应两种空间站开关为 fa
 旧日志中存在 `WorldProvider type -1234`、`-1032` 查询失败。源码的测试星与 Barnarda C2 恰有调试注册限制，因此目前更像查询了未注册的调试维度；这不是已经证实的 ID 冲突。应看新日志中是否仍出现，并结合调用位置核实。
 
 本次完成配置与源码层面的清单、内容分层和进度缺口定位。新配置的实际生效、飞行、地形与生存验证尚未完成，Issue #4 保持进行中。
+
+## 与后期航天规划的区别
+
+本文记录当前实现：GS 系外目的地按配置注册为 T6，EP Kepler-22b 为 T10，EP 七阶组仍受原开关约束。[NewEarth](../../NewEarth/README.md)目标为常规系外最低 T7、开普勒最低 T8、终章要求八阶飞船与已安装有效核心；先制造基础八阶，再去开普勒取得核心材料。该设计尚未修改等级、配方或当前实例，不能作为现状已可达的证据。
 
 ## Wiki 与作者说明补充
 
@@ -262,4 +266,12 @@ GS 火星、金星空间站开关为 true；EP 对应两种空间站开关为 fa
 - [GS 巴纳德 C 地形与矿物](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
 - [GS 巴纳德 C1 地形与矿物](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
 
-EP 没有导入主项目源码，本轮对应证据来自本机 `ExtraPlanets-1.12.2-0.8.0.jar` 的 `ExtraPlanets_Planets`、`ExtraPlanets_Moons`、`ExtraPlanets_Items`、`GCRegisterUtilities` 及 Kepler-22b Provider 字节码。AsmodeusCore 的 `BodiesRegistry.setProviderData` 用于核对注册参数中的等级含义。
+2026-11-01 首轮 EP 证据来自本机 `ExtraPlanets-1.12.2-0.8.0.jar` 的 `ExtraPlanets_Planets`、`ExtraPlanets_Moons`、`ExtraPlanets_Items`、`GCRegisterUtilities` 及 Kepler-22b Provider 字节码。2026-11-02 已将上游 `dev_1.12.2` 的 0.8.0 源码快照导入主项目，保留原字节码依据，并补充以下可直接阅读的入口：
+
+- [EP 行星及 Kepler 注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/ExtraPlanets_Planets.java)。
+- [EP 卫星注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/ExtraPlanets_Moons.java)。
+- [EP 火箭与物品注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)。
+- [EP 方块初始化](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/ExtraPlanets_Blocks.java)与 [Phobos 生成器](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/Phobos/worldgen/BiomeDecoratorPhobos.java)：`FOSSIL` 的初始化依赖部分主星开关，而 Phobos 无条件引用它，不能只根据该卫星开关就认定生成链完整。
+- [EP Kepler Provider](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/WorldProviderKepler22b.java)。
+
+版本声明相同不代表整个提交与发行包逐字节一致；核对范围与构建边界见 [EP 源码说明](extraplanets-source-notes.md)。AsmodeusCore 的 `BodiesRegistry.setProviderData` 仍以实际 JAR 用于核对 GS 注册参数中的等级含义。

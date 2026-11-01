@@ -1,0 +1,32 @@
+{
+  "title": "更结实一点",
+  "description": "获得 HDP:0 板材",
+  "icon": "galaxyspace:hdp 1 0",
+  "x": 3.0,
+  "y": 0.0,
+  "text": [
+    "用途：准备 GS 四级火箭所用的基础高级板材。",
+    "操作：组合镁板、SDHD120 复合板与 GC T3 强化板，按实际配方加工。",
+    "提示：保留加工设备与原料供应，后续板材仍会使用已有材料。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a21030a",
+      "title": "获得 HDP:0 板材",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:hdp",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ]
+}
