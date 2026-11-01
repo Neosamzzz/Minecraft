@@ -2,7 +2,7 @@
 
 Git 分支：[codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension)。核对日期：2026-11-02。
 
-新维度、终章体验与正常过夜后的结尾触发独立推进；多人宇宙飞船、最终能源核心由[物品线](../items/README.md)维护。整体关系见[支线总览](../README.md)。当前仅记录设计，维度与演出尚未实现。
+新维度、终章体验与正常过夜后的结尾触发独立推进；多人宇宙飞船、最终能源核心及现有系外目的地的专用工具由[物品线](../items/README.md)维护。整体关系见[支线总览](../README.md)。当前仅记录设计，维度与演出尚未实现。
 
 ## 体验方向
 
