@@ -1,14 +1,15 @@
 # 开发指南
 
-本仓库主要用来续写GC和GS的拓展
+本仓库主要用来续写GC和GS的拓展，并维护 Minecraft 1.12.2 相关模组源码。
 *推送请使用中文介绍*
 
 ## 源码来源
 
-本仓库基于以下两个上游项目，保留其源码并集中维护本项目的修改：
+本仓库包含以下三个上游项目的源码，并集中维护本项目的修改：
 
 - [GalaxySpace](https://github.com/BlesseNtumble/GalaxySpace)：对应 `GalaxySpace/`，基于 `dev_1.12.2` 分支。
 - [Galacticraft-Legacy](https://github.com/TeamGalacticraft/Galacticraft-Legacy)：对应 `Galacticraft-Legacy/`，参考源码来自 `master-1.12` 分支。
+- [FTB Quests](https://github.com/FTBTeam/FTB-Quests)：对应 `FTB-Quests/`，基于 `1.12` 分支，保留旧依赖和资源下载的构建兼容修复。
 
 源码来源及导入提交记录见 [upstream.json](upstream.json)。开发时直接使用本仓库，无需另外克隆上游项目。
 
@@ -18,6 +19,7 @@
 Minecraft/
 ├── GalaxySpace/             # 开发源码、编译依赖与测试
 ├── Galacticraft-Legacy/     # GC 参考源码
+├── FTB-Quests/              # FTB Quests 源码与独立构建配置
 ├── dev-tools/               # 打包所需的基础材料
 ├── tools/build.py           # 编译与打包入口
 ├── version.txt              # GSLC 版本号
@@ -43,6 +45,8 @@ javac -version
 
 ## 构建打包
 
+### GSLaunchCompat
+
 在 Minecraft 仓库根目录执行。
 
 macOS / Linux：
@@ -66,6 +70,24 @@ build/libs/GSLaunchCompat-x.x.x.jar
 `x.x.x` 来自根目录 `version.txt`，包内实现版本与文件名同步。更新版本时修改该文件。
 
 依赖已经下载完整后，可加 `--offline` 使用离线构建。构建缓存和产物不提交到 Git。
+
+### FTB Quests
+
+在 Minecraft 仓库根目录执行，独立编译 FTB Quests。
+
+Windows：
+
+```powershell
+.\FTB-Quests\gradlew.bat -p FTB-Quests --no-daemon --console=plain build
+```
+
+macOS / Linux：
+
+```sh
+bash FTB-Quests/gradlew -p FTB-Quests --no-daemon --console=plain build
+```
+
+依赖缓存完整后可在命令中添加 `--offline`。产物位于 `FTB-Quests/build/libs/FTBQuests-1202.9.0.jar`；环境及修复说明见 [FTB-Quests/DEVELOPMENT.md](FTB-Quests/DEVELOPMENT.md)。该模组独立构建，根目录的 `tools/build.py` 仍用于 GSLC。
 
 ## 本地测试
 

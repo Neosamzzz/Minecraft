@@ -1,0 +1,71 @@
+import groovy.json.JsonSlurper
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+
+// This ForgeGradle 2.3 snapshot hardcodes HTTP and ignores failed asset downloads.
+// Keep its task dependencies and cache layout, but use HTTPS and fail on corruption.
+def assetTask = tasks.getByName('getAssets')
+assetTask.setActions([])
+assetTask.doLast {
+    def index = new JsonSlurper().parse(assetTask.assetsIndex)
+    def root = assetTask.assetsDir
+    def offline = gradle.startParameter.offline
+    def entries = index.objects.values().collectEntries { [(it.hash): it.size] }
+    def valid = { File file, String hash, long size ->
+        file.isFile() && file.length() == size &&
+            MessageDigest.getInstance('SHA-1').digest(file.bytes).encodeHex().toString() == hash
+    }
+    def executor = Executors.newFixedThreadPool(8)
+    try {
+        def futures = entries.collect { hash, size ->
+            executor.submit({
+                def target = new File(root, "objects/${hash.substring(0, 2)}/${hash}")
+                if (!valid(target, hash, size)) {
+                    if (offline) throw new GradleException("Asset missing or corrupt in offline mode: ${hash}")
+                    target.parentFile.mkdirs()
+                    def partial = new File(target.path + '.part')
+                    for (int attempt = 1; attempt <= 3; attempt++) {
+                        try {
+                            def connection = new URL("https://resources.download.minecraft.net/${hash.substring(0, 2)}/${hash}").openConnection()
+                            connection.connectTimeout = 15000
+                            connection.readTimeout = 30000
+                            connection.inputStream.withCloseable { input ->
+                                partial.withOutputStream { output -> output << input }
+                            }
+                            if (!valid(partial, hash, size)) throw new IOException("Asset checksum mismatch: ${hash}")
+                            Files.move(partial.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                            break
+                        } catch (IOException failure) {
+                            if (attempt == 3) throw failure
+                        } finally {
+                            Files.deleteIfExists(partial.toPath())
+                        }
+                    }
+                }
+                return null
+            } as Callable)
+        }
+        futures.eachWithIndex { future, i ->
+            future.get()
+            if ((i + 1) % 100 == 0 || i + 1 == futures.size()) {
+                logger.lifecycle("Verified Minecraft assets: ${i + 1}/${futures.size()}")
+            }
+        }
+    } finally {
+        executor.shutdownNow()
+    }
+    if (index.virtual) {
+        def indexName = assetTask.assetsIndex.name.replaceFirst(/\.json$/, '')
+        index.objects.each { name, entry ->
+            def source = new File(root, "objects/${entry.hash.substring(0, 2)}/${entry.hash}")
+            def target = new File(root, "virtual/${indexName}/${name}")
+            if (!valid(target, entry.hash, entry.size)) {
+                target.parentFile.mkdirs()
+                Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+        }
+    }
+}
