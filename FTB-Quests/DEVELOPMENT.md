@@ -18,18 +18,17 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk1.8.0_8u202_x64'
 
 ## 编译与打包
 
+日常构建在 Minecraft 仓库根目录执行统一入口：
+
 ```powershell
-.\gradlew.bat --no-daemon --console=plain build
+py -3 tools/build.py --target ftbquests
 ```
 
-产物在 `build/libs/`：
+依赖缓存完整后可添加 `--offline`；macOS / Linux 将 `py -3` 替换为 `python3`。最终模组包输出到主仓库的 `build/libs/FTBQuests-1202.9.0.jar`。
 
-- `FTBQuests-1202.9.0.jar`：重混淆后的模组 JAR。
-- `FTBQuests-1202.9.0-sources.jar`：源码包。
+如需直接调用 Gradle，在本子目录执行 `./gradlew`（Windows 使用 `.\gradlew.bat`），任务为 `build`。子项目原生输出在本目录的 `build/libs/`，包括模组 JAR 和 `FTBQuests-1202.9.0-sources.jar` 源码包。
 
-设置了 `BUILD_NUMBER` 时，版本名会追加构建编号。依赖和工具默认缓存到用户目录的 `.gradle/`。
-
-编译成功后，仍需在独立的游戏实例中验证运行行为。
+设置 `BUILD_NUMBER` 时版本会追加构建编号，统一入口会复制对应版本的模组包。完整用法、环境准备和测试流程见主仓库 [README](../README.md)。编译成功后，仍需在独立的游戏实例中验证运行行为。
 
 ## 旧依赖兼容修复
 

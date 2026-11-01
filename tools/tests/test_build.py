@@ -7,9 +7,17 @@ import tempfile
 import unittest
 import zipfile
 import json
+import contextlib
+import importlib.util
+import io
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGER = ROOT / 'GalaxySpace/tests/telemetry_dimension/build_addon.py'
+
+SPEC = importlib.util.spec_from_file_location('build_entry', ROOT / 'tools/build.py')
+BUILD = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(BUILD)
 
 
 class PackagingTests(unittest.TestCase):
@@ -68,6 +76,109 @@ class BuildEntryTests(unittest.TestCase):
             result = subprocess.run([sys.executable, str(ROOT / 'tools/build.py'), '--offline'], env=env, capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn('JDK 8', result.stderr)
+
+
+class BuildTargetTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+        self.ftb = self.work / 'FTB-Quests'
+        self.ftb.mkdir()
+        (self.ftb / 'gradle.properties').write_text('mod_name=FTBQuests\nmod_version=1202.9.0\n')
+        (self.ftb / 'build/libs').mkdir(parents=True)
+        # Old versions and sources must never be mistaken for the current mod JAR.
+        (self.ftb / 'build/libs/FTBQuests-1202.8.0.jar').write_bytes(b'stale mod')
+        (self.ftb / 'build/libs/FTBQuests-1202.9.0-sources.jar').write_bytes(b'sources')
+        self.commands = []
+        self.build_number = ''
+        self.emit_ftb = True
+
+    def fake_subprocess(self, command, **kwargs):
+        self.commands.append(command)
+        if '-p' in command:
+            project = command[command.index('-p') + 1]
+            if project == 'FTB-Quests' and self.emit_ftb:
+                suffix = '.' + self.build_number if self.build_number else ''
+                (self.ftb / ('build/libs/FTBQuests-1202.9.0' + suffix + '.jar')).write_bytes(b'current mod')
+        elif len(command) > 1 and command[1].endswith('build_addon.py'):
+            Path(command[-2]).write_bytes(b'GSLC package')
+        else:
+            self.fail('Unexpected subprocess: ' + repr(command))
+        return subprocess.CompletedProcess(command, 0)
+
+    def invoke(self, *args, build_number=''):
+        self.build_number = build_number
+        env = {'BUILD_NUMBER': build_number} if build_number else {}
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with mock.patch.object(BUILD, 'ROOT', self.work), \
+                mock.patch.object(BUILD, 'check_jdk'), \
+                mock.patch.object(BUILD.subprocess, 'run', side_effect=self.fake_subprocess), \
+                mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(sys, 'argv', ['build.py', *args]), \
+                contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            result = BUILD.main()
+        return result, stdout.getvalue(), stderr.getvalue()
+
+    def test_default_preserves_gslc_packaging_and_offline_flag(self):
+        (self.work / 'version.txt').write_text('9.8.7\n')
+        code, _, error = self.invoke('--offline')
+        self.assertEqual(code, 0, error)
+        self.assertEqual((self.work / 'build/libs/GSLaunchCompat-9.8.7.jar').read_bytes(), b'GSLC package')
+        self.assertEqual(len(self.commands), 2)
+        self.assertIn('GalaxySpace', self.commands[0])
+        self.assertIn('--offline', self.commands[0])
+        self.assertIn('--rerun-tasks', self.commands[0])
+        self.assertEqual(self.commands[0][-1], 'jar')
+        self.assertEqual(self.commands[1][-1], '9.8.7')
+
+    def test_ftb_build_does_not_require_gslc_version_and_copies_exact_mod(self):
+        code, _, error = self.invoke('--target', 'ftbquests', '--offline')
+        self.assertEqual(code, 0, error)
+        self.assertEqual(len(self.commands), 1)
+        self.assertIn('FTB-Quests', self.commands[0])
+        self.assertIn('--offline', self.commands[0])
+        self.assertEqual(self.commands[0][-1], 'build')
+        self.assertEqual([p.name for p in (self.work / 'build/libs').iterdir()], ['FTBQuests-1202.9.0.jar'])
+        self.assertEqual((self.work / 'build/libs/FTBQuests-1202.9.0.jar').read_bytes(), b'current mod')
+
+    def test_ftb_build_number_selects_matching_artifact(self):
+        code, _, error = self.invoke('--target', 'ftbquests', build_number='17')
+        self.assertEqual(code, 0, error)
+        self.assertEqual((self.work / 'build/libs/FTBQuests-1202.9.0.17.jar').read_bytes(), b'current mod')
+
+    def test_missing_ftb_artifact_does_not_export_stale_or_source_jars(self):
+        self.emit_ftb = False
+        code, _, error = self.invoke('--target', 'ftbquests')
+        self.assertEqual(code, 1)
+        self.assertIn('Expected FTB Quests artifact', error)
+        self.assertFalse((self.work / 'build/libs').exists())
+
+    def test_all_exports_both_targets_in_order(self):
+        (self.work / 'version.txt').write_text('9.8.7\n')
+        code, _, error = self.invoke('--target', 'all', '--offline')
+        self.assertEqual(code, 0, error)
+        self.assertEqual([p.name for p in sorted((self.work / 'build/libs').iterdir())],
+                         ['FTBQuests-1202.9.0.jar', 'GSLaunchCompat-9.8.7.jar'])
+        self.assertIn('GalaxySpace', self.commands[0])
+        self.assertTrue(self.commands[1][1].endswith('build_addon.py'))
+        self.assertIn('FTB-Quests', self.commands[2])
+        self.assertIn('--offline', self.commands[2])
+
+    def test_all_stops_after_first_gradle_failure(self):
+        (self.work / 'version.txt').write_text('9.8.7\n')
+        with mock.patch.object(self, 'fake_subprocess', side_effect=subprocess.CalledProcessError(7, ['gradle'])) as runner:
+            code, _, error = self.invoke('--target', 'all')
+        self.assertEqual(code, 1)
+        self.assertIn('Build failed', error)
+        self.assertEqual(runner.call_count, 1)
+        self.assertFalse((self.work / 'build/libs').exists())
+
+    def test_ftb_rejects_path_in_build_number_before_invoking_gradle(self):
+        code, _, error = self.invoke('--target', 'ftbquests', build_number='../other')
+        self.assertEqual(code, 1)
+        self.assertIn('Invalid FTB Quests', error)
+        self.assertEqual(self.commands, [])
 
 
 if __name__ == '__main__':
