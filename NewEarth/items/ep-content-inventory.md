@@ -260,6 +260,66 @@ EP 实际注册9种模块：探测目镜、免摔、盖革计数、发射清单�
 | `tier10_items` | 0: `tier10engine`；1: `tier10booster`；2: `tier10fin`；3: `tier10heavy_duty_plate`；4: `compressed_dark_iron`；5: `ingot_dark_iron` | 0～3为原火箭部件／强化板；其余原料逐项保留、统一或裁剪 |
 | `tier11_items` | 0: `blue_diamond`；1: `red_diamond`；2: `purple_diamond`；3: `yellow_diamond`；4: `green_diamond`；5: `ingot_platinum`；6: `compressed_platinum`；7: `blue_sticks`；8: `red_sticks`；9: `purple_sticks`；10: `yellow_sticks`；11: `green_sticks`；12: `brown_sticks` | 0～6五色钻石与铂材料保留；7～12木棍子项随生态／配方取舍 |
 
+## 第三轮：机器、平台与流体（2026-11-03）
+
+本轮补齐 `ExtraPlanets_Machines` 的16个方块字段、其19种机器子项，以及 `ExtraPlanets_Fluids` 的13种流体及通用桶入口；另筛查平台、爆炸物和地形／装饰方块。普通方块的全部元数据、结构战利品和运行时注册数量仍未穷尽，不把本节计入前述328个静态物品字段。
+
+### 机器取舍
+
+16个字段中，两个氧气设备字段各分压缩／解压两项，太阳能字段分混合／终极两项，合计19种。以下是裁剪建议，不是已实施或逐项定稿。
+
+| 字段／设备 | 建议 | 实际用途与依赖 |
+| --- | --- | --- |
+| `REFINERY_ADVANCED`、`REFINERY_ULTIMATE` | 待定，非主线必需 | GC 精炼功能的升级设备；原制造配方见指南，不能仅凭功能重叠判定没有作用 |
+| `OXYGEN_COMPRESSOR_ADVANCED`、`OXYGEN_COMPRESSOR_ULTIMATE` | 待定 | 每个字段含 meta0压缩、meta1解压；和氧气罐、基地补给一起决定 |
+| `SOLAR_PANEL` | 待定 | meta0混合、meta1终极；原配方会用镁／水晶，裁掉后不能再把它们写成材料的现有用途 |
+| `FUEL_LOADER_ADVANCED`、`FUEL_LOADER_ULTIMATE` | 待定 | 原燃料装载升级；新载具补给方案未定，先保留引用 |
+| `BASIC_SMASHER` | 保留复用候选 | 原注册配方：钾盐矿→3碎片；有输入→输出配方表及增删接口，不代表支持多原料合金 |
+| `BASIC_SOLAR_EVAPORTATION_CHAMBER` | 保留复用候选 | 原注册配方：12钾盐碎片→1钾；同样有独立配方表 |
+| `BASIC_CRYSALLIZER` | 随辐射化学链待定 | `salt_fluid`→碘盐；原处理在 TileEntity 内写定，不是通用配方表 |
+| `BASIC_DECRYSALLIZER` | 随辐射化学链待定 | 6碘盐→`salt_fluid`；字段拼写保留源码原样 |
+| `BASIC_CHEMICAL_INJECTOR` | 随辐射化学链待定 | 输入固定检查碘盐和钾，产出碘化钾；改成新七阶材料加工需改实际机器处理逻辑 |
+| `BASIC_PURIFIER` | 随环境与净水用途待定 | 消耗碘盐，放射性水→污染水→净水两段处理；净水还用于抗辐射饮料 |
+| `BASIC_DENSIFIER` | 建议保留复用候选 | 7种流体处理分支，提供冰、煤、冻结氮及食品等产出；详见下表 |
+| `BASIC_DECONTAMINATION_UNIT` | GS 环境适配后决定 | 服务 EP 玩家辐射能力；连同多方块占位体处理，不能只隐藏设备本体 |
+| `VEHICLE_CHARGER` | 随漫游车整组待定 | 和漫游车、电力部件及充能平台一起决定；不是七阶材料工作台 |
+
+**开关绑定：** 结晶器、逆结晶器、粉碎机、化学注入器、太阳能蒸发室、净化器、辐射消除装置共7个机器字段，初始化和注册均嵌套在 `Config.RADIATION` 下，再检查各自开关。不能为删除 EP 辐射装备直接关闭辐射总开关，同时又要求继续使用这些机器。浓缩机不在这个嵌套分支。复用设备时应由实现方拆开依赖或承接处理功能。
+
+### 13种流体与桶
+
+`ExtraPlanets_Fluids.initFluid()` 对以下13种流体逐一注册并调用 `FluidRegistry.addBucketForFluid`；这是 Forge 通用桶的不同流体内容，不是13个独立 EP 桶物品字段。`ItemBasicItemBucket` 类存在不足以证明它是当前入口；主物品注册中的旧冻结水桶注册行已注释。JEI 隐藏、配方替换需识别桶内流体，不能隐藏整个通用桶物品。
+
+| 流体注册名 | 已查到的处理关系 | 建议 |
+| --- | --- | --- |
+| `glowstone_fluid` | 浓缩机输出荧石块 | 保留流体／地形，处理用途可复用 |
+| `magma_fluid` | 本轮未发现浓缩机处理分支 | 随保留地形保留，不直接等同熔岩或火箭燃料 |
+| `nitrogen_fluid` | 浓缩机输出冻结氮 | 保留；不能仅凭名字替换 GS 氮气 |
+| `frozen_water_fluid` | 浓缩机输出冰 | 保留，作为原冰类资源加工候选 |
+| `salt_fluid` | 结晶器／逆结晶器与碘盐互转 | 随化学链待定，不按名称当作普通水 |
+| `radioactive_water_fluid` | 净化器第一段输入 | 随地形和环境适配保留引用 |
+| `clean_water_fluid` | 净化器最终输出；抗辐射饮料配方输入 | 随净水及饮料取舍，不等于原版水桶 |
+| `infected_water_fluid` | 净化器中间产物及第二段输入 | 与净化链一起决定 |
+| `methane_fluid` | 本轮未发现浓缩机处理分支 | 随地形保留，不直接视为 GS 甲烷或可加注燃料 |
+| `nitrogen_ice_fluid` | 浓缩机输出冰，与 `nitrogen_fluid` 输出不同 | 保留并分清两种流体 |
+| `liquid_hydrocarbon_fluid` | EP 土星地形用液体；浓缩机输出煤 | 保留；原实现不是直接产出火箭燃油 |
+| `liquid_chocolate_fluid` | 浓缩机输出巧克力条 | 随开普勒食品生态可选保留 |
+| `liquid_caramel_fluid` | 浓缩机输出焦糖条 | 随开普勒食品生态可选保留 |
+
+上述为源码分支关系，不是实机处理验收；未把代码中声明的输出数量直接当作每桶可靠产率。浓缩机和净化器的容器、管道、重进保存仍需在决定复用后验证。
+
+### 平台、杂项方块与地形边界
+
+| 内容 | 建议 | 处理边界 |
+| --- | --- | --- |
+| `ADVANCED_LAUCHPAD` | 按载具需要拆分，暂不整项删除 | meta0二级平台、1三级平台、2电力充能平台、3火箭充能平台；先核对七阶及未来载具使用哪项 |
+| `ADVANCED_LAUCHPAD_FULL`、`FAKE_BLOCK`及辐射装置占位体 | 作为关联实现处理 | 多方块完整体／占位不是额外玩家工作台，不单独设计生存配方 |
+| `NUCLEAR_BOMB`、`FIRE_BOMB` | 剔除生存获取候选 | 不承担已定航天制造与图纸主线；保留谷神星／土星不等于要求保留这两种物品，配方与其他获取入口仍需追踪 |
+| 保留星球的地表、石头、砂砾、冰、火山岩、矿石及化石 | 保留世界生成引用，矿物逐项统一 | 尤其 EP 火山岩原有冶炼火山锭关系；删除装备不应误删资源方块 |
+| 不再启用的 EP 重复卫星地形方块 | 随天体裁剪检查注册与配方引用 | 不默认删除旧存档方块，也不扩展裁剪到未列出的卫星 |
+| 石砖、楼梯、装饰块、开普勒木材／植物与糖果方块 | 非优先裁剪项，随地形生态保留 | 它们不属于“乱七八糟的装备”；无主线制造用途不足以证明应该删除 |
+| 各级地牢宝箱与 Boss 刷怪方块 | 保留结构功能，改奖励 | 图纸替换不是取消宝箱／刷怪方块注册；保持钥匙与地牢工作 |
+
 ## 获取入口与实施顺序
 
 1. 工具护甲先按材质开关与配方条件实施，但不能连带关闭所保留星球。防护装备等 GS 兼容完成后再清理。
@@ -267,7 +327,7 @@ EP 实际注册9种模块：探测目镜、免摔、盖革计数、发射清单�
 3. 源码地牢普通表目前有 Mercury、Jupiter 两份 JSON；Boss 特殊奖励另由注册代码处理，不能只改 loot_tables。装备套件、紧急套件也可能重新产出已裁物品，需要逐项检查。
 4. 氧气罐配置 `OXYGEN_TANKS` 仅覆盖 Very Heavy／Extremely Heavy 两档；45种彩色罐在初始化中单独创建，须另处理。关闭电池开关同样会影响仍需电池的设备配方，暂不执行。
 5. 新七阶尚未确定的配件和九／十阶素材先保留引用，不能为了清列表破坏当前0.1.0启动；旧获取入口在新路线接入时替换。
-6. 本轮未清点方块物品／机器／桶的完整注册表，未验证全部结构、套件、交易和运行时掉落。下一轮针对确定剔除项追踪这些入口，再执行裁剪与启动验证。
+6. 机器16个字段及13种流体桶入口已补查；普通方块全部元数据、结构、交易和运行时掉落仍未穷尽。下一轮针对剔除候选追踪非合成获取入口，形成实现清单；裁剪与启动验证由实现方执行。
 
 ## 来源与验收
 
@@ -276,5 +336,9 @@ EP 实际注册9种模块：探测目镜、免摔、盖革计数、发射清单�
 - [护甲定义](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/items/armor/ExtraPlanets_Armor.java)
 - [配方条件](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/recipes/RecipeEnabledCondition.java)
 - [机器与其他原配方](../../ExtraPlanets/src/main/resources/assets/extraplanets/recipes/)
+- [机器注册与开关依赖](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/machines/ExtraPlanets_Machines.java)
+- [机器配方表](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/recipes/ExtraPlanets_MachineRecipes.java)与[具体处理逻辑](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/tileEntities/machines/)
+- [流体与通用桶注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/fluid/ExtraPlanets_Fluids.java)
+- [普通方块注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/ExtraPlanets_Blocks.java)
 
 已用声明字段交叉核对16套工具与16套普通护甲数量，逐项列出156个主物品字段，并拆出8组火箭材料容器。未将源码存在写成当前已加载；尚无裁剪后游戏验收。
