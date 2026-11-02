@@ -6,4 +6,4 @@
 
 本页只保留旧链接入口，不再维护另一份规划或开发任务清单。
 
-两个实际 Git 分支分别为 [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) 和 [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension)，并非只在文档中分组。
+物品与维度方向现统一在 `main` 的 `NewEarth/items/`、`NewEarth/dimension/` 维护，原独立开发分支已合并归档。

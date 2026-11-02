@@ -27,16 +27,16 @@
 
 最终能源核心的材料组合已确定为五种彩色钻石全部加铂制品，不是任选颜色；具体数量、铂制品形式与配方布局待核算。
 
-## 目录与 Git 分支
+## 目录与维护入口
 
-| 开发线 | 方向文档 | Git 分支 |
-| --- | --- | --- |
-| 载具、系外物品与专用工具 | [items/README.md](items/README.md) | [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) |
-| 终章新维度 | [dimension/README.md](dimension/README.md) | [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension) |
+统一在 `main` 维护，物品与维度按目录划分工作范围：
 
-两分支从同一 `main` 基线建立，共同方向初始提交为 `65c3fe1`，后续独立推进。本总览记录共同基调，物品、维度的具体范围分别由子目录维护；两个开发分支不预设最后必须打包为两个模组。
+| 开发线 | 方向文档 |
+| --- | --- |
+| 载具、系外物品与专用工具 | [items/README.md](items/README.md) |
+| 终章新维度 | [dimension/README.md](dimension/README.md) |
 
-物品线可以利用已有世界验证载具、核心与多人往返，不等待新维度完成；维度线可以独立研究地形、正常睡眠与演出触发，不等待新飞船完成。
+原 `codex/newearth-items` 与 `codex/newearth-dimension` 已合并归档。本总览记录共同基调，具体范围由子目录维护；目录划分不预设最终必须制作两个模组。
 
 ## 共同方向
 

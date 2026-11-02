@@ -6,16 +6,18 @@
 
 ## 分支与资料入口
 
-| 分支 | 维护范围 |
+代码、任务配置、研究资料与新地球方向文档统一在 [main](https://github.com/Neosamzzz/Minecraft/tree/main) 维护。原 `codex/ftb`、`codex/newearth-items`、`codex/newearth-dimension` 已合并归档，不再作为独立维护入口。
+
+| 内容 | 目录 |
 | --- | --- |
-| [main](https://github.com/Neosamzzz/Minecraft/tree/main) | 已合并的源码、任务配置与文档；共用星球研究资料的稳定入口 |
-| [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb) | FTB 功能代码、任务配置、玩家说明书与作者侧文稿统一维护 |
-| [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) | 新地球物品、多人飞船、最终能源核心与系外专用工具 |
-| [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension) | 终章维度、地形、正常过夜与结尾演出 |
+| FTB 功能代码 | `FTB-Quests/` |
+| 六章任务配置 | `quest-config/solar-system/normal/` |
+| 玩家说明书与作者文稿 | `docs/` |
+| 星球共用研究资料 | `docs/research/` |
+| 新地球物品、飞船与能源核心方向 | `NewEarth/items/` |
+| 终章维度与结尾演出方向 | `NewEarth/dimension/` |
 
-开发分支中的其他模块和文档可能保留旧快照。FTB 后续修改以 `codex/ftb` 为入口，共用星球资料查阅 [main 上的玩法详解](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)；各开发线完成后再合入 `main`。
-
-旧 `codex/ftb-public-team` 与 `codex/project-docs-20261102` 已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 汇入 `main`，现由 `codex/ftb` 接续维护；旧文档 PR #14 已由 PR #15 取代。历史记录中的旧分支名和提交号保留原意，不作为当前维护入口。
+历史分支名、提交号与部署记录保留原意，不作为当前维护入口。新地球仍按物品与维度划分工作范围，但无需切换分支查阅资料。
 
 ## 当前进展
 
@@ -27,10 +29,10 @@
 | FTB 功能 | 公共团队与共享进度；本机开发包 1202.9.3 关闭游戏内编辑并简化无奖励详情 | 双人联机、重启后进度与旧队数据验收 |
 | FTB 内容 | [太阳系说明书](docs/ftb-player-guide.md)与六章、60 个目标配置已完成并部署本机；草稿中的后期内容继续预留 | 六章显示、判定、共享与保存的运行验收；后期载具与能源升级接入 |
 | 星球资料 | GC / GS / EP 静态调查、EP 0.8.0 源码快照与部分运行日志核对 | 正常飞行、资源加工、防护与返航验证 |
-| 新地球 | 火箭物品、新维度分别建立 Git 分支与方向文档 | 两线实现尚未开始，基础 FTB 内容独立推进 |
+| 新地球 | 火箭物品、新维度按目录分别记录方向，统一在主线维护 | 两线实现尚未开始，基础 FTB 内容独立推进 |
 
 > [!IMPORTANT]
-> **FTB 代码、任务配置和说明书已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 合入 `main`，后续开发统一在 [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb) 维护。** 主线包含 1202.9.3 公共团队代码、关闭游戏内编辑与空奖励栏精简、六章任务配置及正式玩家说明书。旧 FTB 代码与文档分支已停止维护，其后续工作由 `codex/ftb` 承接。客户端和服务端应使用同一版本，构建通过与游戏验收分别记录。
+> **FTB 代码、任务配置和说明书已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 合入 `main`，后续代码、任务配置与文档统一在 `main` 维护。** 主线包含 1202.9.3 公共团队代码、关闭游戏内编辑与空奖励栏精简、六章任务配置及正式玩家说明书。FTB 与新地球开发分支已统一合入 `main`，不再分别维护。客户端和服务端应使用同一版本，构建通过与游戏验收分别记录。
 
 文档入口见 [FTB 资料区](docs/README.md)，当前本机模组清单见[整合包基线](changelog/modpack.md)。玩法与任务资料含作者侧终章设定，不直接作为玩家可见文本发布。
 
