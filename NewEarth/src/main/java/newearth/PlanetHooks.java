@@ -16,6 +16,10 @@ public final class PlanetHooks {
     private static Integer erisDimension;
     private PlanetHooks() { }
 
+    public static boolean isReplacedDummy(String name) {
+        return "jupiter".equals(name) || "saturn".equals(name) || "uranus".equals(name) || "neptune".equals(name);
+    }
+
     static void validateConfiguration() {
         try {
             Class<?> ep = Class.forName("com.mjr.extraplanets.Config");

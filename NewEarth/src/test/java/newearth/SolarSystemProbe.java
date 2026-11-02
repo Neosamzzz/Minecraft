@@ -58,6 +58,11 @@ public final class SolarSystemProbe {
         check(orphan.getParentPlanet() == null, "Disabled GS Pluto does not capture unrelated null-parent moons");
         check(ep.get(4).getTierRequirement() == 6, "EP Pluto remains valid without a GS Pluto object");
         checkConfig();
+        checkCatalogue();
+        for (String name : new String[] {"jupiter", "saturn", "uranus", "neptune"})
+            check(PlanetHooks.isReplacedDummy(name), "GC fallback suppressed: " + name);
+        for (String name : new String[] {"mercury", "ceres", "mars", "haumea"})
+            check(!PlanetHooks.isReplacedDummy(name), "Other GC fallback untouched: " + name);
 
         String runtime = System.getenv("NEWEARTH_RUNTIME_MODS");
         if (runtime != null && !runtime.isEmpty()) transformRuntime(new File(runtime));
@@ -73,6 +78,8 @@ public final class SolarSystemProbe {
 
     private static void transformRuntime(File directory) throws Exception {
         Set<String> required = new HashSet<>(Arrays.asList(
+                "micdoodle8.mods.galacticraft.core.GalacticraftCore",
+                "micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.util.WorldUtil",
                 "galaxyspace.core.prefab.items.rockets.ItemTier6Rocket", "galaxyspace.core.prefab.entities.EntityTier6Rocket",
                 "com.mjr.extraplanets.planets.Neptune.WorldProviderNeptune", "com.mjr.extraplanets.planets.Pluto.WorldProviderPluto",
@@ -132,6 +139,25 @@ public final class SolarSystemProbe {
         check(untouched > 0, "Non-target installed classes are unchanged");
         check(teleportTypes.size() == 4, "All four orbit teleport types load without interception");
         System.out.println("Verified " + untouched + " non-target classes unchanged, including four orbit teleport types");
+    }
+
+    private static void checkCatalogue() {
+        CatalogueScroll scroll = new CatalogueScroll();
+        scroll.contentHeight = 700; scroll.viewportHeight = 200;
+        check(scroll.maximum() == 500, "Expanded catalogue overflow measured");
+        scroll.wheel(120); check(scroll.offset == 0, "Wheel clamps at first row");
+        scroll.wheel(-120); check(scroll.offset == 28, "Wheel moves two rows");
+        check(scroll.rowY(78) == 50 && scroll.rowY(92) == 64, "Drawing and hit tests use the same row offset");
+        scroll.drag(10000); check(scroll.offset == 500, "Dragging reaches last row");
+        check(scroll.thumbTop() + scroll.thumbHeight() == 200, "Scrollbar reaches bottom of track");
+        scroll.drag(-100); check(scroll.offset == 0, "Dragging above track clamps to start");
+        scroll.contentHeight = 100; scroll.clamp();
+        check(scroll.maximum() == 0 && scroll.thumbHeight() == 200, "Short catalogue needs no scrolling");
+        for (int height : new int[] {120, 240, 480}) {
+            scroll.viewportHeight = height; scroll.contentHeight = height + 140;
+            scroll.drag(height); check(scroll.offset == 140, "Bottom reachable across GUI scales: " + height);
+            scroll.drag(0); check(scroll.offset == 0, "Top reachable across GUI scales: " + height);
+        }
     }
 
     private static void checkConfig() throws Exception {
