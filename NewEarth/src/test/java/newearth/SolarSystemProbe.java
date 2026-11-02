@@ -77,7 +77,26 @@ public final class SolarSystemProbe {
         File[] jars = directory.listFiles((dir, name) -> name.endsWith(".jar"));
         if (jars == null) throw new IllegalArgumentException("Missing runtime mods directory " + directory);
         PlanetTransformer transformer = new PlanetTransformer();
+        Set<String> targets = new HashSet<>(required);
+        Set<String> teleportTypes = new HashSet<>();
+        int untouched = 0;
         for (File file : jars) try (JarFile jar = new JarFile(file)) {
+            // A target-only test missed TeleportTypeSaturnOrbit being intercepted.
+            // Sweep every non-target class, including all four sibling teleport types.
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                if (!entry.getName().endsWith(".class")) continue;
+                String name = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
+                if (targets.contains(name)) continue;
+                byte[] original = readEntry(jar, entry);
+                if (transformer.transform(name, name, original) != original)
+                    throw new AssertionError("Non-target class was modified: " + name);
+                untouched++;
+                for (String planet : new String[] {"Saturn", "Neptune", "Pluto", "Eris"})
+                    if (name.equals("com.mjr.extraplanets.planets." + planet + ".spacestation.TeleportType" + planet + "Orbit"))
+                        teleportTypes.add(name);
+            }
             for (String name : new ArrayList<>(required)) {
                 JarEntry entry = jar.getJarEntry(name.replace('.', '/') + ".class");
                 if (entry == null) continue;
@@ -103,6 +122,18 @@ public final class SolarSystemProbe {
             }
         }
         check(required.isEmpty(), "Every required runtime target found: " + required);
+        check(untouched > 0, "Non-target installed classes are unchanged");
+        check(teleportTypes.size() == 4, "All four orbit teleport types load without interception");
+        System.out.println("Verified " + untouched + " non-target classes unchanged, including four orbit teleport types");
+    }
+
+    private static byte[] readEntry(JarFile jar, JarEntry entry) throws Exception {
+        try (java.io.InputStream input = jar.getInputStream(entry)) {
+            java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+            byte[] buffer = new byte[8192]; int count;
+            while ((count = input.read(buffer)) >= 0) output.write(buffer, 0, count);
+            return output.toByteArray();
+        }
     }
 
     private static void executeGate(ClassNode original) throws Exception {

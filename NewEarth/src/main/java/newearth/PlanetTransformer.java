@@ -18,8 +18,10 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
         boolean world = "micdoodle8.mods.galacticraft.core.util.WorldUtil".equals(n);
         boolean item = "galaxyspace.core.prefab.items.rockets.ItemTier6Rocket".equals(n);
         boolean rocket = "galaxyspace.core.prefab.entities.EntityTier6Rocket".equals(n);
-        boolean orbit = n != null && n.startsWith("com.mjr.extraplanets.planets.")
-                && (n.endsWith("SaturnOrbit") || n.endsWith("NeptuneOrbit") || n.endsWith("PlutoOrbit") || n.endsWith("ErisOrbit"));
+        boolean orbit = "com.mjr.extraplanets.planets.Saturn.spacestation.WorldProviderSaturnOrbit".equals(n)
+                || "com.mjr.extraplanets.planets.Neptune.spacestation.WorldProviderNeptuneOrbit".equals(n)
+                || "com.mjr.extraplanets.planets.Pluto.spacestation.WorldProviderPlutoOrbit".equals(n)
+                || "com.mjr.extraplanets.planets.Eris.spacestation.WorldProviderErisOrbit".equals(n);
         boolean provider = n != null && (n.equals("com.mjr.extraplanets.planets.Neptune.WorldProviderNeptune")
                 || n.equals("com.mjr.extraplanets.planets.Pluto.WorldProviderPluto")
                 || n.equals("com.mjr.extraplanets.planets.Eris.WorldProviderEris"));

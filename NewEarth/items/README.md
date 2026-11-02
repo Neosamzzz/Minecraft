@@ -2,7 +2,7 @@
 
 维护分支：[main](https://github.com/Neosamzzz/Minecraft/tree/main)。更新日期：2026-11-03。
 
-本线负责七阶火箭、九阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。NewEarth 0.2.0 已接入太阳系主星组合、GS 卫星改挂与阶段通行规则，保留 0.1.0 的七阶过渡制造；环境防护、地牢奖励和新制造路线尚未接入。新增九阶载具、工具、工作台和核心尚未实现，正常航行仍待实测。
+本线负责七阶火箭、九阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。NewEarth 0.2.1 已接入太阳系主星组合、GS 卫星改挂与阶段通行规则，保留 0.1.0 的七阶过渡制造；环境防护、地牢奖励和新制造路线尚未接入。新增九阶载具、工具、工作台和核心尚未实现，正常航行仍待实测。
 
 > [!IMPORTANT]
 > **交接与设计前先读 [planet-gameplay-guide.md：星球玩法详解](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)。**
@@ -92,7 +92,13 @@
 py -3 tools/build.py --target newearth --offline
 ```
 
-首次缺少缓存时去掉 `--offline`。产物为 `build/libs/NewEarth-0.2.0.jar`；客户端与服务端都需要同版本 NewEarth，以及已有 GC、GS 2.2.0、EP 0.8.0 和它们的依赖。后续版本以 `NewEarth/gradle.properties` 为准。当前源码编译使用共用 GC 4.0.2.283 开发依赖，目标运行基线仍为 GC 4.0.6；隔离检查不证明这两个版本的完整运行兼容。
+首次缺少缓存时去掉 `--offline`。产物为 `build/libs/NewEarth-0.2.1.jar`；客户端与服务端都需要同版本 NewEarth，以及已有 GC、GS 2.2.0、EP 0.8.0 和它们的依赖。后续版本以 `NewEarth/gradle.properties` 为准。当前源码编译使用共用 GC 4.0.2.283 开发依赖，目标运行基线仍为 GC 4.0.6；隔离检查不证明这两个版本的完整运行兼容。
+
+### 0.2.1：修复轨道传送类被误拦截
+
+2026-11-03 用户在 Forge 2864 客户端实测，0.2.0 在 EP 预初始化时崩溃：轨道补丁按 `SaturnOrbit` 等后缀匹配，误将 `TeleportTypeSaturnOrbit` 当成 Provider，触发“不支持的补丁目标”。0.2.1 改为四个轨道 Provider 的完整类名精确匹配，传送处理器保持原样。
+
+回归检查改用用户测试实例的实际 JAR，除13个补丁目标外遍历全部非目标类，确认均不修改，并明确覆盖土星、海王星、冥王星、Eris 的四个轨道传送类。太阳系73项、七阶51项通过，重新构建为0.2.1。已备份并替换用户指定实例中的0.2.0；本次未代用户启动游戏，完整加载和玩法仍待用户重测。
 
 ### 0.2.0：太阳系注册与通行整合
 
