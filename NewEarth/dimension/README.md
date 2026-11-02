@@ -1,6 +1,6 @@
 # 终章新维度
 
-维护分支：[main](https://github.com/Neosamzzz/Minecraft/tree/main)。核对日期：2026-11-02。
+维护分支：[main](https://github.com/Neosamzzz/Minecraft/tree/main)。核对日期：2026-11-03。
 
 新维度、终章体验与正常过夜后的结尾触发独立推进；多人宇宙飞船、最终能源核心及现有系外目的地的专用工具由[物品线](../items/README.md)维护。整体关系见[支线总览](../README.md)。当前仅记录设计，维度与演出尚未实现。
 
@@ -26,6 +26,12 @@
 
 地形优先研究现有 1.12.2 模组或生成器的复用方式，包括能否用于独立维度；不将自行编写生成算法或移植 FreeTerraForged 作为当前前置。参考图用于确定景观尺度与气氛，不锁定具体树种、粉色森林或某个模组。
 
+呈现规则已确定：默认仅终章启用固定的 Reimagined 与预设参数；最多提供一个“全局启用终章光影”选项，开启后全局使用这套光影，并允许玩家正常手动调整参数。此规则尚未实现，按维度切换与恢复需实测。Galacticraft Compatibility 的“是否将会使用光影”实际写入 AsmodeusCore 的四个天空开关，不能代替外部光影包切换。
+
+性能作为地形、光影与 DH 的共同约束：优先用山脉轮廓、河湖视野与森林分布形成尺度，控制密集植被、阴影质量、LOD 距离与后台任务负载。当前 HIGH 只是已测试组合，不预先定为最终默认档；比较首次生成、缓存完成后、移动探索与重进时的帧率稳定性、卡顿和内存，目标数值按实测确定。
+
+抵达前应异步准备终章落点及可见远景，优先复用缓存、准备第一眼可见范围，再逐步扩展，并限制对航行性能的影响。地形区块生成、DH LOD 构建及客户端加载分别验证；尚未确认 1.12.2 DH 在进入目标维度前的数据准备接口与多人传输方式，不将该目标记为已实现。
+
 | 已查到的依据 | 判断与边界 |
 | --- | --- |
 | 用户日志中 DH 3.3.3 与 OptiFine 光影组合在渲染矩阵捕获处崩溃；移除 DH 后光影正常，换光影仍出现同类异常 | 不再以更换 OptiFine G5 / G6 或不断更换光影作为主要排障路线；[DH #1328](https://gitlab.com/distant-horizons-team/distant-horizons/-/work_items/1328#note_4127429824) 的维护者明确说明 1.12.2 不支持 OptiFine 光影，建议 Actinium / Demonica |
@@ -43,7 +49,7 @@
 | --- | --- | --- |
 | 一、独立版本验证 | 独立 1.12.2 实例、普通主世界；固定加载器、Java、Actinium、DH 与 Reimagined，验证近远景、水、天空、阴影及退出重进 | 已通过本轮普通世界画面与重进验收，保留已知提示 |
 | 二、现有模组共存 | 在阶段一组合中加入 GC / GS 及整合包依赖，先在普通主世界确认启动、渲染和保存 | 本轮启动、光影画面、保存与完整重启重进通过；未验收跨星球及完整玩法 |
-| 三、地形方案验证 | 用独立测试世界比较少量现有生成方案的尺度、景观、DH 表现与生成成本，选定能接入独立维度的一种 | 未开始 |
+| 三、地形方案验证 | 用独立测试世界比较少量现有生成方案的尺度、景观、DH 表现与生成成本，选定能接入独立维度的一种 | 进行中；RTG Plus 首轮普通世界验证，尚未选型 |
 | 四、终章实现与对接 | 接入地形、环境、正常睡眠与演出，并与物品线对接飞船、有效核心、星图、发现流程和 FTB 抵达记录 | 未开始；可独立推进世界实现，不以飞船完成为前置 |
 | 五、维度与完整旅程验收 | 最后实测星球往返、按维度呈现、缓存恢复、多人过夜、演出及重启后的状态 | 未开始 |
 
@@ -68,6 +74,19 @@
 - 已知提示与边界：仍有阶段一的 `Opaque + Translucent` 提示和 DH 在线更新超时；另有 missing MultiModel 以及 GC WorldProvider 类型 `-1234` / `-1032` 提示，尚未确定来源及跨维度影响，本轮不据此判定星球可通行。未验证机器与火箭完整玩法、FTB 任务行为、多人、长期稳定性或星球往返；这些不由主菜单加载成功替代。
 
 首轮保存关闭日志、重进日志与最近画面分别保存在 Windows `build/checks/newearth/compat/startup.log`、`reentry.log`、`reimagined.png`，不提交本机实例和生成文件。后续进入阶段三地形方案验证，维度与完整旅程仍按阶段五验收。
+
+### 阶段三地形验证
+
+先比较自然地形基线与景观变化：首选测试 RTG 路线，再以 OTG + Biome Bundle 对照；参考图约束近景可生活、中距离有河湖留白、远处形成连续山脉轮廓，不照搬树种或配色。原 [RTG 项目](https://github.com/Team-RTG/Realistic-Terrain-Generation)已指向持续维护的 [RTG Plus](https://github.com/Zeno410/Realistic-Terrain-Generation-Plus)，本轮固定使用发布平台标为正式版的 [9.0.4](https://modrinth.com/mod/rtg-plus/version/9.0.4)，不使用旧 6.1 快照。
+
+2026-11-03 首轮：Windows `.local/newearth-render/game-rtg/` 复制阶段二的模组、配置与渲染参数，新增 `RTG-1.12.2-9.0.4.jar`，按 Modrinth 发布元数据核对 SHA-512 并通过 ZIP CRC；未复制旧存档。入口为上级 `launch-rtg.cmd`，窗口名 `NewEarth RTG Test`；第二阶段实例仍保留。创建 RTG 世界类型的普通创造世界，种子 `20261103`，存档名 `新的世界RTG-Terrain`。原版视距 12、DH 半径 256、Reimagined HIGH 延续前轮，仅用于首轮观察，不作为最终性能参数。
+
+- 已观察：29 个模组完成加载；出生点约 `(228, 78, 234)`，有草地、花草、河岸与高树森林，升至约 Y=152 可见山地和林地组合；光影及 DH 任务运行，远景数据库增长。
+- 未通过项：远景出现竖直断面与未补齐区域，尚未确定是加载过程还是生成/渲染问题，不能作为完整景观验收；日志有 RTG cascading worldgen lag 与此前已记录的渲染提示。单次 F3 观察约 61 / 111 FPS，两个游戏实例同时运行、视角及生成负载不同，不作平均帧率、稳定性或方案优劣结论。
+- 对照排查：首个世界保存返回菜单后可重进，断面仍存在；保留首轮证据，改用 `INTERNAL_SERVER` 并重启客户端，在相同种子、相同 RTG 类型的新存档 `新的世界RTG-Internal` 中观察，随后仍出现相似断面，生成模式切换未解决。临时关闭 Reimagined 后断面仍可见，不能只归因于光影；已恢复光影，当前保留该对照世界供查看。尚未完成 DH 开关对照、附近实际区块与 LOD 高度比对，根因未定。当前测试配置的 DH 生成路径为 `INTERNAL_SERVER`，原值 `FEATURES`，不改变正式实例。
+- 接入依据：[RTG API](https://github.com/Zeno410/Realistic-Terrain-Generation-Plus/blob/main/src/main/java/rtg/api/RTGAPI.java)与世界类型实现提供额外维度允许列表及地形生成入口；已安装 JAR 的公开方法也已核对；这属于接口可行性依据，尚未完成 GC 自定义行星接入验证。默认配置另会向非 RTG 世界添加树木与池塘（`treesInNonRTGWorlds` / `lakesInNonRTGWorlds`），正式接入前必须限制影响范围，不能直接向现有实例安装默认配置。OTG + Biome Bundle 对照、代表性山脉/海岸探索、单实例性能与缓存稳定后观察待完成，不提前确定生成器。
+
+检查结果沿用 Windows `build/checks/newearth/terrain/`，按 `rtg-near.png`、`rtg-overview.png`、`rtg.log` 保存最近输出，`rtg-features.log` / `rtg-features.png` 和 `rtg-no-shaders.png` 保留本次必要的异常对照证据，实例和生成文件不提交。
 
 ## 发现与 FTB 呈现
 
