@@ -49,7 +49,7 @@
 | --- | --- | --- |
 | 一、独立版本验证 | 独立 1.12.2 实例、普通主世界；固定加载器、Java、Actinium、DH 与 Reimagined，验证近远景、水、天空、阴影及退出重进 | 已通过本轮普通世界画面与重进验收，保留已知提示 |
 | 二、现有模组共存 | 在阶段一组合中加入 GC / GS 及整合包依赖，先在普通主世界确认启动、渲染和保存 | 本轮启动、光影画面、保存与完整重启重进通过；未验收跨星球及完整玩法 |
-| 三、地形方案验证 | 用独立测试世界比较少量现有生成方案的尺度、景观、DH 表现与生成成本，选定能接入独立维度的一种 | 进行中；RTG Plus 首轮普通世界验证，尚未选型 |
+| 三、地形方案验证 | 用独立测试世界比较少量现有生成方案的尺度、景观、DH 表现与生成成本，选定能接入独立维度的一种 | 进行中；RTG Plus 与 OTG / Biome Bundle 普通世界对照，尚未选型 |
 | 四、终章实现与对接 | 接入地形、环境、正常睡眠与演出，并与物品线对接飞船、有效核心、星图、发现流程和 FTB 抵达记录 | 未开始；可独立推进世界实现，不以飞船完成为前置 |
 | 五、维度与完整旅程验收 | 最后实测星球往返、按维度呈现、缓存恢复、多人过夜、演出及重启后的状态 | 未开始 |
 
@@ -85,6 +85,8 @@
 - 未通过项：远景出现竖直断面与未补齐区域，尚未确定是加载过程还是生成/渲染问题，不能作为完整景观验收；日志有 RTG cascading worldgen lag 与此前已记录的渲染提示。单次 F3 观察约 61 / 111 FPS，两个游戏实例同时运行、视角及生成负载不同，不作平均帧率、稳定性或方案优劣结论。
 - 对照排查：首个世界保存返回菜单后可重进，断面仍存在；保留首轮证据，改用 `INTERNAL_SERVER` 并重启客户端，在相同种子、相同 RTG 类型的新存档 `新的世界RTG-Internal` 中观察，随后仍出现相似断面，生成模式切换未解决。临时关闭 Reimagined 后断面仍可见，不能只归因于光影；已恢复光影，当前保留该对照世界供查看。尚未完成 DH 开关对照、附近实际区块与 LOD 高度比对，根因未定。当前测试配置的 DH 生成路径为 `INTERNAL_SERVER`，原值 `FEATURES`，不改变正式实例。
 - 接入依据：[RTG API](https://github.com/Zeno410/Realistic-Terrain-Generation-Plus/blob/main/src/main/java/rtg/api/RTGAPI.java)与世界类型实现提供额外维度允许列表及地形生成入口；已安装 JAR 的公开方法也已核对；这属于接口可行性依据，尚未完成 GC 自定义行星接入验证。默认配置另会向非 RTG 世界添加树木与池塘（`treesInNonRTGWorlds` / `lakesInNonRTGWorlds`），正式接入前必须限制影响范围，不能直接向现有实例安装默认配置。OTG + Biome Bundle 对照、代表性山脉/海岸探索、单实例性能与缓存稳定后观察待完成，不提前确定生成器。
+
+OTG 对照同样使用独立普通世界：Windows `.local/newearth-render/game-otg/` 从阶段二复制模组、配置与渲染参数，不含 RTG；固定 CurseForge 官方文件 [OTG v9.9 / 9338964](https://www.curseforge.com/minecraft/mc-mods/open-terrain-generator/files/9338964) 与 [Biome Bundle v6.1 / 2505277](https://www.curseforge.com/minecraft/mc-mods/biome-bundle/files/2505277)，均通过 ZIP CRC，记录下载 SHA-256 / SHA-512；CurseForge 与 Modrinth 同名 OTG v9.9 的二进制不同，本轮只用前者。入口为上级 `launch-otg.cmd`，窗口名 `NewEarth OTG Test`。预设界面选择 Biome Bundle、种子 `20261103`、创造与允许命令，预生成半径为 0，未创建额外维度；存档名 `Biome Bundle`。首个区域为红色岩柱、草地与海岸，光影正常，但同样观察到远处竖直断面，不能据此认定 RTG 独有问题。OTG 的预设/独立维度 GUI 可用不等于已对接 GC 星球。 已正常关闭保存、完整重启并重新进入同一世界，光影设置保留。远景断面仍在，DH 实际开关对照待用户手动协助；远程 F6 操作没有确认切换成功，不作为对照证据。仅 OTG 测试实例开启了 `enableDebugKeybindings` 方便检查，不是交付默认配置。检查目录另保留 `otg-startup.log` 与 `otg-near.png`；三实例同时运行，不进行性能优劣判定。
 
 检查结果沿用 Windows `build/checks/newearth/terrain/`，按 `rtg-near.png`、`rtg-overview.png`、`rtg.log` 保存最近输出，`rtg-features.log` / `rtg-features.png` 和 `rtg-no-shaders.png` 保留本次必要的异常对照证据，实例和生成文件不提交。
 
