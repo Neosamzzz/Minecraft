@@ -1,25 +1,26 @@
 package newearth;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Moon;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
+import micdoodle8.mods.galacticraft.api.recipe.CompressorRecipes;
 import micdoodle8.mods.galacticraft.api.recipe.INasaWorkbenchRecipe;
-import net.minecraft.init.Blocks;
+import micdoodle8.mods.galacticraft.core.recipe.NasaWorkbenchRecipe;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-/** Real MC inventory, GS assembler matcher and GC NASA recipes; test items stand in for GS/EP registration. */
+/** Exercises manufacturing retirement and retained resources using real recipe registries. */
 public final class ProgressionProbe {
     private static int checks;
     private static void check(boolean result, String message) {
@@ -31,75 +32,69 @@ public final class ProgressionProbe {
         ForgeRegistries.ITEMS.register(value);
         return value;
     }
+    private static IRecipe recipe(String id, ItemStack output) {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        ingredients.add(Ingredient.fromStacks(new ItemStack(Items.IRON_INGOT)));
+        IRecipe recipe = new ShapelessRecipes("", output, ingredients).setRegistryName(id);
+        ForgeRegistries.RECIPES.register(recipe);
+        return recipe;
+    }
     public static void main(String[] args) {
-        net.minecraft.launchwrapper.Launch.blackboard = new java.util.HashMap<>();
+        net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        List<INasaWorkbenchRecipe> nasa = new ArrayList<>();
+        for (int tier = 4; tier <= 10; tier++) {
+            Item rocket = item("extraplanets:item_tier" + tier + "_rocket");
+            for (int cargo = 0; cargo <= 3; cargo++)
+                nasa.add(new NasaWorkbenchRecipe(new ItemStack(rocket, 1, cargo), new HashMap<>()));
+            Item parts = item("extraplanets:tier" + tier + "_items");
+            for (int meta = 0; meta <= 3; meta++) {
+                ItemStack output = new ItemStack(parts, 1, meta);
+                check(ContentPruning.retiredOutput(output), "Retired rocket component " + tier + ":" + meta);
+                recipe("newearth:retired_" + tier + "_" + meta, output);
+            }
+            for (int meta = 4; meta <= 7; meta++)
+                check(ContentPruning.retiredOutput(new ItemStack(parts, 1, meta)) == (tier == 7 && meta == 6),
+                        "Preserve resources except old reinforced plate intermediate " + tier + ":" + meta);
+            Item cone = item("extraplanets:nose_cone_tier" + tier);
+            check(ContentPruning.retiredOutput(new ItemStack(cone)), "Retired nose cone " + tier);
+        }
+        Item electric = item("extraplanets:item_tier10_electric_rocket");
+        nasa.add(new NasaWorkbenchRecipe(new ItemStack(electric), new HashMap<>()));
+        Item rover = item("extraplanets:mars_rover");
+        nasa.add(new NasaWorkbenchRecipe(new ItemStack(rover), new HashMap<>()));
+        check(ContentPruning.pruneNasa(nasa) == 29, "Remove every tier and cargo variant including electric rocket");
+        check(nasa.size() == 1 && nasa.get(0).getRecipeOutput().getItem() == rover, "Preserve rover recipe");
+        for (String color : new String[] {"blue", "red", "purple", "yellow", "green"})
+            for (String part : new String[] {"pickaxe", "axe", "hoe", "shovel", "sword", "helmet", "chest", "legings", "boots"}) {
+                Item tool = item("extraplanets:" + color + "_diamond_" + part);
+                recipe("newearth:" + color + "_" + part, new ItemStack(tool));
+            }
+        Item raw = item("extraplanets:tier11_items");
+        for (int meta = 0; meta <= 6; meta++)
+            check(!ContentPruning.retiredOutput(new ItemStack(raw, 1, meta)), "Preserve five diamonds and platinum " + meta);
+        Item other = item("anothermod:tier7_items");
+        check(!ContentPruning.retiredOutput(new ItemStack(other)), "Do not match other mods by path alone");
+        IRecipe retained = recipe("newearth:retained", new ItemStack(raw));
+        check(ContentPruning.pruneCrafting(ForgeRegistries.RECIPES) == 73, "Remove 28 components and all 45 colored equipment recipes");
+        check(ForgeRegistries.RECIPES.getValue(retained.getRegistryName()) == retained, "Preserve raw material crafting");
+        check(ContentPruning.pruneCrafting(ForgeRegistries.RECIPES) == 0, "Crafting cleanup is idempotent");
+        Item parts7 = ForgeRegistries.ITEMS.getValue(new ResourceLocation("extraplanets:tier7_items"));
+        CompressorRecipes.addShapelessRecipe(new ItemStack(parts7, 2, 3), Items.IRON_INGOT);
+        CompressorRecipes.addShapelessRecipe(new ItemStack(parts7, 1, 4), Items.GOLD_INGOT);
+        CompressorRecipes.addShapelessRecipe(new ItemStack(parts7, 1, 6), Items.DIAMOND);
+        check(ContentPruning.pruneCompressor() == 2, "Remove old heavy plate and reinforced intermediate regardless of output count");
+        check(CompressorRecipes.getRecipeListAll().stream().noneMatch(r -> ContentPruning.retiredOutput(r.getRecipeOutput())), "No retired compressor output remains");
+        check(CompressorRecipes.getRecipeListAll().stream().anyMatch(r -> r.getRecipeOutput().getItem() == parts7 && r.getRecipeOutput().getMetadata() == 4), "Preserve compressed resource recipe");
+        check(ContentPruning.pruneCompressor() == 0, "Compressor cleanup is idempotent");
         Planet proxima = new Planet("proxima_b"); proxima.setTierRequired(6); GalaxyRegistry.registerPlanet(proxima);
         Planet barnarda = new Planet("barnarda_c"); barnarda.setTierRequired(6); GalaxyRegistry.registerPlanet(barnarda);
         Moon moon = new Moon("barnarda_c1").setParentPlanet(barnarda); moon.setTierRequired(6); GalaxyRegistry.registerMoon(moon);
-        Planet mars = new Planet("probe_mars"); mars.setTierRequired(2); GalaxyRegistry.registerPlanet(mars);
         Planet kepler = new Planet("kepler22b"); kepler.setTierRequired(10); GalaxyRegistry.registerPlanet(kepler);
-        List<INasaWorkbenchRecipe> nasa = new ArrayList<>();
-        int initialRecipes = AssemblyRecipes.getRecipeList().size();
-        try {
-            SolarSystemBridge.install(nasa);
-            throw new AssertionError("Missing EP registration must fail explicitly");
-        } catch (IllegalStateException expected) {
-            check(expected.getMessage().contains("item_tier7_rocket"), "Missing item is named");
-        }
-        check(proxima.getTierRequirement() == 6, "Invalid setup does not change tiers");
-        check(nasa.isEmpty() && AssemblyRecipes.getRecipeList().size() == initialRecipes, "Invalid setup adds no recipes");
-        Item rocket = item("extraplanets:item_tier7_rocket");
-        Item schematic = item("extraplanets:schematic_tier7");
-        Item parts = item("galaxyspace:rocket_parts");
-        Item modules = item("galaxyspace:rocket_modules");
-        Item plates = item("galaxyspace:hdp");
-        SolarSystemBridge.install(nasa);
-        check(proxima.getTierRequirement() == 7 && barnarda.getTierRequirement() == 7 && moon.getTierRequirement() == 7, "Loaded exoplanets and moon require T7");
-        check(mars.getTierRequirement() == 2, "Solar-system tier is unchanged");
-        check(kepler.getTierRequirement() == 10, "Kepler remains gated until custom T9 exists");
-        check(!GalaxyRegistry.getRegisteredPlanets().containsKey("tauceti_f"), "Disabled destination stays absent");
-        Container container = new Container() {
-            @Override public boolean canInteractWith(EntityPlayer player) { return true; }
-        };
-        InventoryCrafting crafting = new InventoryCrafting(container, 3, 3);
-        // Deliberately reorder inputs to exercise the real GS shapeless matcher.
-        crafting.setInventorySlotContents(0, new ItemStack(plates, 1, 2));
-        crafting.setInventorySlotContents(1, new ItemStack(Items.PAPER));
-        crafting.setInventorySlotContents(3, new ItemStack(plates, 1, 2));
-        crafting.setInventorySlotContents(5, new ItemStack(plates, 1, 2));
-        crafting.setInventorySlotContents(7, new ItemStack(modules, 1, 10));
-        crafting.setInventorySlotContents(8, new ItemStack(plates, 1, 2));
-        check(AssemblyRecipes.findMatchingRecipe(crafting, null).getItem() == schematic, "Schematic is craftable in GS generic assembler");
-        crafting.setInventorySlotContents(7, ItemStack.EMPTY);
-        check(AssemblyRecipes.findMatchingRecipe(crafting, null).isEmpty(), "Schematic requires T6 licence");
-        crafting.setInventorySlotContents(7, new ItemStack(modules, 1, 10));
-        crafting.setInventorySlotContents(0, new ItemStack(plates, 1, 1));
-        check(AssemblyRecipes.findMatchingRecipe(crafting, null).isEmpty(), "Schematic rejects T5 plate");
-        check(nasa.size() == 8, "All eight cargo placements are registered");
-        for (int mask = 0; mask < 8; mask++) {
-            InventoryBasic inventory = new InventoryBasic("probe", false, 22);
-            inventory.setInventorySlotContents(1, new ItemStack(parts, 1, 15));
-            for (int slot = 2; slot <= 11; slot++) inventory.setInventorySlotContents(slot, new ItemStack(plates, 1, 2));
-            inventory.setInventorySlotContents(12, new ItemStack(parts, 1, 18));
-            inventory.setInventorySlotContents(16, new ItemStack(parts, 1, 18));
-            inventory.setInventorySlotContents(15, new ItemStack(parts, 1, 17));
-            for (int slot : new int[] {13, 14, 17, 18}) inventory.setInventorySlotContents(slot, new ItemStack(parts, 1, 19));
-            for (int i = 0; i < 3; i++) if ((mask & (1 << i)) != 0) inventory.setInventorySlotContents(19 + i, new ItemStack(Blocks.CHEST));
-            INasaWorkbenchRecipe matched = null;
-            for (INasaWorkbenchRecipe recipe : nasa) if (recipe.matches(inventory)) {
-                check(matched == null, "No ambiguous cargo recipes " + mask);
-                matched = recipe;
-            }
-            check(matched != null && matched.getRecipeOutput().getItem() == rocket && matched.getRecipeOutput().getMetadata() == Integer.bitCount(mask), "Correct cargo variant " + mask);
-            check(!matched.getRecipeOutput().hasTagCompound(), "No fabricated fuel/inventory NBT");
-            inventory.setInventorySlotContents(2, new ItemStack(plates, 1, 1));
-            check(nasa.stream().noneMatch(r -> r.matches(inventory)), "T5 plate rejected " + mask);
-            inventory.setInventorySlotContents(2, new ItemStack(plates, 1, 2));
-            inventory.setInventorySlotContents(15, ItemStack.EMPTY);
-            check(nasa.stream().noneMatch(r -> r.matches(inventory)), "Engine required " + mask);
-        }
+        SolarSystemBridge.install();
+        check(proxima.getTierRequirement() == 7 && barnarda.getTierRequirement() == 7 && moon.getTierRequirement() == 7, "Preserve exoplanet T7 gates");
+        check(kepler.getTierRequirement() == 10, "Keep Kepler gate pending custom T9");
         System.out.println("NewEarth progression: " + checks + " checks passed (isolated; no Forge server or flight)");
     }
 }
