@@ -4,6 +4,19 @@
 
 [快速开始](#快速开始) · [构建目标](#构建目标) · [安装与测试](#安装与测试) · [源码结构](#源码结构) · [开发说明](#开发说明)
 
+## 分支与资料入口
+
+| 分支 | 维护范围 |
+| --- | --- |
+| [main](https://github.com/Neosamzzz/Minecraft/tree/main) | 已合并的源码、任务配置与文档；共用星球研究资料的稳定入口 |
+| [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb) | FTB 功能代码、任务配置、玩家说明书与作者侧文稿统一维护 |
+| [codex/newearth-items](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-items) | 新地球物品、多人飞船、最终能源核心与系外专用工具 |
+| [codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/tree/codex/newearth-dimension) | 终章维度、地形、正常过夜与结尾演出 |
+
+开发分支中的其他模块和文档可能保留旧快照。FTB 后续修改以 `codex/ftb` 为入口，共用星球资料查阅 [main 上的玩法详解](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)；各开发线完成后再合入 `main`。
+
+旧 `codex/ftb-public-team` 与 `codex/project-docs-20261102` 已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 汇入 `main`，现由 `codex/ftb` 接续维护；旧文档 PR #14 已由 PR #15 取代。历史记录中的旧分支名和提交号保留原意，不作为当前维护入口。
+
 ## 当前进展
 
 文档核对日期：**2026-11-02**。本仓库集中管理源码、研究资料与任务配置，不是可直接启动的完整客户端或服务端整合包。
@@ -17,7 +30,7 @@
 | 新地球 | 火箭物品、新维度分别建立 Git 分支与方向文档 | 两线实现尚未开始，基础 FTB 内容独立推进 |
 
 > [!IMPORTANT]
-> **FTB 代码、任务配置和说明书已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 合入 `main`，后续以主线为准。** 主线包含 1202.9.3 公共团队代码、关闭游戏内编辑与空奖励栏精简、六章任务配置及正式玩家说明书。旧 FTB 代码与文档分支已停止维护。客户端和服务端应使用同一版本，构建通过与游戏验收分别记录。
+> **FTB 代码、任务配置和说明书已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 合入 `main`，后续开发统一在 [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb) 维护。** 主线包含 1202.9.3 公共团队代码、关闭游戏内编辑与空奖励栏精简、六章任务配置及正式玩家说明书。旧 FTB 代码与文档分支已停止维护，其后续工作由 `codex/ftb` 承接。客户端和服务端应使用同一版本，构建通过与游戏验收分别记录。
 
 文档入口见 [FTB 资料区](docs/README.md)，当前本机模组清单见[整合包基线](changelog/modpack.md)。玩法与任务资料含作者侧终章设定，不直接作为玩家可见文本发布。
 

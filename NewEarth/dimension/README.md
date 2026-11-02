@@ -24,7 +24,7 @@ Git 分支：[codex/newearth-dimension](https://github.com/Neosamzzz/Minecraft/t
 
 发现前不展示终章名称、封面或目的地信息；章节、节点、通知和星图等需要共同考虑。具体揭示方式后续核实，不将某个隐藏选项当成已经实现的保证。
 
-「似曾相识」与 H01 抵达占位由 `docs/ftb-quest-manuscript.md` 维护，最终在维度接入后对接。基础 FTB 内容独立推进，不等待新维度完成。
+「似曾相识」与 H01 抵达占位由 [FTB 作者侧文稿](https://github.com/Neosamzzz/Minecraft/blob/codex/ftb/docs/ftb-quest-manuscript.md)维护（`codex/ftb` 分支），最终在维度接入后对接。基础 FTB 内容独立推进，不等待新维度完成。
 
 ## 与火箭线的接口
 

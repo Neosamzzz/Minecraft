@@ -1,5 +1,7 @@
 # FTB Quests 本地改动
 
+当前维护分支为 [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb)，代码、任务配置与文档同步维护；`main` 保存已合并版本。下方旧分支名、提交号与版本信息属于历史记录，不代表当前入口。
+
 上游：[FTBTeam/FTB-Quests](https://github.com/FTBTeam/FTB-Quests) 分支 `1.12`，导入提交见 [upstream.json](../upstream.json)。
 
 核对日期：2026-11-02。本机开发包 **1202.9.3** 已加入熟人服公共团队、关闭游戏内任务编辑并精简无奖励详情。1202.9.2 的完整构建与 20 项隔离检查、1202.9.3 的完整构建已有记录，实际双人联机与 GUI 验收未完成。

@@ -2,7 +2,7 @@
 
 更新日期：2026-11-02。对应 [Issue #12](https://github.com/Neosamzzz/Minecraft/issues/12)。
 
-代码、任务定义与说明书已通过 PR #15 合入 `main`，对应模组版本 1202.9.3；旧 FTB 代码与文档分支不再是单独维护入口。
+代码、任务定义与说明书已通过 PR #15 合入 `main`，对应模组版本 1202.9.3；后续代码、配置与说明书统一在 `codex/ftb` 维护，`main` 保存已合并版本。旧 FTB 代码与文档分支停止维护。
 
 [玩家说明书](../../docs/ftb-player-guide.md) · [草稿](../../docs/ftb-quest-manuscript.md) · [物品依据](../../docs/research/quest-item-notes.md)
 
