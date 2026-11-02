@@ -28,7 +28,7 @@ FTB 用任务书呈现整合包已有玩法的发展，让朋友共同推进、�
 | [任务内容方向](ftb-content-direction.md) | 轻量主线、任务选取与表达原则 |
 | [任务定稿表](ftb-quest-content.md) | 当前采用的节点、游戏内文字、目标与编排；不再另写逐条操作手册 |
 | [太阳系配置](../quest-config/solar-system/README.md) | 实际配置、ID 映射、部署和恢复；兼容定义的保留原因 |
-| [后期预备稿](ftb-quest-manuscript.md) | 尚未落地的七阶、系外、八阶、开普勒与终章节点，不重复当前定稿 |
+| [任务预备稿](ftb-quest-manuscript.md) | 新太阳系调整候选及七阶、系外、多人飞船、开普勒与终章预留，不重复当前定稿 |
 | [任务物品核对](research/quest-item-notes.md) | 任务选材、注册 ID、配方与获取限制的依据 |
 | [星球静态调查](research/planet-gameplay-audit.md) | 首轮配置、维度注册和共存问题的调查快照 |
 | [星球玩法详解](research/planet-gameplay-guide.md) | 共用的资源、采集限制、加工与玩法事实；相关运行观察回填对应条目 |
