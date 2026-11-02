@@ -4,7 +4,7 @@
 
 对应 [Project #4「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1) 与 [Issue #8「自建星球」](https://github.com/Neosamzzz/Minecraft/issues/8)。本支线连接后期航天、多人宇宙飞船与独立拟地球行星，为共同旅程安排一次自然的收尾。
 
-**资源与玩法的重要资料入口：[planet-gameplay-guide.md](https://github.com/Neosamzzz/Minecraft/blob/codex/project-docs-20261102/docs/research/planet-gameplay-guide.md)。** 各星球现有资源、环境和制造关系在 guide 中查阅；本目录只维护开发方向，不复制资源清单或具体用法。链接以统一资料分支为准。
+**资源与玩法的重要资料入口：[planet-gameplay-guide.md](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)。** 各星球现有资源、环境和制造关系在 guide 中查阅；本目录只维护开发方向，不复制资源清单或具体用法。共用资料以 `main` 上的已合并版本为准。
 
 > [!NOTE]
 > 本目录记录已确定的设计及协作边界。新载具、工作台、能源核心、终章维度与演出尚未实现；文档中的目标等级不代表已修改当前实例。

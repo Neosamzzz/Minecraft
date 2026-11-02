@@ -1,5 +1,7 @@
 # 1.12.2 开发环境
 
+本分支可能保留旧版 FTB 源码或说明；当前维护入口为 [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb)，已合并版本见 `main`。构建 FTB 时应切换到对应维护分支，代码、配置与文档使用同一版本。
+
 ## 工具版本
 
 - 上游分支：`1.12`。

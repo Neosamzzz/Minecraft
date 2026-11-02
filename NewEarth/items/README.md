@@ -5,8 +5,8 @@
 本线负责七阶火箭、八阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。当前是开发方向，新增载具、工具、工作台和核心尚未实现。
 
 > [!IMPORTANT]
-> **交接与设计前先读 [planet-gameplay-guide.md：星球玩法详解](https://github.com/Neosamzzz/Minecraft/blob/codex/project-docs-20261102/docs/research/planet-gameplay-guide.md)。**
-> 各星球的现有资源、环境、制造关系及待验证事项在这份 guide 中查阅，它是本线的重要依据，不只是 FTB 文案参考。链接指向统一资料分支，避免使用开发分支中保留的旧快照。
+> **交接与设计前先读 [planet-gameplay-guide.md：星球玩法详解](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)。**
+> 各星球的现有资源、环境、制造关系及待验证事项在这份 guide 中查阅，它是本线的重要依据，不只是 FTB 文案参考。链接指向 `main` 上的共用资料，开发分支内的旧快照不作为最新依据。
 
 ## 整体方向
 
