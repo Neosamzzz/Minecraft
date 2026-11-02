@@ -1,5 +1,7 @@
 # FTB 资料区
 
+当前 FTB 维护分支为 [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb)，代码、任务配置与说明书一并维护；`main` 保存已合并版本。本开发分支中的 FTB 资料可能是旧快照，完整分工见[分支与资料入口](../README.md#分支与资料入口)。
+
 FTB 是整合包主线之外的一条大支线。主线本身是原本要玩的 GC 玩法，加上为完善体验做的自行修补；FTB 负责把已有玩法的发展过程可视化，让一起玩的朋友共同推进、看得见全服进度。
 
 本目录只管 FTB 这一块，对应 [Issue #7：梳理并配置好游戏内的 FTB 相关功能](https://github.com/Neosamzzz/Minecraft/issues/7) 和看板 [FTB移植](https://github.com/users/Neosamzzz/projects/3)。GSLC 补丁与本目录无关，其记录见 [`../changelog/`](../changelog/README.md)。

@@ -1,5 +1,7 @@
 # FTB Quests 本地改动
 
+当前维护分支为 [codex/ftb](https://github.com/Neosamzzz/Minecraft/tree/codex/ftb)，代码、任务配置与文档同步维护；`main` 保存已合并版本。下方旧分支名、提交号与版本信息属于历史记录，不代表当前入口。
+
 上游：[FTBTeam/FTB-Quests](https://github.com/FTBTeam/FTB-Quests) 分支 `1.12`，导入提交见 [upstream.json](../upstream.json)。
 
 当前状态：**源码无本地改动**，只调整了构建配置；构建通过，尚未做游戏内验证。
