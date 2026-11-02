@@ -21,7 +21,7 @@
 | MJRLegendsLib | `MJRLegendsLib-1.12.2-1.2.1.jar` | |
 | MixinBooter | `000mixinbooter-12.2.jar` | 当前本机版本；历史 GSLC 探针使用 10.7，不能视为已在 12.2 重跑 |
 | GSLaunchCompat | `GSLaunchCompat-1.4.8.jar` | 本项目产物，见 [gslc.md](gslc.md) |
-| FTB Quests | `FTBQuests-1202.9.3.jar` | 由统一 FTB 分支重新构建并部署，源码与本机版本一致，见 [ftb-quests.md](ftb-quests.md) |
+| FTB Quests | `FTBQuests-1202.9.3.jar` | 已重新构建并部署，当前主线保留对应源码，见 [ftb-quests.md](ftb-quests.md) |
 | FTB Library | `[FTB Library（旧版）] FTBLib-5.4.7.0.jar` | 文件名标 5.4.7.0，内部元数据与启动日志为 5.4.7.2 |
 | Item Filters | `[物品过滤器] ItemFilters-1.0.4.2.jar` | |
 

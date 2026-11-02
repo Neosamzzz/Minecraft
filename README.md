@@ -77,7 +77,7 @@ python3 tools/build.py --target all
 > [!NOTE]
 > 首次构建需要联网下载工具、依赖并处理 Minecraft 开发类库。已安装的游戏实例与这套开发缓存分开管理；缓存默认位于用户目录的 `.gradle/`，后续构建会复用。
 
-成功后，按命令打印的 `Built:` 路径取包。GSLC 当前为 1.4.8；FTB 文件名跟随所检出分支的 `mod_version`，不以本文的本机安装版本推定：
+成功后，按命令打印的 `Built:` 路径取包。GSLC 当前为 1.4.8；FTB 文件名以 `FTB-Quests/gradle.properties` 中的 `mod_version` 为准，不以本文的本机安装版本推定：
 
 ```text
 build/libs/
@@ -136,7 +136,7 @@ GSLC 编译并重混淆 GalaxySpace，再使用 `dev-tools/GSLaunchCompat-1.3-pu
 
 | 模组 | 版本 | 客户端 | 服务端 |
 | --- | --- | --- | --- |
-| FTB Quests | 统一 FTB 分支构建的 1202.9.3，两端使用同一版本 | 必需 | 必需 |
+| FTB Quests | 主线源码构建的 1202.9.3，两端使用同一版本 | 必需 | 必需 |
 | [FTB Library](https://www.curseforge.com/minecraft/mc-mods/ftb-library-legacy-forge/files/2985811) | 5.4.7.2 | 必需 | 必需 |
 | [Item Filters](https://www.curseforge.com/minecraft/mc-mods/item-filters/files/3003364) | 1.0.4.2 | 必需 | 必需 |
 
@@ -210,7 +210,7 @@ macOS / Linux 使用 `python3 -m unittest discover -s tools/tests`。这些检�
 
 - [FTB 开发说明](FTB-Quests/DEVELOPMENT.md)：依赖版本、直接调用 Gradle、兼容修复、任务功能、数据保存和编辑入口。
 - [FTB 资料区](docs/README.md)：FTB 接入的主基调、工作路线，以及团队方案、内容方向和星球依据。
-- [新地球支线](NewEarth/README.md)：物品/火箭与新维度分别使用 Git 分支推进，优先复用现有星球材料；对应 [Project「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1)。
+- [新地球支线](NewEarth/README.md)：物品/火箭与新维度在 `main` 中按目录组织，优先复用现有星球材料；对应 [Project「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1)。
 - [FTB 公共团队方案](docs/ftb-shared-team-plan.md)与[任务内容方向](docs/ftb-content-direction.md)：公共团队实现、版本边界、维护方式及轻量无奖励的内容规则。
 - [任务内容稿](docs/ftb-quest-manuscript.md)与[任务小样](quest-config/preview/README.md)：作者侧完整候选内容，以及可增量试用的三个节点。
 - [星球现状审计](docs/research/planet-gameplay-audit.md)与[玩法详解](docs/research/planet-gameplay-guide.md)：配置、源码层面的目的地与制造关系，含待运行验证事项。

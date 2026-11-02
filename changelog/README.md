@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | [gslc.md](gslc.md) | GSLaunchCompat 补丁的版本历史（发射控制器权限、遥感显示器、地图与时钟） | 1.4.8 |
 | [modpack.md](modpack.md) | 整合包基线：模组清单、版本、配置入口 | — |
-| [ftb-quests.md](ftb-quests.md) | FTB Quests 相对上游的本地改动 | 统一 FTB 分支源码 1202.9.3 |
+| [ftb-quests.md](ftb-quests.md) | FTB Quests 相对上游的本地改动 | 主线 FTB 源码 1202.9.3 |
 
 核对日期：2026-11-02。本机文件版本、已提交源码和游戏验收分别记录，不把本机构建包视为已经发布。新地球两条 Git 开发线尚无模组版本，方向见 [NewEarth](../NewEarth/README.md)，不在本页虚构发行记录。
 
