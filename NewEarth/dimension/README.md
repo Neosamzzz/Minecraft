@@ -20,6 +20,32 @@
 
 维度线可独立研究与验证地形和世界行为，不以七八阶火箭已经完成为起点。维度 ID、星图位置、环境参数与生成方式尚未确定。
 
+## 地形、光影与远景路线
+
+2026-11-02 调查结论：保留 Minecraft 1.12.2 与 GC / GS 玩法，光影是景观目标的重要组成部分，以 Complementary Reimagined r5.9.3 为优先验证对象，使用 DH 承担远景。优先保证终章星球的呈现，其他星球保留原有风格；是否能按维度切换光影与 DH、切换后能否正确恢复，尚待验证，不能据此假定其他维度不受客户端渲染器影响。
+
+地形优先研究现有 1.12.2 模组或生成器的复用方式，包括能否用于独立维度；不将自行编写生成算法或移植 FreeTerraForged 作为当前前置。参考图用于确定景观尺度与气氛，不锁定具体树种、粉色森林或某个模组。
+
+| 已查到的依据 | 判断与边界 |
+| --- | --- |
+| 用户日志中 DH 3.3.3 与 OptiFine 光影组合在渲染矩阵捕获处崩溃；移除 DH 后光影正常，换光影仍出现同类异常 | 不再以更换 OptiFine G5 / G6 或不断更换光影作为主要排障路线；[DH #1328](https://gitlab.com/distant-horizons-team/distant-horizons/-/work_items/1328#note_4127429824) 的维护者明确说明 1.12.2 不支持 OptiFine 光影，建议 Actinium / Demonica |
+| [Actinium 的 DH 记录](https://github.com/Q-Engineering-Source/Actinium/blob/main/docs/compat/dh.md)包含 DH 3.3.0 与多款光影的实机回归；[兼容矩阵](https://github.com/Q-Engineering-Source/Actinium/blob/main/docs/compatibility-matrix.md)列有 Reimagined r5.9.3 与 DH LOD | Cleanroom + 现代 Java + Actinium + DH 是有实测依据的优先验证路线；记录涉及不同提交，不能视为任意版本组合都通过 |
+| [第三方补丁项目](https://github.com/Marsietiss/celeritas-littletiles-bridge)记录官方 DH 3.3.3、修改过的 Demonica 0.7.3 与 Reimagined r5.9.3 HIGH 实测 | Demonica 可作为备选研究对象；该记录依赖补丁及指定 Celeritas，不代表官方 Demonica 任意版本直接可用，也不因此给本项目加入 LittleTiles 补丁 |
+| [Actinium 的 GalaxySpace 记录](https://github.com/Q-Engineering-Source/Actinium/blob/main/docs/compat/galaxyspace.md)有 GC / GS / AsmodeusCore 共存与天空修复的用户确认 | 该次修复验证的是无光影天空，不能推导整套 GC / GS + 光影 + DH 已验证 |
+
+优先从 Actinium 文档推荐的 Cleanroom 0.6.13-alpha 与 Java 21 或以上运行环境核对依赖；其当前说明排除 Cleanroom 0.7.0 及以上。实际搭建前重新核实发布包、DH 接口和所需版本，固定一次测试组合；不把升级 Java 本身当作解决渲染冲突的措施。
+
+区块预生成与 DH LOD 构建分别评估：已有区块仍需转换成远景数据，不能以预生成完成判定 DH 缓存就绪，也不能按高版本 DH SeedGen 的速度承诺 1.12.2 表现。此前工具名称曾混淆；用户日志里的工具是 Chunk-Pregenerator，不能将其问题直接归到 Chunky。
+
+## 简要推进顺序
+
+1. **先验证渲染组合。** 使用独立测试实例和测试世界，从最小依赖确认 Reimagined 与 DH 的近远景、水、天空、阴影及重进世界，再加入现有 GC / GS 及其依赖，检查其他星球与维度切换。实际画面在目标 Windows 客户端验收；源码、编译与 Mac 测试只作辅助依据。
+2. **再验证地形与独立维度。** 比较现有生成方案的山脉、森林、河流、海陆尺度和生成成本，选定能承载目标景观的一种；接入测试维度后检查 DH 远景衔接、缓存恢复、生成性能、保存与往返。先满足景观方向，不为比较方案另扩展生态或工业内容。
+3. **补齐世界行为与结尾。** 验证环境、昼夜、正常床睡眠与多人过夜，再接入服务端过夜完成判定和客户端演出，检查同步、重复触发及演出后继续游玩。
+4. **最后对接完整旅程。** 与物品线接通星图、八阶飞船、有效核心及同船乘员到达返回，再落实发现前的信息隐藏和 FTB 抵达记录。
+
+当前只确定研究路线与顺序，尚未搭建或运行本项目的新渲染组合；完整模组兼容、地形选型和按维度呈现仍是待验证项。验证结果回填本页或 Issue #8，生成文件沿用[项目目录规范](../../docs/project-layout.md)，不为每轮尝试新增报告或永久脚本。
+
 ## 发现与 FTB 呈现
 
 发现前不展示终章名称、封面或目的地信息；章节、节点、通知和星图等需要共同考虑。具体揭示方式后续核实，不将某个隐藏选项当成已经实现的保证。
@@ -44,4 +70,4 @@
 
 成功过夜由服务端确认，客户端播放演出；事件时机、多人同步和重复事件防护需要实际联机验证。该流程由模组机制承担，FTB 不添加睡觉、放床或看完演出的勾选节点。
 
-本页记录方向，不预排具体开发任务或锁定地形算法。
+本页维护方向、调查结论与简要推进顺序；具体实现和地形算法根据验证结果确定。
