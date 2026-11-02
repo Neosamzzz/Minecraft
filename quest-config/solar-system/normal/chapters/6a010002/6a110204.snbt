@@ -2,7 +2,7 @@
   "title": "再画大一点",
   "description": "获得三级火箭图纸",
   "icon": "galacticraftplanets:schematic 1 0",
-  "x": 3.0,
+  "x": 1.6,
   "y": 0.0,
   "text": [
     "用途：解锁三级火箭制造页面。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

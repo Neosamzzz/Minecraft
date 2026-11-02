@@ -61,6 +61,8 @@ public class GuiQuestTree extends GuiBase
 	public final PanelViewQuest viewQuestPanel;
 	public boolean movingObjects = false;
 	public int zoom = 16;
+	private boolean fitChapterPending = true;
+	private int fittedWidth, fittedHeight;
 	public long lastShiftPress = 0L;
 	public static boolean grid = false;
 
@@ -130,6 +132,7 @@ public class GuiQuestTree extends GuiBase
 			//movingQuests = false;
 			closeQuest();
 			selectedChapter = chapter;
+			fitChapterPending = true;
 			questPanel.refreshWidgets();
 			questPanel.resetScroll();
 		}
@@ -451,6 +454,32 @@ public class GuiQuestTree extends GuiBase
 		}
 
 		super.tick();
+
+		if (selectedChapter != null && width > 80 && height > 80 && (fitChapterPending || fittedWidth != width || fittedHeight != height))
+		{
+			double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;
+			double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
+			for (Quest quest : selectedChapter.quests)
+			{
+				if (!file.canEdit() && !quest.isVisible(file.self))
+				{
+					continue;
+				}
+				minX = Math.min(minX, quest.x - quest.size / 2D - 0.5D);
+				maxX = Math.max(maxX, quest.x + quest.size / 2D + 0.5D);
+				minY = Math.min(minY, quest.y - quest.size / 2D);
+				maxY = Math.max(maxY, quest.y + quest.size / 2D + 1D);
+			}
+			if (minX != Double.POSITIVE_INFINITY)
+			{
+				double step = 1.5D + ThemeProperties.QUEST_SPACING.get(selectedChapter) / 4D;
+				zoom = MathHelper.clamp((int) Math.floor(Math.min((width - 64D) / ((maxX - minX) * step), (height - 52D) / ((maxY - minY) * step))), 8, 16);
+				questPanel.resetScroll();
+			}
+			fitChapterPending = false;
+			fittedWidth = width;
+			fittedHeight = height;
+		}
 	}
 
 	public int getZoom()
@@ -534,6 +563,12 @@ public class GuiQuestTree extends GuiBase
 		Color4I borderColor = ThemeProperties.WIDGET_BORDER.get(selectedChapter);
 		GuiHelper.drawHollowRect(x, y, w, h, borderColor, false);
 		super.drawForeground(theme, x, y, w, h);
+		if (selectedChapter != null)
+		{
+			Color4I.BLACK.withAlpha(210).draw(x + 21, y + 1, w - 42, 28);
+			theme.drawString(selectedChapter.getTitle(), x + 29, y + 5, Color4I.WHITE, Theme.SHADOW);
+			theme.drawString(I18n.format("ftbquests.gui.layout_hint"), x + 29, y + 17, Color4I.GRAY, 0);
+		}
 	}
 
 	@Override

@@ -3,7 +3,7 @@
   "description": "获得 GS 装配机",
   "icon": "galaxyspace:assembly_machine 1 0",
   "x": 0.0,
-  "y": 0.0,
+  "y": -1.7,
   "text": [
     "用途：进入新的材料与火箭部件加工体系。",
     "操作：接通设备所需能源，按装配配方加工复合材料和普通火箭部件。",
@@ -29,6 +29,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.3,
+  "size": 1.18,
   "shape": "square"
 }

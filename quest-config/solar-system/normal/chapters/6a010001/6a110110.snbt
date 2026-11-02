@@ -2,8 +2,8 @@
   "title": "把空气装起来",
   "description": "获得氧气压缩机",
   "icon": "galacticraftcore:oxygen_compressor 1 0",
-  "x": 3.0,
-  "y": 0.0,
+  "x": -3.2,
+  "y": -1.7,
   "text": [
     "用途：向随身氧气罐补充氧气。",
     "操作：将设备接入电力和氧气供应，放入需要补充的氧气罐，完成后取回。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

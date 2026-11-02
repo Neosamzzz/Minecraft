@@ -1,12 +1,102 @@
 {
   "title": "不止一条航线",
-  "icon": "galacticraftplanets:rocket_t3",
+  "icon": "galaxyspace:assembly_machine 1 0",
   "description": [
     "小行星带、水星、谷神星和金星提供不同的探索方向。",
     "结合材料需求选择目的地，建立 GS 装配体系。",
-    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+    "任务自由完成；连线表示建议路线，不限制完成资格。"
   ],
   "always_invisible": false,
   "group": 0,
-  "default_quest_shape": "circle"
+  "default_quest_shape": "circle",
+  "images": [
+    {
+      "x": -4.8,
+      "y": -5.1,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -4.8,
+      "y": -1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -1.6,
+      "y": -1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 1.6,
+      "y": -1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 4.8,
+      "y": -1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 6.4,
+      "y": 0.535,
+      "width": 0.1,
+      "height": 0.99,
+      "rotation": 0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -4.8,
+      "y": 1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -1.6,
+      "y": 1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    }
+  ]
 }

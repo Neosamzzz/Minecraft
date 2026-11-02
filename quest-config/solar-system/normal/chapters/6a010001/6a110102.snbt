@@ -2,8 +2,8 @@
   "title": "打成一片",
   "description": "获得压缩机",
   "icon": "galacticraftcore:machine 1 12",
-  "x": -3.0,
-  "y": -3.0,
+  "x": -3.2,
+  "y": -5.1,
   "text": [
     "用途：将金属加工为后续制造使用的压缩材料。",
     "操作：向压缩机放入对应原料和燃料，按当前配方加工板材。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

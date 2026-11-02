@@ -1,9 +1,9 @@
 {
   "title": "换个地方开矿",
   "description": "抵达木卫三",
-  "icon": "minecraft:packed_ice",
-  "x": -3.0,
-  "y": 3.0,
+  "icon": "galacticraftplanets:asteroids_block 1 4",
+  "x": -3.2,
+  "y": 0.0,
   "text": [
     "用途：增加镁和钛材料的补给来源。",
     "操作：根据制造消耗安排采矿，记录可再次到访的位置。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1016
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

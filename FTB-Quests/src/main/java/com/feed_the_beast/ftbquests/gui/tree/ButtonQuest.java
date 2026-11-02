@@ -483,5 +483,26 @@ public class ButtonQuest extends Button
 			qicon.draw(0, 0, 1, 1);
 			GlStateManager.popMatrix();
 		}
+
+		// Keep the map readable without hovering every item. Full text stays in the tooltip.
+		if (treeGui.getZoom() >= 8 && !getTitle().isEmpty())
+		{
+			float scale = Math.min(1F, treeGui.getZoom() / 12F);
+			int maxWidth = 64;
+			List<String> lines = Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(getTitle(), maxWidth);
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(x + w / 2D, y + h + 3D, 0D);
+			GlStateManager.scale(scale, scale, 1D);
+			for (int i = 0; i < Math.min(2, lines.size()); i++)
+			{
+				String line = lines.get(i);
+				if (i == 1 && lines.size() > 2)
+				{
+					line = Minecraft.getMinecraft().fontRenderer.trimStringToWidth(line, maxWidth - 8) + "…";
+				}
+				theme.drawString(line, -theme.getStringWidth(line) / 2, i * 10, Color4I.WHITE, Theme.SHADOW);
+			}
+			GlStateManager.popMatrix();
+		}
 	}
 }

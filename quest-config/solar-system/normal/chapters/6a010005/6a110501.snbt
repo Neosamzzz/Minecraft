@@ -2,8 +2,8 @@
   "title": "裂谷之间",
   "description": "抵达土卫二",
   "icon": "minecraft:packed_ice",
-  "x": -6.0,
-  "y": 0.0,
+  "x": -6.4,
+  "y": -1.7,
   "text": [
     "用途：探索冰原、山脉与裂谷。",
     "操作：先寻找安全落脚点，再根据采集或据点计划选择路线。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1017
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

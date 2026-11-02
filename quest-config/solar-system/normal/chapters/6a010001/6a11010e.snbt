@@ -2,8 +2,8 @@
   "title": "月球驾照",
   "description": "获得月球车",
   "icon": "galacticraftcore:buggy 1 0",
-  "x": 12.0,
-  "y": 3.0,
+  "x": 6.4,
+  "y": 5.1,
   "text": [
     "用途：增加地表移动与探索方式。",
     "操作：解锁月球车图纸，在 NASA 工作台组装，并为车辆准备燃料。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

@@ -1,9 +1,9 @@
 {
   "title": "大气，不等于空气",
   "description": "抵达土卫六",
-  "icon": "minecraft:packed_ice",
-  "x": -3.0,
-  "y": 0.0,
+  "icon": "galacticraftcore:item_basic_moon 1 2",
+  "x": -3.2,
+  "y": -1.7,
   "text": [
     "用途：调查不同大气环境与宝石资源。",
     "操作：保持氧气装备有效，按需要采集宝石和工业材料。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1018
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

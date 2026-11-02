@@ -2,8 +2,8 @@
   "title": "我们来过",
   "description": "获得旗帜",
   "icon": "galacticraftcore:flag 1 0",
-  "x": 9.0,
-  "y": 3.0,
+  "x": 6.4,
+  "y": 1.7,
   "text": [
     "用途：为探索地点留下标记。",
     "操作：取得旗帜后，可在合适位置放置，作为着陆点或据点附近的标识。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

@@ -1,9 +1,9 @@
 {
   "title": "地面去哪了",
   "description": "抵达小行星带",
-  "icon": "minecraft:end_stone",
-  "x": -6.0,
-  "y": -3.0,
+  "icon": "galacticraftplanets:asteroids_block 1 0",
+  "x": -6.4,
+  "y": -5.1,
   "text": [
     "用途：进入漂浮地形，寻找钛材料和遗迹。",
     "操作：先确认安全落脚处与移动方式，记录火箭或返回设备的位置。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -30
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

@@ -434,3 +434,4 @@ commands.ftbquests.generate_chapter_with_all_items_in_game.usage=/ftbquests gene
 ftbquests.shared_team.fixed=Everyone uses the public team. Team membership changes are disabled.
 ftbquests.shared_team.editing.on=Edit quests
 ftbquests.shared_team.editing.off=Finish editing
+ftbquests.gui.layout_hint=Explore freely · Lines suggest a route · Scroll to zoom, drag to pan

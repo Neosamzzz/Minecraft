@@ -2,7 +2,7 @@
   "title": "这声嘶嘶不太妙",
   "description": "击败火星进化苦力怕 Boss",
   "icon": "minecraft:iron_sword",
-  "x": 0.0,
+  "x": -1.6,
   "y": 0.0,
   "text": [
     "用途：探索火星地牢及其特殊战利品。",
@@ -18,5 +18,7 @@
       "entity": "galacticraftplanets:creeper_boss",
       "value": 1
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

@@ -2,8 +2,8 @@
   "title": "天外来客",
   "description": "获得原始陨铁",
   "icon": "galacticraftcore:meteoric_iron_raw 1 0",
-  "x": 9.0,
-  "y": 0.0,
+  "x": -6.4,
+  "y": 1.7,
   "text": [
     "用途：收集用于后续加工和制造的陨铁。",
     "操作：在月面留意陨石，采集原始陨铁并根据配方加工。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

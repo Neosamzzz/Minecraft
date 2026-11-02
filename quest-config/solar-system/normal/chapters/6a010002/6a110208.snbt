@@ -2,8 +2,8 @@
   "title": "今天吃罐头",
   "description": "获得任一种罐头食品",
   "icon": "extraplanets:canned_food 1 0",
-  "x": -3.0,
-  "y": -3.0,
+  "x": 4.8,
+  "y": 3.4,
   "text": [
     "用途：准备远行补给的一种选择。",
     "操作：按配方将熟食与空罐加工为食品，出发前按行程分配食物。",
@@ -43,5 +43,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

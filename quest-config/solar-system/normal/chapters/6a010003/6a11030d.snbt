@@ -2,8 +2,8 @@
   "title": "借个着力点",
   "description": "获得抓钩",
   "icon": "galacticraftplanets:grapple 1 0",
-  "x": -3.0,
-  "y": -6.0,
+  "x": -3.2,
+  "y": 5.1,
   "text": [
     "用途：增加复杂地形中的移动选择。",
     "操作：制作抓钩后，在安全位置熟悉瞄准、挂接和移动方式。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

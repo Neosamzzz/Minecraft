@@ -1,9 +1,9 @@
 {
   "title": "小世界，大用处",
   "description": "抵达 GS 谷神星",
-  "icon": "minecraft:end_stone",
-  "x": -6.0,
-  "y": 6.0,
+  "icon": "minecraft:quartz_block",
+  "x": -6.4,
+  "y": 1.7,
   "text": [
     "用途：寻找白云石，并选择是否探索当地地牢。",
     "操作：优先建立白云石来源，战斗与地牢探索可另行安排。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1007
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

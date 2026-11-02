@@ -1,9 +1,9 @@
 {
   "title": "向内出发",
   "description": "抵达 GS 水星",
-  "icon": "minecraft:end_stone",
-  "x": -6.0,
-  "y": 0.0,
+  "icon": "minecraft:stone",
+  "x": -6.4,
+  "y": -1.7,
   "text": [
     "用途：寻找可在 T3 阶段取得的镁等材料。",
     "操作：按制造需要采矿，为 GS 四级火箭的结构板材准备原料。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1005
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

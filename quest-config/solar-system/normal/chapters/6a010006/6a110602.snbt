@@ -1,9 +1,9 @@
 {
   "title": "冥冥之中",
   "description": "抵达 GS 冥王星",
-  "icon": "minecraft:packed_ice",
-  "x": -3.0,
-  "y": 0.0,
+  "icon": "minecraft:snow",
+  "x": -1.6,
+  "y": -1.7,
   "text": [
     "用途：探索遥远的寒冷地表与地层。",
     "操作：记录着陆点，根据自己的采集或建造目标安排停留。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1008
     }
-  ]
+  ],
+  "size": 1.18,
+  "shape": "square"
 }

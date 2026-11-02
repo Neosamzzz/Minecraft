@@ -2,8 +2,8 @@
   "title": "拼成一艘船",
   "description": "获得火箭装配机",
   "icon": "galaxyspace:rocket_assembler 1 0",
-  "x": 6.0,
-  "y": 0.0,
+  "x": 6.4,
+  "y": -1.7,
   "text": [
     "用途：完成 GS 火箭的最终组装。",
     "操作：准备各类火箭部件与对应许可，再按火箭装配配方放入设备。",
@@ -29,6 +29,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.3,
+  "size": 1.18,
   "shape": "square"
 }

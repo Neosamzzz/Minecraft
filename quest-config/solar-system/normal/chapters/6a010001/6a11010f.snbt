@@ -2,8 +2,8 @@
   "title": "空气也要收集",
   "description": "获得氧气收集器",
   "icon": "galacticraftcore:collector 1 0",
-  "x": 0.0,
-  "y": 0.0,
+  "x": -6.4,
+  "y": -1.7,
   "text": [
     "用途：建立可补充的氧气来源。",
     "操作：连接电力，放置在能够收集氧气的环境，检查产出后接入供氧管线。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

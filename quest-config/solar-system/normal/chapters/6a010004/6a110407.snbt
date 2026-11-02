@@ -2,7 +2,7 @@
   "title": "把航线拉长",
   "description": "获得 GS 五级火箭",
   "icon": "galaxyspace:rocket_tier_5 1 0",
-  "x": 3.0,
+  "x": 6.4,
   "y": 0.0,
   "text": [
     "用途：进入土卫二、土卫六与天卫五等目的地阶段。",
@@ -29,6 +29,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.3,
+  "size": 1.18,
   "shape": "square"
 }

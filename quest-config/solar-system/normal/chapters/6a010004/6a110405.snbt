@@ -1,9 +1,9 @@
 {
   "title": "满地旧伤",
   "description": "抵达木卫四",
-  "icon": "minecraft:packed_ice",
+  "icon": "minecraft:cobblestone",
   "x": 0.0,
-  "y": 3.0,
+  "y": 0.0,
   "text": [
     "用途：观察陨石坑、洞穴与冰质地层。",
     "操作：完成地表勘察后，按自己的采集或建造需求继续探索。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1022
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

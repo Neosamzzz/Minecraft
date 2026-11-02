@@ -1,12 +1,146 @@
 {
   "title": "仰望星空",
-  "icon": "galacticraftcore:rocket_t1",
+  "icon": "galacticraftcore:rocket_t1 1 0",
   "description": [
     "海洋吞没了大部分陆地。留在海岸上的基地，是第一次太空远行的起点。",
     "建立供电、材料加工、燃料与氧气供应，完成首次登月。",
-    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+    "任务自由完成；连线表示建议路线，不限制完成资格。"
   ],
   "always_invisible": false,
   "group": 0,
-  "default_quest_shape": "circle"
+  "default_quest_shape": "circle",
+  "images": [
+    {
+      "x": -4.8,
+      "y": -5.1,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -1.6,
+      "y": -5.1,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 1.6,
+      "y": -5.1,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 4.8,
+      "y": -5.1,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -4.8,
+      "y": -1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -1.6,
+      "y": -1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 6.4,
+      "y": -2.865,
+      "width": 0.1,
+      "height": 0.99,
+      "rotation": 0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -4.8,
+      "y": 1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -1.6,
+      "y": 1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 1.6,
+      "y": 1.7,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 6.4,
+      "y": 0.61,
+      "width": 0.1,
+      "height": 1.14,
+      "rotation": 0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 6.4,
+      "y": 3.935,
+      "width": 0.1,
+      "height": 1.29,
+      "rotation": 0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    }
+  ]
 }

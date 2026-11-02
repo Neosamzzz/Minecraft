@@ -3,7 +3,7 @@
   "description": "获得 NASA 工作台",
   "icon": "galacticraftcore:rocket_workbench 1 0",
   "x": 0.0,
-  "y": -3.0,
+  "y": -5.1,
   "text": [
     "用途：组装 GC 火箭及已解锁的载具。",
     "操作：在对应页面放入火箭部件；获得高级图纸后，在工作台的图纸入口解锁页面。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 1.18,
+  "shape": "square"
 }

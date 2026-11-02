@@ -2,8 +2,8 @@
   "title": "戴斯登场",
   "description": "获得戴斯锭",
   "icon": "galacticraftplanets:item_basic_mars 1 2",
-  "x": -3.0,
-  "y": 0.0,
+  "x": -1.6,
+  "y": -3.4,
   "text": [
     "用途：取得后续火箭和设备使用的材料。",
     "操作：采集戴斯原料并冶炼，根据当前配方继续加工。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

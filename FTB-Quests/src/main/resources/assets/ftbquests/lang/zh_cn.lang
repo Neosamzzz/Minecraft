@@ -235,3 +235,4 @@ ftbquests.gui.view_dependencies=查看前置任务
 ftbquests.gui.view_dependants=查看后续任务
 ftbquests.gui.no_dependencies=没有前置任务
 ftbquests.gui.no_dependants=没有后续任务
+ftbquests.gui.layout_hint=自由推进 · 连线表示建议路线 · 滚轮缩放，拖动查看

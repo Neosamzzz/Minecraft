@@ -2,7 +2,7 @@
   "title": "再加一道料",
   "description": "获得 HDP:1 板材",
   "icon": "galaxyspace:hdp 1 1",
-  "x": 0.0,
+  "x": 3.2,
   "y": 0.0,
   "text": [
     "用途：准备 GS 五级火箭的结构材料。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

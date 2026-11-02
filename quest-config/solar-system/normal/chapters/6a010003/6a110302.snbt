@@ -2,8 +2,8 @@
   "title": "石头里的钛",
   "description": "获得钛铁矿",
   "icon": "galacticraftplanets:asteroids_block 1 4",
-  "x": -3.0,
-  "y": -3.0,
+  "x": -3.2,
+  "y": -5.1,
   "text": [
     "用途：建立钛材料的采集来源。",
     "操作：在小行星中寻找钛铁矿，按配方进行冶炼和进一步加工。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

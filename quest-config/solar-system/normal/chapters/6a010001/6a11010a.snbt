@@ -2,8 +2,8 @@
   "title": "下一张蓝图",
   "description": "获得二级火箭图纸",
   "icon": "galacticraftcore:schematic 1 1",
-  "x": 12.0,
-  "y": -3.0,
+  "x": 0.0,
+  "y": 1.7,
   "text": [
     "用途：解锁后续火箭制造页面。",
     "操作：在月球地牢宝箱中寻找图纸，取得后到 NASA 工作台解锁二级火箭页面。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

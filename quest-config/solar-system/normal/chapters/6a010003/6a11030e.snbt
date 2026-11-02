@@ -3,7 +3,7 @@
   "description": "获得自动采矿机",
   "icon": "galacticraftplanets:astro_miner 1 0",
   "x": 0.0,
-  "y": -3.0,
+  "y": 5.1,
   "text": [
     "用途：准备自动采矿玩法。",
     "操作：解锁对应图纸，在 NASA 工作台制造，并准备配套采矿机基地。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

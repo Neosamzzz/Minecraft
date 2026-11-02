@@ -1,5 +1,5 @@
 [*]
-background:          ftblib:textures/gui/background_squares.png; color=#DCFFFFFF; tile_size=64
+background:          #FF202936
 extra_quest_shapes:  diamond, pentagon, hexagon, octagon, heart, gear
 
 text_color:          #FFFFFF
@@ -45,11 +45,11 @@ move_up_icon:         ftblib:icons/up
 move_down_icon:       ftblib:icons/down
 
 full_screen_quest:                  0
-tasks_text_color:                   #5555FF
+tasks_text_color:                   #90C6EA
 rewards_text_color:                 #FFAA00
-quest_view_background:              {{context_menu}}
+quest_view_background:              #FF17202B
 quest_view_border:                  {{widget_border}}
-quest_view_title:                   #AAAAAA
+quest_view_title:                   #F4DEAD
 quest_completed_color:              #C856FF56
 quest_started_color:                #C800FFFF
 dependency_line_texture:            ftbquests:textures/gui/dependency.png

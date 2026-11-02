@@ -1,12 +1,47 @@
 {
   "title": "红色远方",
-  "icon": "galacticraftplanets:rocket_t3",
+  "icon": "galacticraftplanets:item_basic_mars 1 2",
   "description": [
     "月球之后，火星的资源和地牢为后续制造提供新的条件。",
     "取得戴斯和三级火箭图纸，准备更远的太阳系探索。",
-    "任务可独立完成。里程碑节点较大，支线按主题分组。"
+    "任务自由完成；连线表示建议路线，不限制完成资格。"
   ],
   "always_invisible": false,
   "group": 0,
-  "default_quest_shape": "circle"
+  "default_quest_shape": "circle",
+  "images": [
+    {
+      "x": -3.2,
+      "y": -3.4,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 3.2,
+      "y": 0.0,
+      "width": 3.2,
+      "height": 0.1,
+      "rotation": 0.0,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    }
+  ]
 }

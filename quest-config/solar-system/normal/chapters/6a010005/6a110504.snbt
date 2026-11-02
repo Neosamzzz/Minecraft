@@ -2,8 +2,8 @@
   "title": "百炼成板",
   "description": "获得 HDP:2 板材",
   "icon": "galaxyspace:hdp 1 2",
-  "x": 3.0,
-  "y": 0.0,
+  "x": 3.2,
+  "y": 1.7,
   "text": [
     "用途：准备 GS 六级火箭的结构材料。",
     "操作：将 HDP:1、SDHD120 复合板与 GS 火山石按配方加工。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

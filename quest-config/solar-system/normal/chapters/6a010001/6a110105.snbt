@@ -2,8 +2,8 @@
   "title": "加点油",
   "description": "获得精炼机",
   "icon": "galacticraftcore:refinery 1 0",
-  "x": 3.0,
-  "y": -3.0,
+  "x": 3.2,
+  "y": -5.1,
   "text": [
     "用途：将原油加工为火箭燃料。",
     "操作：接入电力与原油，取得燃料后通过燃料装载机给发射台上的火箭加注。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

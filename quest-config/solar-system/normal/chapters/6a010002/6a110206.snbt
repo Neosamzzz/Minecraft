@@ -1,9 +1,9 @@
 {
   "title": "邻居家的矿",
   "description": "抵达 GS 火卫一",
-  "icon": "minecraft:end_stone",
-  "x": -3.0,
-  "y": 3.0,
+  "icon": "minecraft:iron_ore",
+  "x": -4.8,
+  "y": 3.4,
   "text": [
     "用途：增加火星阶段的材料来源选择。",
     "操作：在星图确认目标来源后前往，按需要采集戴斯、镍或其他资源。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1012
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

@@ -2,8 +2,8 @@
   "title": "冰原来客",
   "description": "抵达木卫二",
   "icon": "minecraft:packed_ice",
-  "x": -6.0,
-  "y": 3.0,
+  "x": -6.4,
+  "y": 0.0,
   "text": [
     "用途：探索冰原、裂谷，并增加硅铝等资源来源。",
     "操作：谨慎穿行裂谷和冰刺地形，按需要采集材料。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -1015
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

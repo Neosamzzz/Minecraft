@@ -2,8 +2,8 @@
   "title": "留一点火种",
   "description": "获得 GS 火山石",
   "icon": "galaxyspace:gs_basic 1 12",
-  "x": -3.0,
-  "y": 0.0,
+  "x": -3.2,
+  "y": -3.4,
   "text": [
     "用途：准备 HDP:2 等后续材料。",
     "操作：从木卫一火山矿取得火山石并保留库存，按后续配方使用。",
@@ -28,5 +28,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

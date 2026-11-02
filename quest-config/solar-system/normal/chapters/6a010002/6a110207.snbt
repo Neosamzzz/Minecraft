@@ -2,8 +2,8 @@
   "title": "多穿一层",
   "description": "获得任一部位保暖衬垫",
   "icon": "galacticraftplanets:thermal_padding 1 0",
-  "x": -6.0,
-  "y": -3.0,
+  "x": 4.8,
+  "y": -3.4,
   "text": [
     "用途：开始准备独立于氧气系统的温度防护。",
     "操作：按当前配方制作，并在对应装备位置安装。",
@@ -43,5 +43,7 @@
       "ignore_nbt": 1,
       "only_from_crafting": false
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }

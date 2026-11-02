@@ -1,9 +1,9 @@
 {
   "title": "金星，不太温柔",
   "description": "抵达金星",
-  "icon": "minecraft:end_stone",
-  "x": -6.0,
-  "y": 3.0,
+  "icon": "galacticraftplanets:venus 1 1",
+  "x": 0.0,
+  "y": -5.1,
   "text": [
     "用途：探索恶劣环境下的资源与地牢。",
     "操作：确认温控及其他实际防护后再出发，首次宜以短途勘察为主。",
@@ -17,5 +17,7 @@
       "type": "ftbquests:dimension",
       "dim": -31
     }
-  ]
+  ],
+  "size": 0.88,
+  "shape": "circle"
 }
