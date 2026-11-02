@@ -42,7 +42,7 @@
 | 阶段 | 范围与完成标志 | 当前状态 |
 | --- | --- | --- |
 | 一、独立版本验证 | 独立 1.12.2 实例、普通主世界；固定加载器、Java、Actinium、DH 与 Reimagined，验证近远景、水、天空、阴影及退出重进 | 已通过本轮普通世界画面与重进验收，保留已知提示 |
-| 二、现有模组共存 | 在阶段一组合中加入 GC / GS 及整合包依赖，先在普通主世界确认启动、渲染和保存 | 未开始 |
+| 二、现有模组共存 | 在阶段一组合中加入 GC / GS 及整合包依赖，先在普通主世界确认启动、渲染和保存 | 本轮启动、光影画面、保存与完整重启重进通过；未验收跨星球及完整玩法 |
 | 三、地形方案验证 | 用独立测试世界比较少量现有生成方案的尺度、景观、DH 表现与生成成本，选定能接入独立维度的一种 | 未开始 |
 | 四、终章实现与对接 | 接入地形、环境、正常睡眠与演出，并与物品线对接飞船、有效核心、星图、发现流程和 FTB 抵达记录 | 未开始；可独立推进世界实现，不以飞船完成为前置 |
 | 五、维度与完整旅程验收 | 最后实测星球往返、按维度呈现、缓存恢复、多人过夜、演出及重启后的状态 | 未开始 |
@@ -56,7 +56,18 @@
 - 已完成：下载并校验 Cleanroom 0.6.13-alpha 的 100 项类库和 1305 项资源；无额外模组时成功进入、保存并退出普通主世界，日志确认 NVIDIA OpenGL 4.6。
 - 本轮组合：Cleanroom 0.6.13-alpha、Java 25.0.1、Actinium alpha-0.0.13、官方 DH 3.3.3、Reimagined r5.9.3 HIGH。Actinium、DH 与光影包已按发布元数据校验哈希；本轮未加入 GC / GS、Fugue 或 Scalar，加载器的后两项缺失提示已明确记录，尚不能据此用于完整整合包。
 - 已确认：Actinium 与 DH 共同加载并识别 Iris 兼容接口；同一普通主世界成功开启 Reimagined HIGH，近景、树木阴影和云层可正常显示，未复现原先花屏与矩阵空指针崩溃。F3 可见 DH 生成与渲染加载任务，LOD 数据库持续增长；已正常关闭、保存并完整重启，再次进入同一存档，光影设置保留且画面正常。用户随后实机确认近远景衔接可接受（轻微瑕疵不影响体验），并在检查水体后确认无问题。阶段一按本轮普通世界画面与重进范围通过，不代表长期稳定性、完整整合包或自定义维度通过。
-- 已知限制：两次进入时各有一次 `Opaque + Translucent pass ran with shaders on` 错误，尚未确认对 LOD 绘制的影响；另有 DH 在线更新超时、生成时 cascading worldgen lag、G1 卡顿提示，以及 `BIOME_SULFUR_CAVES` / `endFlashIntensity` uniform 警告。用户已接受当前画面，不为轻微衔接瑕疵或清除日志提示继续调优；DH 开关定量对照未做。后续若出现可见问题，再结合这些提示定位，必要时对照上游实测过的 DH 3.3.0。下一阶段为现有模组共存验证，尚未开始。
+- 已知限制：两次进入时各有一次 `Opaque + Translucent pass ran with shaders on` 错误，尚未确认对 LOD 绘制的影响；另有 DH 在线更新超时、生成时 cascading worldgen lag、G1 卡顿提示，以及 `BIOME_SULFUR_CAVES` / `endFlashIntensity` uniform 警告。用户已接受当前画面，不为轻微衔接瑕疵或清除日志提示继续调优；DH 开关定量对照未做。后续若出现可见问题，再结合这些提示定位，必要时对照上游实测过的 DH 3.3.0。现有模组共存结果见阶段二。
+
+### 阶段二实测记录
+
+2026-11-02，沿用阶段一的 Windows、Java 25、Cleanroom、Actinium、DH 和 Reimagined HIGH，另建 `.local/newearth-render/game-compat/`，由同目录上级的 `launch-compat.cmd` 启动。阶段一实例与存档保留；未更改正式客户端、服务器或 Java 8。
+
+- 共存基线：从 Windows 正式客户端复制并逐个比对哈希的 12 个 JAR，包括 GC 4.0.6、GS 2.2.0 flight-fix、AsmodeusCore 文件版本 1.0.5、EP 0.8.0、MJRLegendsLib、GSLaunchCompat 1.4.8、GC Compatibility、FTBLib、FTBQuests、ItemFilters、JEI 及外置 MixinBooter 10.7；加入 Fugue 0.23.4 与 Scalar Legacy 1.0.1，合计 16 个外置 JAR，全部通过 ZIP CRC 检查。未加入物品线尚未部署的 NewEarth 开发包，不把该结果扩展为开发包验收。
+- 配置：复制现有 GC / GS / EP、AsmodeusCore、FTB 与 JEI 配置，保留既有 `enableSkyOverworld=false`，本轮未修改天空开关；这只验证当前主世界配置，不代表自定义星球天空兼容。
+- 已确认：28 个模组完成加载，创建普通创造世界 `New WorldCompatRenderTest`；Reimagined r5.9.3 HIGH 的岸边、水面反射与云层显示正常，JEI 可搜索并显示 GalaxySpace 物品。主世界 DH 数据库由约 41 MB 继续增长至约 42 MB。正常关闭时保存区块并关闭 DH，完整重启后再次进入同一存档，光影设置和画面保留。本轮普通主世界启动、渲染、保存与重进范围通过；实例留在世界中供用户继续体验。
+- 已知提示与边界：仍有阶段一的 `Opaque + Translucent` 提示和 DH 在线更新超时；另有 missing MultiModel 以及 GC WorldProvider 类型 `-1234` / `-1032` 提示，尚未确定来源及跨维度影响，本轮不据此判定星球可通行。未验证机器与火箭完整玩法、FTB 任务行为、多人、长期稳定性或星球往返；这些不由主菜单加载成功替代。
+
+首轮保存关闭日志、重进日志与最近画面分别保存在 Windows `build/checks/newearth/compat/startup.log`、`reentry.log`、`reimagined.png`，不提交本机实例和生成文件。后续进入阶段三地形方案验证，维度与完整旅程仍按阶段五验收。
 
 ## 发现与 FTB 呈现
 
