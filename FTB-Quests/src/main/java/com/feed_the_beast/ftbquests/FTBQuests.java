@@ -141,6 +141,6 @@ public class FTBQuests
 
 	public static boolean canEdit(EntityPlayer player)
 	{
-		return !SharedTeamManager.isActive() && NBTUtils.getPersistedData(player, false).getBoolean("ftbquests_editing_mode");
+		return NBTUtils.getPersistedData(player, false).getBoolean("ftbquests_editing_mode");
 	}
 }

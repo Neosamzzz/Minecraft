@@ -28,7 +28,7 @@ public class CommandEditingMode extends CommandFTBQuestsBase
 	@Override
 	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
 	{
-		return !SharedTeamManager.isActive() && (server.isSinglePlayer() || super.checkPermission(server, sender));
+		return SharedTeamManager.isActive() || server.isSinglePlayer() || super.checkPermission(server, sender);
 	}
 
 	@Override

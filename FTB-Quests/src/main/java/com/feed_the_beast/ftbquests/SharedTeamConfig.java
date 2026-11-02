@@ -6,7 +6,7 @@ import net.minecraftforge.common.config.Config;
 public class SharedTeamConfig
 {
 	@Config.RequiresMcRestart
-	@Config.Comment("Use one shared team with in-game quest editing disabled. Maintain quests through configuration files.")
+	@Config.Comment("Use one shared team, keep only Quests in the sidebar, and allow trusted players to toggle quest editing inside the quest book.")
 	public static boolean enabled = true;
 
 	@Config.RequiresMcRestart

@@ -139,7 +139,7 @@ public class ClientQuestFile extends QuestFile
 	@Override
 	public boolean canEdit()
 	{
-		return editingMode && !sharedTeam;
+		return editingMode;
 	}
 
 	public void refreshGui()

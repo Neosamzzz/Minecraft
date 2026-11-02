@@ -103,7 +103,7 @@ public class FTBQuestsClientEventHandler
 	@SubscribeEvent
 	public static void onSidebarButtonCreated(SidebarButtonCreatedEvent event)
 	{
-		if (event.getButton().id.equals(new ResourceLocation("ftblib", "my_team")))
+		if (!event.getButton().id.equals(QUESTS_BUTTON))
 		{
 			event.getButton().addVisibilityCondition(() -> !ClientQuestFile.exists() || !ClientQuestFile.INSTANCE.sharedTeam);
 		}
