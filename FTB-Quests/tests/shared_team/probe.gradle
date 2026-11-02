@@ -1,16 +1,24 @@
+// Generated checks share the repository-level module/check layout.
 allprojects { p ->
     afterEvaluate {
+        def probeOutput = new File(p.projectDir.parentFile, 'build/checks/ftb/shared-team')
         task sharedTeamProbe(type: JavaCompile, dependsOn: classes) {
             source = p.fileTree('tests/shared_team') { include '*.java' }
             classpath = p.sourceSets.main.output + p.sourceSets.main.runtimeClasspath
-            destinationDir = p.file('build/shared-team-probe')
+            destinationDir = probeOutput
+            doFirst {
+                p.delete(probeOutput)
+                probeOutput.mkdirs()
+            }
             sourceCompatibility = '1.8'
             targetCompatibility = '1.8'
             options.encoding = 'UTF-8'
             options.compilerArgs = ['-proc:none']
         }
         task runSharedTeamProbe(type: JavaExec, dependsOn: sharedTeamProbe) {
-            classpath = p.files('build/shared-team-probe') + p.sourceSets.main.output + p.sourceSets.main.runtimeClasspath
+            classpath = p.files(probeOutput) + p.sourceSets.main.output + p.sourceSets.main.runtimeClasspath
+            workingDir = probeOutput
+            doFirst { p.delete(new File(probeOutput, 'logs')) }
             main = 'com.feed_the_beast.ftbquests.util.SharedTeamProbe'
             systemProperty 'java.awt.headless', 'true'
         }

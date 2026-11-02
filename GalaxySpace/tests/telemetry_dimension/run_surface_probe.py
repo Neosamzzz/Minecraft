@@ -3,9 +3,9 @@ from pathlib import Path
 import subprocess
 import sys
 
-from probe_runtime import prepare
+from probe_runtime import arguments, prepare
 
-java, javac, cp, work = prepare(*sys.argv[1:])
+java, javac, cp, work = prepare(*arguments('surface-map'))
 sources = Path(__file__).resolve().parent
 subprocess.run([javac, '-proc:none', '-cp', cp, '-d', str(work),
                 str(sources / 'SurfaceMapProbe.java'), str(sources / 'TelemetryTweaker.java')], check=True)

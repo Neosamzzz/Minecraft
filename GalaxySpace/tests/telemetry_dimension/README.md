@@ -30,7 +30,7 @@ Build with the existing Gradle jar/reobfJar tasks, then:
 Validation:
 
 - `TextLayoutTest`: bounded CJK/long dimension strings; no global layout modification.
-- `run_probe.py RUNTIME_PROBE_DIR OUTPUT_ADDON WORK_DIR`: actual GC4.0.6/Mixin
+- `run_probe.py [RUNTIME_PROBE_DIR [OUTPUT_ADDON [WORK_DIR]]]`: actual GC4.0.6/Mixin
   client and server, packet round trip, player/mob/rocket lookup, cross-world saved
   UUID recovery, stale state, explicit unlink, legacy and malformed NBT.
 - `ForgeIntegrationProbe`: temporary test-only mod, compiled against the existing
@@ -54,3 +54,14 @@ prevents a raw translation key from appearing if resources are absent.
 
 1.4.2 起各版本的改动、影响面与验证状态统一记录在 [changelog/gslc.md](../../../changelog/gslc.md)。
 本文件只保留构建方式、测试手段与 1.4.1 基线的技术要点。
+
+## 检查目录约定
+
+配置 JDK 8 后，在仓库根目录运行：
+
+```sh
+python3 GalaxySpace/tests/telemetry_dimension/run_probe.py
+python3 GalaxySpace/tests/telemetry_dimension/run_surface_probe.py
+```
+
+默认运行环境为 `.local/probe-runtime/`；候选包由 `version.txt` 定位到根目录 `build/libs/`。遥测和地图输出分别为 `build/checks/gslc/telemetry/`、`build/checks/gslc/surface-map/`，默认在依赖验证后替换上次输出。依然支持三个位置参数覆盖，自定义输出目录不自动清空。完整规则见[项目目录规范](../../../docs/project-layout.md)。

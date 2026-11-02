@@ -3,10 +3,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-from probe_runtime import prepare
+from probe_runtime import arguments, prepare
 
 root = Path(__file__).resolve().parent
-java, javac, cp, work = prepare(*sys.argv[1:])
+java, javac, cp, work = prepare(*arguments('telemetry'))
 subprocess.run([javac, '-proc:none', '-cp', cp, '-d', str(work),
                 str(root / 'TelemetryProbe.java'), str(root / 'TelemetryTweaker.java')], check=True)
 for side in ('server', 'client'):

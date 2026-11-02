@@ -18,7 +18,7 @@ GalaxySpace flight-fix JAR is still required and remains unchanged.
 
 Runtime test:
 
-    python3 tests/public_controller/run_probe.py RUNTIME_PROBE_DIR OUTPUT_ADDON WORK_DIR
+    python3 tests/public_controller/run_probe.py [RUNTIME_PROBE_DIR [OUTPUT_ADDON [WORK_DIR]]]
 
 The runtime probe uses actual GC 4.0.6 classes, LaunchWrapper and Mixin, asserting
 both GUIs reject a different owner before patching and allow it after patching.
@@ -26,3 +26,5 @@ It also checks the advanced dropdown and unchanged owner data. This is not an
 OpenGL UI or multiplayer packet round-trip test; verify persisted settings with
 another player in game. The existing server BindingProbe passed 105 checks with
 the new addon, confirming client-side isolation and preserved flight behavior.
+
+在仓库根目录可直接执行 `python3 GalaxySpace/tests/public_controller/run_probe.py`。默认读取 `.local/probe-runtime/` 和 `version.txt` 对应的最终 GSLC，输出到 `build/checks/gslc/public-controller/`，每次依赖验证后替换上次默认输出。显式指定的自定义输出目录不自动清空。目录约定见[项目目录规范](../../../docs/project-layout.md)。

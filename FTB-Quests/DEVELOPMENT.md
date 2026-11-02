@@ -93,4 +93,6 @@ py -3 tools/build.py --target ftbquests
 .\FTB-Quests\gradlew.bat -p FTB-Quests --offline --no-daemon --console=plain -I tests/shared_team/probe.gradle runSharedTeamProbe
 ```
 
-探针使用真实 Library 团队、Quests 数据和 GUI action 接口，不启动完整游戏或网络，也不访问玩家存档。测试目录在系统临时目录创建。完整运行验收见[公共团队方案](../docs/ftb-shared-team-plan.md#最低验收范围)。
+探针使用真实 Library 团队、Quests 数据和 GUI action 接口，不启动完整游戏或网络，也不访问玩家存档。探针编译输出统一写入仓库根目录 `build/checks/ftb/shared-team/`，重新编译时替换旧编译输出，运行日志也写入该目录并在下次检查前清理；测试使用的临时数据仍在系统临时目录创建。目录规则见[项目目录规范](../docs/project-layout.md)。完整运行验收见[公共团队方案](../docs/ftb-shared-team-plan.md#最低验收范围)。
+
+仅运行这项无图形检查时，如果离线环境缺少原生库或游戏资源缓存，可在命令末尾添加 `-x extractNatives -x getAssets`；它不需要窗口、声音和游戏资源，不适用于完整游戏启动验证。

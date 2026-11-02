@@ -179,13 +179,19 @@ Minecraft/
 ├── docs/                    # FTB 方案、内容稿与星球研究
 ├── changelog/               # 各开发线改动记录与本机基线
 ├── planning/                # 旧规划入口，转向 NewEarth
-├── dev-tools/               # GSLC 打包底包
+├── dev-tools/               # 构建必需的固定材料，用途与来源见目录说明
 ├── tools/build.py           # 统一构建入口
 ├── tools/tests/             # 构建与打包工具测试
 ├── upstream.json            # 上游来源和导入提交
 ├── version.txt              # GSLC 版本号
-└── build/libs/              # 最终模组包，不提交 Git
+├── .local/                  # 本机开发环境与辅助资料，不提交 Git
+├── server/                  # 本机服务端及管理工具，不提交 Git
+└── build/                   # 可重新生成的输出，不提交 Git
+    ├── libs/                # 最终模组包
+    └── checks/<模块>/<检查项>/ # 专项检查最近一次输出
 ```
+
+目录职责、命名与新增模块约定见[项目目录规范](docs/project-layout.md)。构建底包用途见 [dev-tools 说明](dev-tools/README.md)。
 
 | 上游项目 | 导入分支 | 本地目录 |
 | --- | --- | --- |
