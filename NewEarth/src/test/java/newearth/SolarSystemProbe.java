@@ -142,6 +142,7 @@ public final class SolarSystemProbe {
                         new Analyzer<>(new BasicVerifier()).analyze(node.name, method);
                 }
                 check(true, "Installed bytecode dataflow valid: " + name);
+                if (name.endsWith("GuiCelestialSelection") || name.endsWith("CustomCelestialSelection")) checkMapPatch(node);
                 if (name.endsWith("WorldProviderNeptune") || name.endsWith("WorldProviderPluto") || name.endsWith("WorldProviderEris"))
                     executeGate(node);
                 required.remove(name);
@@ -180,9 +181,48 @@ public final class SolarSystemProbe {
                     "/assets/extraplanets/lang/" + language + ".lang"), java.nio.charset.StandardCharsets.UTF_8)) { expected.load(reader); }
             for (String key : expected.stringPropertyNames())
                 check(locale.formatMessage(key, new Object[0]).equals(expected.getProperty(key)), "Actual Locale override: " + language + " / " + key);
+            checkMapFacts(locale, language);
             System.out.println("Actual MC Locale " + language + ": " + locale.formatMessage("planet.JupiterEP", new Object[0])
                     + ", " + locale.formatMessage("planet.MercuryEP", new Object[0]));
         }
+    }
+
+    private static void checkMapPatch(ClassNode node) {
+        int hints = 0, renders = 0, legacy = 0;
+        for (MethodNode method : node.methods) for (AbstractInsnNode i : method.instructions.toArray()) {
+            if (i instanceof MethodInsnNode) {
+                MethodInsnNode call = (MethodInsnNode) i;
+                if (call.owner.equals("newearth/client/CatalogueHooks") && call.name.equals("drawFacts")) renders++;
+                if (call.owner.equals("newearth/client/CatalogueHooks") && call.name.equals("legacyDetails")) legacy++;
+            }
+            if (method.name.equals("drawButtons") && i.getOpcode() == Opcodes.POP2 && i.getNext().getOpcode() == Opcodes.ICONST_0
+                    && i.getNext().getNext().getOpcode() == Opcodes.IFEQ) hints++;
+        }
+        check(hints == 1, "Zoom hint disabled without altering selection input: " + node.name);
+        check(renders > 0, "Right-panel facts drawn after map buttons: " + node.name);
+        if (node.name.contains("CustomCelestialSelection")) check(legacy == 1, "Legacy details gated; galaxy controls retained");
+    }
+
+    private static void checkMapFacts(net.minecraft.client.resources.Locale locale, String language) throws Exception {
+        for (java.lang.reflect.Field field : net.minecraft.client.resources.I18n.class.getDeclaredFields())
+            if (field.getType() == net.minecraft.client.resources.Locale.class) { field.setAccessible(true); field.set(null, locale); }
+        java.util.Properties expected = new java.util.Properties();
+        try (java.io.Reader reader = new java.io.InputStreamReader(SolarSystemProbe.class.getResourceAsStream(
+                "/assets/newearth/lang/" + language + ".lang"), java.nio.charset.StandardCharsets.UTF_8)) { expected.load(reader); }
+        for (String key : expected.stringPropertyNames())
+            check(locale.formatMessage(key, new Object[0]).equals(expected.getProperty(key)), "Actual map translation: " + key);
+        Planet body = new Planet("mercuryep");
+        body.setDimensionInfo(0, net.minecraft.world.WorldProviderSurface.class);
+        body.setTierRequired(3);
+        body.setAtmosphere(new micdoodle8.mods.galacticraft.api.world.AtmosphereInfo(false, false, false, -5, 0, 0));
+        List<String> rows = newearth.client.PlanetFacts.describe(body);
+        check(rows.stream().anyMatch(row -> row.endsWith("T3")), "Map uses registered tier");
+        check(rows.stream().anyMatch(row -> row.endsWith(expected.getProperty("newearth.map.freezing"))), "Cold classification from game parameter");
+        check(rows.stream().anyMatch(row -> row.endsWith(expected.getProperty("newearth.map.resources.mercuryep"))), "EP resource identity retained");
+        check(!expected.getProperty("newearth.map.resources.mercury").equals(expected.getProperty("newearth.map.resources.mercuryep")), "GS and EP resources differ");
+        body.setUnreachable();
+        check(newearth.client.PlanetFacts.describe(body).size() == 2, "Display-only bodies do not claim a landable environment");
+        check(newearth.client.PlanetFacts.thermalClass(0).equals("mild") && newearth.client.PlanetFacts.thermalClass(4).equals("scorching"), "Thermal classification boundaries");
     }
 
     private static void checkNames() throws Exception {

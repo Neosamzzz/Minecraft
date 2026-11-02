@@ -50,6 +50,9 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 m.instructions.insert(hook); changes++;
             }
             if (gui) changes += patchCatalogue(m);
+            if ((gui || epGui) && m.name.equals("drawButtons") && m.desc.equals("(II)V")) {
+                patchMapButtons(m); changes++;
+            }
             if (provider && m.name.equals("canSpaceshipTierPass") && m.desc.equals("(I)Z")) {
                 // EP 0.8.0 source snapshots and installed jars differ here. Accept
                 // either the known constant gate or a body-tier lookup, then emit
@@ -120,7 +123,7 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 m.instructions.insert(hook); changes++;
             }
         }
-        int expected = gui ? 5 : world ? 2 : 1;
+        int expected = gui ? 6 : epGui ? 2 : world ? 2 : 1;
         if (changes != expected) throw new IllegalStateException("Unsupported solar-system patch target " + n + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         c.accept(writer);
@@ -137,27 +140,28 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
             if (next != null && next.getOpcode() == IFNULL) { guard = (JumpInsnNode) next; break; }
         }
         if (guard == null) throw new IllegalStateException("Unsupported EP detail panel guard");
-        LabelNode originalEnd = guard.label, cleanup = new LabelNode();
-        for (AbstractInsnNode i = guard.getNext(); i != originalEnd; i = i.getNext()) {
-            if (i == null) throw new IllegalStateException("Unsupported EP detail panel range");
-            if (i instanceof JumpInsnNode && ((JumpInsnNode) i).label == originalEnd) ((JumpInsnNode) i).label = cleanup;
+        // Preserve the galaxy selector below this block; only suppress the legacy details.
+        m.instructions.insertBefore(guard, new MethodInsnNode(INVOKESTATIC,
+                "newearth/client/CatalogueHooks", "legacyDetails", "(Ljava/lang/Object;)Z", false));
+        guard.setOpcode(IFEQ);
+    }
+
+    private static void patchMapButtons(MethodNode m) {
+        int hints = 0;
+        for (AbstractInsnNode i : m.instructions.toArray()) {
+            if (!(i instanceof FieldInsnNode) || !((FieldInsnNode) i).name.equals("SELECTED")) continue;
+            AbstractInsnNode jump = i.getNext();
+            while (jump != null && jump.getOpcode() < 0) jump = jump.getNext();
+            if (jump == null || jump.getOpcode() != IF_ACMPNE)
+                throw new IllegalStateException("Unsupported map zoom hint guard");
+            InsnList disabled = new InsnList(); disabled.add(new InsnNode(POP2)); disabled.add(new InsnNode(ICONST_0));
+            m.instructions.insertBefore(jump, disabled); ((JumpInsnNode) jump).setOpcode(IFEQ); hints++;
         }
-        InsnList begin = new InsnList(); begin.add(new VarInsnNode(ALOAD, 0)); begin.add(new VarInsnNode(ILOAD, 2));
-        begin.add(new MethodInsnNode(INVOKESTATIC, client, "beginDetails", "(Ljava/lang/Object;I)I", false));
-        begin.add(new VarInsnNode(ISTORE, 2)); m.instructions.insert(guard, begin);
-        AbstractInsnNode frameNode = originalEnd.getNext();
-        while (frameNode != null && !(frameNode instanceof FrameNode) && frameNode.getOpcode() < 0) frameNode = frameNode.getNext();
-        if (!(frameNode instanceof FrameNode)) throw new IllegalStateException("Missing EP detail panel join frame");
-        FrameNode frame = (FrameNode) frameNode;
-        InsnList end = new InsnList(); end.add(cleanup);
-        end.add(new FrameNode(F_NEW, frame.local.size(), frame.local.toArray(), frame.stack.size(), frame.stack.toArray()));
-        end.add(new VarInsnNode(ALOAD, 0)); end.add(new VarInsnNode(ILOAD, 2));
-        end.add(new MethodInsnNode(INVOKESTATIC, client, "endDetails", "(Ljava/lang/Object;I)I", false));
-        end.add(new VarInsnNode(ISTORE, 2)); m.instructions.insertBefore(originalEnd, end);
+        if (hints != 1) throw new IllegalStateException("Unsupported map zoom hint count " + hints);
         for (AbstractInsnNode i : m.instructions.toArray()) if (i.getOpcode() == RETURN) {
-            InsnList finish = new InsnList(); finish.add(new VarInsnNode(ALOAD, 0)); finish.add(new VarInsnNode(ILOAD, 2));
-            finish.add(new MethodInsnNode(INVOKESTATIC, client, "endDetails", "(Ljava/lang/Object;I)I", false)); finish.add(new InsnNode(POP));
-            m.instructions.insertBefore(i, finish);
+            InsnList render = new InsnList(); render.add(new VarInsnNode(ALOAD, 0));
+            render.add(new MethodInsnNode(INVOKESTATIC, "newearth/client/CatalogueHooks", "drawFacts", "(Ljava/lang/Object;)V", false));
+            m.instructions.insertBefore(i, render);
         }
     }
 

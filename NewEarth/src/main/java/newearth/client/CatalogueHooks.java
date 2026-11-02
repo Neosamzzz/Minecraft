@@ -2,15 +2,18 @@ package newearth.client;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
-import micdoodle8.mods.galacticraft.api.galaxies.Star;
+import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
+import micdoodle8.mods.galacticraft.api.galaxies.Satellite;
 import micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import newearth.CatalogueScroll;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -30,7 +33,8 @@ public final class CatalogueHooks {
         Object detailsBody;
         int x, y, left, top, bottom, dragAnchor;
         int detailsLeft, detailsTop, detailsBottom, detailsAnchor;
-        boolean dragging, detailsDragging, detailsEnabled, detailsActive;
+        boolean dragging, detailsDragging, detailsEnabled;
+        List<String> detailLines = new ArrayList<>();
     }
 
     private static State state(Object gui) { return STATES.computeIfAbsent(gui, key -> new State()); }
@@ -49,13 +53,16 @@ public final class CatalogueHooks {
             s.scroll.contentHeight = children.size() * 14;
             if (!zoomed && children.contains(selected)) s.scroll.contentHeight += ANIMATION.getInt(object);
             s.scroll.viewportHeight = s.bottom - s.top; s.scroll.clamp();
-            s.detailsEnabled = object.getClass().getName().equals("com.mjr.extraplanets.client.gui.screen.CustomCelestialSelection")
-                    && selected != null && !VIEW.get(object).toString().equals("PROFILE")
-                    && Class.forName("com.mjr.extraplanets.Config").getField("SHOW_EXINFO_CUSTOM_CELESTIAL_SELECTION").getBoolean(null);
-            if (selected != s.detailsBody) { s.detailsBody = selected; s.details.offset = 0; s.detailsDragging = false; }
-            s.detailsLeft = gui.width - 270 - s.left; s.detailsTop = 27;
-            s.details.contentHeight = selected instanceof Star ? 110 : Math.max(240, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT * 27 - 3);
-            s.details.viewportHeight = Math.min(s.details.contentHeight, Math.max(1, gui.height - s.left - 3 - s.detailsTop));
+            s.detailsEnabled = selected != null && !(selected instanceof Satellite) && !VIEW.get(object).toString().equals("PROFILE");
+            if (selected != s.detailsBody) {
+                s.detailsBody = selected; s.details.offset = 0; s.detailsDragging = false;
+                s.detailLines = selected == null || selected instanceof Satellite ? new ArrayList<>() : PlanetFacts.describe((CelestialBody) selected);
+            }
+            s.detailsLeft = gui.width - s.left - 92; s.detailsTop = s.left + 30;
+            int lines = 0;
+            for (String line : s.detailLines) lines += Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(line, 82).size();
+            s.details.contentHeight = lines * 11;
+            s.details.viewportHeight = Math.max(1, Math.min(100, gui.height - s.left - 3 - s.detailsTop));
             s.detailsBottom = s.detailsTop + s.details.viewportHeight; s.details.clamp();
             if (!Mouse.isButtonDown(0)) { s.dragging = false; s.detailsDragging = false; }
             if (s.dragging) s.scroll.drag(y - s.top - s.dragAnchor);
@@ -64,7 +71,7 @@ public final class CatalogueHooks {
     }
 
     private static boolean insideDetails(State s, int x, int y) {
-        return s.detailsEnabled && x >= s.detailsLeft && x < s.detailsLeft + 168 && y >= s.detailsTop && y < s.detailsBottom;
+        return s.detailsEnabled && x >= s.detailsLeft && x < s.detailsLeft + 88 && y >= s.detailsTop && y < s.detailsBottom;
     }
 
     private static boolean inside(State s, int x, int y) {
@@ -80,7 +87,7 @@ public final class CatalogueHooks {
 
     public static boolean click(Object gui, int x, int y, int button) {
         State s = state(gui);
-        if (button == 0 && insideDetails(s, x, y) && x >= s.detailsLeft + 163 && s.details.maximum() > 0) {
+        if (button == 0 && insideDetails(s, x, y) && x >= s.detailsLeft + 84 && s.details.maximum() > 0) {
             int thumb = s.detailsTop + s.details.thumbTop();
             s.detailsAnchor = y >= thumb && y < thumb + s.details.thumbHeight() ? y - thumb : s.details.thumbHeight() / 2;
             s.detailsDragging = true; s.details.drag(y - s.detailsTop - s.detailsAnchor); return true;
@@ -93,24 +100,27 @@ public final class CatalogueHooks {
 
     public static boolean dragging(Object gui) { State s = state(gui); return s.dragging || s.detailsDragging; }
 
-    public static int beginDetails(Object object, int mouseY) {
-        State s = state(object);
-        if (!s.detailsEnabled) return mouseY;
-        clip(object, s.detailsLeft, s.detailsTop, 168, s.details.viewportHeight);
-        GL11.glPushMatrix(); GL11.glTranslated(0, -s.details.offset, 0); s.detailsActive = true;
-        return mouseY + s.details.offset;
-    }
+    public static boolean legacyDetails(Object selected) { return false; }
 
-    public static int endDetails(Object object, int mouseY) {
+    public static void drawFacts(Object object) {
         State s = state(object);
-        if (!s.detailsActive) return mouseY;
-        GL11.glPopMatrix(); GL11.glPopAttrib(); s.detailsActive = false;
-        if (s.details.maximum() > 0) {
-            int x = s.detailsLeft + 164, y = s.detailsTop + s.details.thumbTop();
-            Gui.drawRect(x, s.detailsTop, x + 3, s.detailsBottom, 0xAA123344);
-            Gui.drawRect(x, y, x + 3, y + s.details.thumbHeight(), s.detailsDragging ? 0xFFFFFF88 : 0xFF55CCFF);
+        if (!s.detailsEnabled) return;
+        Minecraft mc = Minecraft.getMinecraft();
+        mc.fontRenderer.drawString(I18n.format("newearth.map.details"), s.detailsLeft + 2, s.left + 18, 0x55CCFF);
+        clip(object, s.detailsLeft, s.detailsTop, 88, s.details.viewportHeight);
+        int y = s.detailsTop - s.details.offset;
+        for (String line : s.detailLines) {
+            for (String part : mc.fontRenderer.listFormattedStringToWidth(line, 82)) {
+                mc.fontRenderer.drawString(part, s.detailsLeft, y, 0xDDDDDD); y += 11;
+            }
         }
-        return mouseY - s.details.offset;
+        GL11.glPopAttrib();
+        if (s.details.maximum() > 0) {
+            int x = s.detailsLeft + 85, top = s.detailsTop + s.details.thumbTop();
+            Gui.drawRect(x, s.detailsTop, x + 2, s.detailsBottom, 0xAA123344);
+            Gui.drawRect(x, top, x + 2, top + s.details.thumbHeight(), 0xFF55CCFF);
+        }
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     private static void clip(Object object, int x, int y, int width, int height) {
