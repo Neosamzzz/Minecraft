@@ -193,6 +193,8 @@ public final class SolarSystemProbe {
             check(names.size() == 21, "All EP compatibility names supplied: " + language);
             check(names.values().stream().noneMatch(value -> value.toString().contains("2.0")), "No 2.0 label remains: " + language);
             check(names.getProperty("planet.MercuryEP").contains("EP"), "Dual Mercury destinations remain distinguishable: " + language);
+            check(names.values().stream().filter(value -> value.toString().contains("EP")).count() == 2,
+                    "Only the two retained dual planets need source labels: " + language);
         }
     }
 
@@ -218,9 +220,10 @@ public final class SolarSystemProbe {
     private static void checkConfig() throws Exception {
         File root = new File(System.getProperty("newearth.configRoot"));
         net.minecraftforge.common.config.Configuration gs = config(new File(root, "GalaxySpace/dimensions.conf"));
-        for (String name : new String[] {"enableJupiter", "enableSaturn", "enableUranus", "enableNeptune", "enablePluto"})
+        for (String name : new String[] {"enableJupiter", "enableSaturn", "enableUranus", "enableNeptune", "enablePluto", "enableTriton"})
             configFlag(gs, "general", name, false);
         for (String name : new String[] {"enableMercury", "enableCeres", "enableIo", "enableEnceladus", "enableMiranda",
+                "enablePhobos", "enableEuropa", "enableGanymede", "enableCallisto", "enableTitan",
                 "enableJupiterMoons", "enableSaturnMoons", "enableUranusMoons", "enableNeptuneMoons"})
             configFlag(gs, "general", name, true);
         net.minecraftforge.common.config.Configuration ep = config(new File(root, "ExtraPlanets.cfg"));
@@ -232,6 +235,22 @@ public final class SolarSystemProbe {
             check(category != null, "EP fixed config key exists: " + name);
             configFlag(ep, category, name, true);
         }
+        for (String name : new String[] {"Phobos", "IO", "Europa", "Ganymede", "Callisto", "Titan"}) {
+            String category = null;
+            for (String candidate : ep.getCategoryNames()) if (ep.hasKey(candidate, name)) category = candidate;
+            check(category != null, "Excluded EP moon key exists: " + name);
+            configFlag(ep, category, name, false);
+        }
+        int duplicateSurfaces = 0;
+        String[][] pairs = {{"enableMercury", "Mercury & Tier 4 Rocket"}, {"enableCeres", "Ceres"},
+                {"enablePhobos", "Phobos"}, {"enableIo", "IO"}, {"enableEuropa", "Europa"},
+                {"enableGanymede", "Ganymede"}, {"enableCallisto", "Callisto"}, {"enableTitan", "Titan"}, {"enableTriton", "Triton"}};
+        for (String[] pair : pairs) {
+            boolean epEnabled = false;
+            for (String category : ep.getCategoryNames()) if (ep.hasKey(category, pair[1])) epEnabled = ep.getCategory(category).get(pair[1]).getBoolean();
+            if (gs.getCategory("general").get(pair[0]).getBoolean() && epEnabled) duplicateSurfaces++;
+        }
+        check(duplicateSurfaces == 2, "Only Mercury and Ceres retain two landable implementations");
     }
 
     private static net.minecraftforge.common.config.Configuration config(File file) {

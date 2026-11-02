@@ -33,10 +33,13 @@ public final class PlanetHooks {
             Class<?> gs = Class.forName("galaxyspace.core.configs.GSConfigDimensions");
             for (String name : new String[] {"GALAXY_SPACE_COMPATIBILITY", "MERCURY", "CERES", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "ERIS", "TRITON"})
                 expectFlag(ep, name, true, "config/ExtraPlanets.cfg");
+            for (String name : new String[] {"PHOBOS", "IO", "EUROPA", "GANYMEDE", "CALLISTO", "TITAN"})
+                expectFlag(ep, name, false, "config/ExtraPlanets.cfg");
             for (String name : new String[] {"enableMercury", "enableCeres", "enableIo", "enableEnceladus", "enableMiranda",
+                    "enablePhobos", "enableEuropa", "enableGanymede", "enableCallisto", "enableTitan",
                     "enableJupiterMoons", "enableSaturnMoons", "enableUranusMoons", "enableNeptuneMoons"})
                 expectFlag(gs, name, true, "config/GalaxySpace/dimensions.conf");
-            for (String name : new String[] {"enableJupiter", "enableSaturn", "enableUranus", "enableNeptune", "enablePluto"})
+            for (String name : new String[] {"enableJupiter", "enableSaturn", "enableUranus", "enableNeptune", "enablePluto", "enableTriton"})
                 expectFlag(gs, name, false, "config/GalaxySpace/dimensions.conf");
         } catch (ReflectiveOperationException e) { throw unsupported(e); }
     }
