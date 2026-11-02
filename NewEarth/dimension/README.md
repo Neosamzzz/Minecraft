@@ -33,18 +33,30 @@
 | [第三方补丁项目](https://github.com/Marsietiss/celeritas-littletiles-bridge)记录官方 DH 3.3.3、修改过的 Demonica 0.7.3 与 Reimagined r5.9.3 HIGH 实测 | Demonica 可作为备选研究对象；该记录依赖补丁及指定 Celeritas，不代表官方 Demonica 任意版本直接可用，也不因此给本项目加入 LittleTiles 补丁 |
 | [Actinium 的 GalaxySpace 记录](https://github.com/Q-Engineering-Source/Actinium/blob/main/docs/compat/galaxyspace.md)有 GC / GS / AsmodeusCore 共存与天空修复的用户确认 | 该次修复验证的是无光影天空，不能推导整套 GC / GS + 光影 + DH 已验证 |
 
-优先从 Actinium 文档推荐的 Cleanroom 0.6.13-alpha 与 Java 21 或以上运行环境核对依赖；其当前说明排除 Cleanroom 0.7.0 及以上。实际搭建前重新核实发布包、DH 接口和所需版本，固定一次测试组合；不把升级 Java 本身当作解决渲染冲突的措施。
+优先使用 Actinium 文档推荐的 Cleanroom 0.6.13-alpha；Cleanroom 该版本的发布包要求 Java 25 / 26，不能只按 Actinium 字节码的 Java 21 下限选择运行时。Actinium 当前说明排除 Cleanroom 0.7.0 及以上。实际搭建前重新核实发布包、DH 接口和所需版本，固定一次测试组合；不把升级 Java 本身当作解决渲染冲突的措施。
 
 区块预生成与 DH LOD 构建分别评估：已有区块仍需转换成远景数据，不能以预生成完成判定 DH 缓存就绪，也不能按高版本 DH SeedGen 的速度承诺 1.12.2 表现。此前工具名称曾混淆；用户日志里的工具是 Chunk-Pregenerator，不能将其问题直接归到 Chunky。
 
-## 简要推进顺序
+## 阶段与验证进度
 
-1. **先验证渲染组合。** 使用独立测试实例和测试世界，从最小依赖确认 Reimagined 与 DH 的近远景、水、天空、阴影及重进世界，再加入现有 GC / GS 及其依赖，检查其他星球与维度切换。实际画面在目标 Windows 客户端验收；源码、编译与 Mac 测试只作辅助依据。
-2. **再验证地形与独立维度。** 比较现有生成方案的山脉、森林、河流、海陆尺度和生成成本，选定能承载目标景观的一种；接入测试维度后检查 DH 远景衔接、缓存恢复、生成性能、保存与往返。先满足景观方向，不为比较方案另扩展生态或工业内容。
-3. **补齐世界行为与结尾。** 验证环境、昼夜、正常床睡眠与多人过夜，再接入服务端过夜完成判定和客户端演出，检查同步、重复触发及演出后继续游玩。
-4. **最后对接完整旅程。** 与物品线接通星图、八阶飞船、有效核心及同船乘员到达返回，再落实发现前的信息隐藏和 FTB 抵达记录。
+| 阶段 | 范围与完成标志 | 当前状态 |
+| --- | --- | --- |
+| 一、独立版本验证 | 独立 1.12.2 实例、普通主世界；固定加载器、Java、Actinium、DH 与 Reimagined，验证近远景、水、天空、阴影及退出重进 | 进行中，见下方实测记录 |
+| 二、现有模组共存 | 在阶段一组合中加入 GC / GS 及整合包依赖，先在普通主世界确认启动、渲染和保存 | 未开始 |
+| 三、地形方案验证 | 用独立测试世界比较少量现有生成方案的尺度、景观、DH 表现与生成成本，选定能接入独立维度的一种 | 未开始 |
+| 四、终章实现与对接 | 接入地形、环境、正常睡眠与演出，并与物品线对接飞船、有效核心、星图、发现流程和 FTB 抵达记录 | 未开始；可独立推进世界实现，不以飞船完成为前置 |
+| 五、维度与完整旅程验收 | 最后实测星球往返、按维度呈现、缓存恢复、多人过夜、演出及重启后的状态 | 未开始 |
 
-当前只确定研究路线与顺序，尚未搭建或运行本项目的新渲染组合；完整模组兼容、地形选型和按维度呈现仍是待验证项。验证结果回填本页或 Issue #8，生成文件沿用[项目目录规范](../../docs/project-layout.md)，不为每轮尝试新增报告或永久脚本。
+前期版本与地形验证使用普通主世界，不提前制作终章维度；阶段一通过不等于自定义维度或整合包通过。阶段结果持续更新在对应位置，被替换的版本与结论及时修订，历史由 Git 与 Issue #8 保留。生成文件沿用[项目目录规范](../../docs/project-layout.md)，不为每轮尝试新增报告或永久脚本。
+
+### 阶段一实测记录
+
+2026-11-02 开始，测试环境为 Windows 11、RTX 3060 Laptop、NVIDIA 610.88。独立实例放在 Windows 项目的 `.local/newearth-render/`，日志位于 `build/checks/newearth/render/`；复用现有 Java 25.0.1 运行时，仅由测试启动入口显式指定，原有 Java 8、启动器配置、正式客户端和服务器保持原样。可复用入口为该目录的 `launch.cmd`，测试存档为 `New WorldRenderTest`；首轮、重进日志与最近画面分别保留为检查目录下的 `actinium-console.log`、`reentry.log`、`reimagined.png`。
+
+- 已完成：下载并校验 Cleanroom 0.6.13-alpha 的 100 项类库和 1305 项资源；无额外模组时成功进入、保存并退出普通主世界，日志确认 NVIDIA OpenGL 4.6。
+- 本轮组合：Cleanroom 0.6.13-alpha、Java 25.0.1、Actinium alpha-0.0.13、官方 DH 3.3.3、Reimagined r5.9.3 HIGH。Actinium、DH 与光影包已按发布元数据校验哈希；本轮未加入 GC / GS、Fugue 或 Scalar，加载器的后两项缺失提示已明确记录，尚不能据此用于完整整合包。
+- 已确认：Actinium 与 DH 共同加载并识别 Iris 兼容接口；同一普通主世界成功开启 Reimagined HIGH，近景、树木阴影和云层可正常显示，未复现原先花屏与矩阵空指针崩溃。F3 可见 DH 生成与渲染加载任务，LOD 数据库持续增长；已正常关闭、保存并完整重启，再次进入同一存档，光影设置保留且画面正常。远景衔接与水面仍需单独验收，阶段一尚未通过。
+- 待处理：两次进入时各有一次 `Opaque + Translucent pass ran with shaders on` 错误，尚未确认对 LOD 绘制的影响；另有 DH 在线更新超时、生成时 cascading worldgen lag、G1 卡顿提示，以及 `BIOME_SULFUR_CAVES` / `endFlashIntensity` uniform 警告。下一步先做 DH 开关对照、远景衔接及水面检查，必要时对照上游实测过的 DH 3.3.0，不能把缓存生成等同于远景渲染通过。
 
 ## 发现与 FTB 呈现
 
