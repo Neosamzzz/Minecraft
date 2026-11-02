@@ -8,4 +8,6 @@
 
 `tools/build.py` 将该底包与当前编译的 GalaxySpace 内容交给遥测打包脚本，生成 `build/libs/` 中的当前版本 GSLC。文件名的 1.3 是底包版本，不是最终交付版本。调整底包时需验证原有补丁保留及新的候选包；日常清理不要删除该文件。
 
+NewEarth 使用 `NewEarth/build.gradle`，复用 GalaxySpace 的 Gradle Wrapper 和 `GalaxySpace/libs/Galacticraft-1.12.2-4.0.2.283.jar` 编译依赖，通过统一入口 `--target newearth` 构建。它不使用 GSLC 底包，不新增固定材料；GS/EP 仍由运行环境提供，不打进 NewEarth JAR。
+
 新增材料时在此登记用途及来源，临时下载、测试日志和本机路径配置分别放入 `.local/` 或 `build/checks/`，不堆积到此目录。完整规则见[项目目录规范](../docs/project-layout.md)。

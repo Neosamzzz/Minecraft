@@ -1,0 +1,10 @@
+[
+  {
+    "modid": "newearth",
+    "name": "NewEarth",
+    "description": "后期航天、系外探索与新地球衔接",
+    "version": "${version}",
+    "mcversion": "1.12.2",
+    "authorList": ["Neosamzzz"]
+  }
+]

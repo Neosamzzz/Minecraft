@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Build GSLC and FTB Quests with their pinned toolchains into build/libs."""
+"""Build project mods with their pinned toolchains into build/libs."""
 import argparse
+import json
 import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -27,11 +29,12 @@ def check_jdk(env):
         env['JAVA_HOME'] = str(Path(java_home).expanduser().absolute())
 
 
-def run_gradle(project, task, env, offline, rerun=False):
+def run_gradle(project, task, env, offline, rerun=False, wrapper=None):
+    wrapper = wrapper or project
     if os.name == 'nt':
-        command = [env.get('COMSPEC', 'cmd.exe'), '/d', '/c', project + r'\gradlew.bat']
+        command = [env.get('COMSPEC', 'cmd.exe'), '/d', '/c', wrapper + r'\gradlew.bat']
     else:
-        command = ['bash', str(ROOT / project / 'gradlew')]
+        command = ['bash', str(ROOT / wrapper / 'gradlew')]
     command += ['-p', project, '--no-daemon', '--console=plain']
     if rerun:
         command.append('--rerun-tasks')
@@ -82,25 +85,47 @@ def build_ftbquests(env, offline):
     print('Built: {}'.format(output))
 
 
+def build_newearth(env, offline):
+    properties = (ROOT / 'NewEarth/gradle.properties').read_text(encoding='utf-8')
+    match = re.search(r'^mod_version=([A-Za-z0-9][A-Za-z0-9._+-]*)$', properties, re.MULTILINE)
+    if not match:
+        raise ValueError('Invalid NewEarth mod_version.')
+    version = match.group(1)
+    run_gradle('NewEarth', 'build', env, offline, wrapper='GalaxySpace')
+    artifact = ROOT / 'NewEarth/build/libs' / ('NewEarth-' + version + '.jar')
+    if not artifact.is_file():
+        raise FileNotFoundError('Expected NewEarth artifact was not produced: {}'.format(artifact))
+    with zipfile.ZipFile(artifact) as jar:
+        metadata = json.loads(jar.read('mcmod.info').decode('utf-8'))
+        if len(metadata) != 1 or metadata[0].get('modid') != 'newearth' or metadata[0].get('version') != version:
+            raise ValueError('NewEarth metadata does not match the requested version.')
+        if 'newearth/NewEarth.class' not in jar.namelist():
+            raise ValueError('NewEarth artifact has no mod entry point.')
+    output = ROOT / 'build/libs' / artifact.name
+    output.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(str(artifact), str(output))
+    print('Built: {}'.format(output))
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description='Build GSLaunchCompat and/or FTB Quests into build/libs using JDK 8.',
+        description='Build GSLaunchCompat, FTB Quests and NewEarth into build/libs using JDK 8.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument('--target', choices=('gslc', 'ftbquests', 'all'), default='gslc',
-                        help='Build target; all builds GSLC followed by FTB Quests.')
+    parser.add_argument('--target', choices=('gslc', 'ftbquests', 'newearth', 'all'), default='gslc',
+                        help='Build target; all builds GSLC, FTB Quests, then NewEarth.')
     parser.add_argument('--offline', action='store_true', help='Use only already cached Gradle dependencies.')
     args = parser.parse_args()
     try:
         env = dict(os.environ)
         check_jdk(env)
-        targets = ('gslc', 'ftbquests') if args.target == 'all' else (args.target,)
-        builders = {'gslc': build_gslc, 'ftbquests': build_ftbquests}
+        targets = ('gslc', 'ftbquests', 'newearth') if args.target == 'all' else (args.target,)
+        builders = {'gslc': build_gslc, 'ftbquests': build_ftbquests, 'newearth': build_newearth}
         for target in targets:
             print('Building {}...'.format(target), flush=True)
             builders[target](env, args.offline)
         return 0
-    except (ValueError, OSError, subprocess.SubprocessError) as error:
+    except (ValueError, OSError, zipfile.BadZipFile, subprocess.SubprocessError) as error:
         print('Build failed: {}'.format(error), file=sys.stderr)
         return 1
 

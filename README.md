@@ -1,6 +1,6 @@
 # Minecraft 1.12.2 · 航天玩法与共享任务
 
-用于开发和测试 Minecraft 1.12.2 模组的源码仓库，集中维护 Galacticraft / GalaxySpace 拓展与 FTB Quests。通过 `tools/build.py` 统一构建，输出 GSLaunchCompat 补丁和 FTB Quests 模组；`Galacticraft-Legacy/` 与 `ExtraPlanets/` 保留为参考源码。
+用于开发和测试 Minecraft 1.12.2 模组的源码仓库，集中维护 Galacticraft / GalaxySpace 拓展、FTB Quests 与 NewEarth。通过 `tools/build.py` 统一构建，输出 GSLaunchCompat、FTB Quests 和 NewEarth；`Galacticraft-Legacy/` 与 `ExtraPlanets/` 保留为参考源码。
 
 [快速开始](#快速开始) · [构建目标](#构建目标) · [安装与测试](#安装与测试) · [源码结构](#源码结构) · [开发说明](#开发说明)
 
@@ -14,7 +14,7 @@
 | 六章任务配置 | `quest-config/solar-system/normal/` |
 | 任务定稿与预备稿 | `docs/` |
 | 星球共用研究资料 | `docs/research/` |
-| 新地球物品、飞船与能源核心方向 | `NewEarth/items/` |
+| 新地球物品、飞船与能源核心设计及进度 | `NewEarth/items/` |
 | 终章维度与结尾演出方向 | `NewEarth/dimension/` |
 
 历史分支名、提交号与部署记录保留原意，不作为当前维护入口。新地球仍按物品与维度划分工作范围，但无需切换分支查阅资料。
@@ -29,7 +29,7 @@
 | FTB 功能 | 公共团队与共享进度；本机开发包 1202.9.5 恢复任务书内编辑开关，侧栏仅保留任务；无奖励详情继续精简 | 双人联机、重启后进度与旧队数据验收 |
 | FTB 内容 | [太阳系任务定稿表](docs/ftb-quest-content.md)已落实为六章、44 个可见目标；另 16 项留兼容归档；大六边形火箭与分叉布局已配置，后期保留预备稿 | 任务判定、多人共享与进度保存验收；后期载具与能源升级接入 |
 | 星球资料 | GC / GS / EP 静态调查、EP 0.8.0 源码快照与部分运行日志核对 | 正常飞行、资源加工、防护与返航验证 |
-| 新地球 | 火箭物品、新维度按目录分别记录方向，统一在主线维护 | 两线实现尚未开始，基础 FTB 内容独立推进 |
+| 新地球 | NewEarth 0.1.0 独立附加模组；七阶 GS 制造路线、常规系外 T7 衔接与隔离检查 | 七阶启动与航行实测；系外工具、八阶/装配台/核心；终章维度与演出 |
 
 > [!IMPORTANT]
 > **FTB 代码、任务配置和配套文档已通过 [PR #15](https://github.com/Neosamzzz/Minecraft/pull/15) 合入 `main`，后续代码、任务配置与文档统一在 `main` 维护。** 主线包含 1202.9.5 公共团队代码、任务书内编辑开关与侧栏精简、六章任务配置及当时的配套正文；现行内容审阅入口为任务定稿表。FTB 与新地球开发分支已统一合入 `main`，不再分别维护。客户端和服务端应使用同一版本，构建通过与游戏验收分别记录。
@@ -40,10 +40,11 @@
 | --- | --- |
 | **GSLaunchCompat（GSLC）** | GC / GS 发射控制兼容与遥感显示补丁 |
 | **FTB Quests** | 任务书、完成条件、奖励与团队进度系统 |
+| **NewEarth** | 七阶制造与系外准入衔接，后续承载物品、飞船与核心 |
 
 ## 快速开始
 
-需要 **64 位 JDK 8**（含 `java` 和 `javac`）、**Python 3.8+** 和 **Git**。两个项目各自使用仓库内的 Gradle Wrapper，无需安装全局 Gradle 或 Maven。访问本私有仓库需要相应的 GitHub 权限和本机 Git 凭据。
+需要 **64 位 JDK 8**（含 `java` 和 `javac`）、**Python 3.8+** 和 **Git**。GSLC 与 FTB 使用各自的 Gradle Wrapper，NewEarth 复用 GalaxySpace 的 Wrapper，无需安装全局 Gradle 或 Maven。访问本私有仓库需要相应的 GitHub 权限和本机 Git 凭据。
 
 ```sh
 git clone https://github.com/Neosamzzz/Minecraft.git
@@ -82,7 +83,8 @@ python3 tools/build.py --target all
 ```text
 build/libs/
 ├── GSLaunchCompat-1.4.8.jar
-└── FTBQuests-<mod_version>.jar
+├── FTBQuests-<mod_version>.jar
+└── NewEarth-<mod_version>.jar
 ```
 
 ## 构建目标
@@ -94,7 +96,8 @@ build/libs/
 | `py -3 tools/build.py` | 默认构建 GSLC，保持原有用法 |
 | `py -3 tools/build.py --target gslc` | 只构建 GSLC |
 | `py -3 tools/build.py --target ftbquests` | 只构建 FTB Quests |
-| `py -3 tools/build.py --target all` | 依次构建两者，任一目标失败就停止 |
+| `py -3 tools/build.py --target newearth` | 只构建 NewEarth，自动运行七阶隔离检查 |
+| `py -3 tools/build.py --target all` | 依次构建 GSLC、FTB Quests、NewEarth，任一目标失败就停止 |
 | `py -3 tools/build.py --help` | 查看完整参数 |
 
 工具与依赖已完整缓存后，可以为任意目标添加 `--offline`：
@@ -110,6 +113,7 @@ py -3 tools/build.py --target all --offline
 - **GSLC**：版本来自根目录 [version.txt](version.txt)，文件名和包内实现版本同步。
 - **FTB Quests**：版本来自 [gradle.properties](FTB-Quests/gradle.properties) 的 `mod_version`。设置 `BUILD_NUMBER` 时追加 `.<BUILD_NUMBER>`，统一入口会复制对应版本的模组包。
 - FTB 源码包等其他产物留在 `FTB-Quests/build/libs/`；编译中间产物和缓存不提交到 Git。
+- **NewEarth**：版本来自 `NewEarth/gradle.properties`，复用 GalaxySpace 的 Wrapper 和 GC 编译依赖，输出独立模组。依赖、安装、恢复及待验项见 [物品线](NewEarth/items/README.md#实现状态与构建)。
 
 > [!IMPORTANT]
 > **GSLC 的打包范围是固定的。** 当前流程保留 1.3 底包已有补丁，从新编译结果中选取 `galaxyspace/core/telemetry/`、`MixinTileEntityTelemetry`、`MixinGameScreenText`、`MixinDrawGameScreen` 及遥感语言资源。其他 GalaxySpace 类的修改不会自动进入最终 GSLC，需要同时审阅和调整[打包器](GalaxySpace/tests/telemetry_dimension/build_addon.py)。
@@ -174,7 +178,7 @@ Minecraft/
 ├── Galacticraft-Legacy/     # GC 参考源码
 ├── FTB-Quests/              # FTB Quests 源码与构建配置
 ├── ExtraPlanets/            # EP 1.12.2 / 0.8.0 上游源码快照，用于调查与对照
-├── NewEarth/                # 新地球支线，分物品/火箭与新维度两条开发线
+├── NewEarth/                # 独立附加模组源码与构建；items/、dimension/ 维护对应方向
 ├── quest-config/solar-system/ # 当前太阳系任务配置与 ID 映射
 ├── docs/                    # FTB 方案、内容稿与星球研究
 ├── changelog/               # 各开发线改动记录与本机基线

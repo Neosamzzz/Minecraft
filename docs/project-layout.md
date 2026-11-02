@@ -27,6 +27,7 @@ build/checks/gslc/telemetry/
 build/checks/gslc/surface-map/
 build/checks/gslc/public-controller/
 build/checks/ftb/shared-team/
+build/checks/newearth/progression/
 ```
 
 新增模块沿用 `build/checks/<模块>/<检查项>/`，不使用 `new`、`test2`、`after-cleanup` 等临时名称，也不默认累积带时间戳的目录。脚本按自身位置定位仓库，默认输出不随启动工作目录变化。
