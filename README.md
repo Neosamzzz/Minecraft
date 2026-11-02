@@ -113,7 +113,7 @@ py -3 tools/build.py --target all --offline
 - **GSLC**：版本来自根目录 [version.txt](version.txt)，文件名和包内实现版本同步。
 - **FTB Quests**：版本来自 [gradle.properties](FTB-Quests/gradle.properties) 的 `mod_version`。设置 `BUILD_NUMBER` 时追加 `.<BUILD_NUMBER>`，统一入口会复制对应版本的模组包。
 - FTB 源码包等其他产物留在 `FTB-Quests/build/libs/`；编译中间产物和缓存不提交到 Git。
-- **NewEarth**：版本来自 `NewEarth/gradle.properties`，复用 GalaxySpace 的 Wrapper 和 GC 编译依赖，输出独立模组。依赖、安装、恢复及待验项见 [物品线](NewEarth/items/README.md#实现状态与构建)。
+- **NewEarth**：客户端与服务端均需配套安装根目录 [config](config/) 中的两份运行配置，不能只换 JAR；具体步骤见物品线。版本来自 `NewEarth/gradle.properties`，复用 GalaxySpace 的 Wrapper 和 GC 编译依赖，输出独立模组。依赖、安装、恢复及待验项见 [物品线](NewEarth/items/README.md#实现状态与构建)。
 
 > [!IMPORTANT]
 > **GSLC 的打包范围是固定的。** 当前流程保留 1.3 底包已有补丁，从新编译结果中选取 `galaxyspace/core/telemetry/`、`MixinTileEntityTelemetry`、`MixinGameScreenText`、`MixinDrawGameScreen` 及遥感语言资源。其他 GalaxySpace 类的修改不会自动进入最终 GSLC，需要同时审阅和调整[打包器](GalaxySpace/tests/telemetry_dimension/build_addon.py)。
@@ -179,6 +179,7 @@ Minecraft/
 ├── FTB-Quests/              # FTB Quests 源码与构建配置
 ├── ExtraPlanets/            # EP 1.12.2 / 0.8.0 上游源码快照，用于调查与对照
 ├── NewEarth/                # 独立附加模组源码与构建；items/、dimension/ 维护对应方向
+├── config/                  # 整合包固定运行配置，与 NewEarth 配套分发
 ├── quest-config/solar-system/ # 当前太阳系任务配置与 ID 映射
 ├── docs/                    # FTB 方案、内容稿与星球研究
 ├── changelog/               # 各开发线改动记录与本机基线

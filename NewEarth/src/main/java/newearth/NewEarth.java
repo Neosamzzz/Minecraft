@@ -5,15 +5,16 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = NewEarth.MOD_ID, name = "NewEarth", version = "0.2.1",
+@Mod(modid = NewEarth.MOD_ID, name = "NewEarth", version = "0.2.2",
         dependencies = "required-after:galacticraftcore;required-after:galaxyspace;required-after:extraplanets",
-        acceptableRemoteVersions = "0.2.1")
+        acceptableRemoteVersions = "0.2.2")
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
+        PlanetHooks.validateConfiguration();
         SolarSystemBridge.install();
         PlanetHooks.integrate();
     }

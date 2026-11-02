@@ -12,9 +12,6 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
         String n = transformedName;
-        boolean ep = "com.mjr.extraplanets.Config".equals(n);
-        boolean gs = "galaxyspace.core.configs.GSConfigDimensions".equals(n);
-        boolean registry = "micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry".equals(n);
         boolean world = "micdoodle8.mods.galacticraft.core.util.WorldUtil".equals(n);
         boolean item = "galaxyspace.core.prefab.items.rockets.ItemTier6Rocket".equals(n);
         boolean rocket = "galaxyspace.core.prefab.entities.EntityTier6Rocket".equals(n);
@@ -25,30 +22,11 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
         boolean provider = n != null && (n.equals("com.mjr.extraplanets.planets.Neptune.WorldProviderNeptune")
                 || n.equals("com.mjr.extraplanets.planets.Pluto.WorldProviderPluto")
                 || n.equals("com.mjr.extraplanets.planets.Eris.WorldProviderEris"));
-        if (!(ep || gs || registry || world || item || rocket || provider || orbit)) return bytes;
+        if (!(world || item || rocket || provider || orbit)) return bytes;
         ClassNode c = new ClassNode();
         new ClassReader(bytes).accept(c, 0);
         int changes = 0;
         for (MethodNode m : c.methods) {
-            if ((ep && m.name.equals("load") && m.desc.equals("()V"))
-                    || (gs && m.name.equals("syncConfig") && m.desc.equals("(Z)V"))) {
-                for (AbstractInsnNode i : m.instructions.toArray()) if (i.getOpcode() == RETURN) {
-                    InsnList hook = new InsnList();
-                    hook.add(new LdcInsnNode(Type.getObjectType(c.name)));
-                    hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, ep ? "configureEP" : "configureGS", "(Ljava/lang/Class;)V", false));
-                    m.instructions.insertBefore(i, hook);
-                }
-                changes++;
-            }
-            if (registry && m.name.equals("registerPlanet") && m.desc.endsWith(")Z")) {
-                InsnList hook = new InsnList();
-                LabelNode proceed = new LabelNode();
-                hook.add(new VarInsnNode(ALOAD, 0));
-                hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "keepPlanet", "(Ljava/lang/Object;)Z", false));
-                hook.add(new JumpInsnNode(IFNE, proceed));
-                hook.add(new InsnNode(ICONST_0)); hook.add(new InsnNode(IRETURN)); hook.add(proceed); hook.add(new FrameNode(F_SAME, 0, null, 0, null));
-                m.instructions.insert(hook); changes++;
-            }
             if (provider && m.name.equals("canSpaceshipTierPass") && m.desc.equals("(I)Z")) {
                 // EP 0.8.0 source snapshots and installed jars differ here. Accept
                 // either the known constant gate or a body-tier lookup, then emit

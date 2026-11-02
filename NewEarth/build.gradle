@@ -50,6 +50,7 @@ tasks.register('solarSystemCheck', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.runtimeClasspath
     main = 'newearth.SolarSystemProbe'
+    systemProperty 'newearth.configRoot', rootProject.file('../config').absolutePath
     workingDir = rootProject.file('../build/checks/newearth/solar-system')
     doFirst { workingDir.mkdirs() }
     systemProperty 'java.awt.headless', 'true'

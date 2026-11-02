@@ -19,6 +19,8 @@ public final class SolarSystemProbe {
     public static void main(String[] args) throws Exception {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
+        java.lang.reflect.Field home = net.minecraftforge.fml.relauncher.FMLInjectionData.class.getDeclaredField("minecraftHome");
+        home.setAccessible(true); home.set(null, new File(".").getAbsoluteFile());
         List<Planet> gs = new ArrayList<>(), ep = new ArrayList<>();
         for (String name : new String[] {"jupiter", "saturn", "uranus", "neptune", "pluto"}) {
             gs.add(new Planet(name));
@@ -50,6 +52,12 @@ public final class SolarSystemProbe {
         check(PlanetHooks.filterDestinations(Arrays.asList(eris.getDimensionID()), null).isEmpty(), "Eris removed from unauthorized selection");
         PlanetHooks.integrate(gs, ep, eris);
         check(GalaxyRegistry.getMoonsForPlanet(ep.get(1)).size() == 2, "Repeated integration does not duplicate moons");
+        gs.set(4, null);
+        Moon orphan = moon("probe_orphan", null, 1);
+        PlanetHooks.integrate(gs, ep, eris);
+        check(orphan.getParentPlanet() == null, "Disabled GS Pluto does not capture unrelated null-parent moons");
+        check(ep.get(4).getTierRequirement() == 6, "EP Pluto remains valid without a GS Pluto object");
+        checkConfig();
 
         String runtime = System.getenv("NEWEARTH_RUNTIME_MODS");
         if (runtime != null && !runtime.isEmpty()) transformRuntime(new File(runtime));
@@ -65,8 +73,7 @@ public final class SolarSystemProbe {
 
     private static void transformRuntime(File directory) throws Exception {
         Set<String> required = new HashSet<>(Arrays.asList(
-                "com.mjr.extraplanets.Config", "galaxyspace.core.configs.GSConfigDimensions",
-                "micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry", "micdoodle8.mods.galacticraft.core.util.WorldUtil",
+                "micdoodle8.mods.galacticraft.core.util.WorldUtil",
                 "galaxyspace.core.prefab.items.rockets.ItemTier6Rocket", "galaxyspace.core.prefab.entities.EntityTier6Rocket",
                 "com.mjr.extraplanets.planets.Neptune.WorldProviderNeptune", "com.mjr.extraplanets.planets.Pluto.WorldProviderPluto",
                 "com.mjr.extraplanets.planets.Eris.WorldProviderEris",
@@ -125,6 +132,41 @@ public final class SolarSystemProbe {
         check(untouched > 0, "Non-target installed classes are unchanged");
         check(teleportTypes.size() == 4, "All four orbit teleport types load without interception");
         System.out.println("Verified " + untouched + " non-target classes unchanged, including four orbit teleport types");
+    }
+
+    private static void checkConfig() throws Exception {
+        File root = new File(System.getProperty("newearth.configRoot"));
+        net.minecraftforge.common.config.Configuration gs = config(new File(root, "GalaxySpace/dimensions.conf"));
+        for (String name : new String[] {"enableJupiter", "enableSaturn", "enableUranus", "enableNeptune", "enablePluto"})
+            configFlag(gs, "general", name, false);
+        for (String name : new String[] {"enableMercury", "enableCeres", "enableIo", "enableEnceladus", "enableMiranda",
+                "enableJupiterMoons", "enableSaturnMoons", "enableUranusMoons", "enableNeptuneMoons"})
+            configFlag(gs, "general", name, true);
+        net.minecraftforge.common.config.Configuration ep = config(new File(root, "ExtraPlanets.cfg"));
+        for (String name : new String[] {"Mercury & Tier 4 Rocket", "Jupiter & Tier 5 Rocket", "Saturn & Tier 6 Rocket",
+                "Uranus & Tier 7 Rocket", "Neptune & Tier 8 Rocket", "Pluto & Tier 9 Rocket", "Eris & Tier 10 Rocket",
+                "Ceres", "Triton", "Enable Galaxy Space Compatibility"}) {
+            String category = null;
+            for (String candidate : ep.getCategoryNames()) if (ep.hasKey(candidate, name)) category = candidate;
+            check(category != null, "EP fixed config key exists: " + name);
+            configFlag(ep, category, name, true);
+        }
+    }
+
+    private static net.minecraftforge.common.config.Configuration config(File file) {
+        check(file.isFile(), "Fixed config exists: " + file);
+        File input = new File("config", file.getName());
+        try {
+            input.getParentFile().mkdirs();
+            java.nio.file.Files.copy(file.toPath(), input.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        } catch (java.io.IOException e) { throw new IllegalStateException("Cannot prepare isolated config input", e); }
+        net.minecraftforge.common.config.Configuration config = new net.minecraftforge.common.config.Configuration(input);
+        config.load(); return config;
+    }
+
+    private static void configFlag(net.minecraftforge.common.config.Configuration config, String category, String key, boolean value) {
+        check(config.hasKey(category, key) && config.getCategory(category).get(key).getBoolean() == value,
+                "Fixed config " + key + "=" + value);
     }
 
     private static byte[] readEntry(JarFile jar, JarEntry entry) throws Exception {

@@ -1,7 +1,6 @@
 package newearth;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import micdoodle8.mods.galacticraft.api.galaxies.*;
 import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
@@ -12,37 +11,29 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-/** Runtime policy. Config overrides are in memory; removing the addon restores disk settings. */
+/** Runtime rules for the fixed modpack config; never rewrites config values. */
 public final class PlanetHooks {
     private static Integer erisDimension;
     private PlanetHooks() { }
 
-    public static void configureEP(Class<?> config) {
-        flags(config, true, "GALAXY_SPACE_COMPATIBILITY", "MERCURY", "CERES", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "ERIS", "TRITON");
-        // These offsets normally depend on the user's compatibility setting during load().
+    static void validateConfiguration() {
         try {
-            config.getField("MERCURY_DISTANCE_OFFSET").setFloat(null, 0.15F);
-            config.getField("CERES_DISTANCE_OFFSET").setFloat(null, 0.3F);
+            Class<?> ep = Class.forName("com.mjr.extraplanets.Config");
+            Class<?> gs = Class.forName("galaxyspace.core.configs.GSConfigDimensions");
+            for (String name : new String[] {"GALAXY_SPACE_COMPATIBILITY", "MERCURY", "CERES", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "ERIS", "TRITON"})
+                expectFlag(ep, name, true, "config/ExtraPlanets.cfg");
+            for (String name : new String[] {"enableMercury", "enableCeres", "enableIo", "enableEnceladus", "enableMiranda",
+                    "enableJupiterMoons", "enableSaturnMoons", "enableUranusMoons", "enableNeptuneMoons"})
+                expectFlag(gs, name, true, "config/GalaxySpace/dimensions.conf");
+            for (String name : new String[] {"enableJupiter", "enableSaturn", "enableUranus", "enableNeptune", "enablePluto"})
+                expectFlag(gs, name, false, "config/GalaxySpace/dimensions.conf");
         } catch (ReflectiveOperationException e) { throw unsupported(e); }
     }
 
-    public static void configureGS(Class<?> config) {
-        flags(config, true, "enableMercury", "enableCeres", "enableJupiter", "enableSaturn", "enableUranus", "enableNeptune",
-                "enablePluto", "enableIo", "enableEnceladus", "enableMiranda");
-    }
-
-    private static void flags(Class<?> config, boolean value, String... names) {
-        try {
-            for (String name : names) config.getField(name).setBoolean(null, value);
-        } catch (ReflectiveOperationException e) { throw unsupported(e); }
-    }
-
-    public static boolean keepPlanet(Object object) {
-        Planet body = (Planet) object;
-        // Keep the original GS objects available to its providers, recipes and children,
-        // but register only EP's main node. No IDs or existing dimension folders are rewritten.
-        return !(body.getClass().getName().equals("asmodeuscore.core.prefab.celestialbody.ExPlanet")
-                && Arrays.asList("jupiter", "saturn", "uranus", "neptune", "pluto").contains(body.getName()));
+    private static void expectFlag(Class<?> config, String field, boolean expected, String path) throws ReflectiveOperationException {
+        if (config.getField(field).getBoolean(null) != expected)
+            throw new IllegalStateException("NewEarth modpack configuration mismatch: " + path + " / " + field
+                    + " must be " + expected + ". Install the repository config together with NewEarth; no value was overridden.");
     }
 
     static void integrate() {
@@ -60,8 +51,29 @@ public final class PlanetHooks {
             }
             Planet eris = (Planet) ep.getField("ERIS").get(null);
             if (eris == null) throw new IllegalStateException("Required EP Eris is disabled");
+            preserveCharon(gs, targets.get(4));
             integrate(sources, targets, eris);
         } catch (ReflectiveOperationException e) { throw unsupported(e); }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void preserveCharon(Class<?> gs, Planet pluto) throws ReflectiveOperationException {
+        if (!Class.forName("galaxyspace.core.configs.GSConfigCore").getField("enableUnreachable").getBoolean(null)) return;
+        // Disabling GS Pluto also disables its dummy Charon. Preserve that existing
+        // display moon under EP Pluto without enabling EP's whole dummy-moon group.
+        for (Moon moon : GalaxyRegistry.getRegisteredMoons().values())
+            if (moon.getName().equals("charon")) return;
+        java.lang.reflect.Method register = gs.getDeclaredMethod("registerDummyMoon", String.class, Planet.class, float.class);
+        register.setAccessible(true);
+        Moon charon = (Moon) register.invoke(gs.getDeclaredConstructor().newInstance(), "charon", pluto, 15F);
+        gs.getField("charonPluto").set(null, charon);
+        Class<?> registry = Class.forName("asmodeuscore.core.astronomy.BodiesRegistry");
+        registry.getMethod("setOrbitData", CelestialBody.class, float.class, float.class, float.class)
+                .invoke(null, charon, (float) Math.PI, 0.0017F, 50F);
+        Class type = Class.forName("asmodeuscore.api.dimension.IAdvancedSpace$TypeBody");
+        Class<?> data = Class.forName("asmodeuscore.core.astronomy.BodiesData");
+        Object moonData = data.getConstructor(type).newInstance(Enum.valueOf(type, "MOON"));
+        registry.getMethod("registerBodyData", CelestialBody.class, data).invoke(null, charon, moonData);
     }
 
     static void integrate(List<Planet> sources, List<Planet> targets, Planet eris) {
