@@ -2,13 +2,9 @@
   "title": "脚下有数",
   "description": "获得地质扫描仪",
   "icon": "galaxyspace:geo_scanner 1 0",
-  "x": 3.2,
-  "y": -3.4,
-  "text": [
-    "用途：辅助调查周围地层与地下内容。",
-    "操作：在装配机制造并充电，对方块使用扫描功能，按工具说明切换模式。",
-    "提示：扫描范围与内容由工具实现决定，不表示会标出所有矿物。"
-  ],
+  "x": 2,
+  "y": -3.3,
+  "text": [],
   "optional": true,
   "tasks": [
     {
@@ -29,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

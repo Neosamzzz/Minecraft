@@ -40,5 +40,6 @@
     }
   ],
   "size": 0.88,
-  "shape": "circle"
+  "shape": "circle",
+  "disable_toast": true
 }

@@ -2,12 +2,10 @@
   "title": "矿工不用下班",
   "description": "获得自动采矿机",
   "icon": "galacticraftplanets:astro_miner 1 0",
-  "x": 0.0,
-  "y": 5.1,
+  "x": 5.7,
+  "y": -5.2,
   "text": [
-    "用途：准备自动采矿玩法。",
-    "操作：解锁对应图纸，在 NASA 工作台制造，并准备配套采矿机基地。",
-    "提示：持有设备不代表已部署；并非所有维度或地点都允许使用。"
+    "自动采矿支线；使用还需要配套基地。"
   ],
   "optional": true,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

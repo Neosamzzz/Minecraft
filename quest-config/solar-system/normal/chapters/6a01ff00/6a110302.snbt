@@ -9,7 +9,7 @@
     "操作：在小行星中寻找钛铁矿，按配方进行冶炼和进一步加工。",
     "提示：钛锭、压缩钛与 T3 强化板是不同材料，制造时按具体配方取用。"
   ],
-  "optional": false,
+  "optional": true,
   "tasks": [
     {
       "uid": "6a210302",
@@ -30,5 +30,6 @@
     }
   ],
   "size": 0.88,
-  "shape": "circle"
+  "shape": "circle",
+  "disable_toast": true
 }

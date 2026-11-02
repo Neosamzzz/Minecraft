@@ -2,12 +2,10 @@
   "title": "准备升空",
   "description": "获得一级火箭",
   "icon": "galacticraftcore:rocket_t1 1 0",
-  "x": 6.4,
-  "y": -5.1,
+  "x": 0.2,
+  "y": -2,
   "text": [
-    "用途：准备前往月球的基础载具。",
-    "操作：在 NASA 工作台组装火箭，放在完整发射台上，接好燃料装载机并完成加注。",
-    "提示：起飞前确认氧气、防护、食物、工具和返航物资；获得火箭不代表可以立即出发。"
+    "第一艘火箭，先去月球。"
   ],
   "optional": false,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.18,
-  "shape": "square"
+  "size": 2.05,
+  "shape": "hexagon"
 }

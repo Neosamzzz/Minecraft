@@ -2,12 +2,10 @@
   "title": "蓝色也能带回家",
   "description": "获得蓝宝石",
   "icon": "galacticraftcore:item_basic_moon 1 2",
-  "x": -3.2,
-  "y": 1.7,
+  "x": -1.3,
+  "y": 4.2,
   "text": [
-    "用途：收集一种土卫六可取得的宝石。",
-    "操作：采集蓝宝石矿的掉落物，作为收藏或按当前配方使用。",
-    "提示：任务允许其他来源，取得蓝宝石不证明已经抵达土卫六。"
+    "可选收藏。"
   ],
   "optional": true,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

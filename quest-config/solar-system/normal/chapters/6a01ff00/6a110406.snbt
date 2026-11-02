@@ -9,7 +9,7 @@
     "操作：在 HDP:0 基础上，加入钴板、镍板和白云石粉，按实际配方加工。",
     "提示：钴镍和白云石已有较早来源，不要求先到 T5 天体才能制造第一艘 T5。"
   ],
-  "optional": false,
+  "optional": true,
   "tasks": [
     {
       "uid": "6a210406",
@@ -30,5 +30,6 @@
     }
   ],
   "size": 0.88,
-  "shape": "circle"
+  "shape": "circle",
+  "disable_toast": true
 }

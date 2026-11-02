@@ -2,14 +2,10 @@
   "title": "金星，不太温柔",
   "description": "抵达金星",
   "icon": "galacticraftplanets:venus 1 1",
-  "x": 0.0,
-  "y": -5.1,
-  "text": [
-    "用途：探索恶劣环境下的资源与地牢。",
-    "操作：确认温控及其他实际防护后再出发，首次宜以短途勘察为主。",
-    "提示：氧气只解决呼吸问题，不能替代温度与其他环境防护。"
-  ],
-  "optional": true,
+  "x": -6,
+  "y": 1,
+  "text": [],
+  "optional": false,
   "tasks": [
     {
       "uid": "6a210303",
@@ -18,6 +14,6 @@
       "dim": -31
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

@@ -9,7 +9,7 @@
     "操作：从木卫一火山矿取得火山石并保留库存，按后续配方使用。",
     "提示：不要求首次登陆立即完成全部加工；宝箱产出与矿物来源分开看待。"
   ],
-  "optional": false,
+  "optional": true,
   "tasks": [
     {
       "uid": "6a210402",
@@ -30,5 +30,6 @@
     }
   ],
   "size": 0.88,
-  "shape": "circle"
+  "shape": "circle",
+  "disable_toast": true
 }

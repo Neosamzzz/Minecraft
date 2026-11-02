@@ -2,13 +2,9 @@
   "title": "带上空气",
   "description": "获得任一种普通氧气罐",
   "icon": "galacticraftcore:oxygen_tank_light_full 1 0",
-  "x": 0.0,
-  "y": -1.7,
-  "text": [
-    "用途：为不可呼吸的环境准备随身氧气。",
-    "操作：使用氧气压缩机充氧，并在 GC 装备界面配好氧气面罩、供氧装置和氧气罐。",
-    "提示：本目标不检查罐内余量或穿戴状态；每次出发仍需自行确认。"
-  ],
+  "x": -3.8,
+  "y": 2.5,
+  "text": [],
   "optional": false,
   "tasks": [
     {
@@ -39,6 +35,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

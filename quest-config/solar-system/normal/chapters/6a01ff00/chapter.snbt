@@ -1,0 +1,11 @@
+{
+  "title": "历史节点（存档兼容）",
+  "icon": "minecraft:book",
+  "description": [
+    "保留被并入的 16 项定义及原 ID，仅供编辑维护。"
+  ],
+  "always_invisible": true,
+  "disable_toast": true,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

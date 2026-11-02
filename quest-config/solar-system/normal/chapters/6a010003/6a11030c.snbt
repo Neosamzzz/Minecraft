@@ -2,12 +2,10 @@
   "title": "从头造一艘",
   "description": "获得 GS 四级火箭",
   "icon": "galaxyspace:rocket_tier_4 1 0",
-  "x": 6.4,
-  "y": 1.7,
+  "x": 10.2,
+  "y": 0.1,
   "text": [
-    "用途：完成从 GC 基础航天到 GS 装配体系的转折。",
-    "操作：准备 HDP:0 部件与四级许可，在火箭装配机完成组装。",
-    "提示：许可合成会用到前一级完整火箭，应在基地取出货物后办理升级；具体消耗以当前配方为准。"
+    "四级起改用 GS 装配体系。升级许可会用到前一级完整火箭，先取出货物。"
   ],
   "optional": false,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.18,
-  "shape": "square"
+  "size": 2.5,
+  "shape": "hexagon"
 }

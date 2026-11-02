@@ -9,7 +9,7 @@
     "操作：将设备接入电力和氧气供应，放入需要补充的氧气罐，完成后取回。",
     "提示：出发前检查罐内实际余量，空罐也会满足获得物品目标。"
   ],
-  "optional": false,
+  "optional": true,
   "tasks": [
     {
       "uid": "6a210110",
@@ -30,5 +30,6 @@
     }
   ],
   "size": 0.88,
-  "shape": "circle"
+  "shape": "circle",
+  "disable_toast": true
 }

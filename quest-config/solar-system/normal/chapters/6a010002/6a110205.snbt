@@ -2,12 +2,10 @@
   "title": "航线加长",
   "description": "获得三级火箭",
   "icon": "galacticraftplanets:rocket_t3 1 0",
-  "x": 4.8,
-  "y": 0.0,
+  "x": 6,
+  "y": -0.4,
   "text": [
-    "用途：准备进入小行星带及其他 T3 目的地。",
-    "操作：解锁图纸并完成组装，根据材料或探索需求选择目的地。",
-    "提示：目的地等级只是条件之一；防护、着陆与返航准备仍需单独确认。"
+    "小行星带和更多太阳系目的地。"
   ],
   "optional": false,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.18,
-  "shape": "square"
+  "size": 2.05,
+  "shape": "hexagon"
 }

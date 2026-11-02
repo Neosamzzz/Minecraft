@@ -2,14 +2,12 @@
   "title": "碎了，但有用",
   "description": "获得白云石粉",
   "icon": "galaxyspace:gs_basic 1 4",
-  "x": 0.0,
-  "y": 1.7,
+  "x": 0.4,
+  "y": 5.6,
   "text": [
-    "用途：为 HDP:1 等后续制造准备材料。",
-    "操作：使用 GS 通用回收机将白云石晶体加工为粉末，检查供能和输入输出。",
-    "提示：不同材料的回收产物不同，操作前核对配方。"
+    "白云石晶体经 GS 通用回收机加工。"
   ],
-  "optional": true,
+  "optional": false,
   "tasks": [
     {
       "uid": "6a210308",
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

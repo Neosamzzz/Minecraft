@@ -2,13 +2,9 @@
   "title": "我的一小步，人类一大步",
   "description": "抵达月球",
   "icon": "galacticraftcore:basic_block_moon 1 4",
-  "x": 6.4,
-  "y": -1.7,
-  "text": [
-    "用途：完成第一次月球登陆。",
-    "操作：着陆后记录位置，检查氧气与随身物资，并回收降落载具中保存的火箭及设备。",
-    "提示：先熟悉返航操作，再扩大探索范围；为返程保留燃料、发射设备和能源。"
-  ],
+  "x": 4.6,
+  "y": -0.7,
+  "text": [],
   "optional": false,
   "tasks": [
     {
@@ -18,6 +14,6 @@
       "dim": -28
     }
   ],
-  "size": 1.18,
-  "shape": "square"
+  "size": 2.2,
+  "shape": "diamond"
 }

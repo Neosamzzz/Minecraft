@@ -2,13 +2,9 @@
   "title": "红色远方",
   "description": "抵达火星",
   "icon": "galacticraftplanets:mars 1 4",
-  "x": -4.8,
-  "y": -3.4,
-  "text": [
-    "用途：进入戴斯与后续图纸所在的发展阶段。",
-    "操作：建立清楚的着陆标记，检查防护与补给后再进入洞穴或地牢。",
-    "提示：当前火星地形受 GS 调整，不直接套用其他整合包的地形与路线。"
-  ],
+  "x": -5.5,
+  "y": -1.6,
+  "text": [],
   "optional": false,
   "tasks": [
     {
@@ -18,6 +14,6 @@
       "dim": -29
     }
   ],
-  "size": 1.18,
-  "shape": "square"
+  "size": 2.2,
+  "shape": "diamond"
 }

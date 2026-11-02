@@ -2,13 +2,9 @@
   "title": "双脚暂时离线",
   "description": "获得电动喷气背包",
   "icon": "galaxyspace:jetpack 1 0",
-  "x": 3.2,
-  "y": 3.4,
-  "text": [
-    "用途：增加地表探索中的机动能力。",
-    "操作：制造并充电，装备后在安全地点熟悉启用与起落。",
-    "提示：持续使用会消耗电力，不代替氧气、温度防护或返航设备。"
-  ],
+  "x": 2.1,
+  "y": 4.5,
+  "text": [],
   "optional": true,
   "tasks": [
     {
@@ -29,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

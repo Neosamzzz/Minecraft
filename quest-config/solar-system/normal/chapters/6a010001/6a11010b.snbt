@@ -2,12 +2,10 @@
   "title": "月球留不住我",
   "description": "获得二级火箭",
   "icon": "galacticraftplanets:rocket_t2 1 0",
-  "x": 3.2,
-  "y": 1.7,
+  "x": 12.7,
+  "y": 1,
   "text": [
-    "用途：具备火星阶段的基础载具。",
-    "操作：解锁对应页面，按配方备齐材料并在 NASA 工作台组装。",
-    "提示：更换火箭后仍需重新检查燃料、氧气与目标环境防护。"
+    "下一站：火星。"
   ],
   "optional": false,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.18,
-  "shape": "square"
+  "size": 2.05,
+  "shape": "hexagon"
 }

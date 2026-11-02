@@ -2,13 +2,9 @@
   "title": "又见漂浮的石头",
   "description": "抵达柯伊伯带",
   "icon": "galacticraftplanets:asteroids_block 1 0",
-  "x": 1.6,
-  "y": -1.7,
-  "text": [
-    "用途：探索外太阳系的小天体世界。",
-    "操作：确认落脚位置和移动方法，再调查附近小天体。",
-    "提示：注意定位、氧气与返航；不保证每处都有特殊矿核或遗迹。"
-  ],
+  "x": -2.2,
+  "y": 2.5,
+  "text": [],
   "optional": false,
   "tasks": [
     {
@@ -18,6 +14,6 @@
       "dim": -1009
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

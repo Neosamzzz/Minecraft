@@ -2,13 +2,9 @@
   "title": "有电才好办",
   "description": "获得燃煤发电机",
   "icon": "galacticraftcore:machine 1 0",
-  "x": -6.4,
-  "y": -5.1,
-  "text": [
-    "用途：为电动设备提供基础电力。",
-    "操作：使用燃料发电，并通过铝导线连接设备电力接口。",
-    "提示：连接后检查设备的储能与工作状态；持有发电机不表示供电已经接通。"
-  ],
+  "x": -7,
+  "y": -2.3,
+  "text": [],
   "optional": false,
   "tasks": [
     {
@@ -29,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

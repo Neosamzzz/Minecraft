@@ -18,21 +18,11 @@
       "target": "获得燃煤发电机",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -6.4,
-      "y": -5.1,
-      "source_spec": "galacticraftcore:machine@0"
-    },
-    {
-      "code": "A02",
-      "chapter": "6a010001",
-      "quest": "6a110102",
-      "task": "6a210102",
-      "target": "获得压缩机",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": -3.2,
-      "y": -5.1,
-      "source_spec": "galacticraftcore:machine@12"
+      "x": -7,
+      "y": -2.3,
+      "source_spec": "galacticraftcore:machine@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "A03",
@@ -42,9 +32,11 @@
       "target": "获得 NASA 工作台",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.0,
-      "y": -5.1,
-      "source_spec": "galacticraftcore:rocket_workbench@0"
+      "x": -3.5,
+      "y": -1.1,
+      "source_spec": "galacticraftcore:rocket_workbench@0",
+      "shape": "square",
+      "size": 1.35
     },
     {
       "code": "A04",
@@ -54,21 +46,11 @@
       "target": "获得任一种普通氧气罐",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.0,
-      "y": -1.7,
-      "source_spec": "galacticraftcore:oxygen_tank_light_full@*,galacticraftcore:oxygen_tank_med_full@*,galacticraftcore:oxygen_tank_heavy_full@*"
-    },
-    {
-      "code": "A05",
-      "chapter": "6a010001",
-      "quest": "6a110105",
-      "task": "6a210105",
-      "target": "获得精炼机",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": 3.2,
-      "y": -5.1,
-      "source_spec": "galacticraftcore:refinery@0"
+      "x": -3.8,
+      "y": 2.5,
+      "source_spec": "galacticraftcore:oxygen_tank_light_full@*,galacticraftcore:oxygen_tank_med_full@*,galacticraftcore:oxygen_tank_heavy_full@*",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "A06",
@@ -78,9 +60,11 @@
       "target": "获得一级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 6.4,
-      "y": -5.1,
-      "source_spec": "galacticraftcore:rocket_t1@*"
+      "x": 0.2,
+      "y": -2,
+      "source_spec": "galacticraftcore:rocket_t1@*",
+      "shape": "hexagon",
+      "size": 2.05
     },
     {
       "code": "A07",
@@ -90,9 +74,11 @@
       "target": "抵达月球",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 6.4,
-      "y": -1.7,
-      "source_spec": "dim:-28"
+      "x": 4.6,
+      "y": -0.7,
+      "source_spec": "dim:-28",
+      "shape": "diamond",
+      "size": 2.2
     },
     {
       "code": "A08",
@@ -102,9 +88,11 @@
       "target": "获得原始陨铁",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -6.4,
-      "y": 1.7,
-      "source_spec": "galacticraftcore:meteoric_iron_raw@0"
+      "x": 7.6,
+      "y": -3.8,
+      "source_spec": "galacticraftcore:meteoric_iron_raw@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "A09",
@@ -113,10 +101,12 @@
       "task": "6a210109",
       "target": "击败月球进化骷髅 Boss",
       "type": "ftbquests:kill",
-      "optional": true,
-      "x": -3.2,
-      "y": 1.7,
-      "source_spec": "kill:galacticraftcore:evolved_skeleton_boss"
+      "optional": false,
+      "x": 4.5,
+      "y": 3.2,
+      "source_spec": "kill:galacticraftcore:evolved_skeleton_boss",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "A10",
@@ -126,9 +116,11 @@
       "target": "获得二级火箭图纸",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.0,
-      "y": 1.7,
-      "source_spec": "galacticraftcore:schematic@1"
+      "x": 8.3,
+      "y": 2.1,
+      "source_spec": "galacticraftcore:schematic@1",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "A11",
@@ -138,21 +130,11 @@
       "target": "获得二级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 3.2,
-      "y": 1.7,
-      "source_spec": "galacticraftplanets:rocket_t2@*"
-    },
-    {
-      "code": "A12",
-      "chapter": "6a010001",
-      "quest": "6a11010c",
-      "task": "6a21010c",
-      "target": "获得任意颜色降落伞",
-      "type": "ftbquests:item",
-      "optional": true,
-      "x": 3.2,
-      "y": -1.7,
-      "source_spec": "galacticraftcore:parachute@*"
+      "x": 12.7,
+      "y": 1,
+      "source_spec": "galacticraftplanets:rocket_t2@*",
+      "shape": "hexagon",
+      "size": 2.05
     },
     {
       "code": "A13",
@@ -162,9 +144,11 @@
       "target": "获得旗帜",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 6.4,
-      "y": 1.7,
-      "source_spec": "galacticraftcore:flag@0"
+      "x": 0.7,
+      "y": 4.7,
+      "source_spec": "galacticraftcore:flag@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "A14",
@@ -174,33 +158,11 @@
       "target": "获得月球车",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 6.4,
-      "y": 5.1,
-      "source_spec": "galacticraftcore:buggy@*"
-    },
-    {
-      "code": "A15",
-      "chapter": "6a010001",
-      "quest": "6a11010f",
-      "task": "6a21010f",
-      "target": "获得氧气收集器",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": -6.4,
-      "y": -1.7,
-      "source_spec": "galacticraftcore:collector@0"
-    },
-    {
-      "code": "A16",
-      "chapter": "6a010001",
-      "quest": "6a110110",
-      "task": "6a210110",
-      "target": "获得氧气压缩机",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": -3.2,
-      "y": -1.7,
-      "source_spec": "galacticraftcore:oxygen_compressor@0"
+      "x": 11.8,
+      "y": -2.9,
+      "source_spec": "galacticraftcore:buggy@*",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "B01",
@@ -210,9 +172,11 @@
       "target": "抵达火星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -4.8,
-      "y": -3.4,
-      "source_spec": "dim:-29"
+      "x": -5.5,
+      "y": -1.6,
+      "source_spec": "dim:-29",
+      "shape": "diamond",
+      "size": 2.2
     },
     {
       "code": "B02",
@@ -222,9 +186,11 @@
       "target": "获得戴斯锭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -1.6,
+      "x": -1.5,
       "y": -3.4,
-      "source_spec": "galacticraftplanets:item_basic_mars@2"
+      "source_spec": "galacticraftplanets:item_basic_mars@2",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "B03",
@@ -233,10 +199,12 @@
       "task": "6a210203",
       "target": "击败火星进化苦力怕 Boss",
       "type": "ftbquests:kill",
-      "optional": true,
-      "x": -1.6,
-      "y": 0.0,
-      "source_spec": "kill:galacticraftplanets:creeper_boss"
+      "optional": false,
+      "x": -2.5,
+      "y": 2.4,
+      "source_spec": "kill:galacticraftplanets:creeper_boss",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "B04",
@@ -247,8 +215,10 @@
       "type": "ftbquests:item",
       "optional": false,
       "x": 1.6,
-      "y": 0.0,
-      "source_spec": "galacticraftplanets:schematic@0"
+      "y": 1,
+      "source_spec": "galacticraftplanets:schematic@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "B05",
@@ -258,9 +228,11 @@
       "target": "获得三级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 4.8,
-      "y": 0.0,
-      "source_spec": "galacticraftplanets:rocket_t3@*"
+      "x": 6,
+      "y": -0.4,
+      "source_spec": "galacticraftplanets:rocket_t3@*",
+      "shape": "hexagon",
+      "size": 2.05
     },
     {
       "code": "B06",
@@ -270,33 +242,11 @@
       "target": "抵达 GS 火卫一",
       "type": "ftbquests:dimension",
       "optional": true,
-      "x": -4.8,
-      "y": 3.4,
-      "source_spec": "dim:-1012"
-    },
-    {
-      "code": "B07",
-      "chapter": "6a010002",
-      "quest": "6a110207",
-      "task": "6a210207",
-      "target": "获得任一部位保暖衬垫",
-      "type": "ftbquests:item",
-      "optional": true,
-      "x": 4.8,
-      "y": -3.4,
-      "source_spec": "galacticraftplanets:thermal_padding@0,galacticraftplanets:thermal_padding@1,galacticraftplanets:thermal_padding@2,galacticraftplanets:thermal_padding@3"
-    },
-    {
-      "code": "B08",
-      "chapter": "6a010002",
-      "quest": "6a110208",
-      "task": "6a210208",
-      "target": "获得任一种罐头食品",
-      "type": "ftbquests:item",
-      "optional": true,
-      "x": 4.8,
-      "y": 3.4,
-      "source_spec": "extraplanets:canned_food@0,extraplanets:canned_food@1,extraplanets:canned_food@2,extraplanets:canned_food@3"
+      "x": 1.4,
+      "y": -5.6,
+      "source_spec": "dim:-1012",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C01",
@@ -306,21 +256,11 @@
       "target": "抵达小行星带",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -6.4,
-      "y": -5.1,
-      "source_spec": "dim:-30"
-    },
-    {
-      "code": "C02",
-      "chapter": "6a010003",
-      "quest": "6a110302",
-      "task": "6a210302",
-      "target": "获得钛铁矿",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": -3.2,
-      "y": -5.1,
-      "source_spec": "galacticraftplanets:asteroids_block@4"
+      "x": -7,
+      "y": -3.4,
+      "source_spec": "dim:-30",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C03",
@@ -329,10 +269,12 @@
       "task": "6a210303",
       "target": "抵达金星",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": 0.0,
-      "y": -5.1,
-      "source_spec": "dim:-31"
+      "optional": false,
+      "x": -6,
+      "y": 1,
+      "source_spec": "dim:-31",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C04",
@@ -342,21 +284,11 @@
       "target": "抵达 GS 水星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -6.4,
-      "y": -1.7,
-      "source_spec": "dim:-1005"
-    },
-    {
-      "code": "C05",
-      "chapter": "6a010003",
-      "quest": "6a110305",
-      "task": "6a210305",
-      "target": "获得镁板",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": -3.2,
-      "y": -1.7,
-      "source_spec": "galaxyspace:compressed_plates@2"
+      "x": -2.7,
+      "y": -4.5,
+      "source_spec": "dim:-1005",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C06",
@@ -365,22 +297,12 @@
       "task": "6a210306",
       "target": "抵达 GS 谷神星",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": -6.4,
-      "y": 1.7,
-      "source_spec": "dim:-1007"
-    },
-    {
-      "code": "C07",
-      "chapter": "6a010003",
-      "quest": "6a110307",
-      "task": "6a210307",
-      "target": "获得白云石晶体",
-      "type": "ftbquests:item",
-      "optional": true,
-      "x": -3.2,
-      "y": 1.7,
-      "source_spec": "galaxyspace:gs_basic@3"
+      "optional": false,
+      "x": -3.5,
+      "y": 4.8,
+      "source_spec": "dim:-1007",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C08",
@@ -389,10 +311,12 @@
       "task": "6a210308",
       "target": "获得白云石粉",
       "type": "ftbquests:item",
-      "optional": true,
-      "x": 0.0,
-      "y": 1.7,
-      "source_spec": "galaxyspace:gs_basic@4"
+      "optional": false,
+      "x": 0.4,
+      "y": 5.6,
+      "source_spec": "galaxyspace:gs_basic@4",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C09",
@@ -402,21 +326,11 @@
       "target": "获得 GS 装配机",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.0,
-      "y": -1.7,
-      "source_spec": "galaxyspace:assembly_machine@0"
-    },
-    {
-      "code": "C10",
-      "chapter": "6a010003",
-      "quest": "6a11030a",
-      "task": "6a21030a",
-      "target": "获得 HDP:0 板材",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": 3.2,
-      "y": -1.7,
-      "source_spec": "galaxyspace:hdp@0"
+      "x": 1.3,
+      "y": -2.4,
+      "source_spec": "galaxyspace:assembly_machine@0",
+      "shape": "square",
+      "size": 1.35
     },
     {
       "code": "C11",
@@ -426,9 +340,11 @@
       "target": "获得火箭装配机",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 6.4,
-      "y": -1.7,
-      "source_spec": "galaxyspace:rocket_assembler@0"
+      "x": 5.2,
+      "y": -1.3,
+      "source_spec": "galaxyspace:rocket_assembler@0",
+      "shape": "square",
+      "size": 1.35
     },
     {
       "code": "C12",
@@ -438,9 +354,11 @@
       "target": "获得 GS 四级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 6.4,
-      "y": 1.7,
-      "source_spec": "galaxyspace:rocket_tier_4@*"
+      "x": 10.2,
+      "y": 0.1,
+      "source_spec": "galaxyspace:rocket_tier_4@*",
+      "shape": "hexagon",
+      "size": 2.5
     },
     {
       "code": "C13",
@@ -450,9 +368,11 @@
       "target": "获得抓钩",
       "type": "ftbquests:item",
       "optional": true,
-      "x": -3.2,
-      "y": 5.1,
-      "source_spec": "galacticraftplanets:grapple@0"
+      "x": -1.8,
+      "y": 0.3,
+      "source_spec": "galacticraftplanets:grapple@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C14",
@@ -462,9 +382,11 @@
       "target": "获得自动采矿机",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 0.0,
-      "y": 5.1,
-      "source_spec": "galacticraftplanets:astro_miner@0"
+      "x": 5.7,
+      "y": -5.2,
+      "source_spec": "galacticraftplanets:astro_miner@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "C15",
@@ -474,21 +396,11 @@
       "target": "获得氧气密封器",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 3.2,
-      "y": 5.1,
-      "source_spec": "galacticraftcore:sealer@0"
-    },
-    {
-      "code": "C16",
-      "chapter": "6a010003",
-      "quest": "6a110310",
-      "task": "6a210310",
-      "target": "获得 EP 高级电池",
-      "type": "ftbquests:item",
-      "optional": true,
-      "x": 3.2,
-      "y": -5.1,
-      "source_spec": "extraplanets:advanced_battery@*"
+      "x": 6.5,
+      "y": 4.2,
+      "source_spec": "galacticraftcore:sealer@0",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "D01",
@@ -497,22 +409,12 @@
       "task": "6a210401",
       "target": "抵达木卫一",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": -6.4,
-      "y": -3.4,
-      "source_spec": "dim:-1014"
-    },
-    {
-      "code": "D02",
-      "chapter": "6a010004",
-      "quest": "6a110402",
-      "task": "6a210402",
-      "target": "获得 GS 火山石",
-      "type": "ftbquests:item",
       "optional": false,
-      "x": -3.2,
-      "y": -3.4,
-      "source_spec": "galaxyspace:gs_basic@12"
+      "x": -5.5,
+      "y": -3.6,
+      "source_spec": "dim:-1014",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "D03",
@@ -521,10 +423,12 @@
       "task": "6a210403",
       "target": "抵达木卫二",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": -6.4,
-      "y": 0.0,
-      "source_spec": "dim:-1015"
+      "optional": false,
+      "x": -6.5,
+      "y": 1.4,
+      "source_spec": "dim:-1015",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "D04",
@@ -533,10 +437,12 @@
       "task": "6a210404",
       "target": "抵达木卫三",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": -3.2,
-      "y": 0.0,
-      "source_spec": "dim:-1016"
+      "optional": false,
+      "x": -1.8,
+      "y": -5.5,
+      "source_spec": "dim:-1016",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "D05",
@@ -546,21 +452,11 @@
       "target": "抵达木卫四",
       "type": "ftbquests:dimension",
       "optional": true,
-      "x": 0.0,
-      "y": 0.0,
-      "source_spec": "dim:-1022"
-    },
-    {
-      "code": "D06",
-      "chapter": "6a010004",
-      "quest": "6a110406",
-      "task": "6a210406",
-      "target": "获得 HDP:1 板材",
-      "type": "ftbquests:item",
-      "optional": false,
-      "x": 3.2,
-      "y": 0.0,
-      "source_spec": "galaxyspace:hdp@1"
+      "x": -2.5,
+      "y": 4.5,
+      "source_spec": "dim:-1022",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "D07",
@@ -570,9 +466,11 @@
       "target": "获得 GS 五级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 6.4,
-      "y": 0.0,
-      "source_spec": "galaxyspace:rocket_tier_5@*"
+      "x": 5.2,
+      "y": 0.2,
+      "source_spec": "galaxyspace:rocket_tier_5@*",
+      "shape": "hexagon",
+      "size": 2.05
     },
     {
       "code": "D08",
@@ -582,9 +480,11 @@
       "target": "获得地质扫描仪",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 3.2,
-      "y": -3.4,
-      "source_spec": "galaxyspace:geo_scanner@*"
+      "x": 2,
+      "y": -3.3,
+      "source_spec": "galaxyspace:geo_scanner@*",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "D09",
@@ -594,9 +494,11 @@
       "target": "获得电动喷气背包",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 3.2,
-      "y": 3.4,
-      "source_spec": "galaxyspace:jetpack@*"
+      "x": 2.1,
+      "y": 4.5,
+      "source_spec": "galaxyspace:jetpack@*",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "E01",
@@ -605,10 +507,12 @@
       "task": "6a210501",
       "target": "抵达土卫二",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": -6.4,
-      "y": -1.7,
-      "source_spec": "dim:-1017"
+      "optional": false,
+      "x": -5,
+      "y": -3.5,
+      "source_spec": "dim:-1017",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "E02",
@@ -617,10 +521,12 @@
       "task": "6a210502",
       "target": "抵达土卫六",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": -3.2,
-      "y": -1.7,
-      "source_spec": "dim:-1018"
+      "optional": false,
+      "x": -5,
+      "y": 1,
+      "source_spec": "dim:-1018",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "E03",
@@ -629,22 +535,12 @@
       "task": "6a210503",
       "target": "抵达天卫五",
       "type": "ftbquests:dimension",
-      "optional": true,
-      "x": 0.0,
-      "y": -1.7,
-      "source_spec": "dim:-1024"
-    },
-    {
-      "code": "E04",
-      "chapter": "6a010005",
-      "quest": "6a110504",
-      "task": "6a210504",
-      "target": "获得 HDP:2 板材",
-      "type": "ftbquests:item",
       "optional": false,
-      "x": 3.2,
-      "y": 1.7,
-      "source_spec": "galaxyspace:hdp@2"
+      "x": -0.7,
+      "y": -4.8,
+      "source_spec": "dim:-1024",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "E05",
@@ -654,9 +550,11 @@
       "target": "获得 GS 六级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 6.4,
-      "y": 1.7,
-      "source_spec": "galaxyspace:rocket_tier_6@*"
+      "x": 5.2,
+      "y": -0.4,
+      "source_spec": "galaxyspace:rocket_tier_6@*",
+      "shape": "hexagon",
+      "size": 2.05
     },
     {
       "code": "E06",
@@ -666,9 +564,11 @@
       "target": "获得蓝宝石",
       "type": "ftbquests:item",
       "optional": true,
-      "x": -3.2,
-      "y": 1.7,
-      "source_spec": "galacticraftcore:item_basic_moon@2"
+      "x": -1.3,
+      "y": 4.2,
+      "source_spec": "galacticraftcore:item_basic_moon@2",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "F01",
@@ -678,9 +578,11 @@
       "target": "抵达海卫一",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -4.8,
-      "y": -1.7,
-      "source_spec": "dim:-1021"
+      "x": -5,
+      "y": -2.8,
+      "source_spec": "dim:-1021",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "F02",
@@ -690,9 +592,11 @@
       "target": "抵达 GS 冥王星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -1.6,
-      "y": -1.7,
-      "source_spec": "dim:-1008"
+      "x": 0.2,
+      "y": -4,
+      "source_spec": "dim:-1008",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "F03",
@@ -702,9 +606,11 @@
       "target": "抵达柯伊伯带",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 1.6,
-      "y": -1.7,
-      "source_spec": "dim:-1009"
+      "x": -2.2,
+      "y": 2.5,
+      "source_spec": "dim:-1009",
+      "shape": "circle",
+      "size": 0.9
     },
     {
       "code": "F04",
@@ -714,21 +620,11 @@
       "target": "抵达 GS 妊神星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 4.8,
-      "y": -1.7,
-      "source_spec": "dim:-1023"
-    },
-    {
-      "code": "F05",
-      "chapter": "6a010006",
-      "quest": "6a110605",
-      "task": "6a210605",
-      "target": "获得氧冰、氮冰或干冰晶体之一",
-      "type": "ftbquests:item",
-      "optional": true,
-      "x": 4.8,
-      "y": 1.7,
-      "source_spec": "galaxyspace:gs_basic@23,galaxyspace:gs_basic@24,galaxyspace:gs_basic@27"
+      "x": 4.5,
+      "y": 0.4,
+      "source_spec": "dim:-1023",
+      "shape": "circle",
+      "size": 0.9
     }
   ],
   "reused_preview_ids": {
@@ -747,5 +643,250 @@
   },
   "no_rewards": true,
   "no_consumption": true,
-  "no_dependencies": true
+  "no_dependencies": true,
+  "visible_quests": 44,
+  "archived_nodes": [
+    {
+      "code": "A02",
+      "chapter": "6a01ff00",
+      "quest": "6a110102",
+      "task": "6a210102",
+      "target": "获得压缩机",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -3.2,
+      "y": -5.1,
+      "source_spec": "galacticraftcore:machine@12",
+      "original_chapter": "6a010001",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "A05",
+      "chapter": "6a01ff00",
+      "quest": "6a110105",
+      "task": "6a210105",
+      "target": "获得精炼机",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 3.2,
+      "y": -5.1,
+      "source_spec": "galacticraftcore:refinery@0",
+      "original_chapter": "6a010001",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "A12",
+      "chapter": "6a01ff00",
+      "quest": "6a11010c",
+      "task": "6a21010c",
+      "target": "获得任意颜色降落伞",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 3.2,
+      "y": -1.7,
+      "source_spec": "galacticraftcore:parachute@*",
+      "original_chapter": "6a010001",
+      "original_optional": true,
+      "disable_toast": true
+    },
+    {
+      "code": "A15",
+      "chapter": "6a01ff00",
+      "quest": "6a11010f",
+      "task": "6a21010f",
+      "target": "获得氧气收集器",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -6.4,
+      "y": -1.7,
+      "source_spec": "galacticraftcore:collector@0",
+      "original_chapter": "6a010001",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "A16",
+      "chapter": "6a01ff00",
+      "quest": "6a110110",
+      "task": "6a210110",
+      "target": "获得氧气压缩机",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -3.2,
+      "y": -1.7,
+      "source_spec": "galacticraftcore:oxygen_compressor@0",
+      "original_chapter": "6a010001",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "B07",
+      "chapter": "6a01ff00",
+      "quest": "6a110207",
+      "task": "6a210207",
+      "target": "获得任一部位保暖衬垫",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 4.8,
+      "y": -3.4,
+      "source_spec": "galacticraftplanets:thermal_padding@0,galacticraftplanets:thermal_padding@1,galacticraftplanets:thermal_padding@2,galacticraftplanets:thermal_padding@3",
+      "original_chapter": "6a010002",
+      "original_optional": true,
+      "disable_toast": true
+    },
+    {
+      "code": "B08",
+      "chapter": "6a01ff00",
+      "quest": "6a110208",
+      "task": "6a210208",
+      "target": "获得任一种罐头食品",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 4.8,
+      "y": 3.4,
+      "source_spec": "extraplanets:canned_food@0,extraplanets:canned_food@1,extraplanets:canned_food@2,extraplanets:canned_food@3",
+      "original_chapter": "6a010002",
+      "original_optional": true,
+      "disable_toast": true
+    },
+    {
+      "code": "C02",
+      "chapter": "6a01ff00",
+      "quest": "6a110302",
+      "task": "6a210302",
+      "target": "获得钛铁矿",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -3.2,
+      "y": -5.1,
+      "source_spec": "galacticraftplanets:asteroids_block@4",
+      "original_chapter": "6a010003",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "C05",
+      "chapter": "6a01ff00",
+      "quest": "6a110305",
+      "task": "6a210305",
+      "target": "获得镁板",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -3.2,
+      "y": -1.7,
+      "source_spec": "galaxyspace:compressed_plates@2",
+      "original_chapter": "6a010003",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "C07",
+      "chapter": "6a01ff00",
+      "quest": "6a110307",
+      "task": "6a210307",
+      "target": "获得白云石晶体",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -3.2,
+      "y": 1.7,
+      "source_spec": "galaxyspace:gs_basic@3",
+      "original_chapter": "6a010003",
+      "original_optional": true,
+      "disable_toast": true
+    },
+    {
+      "code": "C10",
+      "chapter": "6a01ff00",
+      "quest": "6a11030a",
+      "task": "6a21030a",
+      "target": "获得 HDP:0 板材",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 3.2,
+      "y": -1.7,
+      "source_spec": "galaxyspace:hdp@0",
+      "original_chapter": "6a010003",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "C16",
+      "chapter": "6a01ff00",
+      "quest": "6a110310",
+      "task": "6a210310",
+      "target": "获得 EP 高级电池",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 3.2,
+      "y": -5.1,
+      "source_spec": "extraplanets:advanced_battery@*",
+      "original_chapter": "6a010003",
+      "original_optional": true,
+      "disable_toast": true
+    },
+    {
+      "code": "D02",
+      "chapter": "6a01ff00",
+      "quest": "6a110402",
+      "task": "6a210402",
+      "target": "获得 GS 火山石",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": -3.2,
+      "y": -3.4,
+      "source_spec": "galaxyspace:gs_basic@12",
+      "original_chapter": "6a010004",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "D06",
+      "chapter": "6a01ff00",
+      "quest": "6a110406",
+      "task": "6a210406",
+      "target": "获得 HDP:1 板材",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 3.2,
+      "y": 0.0,
+      "source_spec": "galaxyspace:hdp@1",
+      "original_chapter": "6a010004",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "E04",
+      "chapter": "6a01ff00",
+      "quest": "6a110504",
+      "task": "6a210504",
+      "target": "获得 HDP:2 板材",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 3.2,
+      "y": 1.7,
+      "source_spec": "galaxyspace:hdp@2",
+      "original_chapter": "6a010005",
+      "original_optional": false,
+      "disable_toast": true
+    },
+    {
+      "code": "F05",
+      "chapter": "6a01ff00",
+      "quest": "6a110605",
+      "task": "6a210605",
+      "target": "获得氧冰、氮冰或干冰晶体之一",
+      "type": "ftbquests:item",
+      "optional": true,
+      "x": 4.8,
+      "y": 1.7,
+      "source_spec": "galaxyspace:gs_basic@23,galaxyspace:gs_basic@24,galaxyspace:gs_basic@27",
+      "original_chapter": "6a010006",
+      "original_optional": true,
+      "disable_toast": true
+    }
+  ],
+  "archive_chapter": "6a01ff00",
+  "total_registered_quests": 60
 }

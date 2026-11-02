@@ -2,32 +2,31 @@
   "title": "木星的邻居们",
   "icon": "galaxyspace:gs_basic 1 12",
   "description": [
-    "四颗卫星各有不同的地形和资源。",
-    "取得火山石，发展高级板材、工具与五级火箭。",
-    "任务自由完成；连线表示建议路线，不限制完成资格。"
+    "四颗卫星、两件探索工具，以及五级火箭。",
+    "任务自由完成；连线仅提示关系。"
   ],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",
   "images": [
     {
-      "x": -4.8,
-      "y": -3.4,
-      "width": 3.2,
-      "height": 0.1,
-      "rotation": 0.0,
-      "image": "#FF70869C",
+      "x": -1.75,
+      "y": -3.45,
+      "width": 6.366,
+      "height": 0.12,
+      "rotation": 2.291,
+      "image": "#FF475A70",
       "hover": [],
       "click": "",
       "dev": false
     },
     {
-      "x": 4.8,
-      "y": 0.0,
-      "width": 3.2,
-      "height": 0.1,
-      "rotation": 0.0,
-      "image": "#FF70869C",
+      "x": 3.233,
+      "y": 2.928,
+      "width": 2.736,
+      "height": 0.12,
+      "rotation": 125.789,
+      "image": "#FF475A70",
       "hover": [],
       "click": "",
       "dev": false

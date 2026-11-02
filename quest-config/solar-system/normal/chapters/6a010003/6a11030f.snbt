@@ -2,12 +2,10 @@
   "title": "关门，留点空气",
   "description": "获得氧气密封器",
   "icon": "galacticraftcore:sealer 1 0",
-  "x": 3.2,
-  "y": 5.1,
+  "x": 6.5,
+  "y": 4.2,
   "text": [
-    "用途：为长期停留的房间准备供氧。",
-    "操作：建造封闭空间，为密封器接入电力和氧气，并观察设备的密封检查结果。",
-    "提示：任务不自动验收房间；确认供氧实际有效后再调整随身氧气安排。"
+    "长期据点的可选设备。"
   ],
   "optional": true,
   "tasks": [
@@ -29,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.88,
+  "size": 0.9,
   "shape": "circle"
 }

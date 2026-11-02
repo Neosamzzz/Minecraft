@@ -2,32 +2,20 @@
   "title": "出门在外",
   "icon": "galaxyspace:rocket_tier_6 1 0",
   "description": [
-    "远行需要稳定的装备与补给，也需要新的制造材料。",
-    "探索土星和天王星的卫星，制造六级火箭。",
-    "任务自由完成；连线表示建议路线，不限制完成资格。"
+    "土星与天王星的卫星，六级火箭。",
+    "任务自由完成；连线仅提示关系。"
   ],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",
   "images": [
     {
-      "x": -3.2,
-      "y": 0.535,
-      "width": 0.1,
-      "height": 1.29,
-      "rotation": 0,
-      "image": "#FF70869C",
-      "hover": [],
-      "click": "",
-      "dev": false
-    },
-    {
-      "x": 4.8,
-      "y": 1.7,
-      "width": 3.2,
-      "height": 0.1,
-      "rotation": 0.0,
-      "image": "#FF70869C",
+      "x": -2.829,
+      "y": 2.878,
+      "width": 2.902,
+      "height": 0.12,
+      "rotation": 40.855,
+      "image": "#FF475A70",
       "hover": [],
       "click": "",
       "dev": false
