@@ -38,7 +38,7 @@
     "multiplayer": "not tested",
     "global_settings_preserved": true,
     "team_data_manual_changes": false,
-    "validation": "docs/ftb-ui-check.md",
+    "validation": "changelog/ftb-quests.md",
     "previous_deployment": {
       "date": "2026-11-02",
       "branch": "codex/ftb-public-team",

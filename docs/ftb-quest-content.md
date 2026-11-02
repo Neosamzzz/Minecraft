@@ -2,7 +2,7 @@
 
 本表用于制作、审阅和调整 FTB 任务，列出采用的任务、游戏内文字、完成目标及编排关系。文档供制作时查看和确认；游戏内任务书负责增加游玩目标与乐趣。
 
-候选内容见[预备稿](ftb-quest-manuscript.md)，玩法依据见[物品核对](research/quest-item-notes.md)及[星球玩法详解](research/planet-gameplay-guide.md)。保留原编号便于对照，表格行序不代表强制完成顺序。
+后期候选内容见[预备稿](ftb-quest-manuscript.md)，玩法依据见[物品核对](research/quest-item-notes.md)及[星球玩法详解](research/planet-gameplay-guide.md)。保留原编号便于对照，表格行序不代表强制完成顺序。
 
 ## 采用范围与写法
 

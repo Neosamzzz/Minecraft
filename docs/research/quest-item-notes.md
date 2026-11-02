@@ -1,6 +1,6 @@
 # FTB 任务关键物品核对
 
-核对日期：2026-11-02。服务于[任务内容稿](../ftb-quest-manuscript.md)，对应 [Issue #12](https://github.com/Neosamzzz/Minecraft/issues/12)。本页记录选材与源码依据，不重复维护完整物品百科或游戏实测记录。
+核对日期：2026-11-02。服务于[任务定稿表](../ftb-quest-content.md)与[后期预备稿](../ftb-quest-manuscript.md)，对应 [Issue #12](https://github.com/Neosamzzz/Minecraft/issues/12)。本页记录选材与源码依据，不重复维护完整物品百科或游戏实测记录。
 
 ## 选取方式
 
@@ -57,6 +57,6 @@
 
 以上 `命名空间:物品:元数据` 是作者侧记法，不是直接可粘贴的 SNBT 物品字符串。部署时拆成真实注册 ID 与元数据；机器、图纸和板材严格区分子项，颜色、电量、货舱按目标适当放宽。所有目标不消耗物品，无任务奖励。
 
-本次太阳系配置已落实 60 个目标，精确映射见[配置 manifest](../../quest-config/solar-system/manifest.json)。特别核对：材料压缩机为 `galacticraftcore:machine` 元数据 12；土卫六蓝宝石掉落复用 `galacticraftcore:item_basic_moon` 元数据 2；冰类采集产物为 `galaxyspace:gs_basic` 元数据 23、24、27，不把地层方块与晶体混用。图纸严格区分 GC 二级与三级火箭子项。
+当前可见任务与兼容保留定义的精确映射见[配置 manifest](../../quest-config/solar-system/manifest.json)。特别核对：材料压缩机为 `galacticraftcore:machine` 元数据 12；土卫六蓝宝石掉落复用 `galacticraftcore:item_basic_moon` 元数据 2；冰类采集产物为 `galaxyspace:gs_basic` 元数据 23、24、27，不把地层方块与晶体混用。图纸严格区分 GC 二级与三级火箭子项。
 
-新增节点只做增量配置，固定既有 ID，保留团队记录。优先验证加载、物品匹配和不消耗，游戏结果统一回填[玩法详解](planet-gameplay-guide.md)，不在本页另立实测口径。
+新增节点只做增量配置，固定既有 ID，保留团队记录。优先验证加载、物品匹配和不消耗，任务功能验证记入[FTB 开发记录](../../changelog/ftb-quests.md)，星球资源与玩法实测回填[玩法详解](planet-gameplay-guide.md)，不在本页另立实测记录。

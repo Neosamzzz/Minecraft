@@ -72,10 +72,10 @@ py -3 tools/build.py --target ftbquests
 
 1. 退出游戏或停服，备份实际使用的任务定义目录和存档；确认 `questfile` 游戏规则及 PackMode 没有切到其他目录。
 2. 修改章节、任务和索引。增加章节时，同时维护 `chapters/index.snbt`；保留既有 UID、全局设置与奖励表。不要用空模板覆盖已有目录。
-3. 重启后检查日志中实际加载目录、章节和任务数量，再打开任务书核对布局与条件。先用[三个节点小样](../quest-config/preview/README.md)验证基础读入流程。
+3. 重启后检查日志中实际加载目录、章节和任务数量，再打开任务书核对布局与条件。以[现行太阳系配置](../quest-config/solar-system/README.md)核对，不再部署旧小样。
 4. 验证物品检测、到达检测、共享进度及退出重进；正式修改时保持节点 ID 稳定。修改完成目标可能影响既有进度，任务定义备份与团队进度备份都应保留。
 
-新增内容按[任务内容稿](../docs/ftb-quest-manuscript.md)分批转配置；不新增任务奖励，不用普通物品或维度检测冒充设备运行、当地采集或完整返航。运行证据统一记录在[玩法详解](../docs/research/planet-gameplay-guide.md#十三2026-11-02-运行日志补记)。
+当前任务按[定稿表](../docs/ftb-quest-content.md)维护，后期内容从[预备稿](../docs/ftb-quest-manuscript.md)确认后再转配置；不新增任务奖励，不用普通物品或维度检测冒充设备运行、当地采集或完整返航。FTB 界面与功能验证记录在[开发记录](../changelog/ftb-quests.md)，星球资源、环境与航行实测回填[玩法详解](../docs/research/planet-gameplay-guide.md)。
 
 源码入口：
 

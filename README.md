@@ -175,10 +175,9 @@ Minecraft/
 ├── FTB-Quests/              # FTB Quests 源码与构建配置
 ├── ExtraPlanets/            # EP 1.12.2 / 0.8.0 上游源码快照，用于调查与对照
 ├── NewEarth/                # 新地球支线，分物品/火箭与新维度两条开发线
-├── quest-config/preview/    # 已部署本机的三个节点小样，不是完整任务书
+├── quest-config/solar-system/ # 当前太阳系任务配置与 ID 映射
 ├── docs/                    # FTB 方案、内容稿与星球研究
 ├── changelog/               # 各开发线改动记录与本机基线
-├── planning/                # 旧规划入口，转向 NewEarth
 ├── dev-tools/               # 构建必需的固定材料，用途与来源见目录说明
 ├── tools/build.py           # 统一构建入口
 ├── tools/tests/             # 构建与打包工具测试
@@ -218,10 +217,10 @@ macOS / Linux 使用 `python3 -m unittest discover -s tools/tests`。这些检�
 - [FTB 资料区](docs/README.md)：FTB 接入的主基调、工作路线，以及团队方案、内容方向和星球依据。
 - [新地球支线](NewEarth/README.md)：物品/火箭与新维度在 `main` 中按目录组织，优先复用现有星球材料；对应 [Project「新地球」](https://github.com/users/Neosamzzz/projects/4/views/1)。
 - [FTB 公共团队方案](docs/ftb-shared-team-plan.md)与[任务内容方向](docs/ftb-content-direction.md)：公共团队实现、版本边界、维护方式及轻量无奖励的内容规则。
-- [任务内容稿](docs/ftb-quest-manuscript.md)与[任务小样](quest-config/preview/README.md)：作者侧完整候选内容，以及可增量试用的三个节点。
+- [任务定稿表](docs/ftb-quest-content.md)与[太阳系配置](quest-config/solar-system/README.md)：当前采用的任务文字、目标与部署说明；未落地内容见[后期预备稿](docs/ftb-quest-manuscript.md)。
 - [星球现状审计](docs/research/planet-gameplay-audit.md)与[玩法详解](docs/research/planet-gameplay-guide.md)：配置、源码层面的目的地与制造关系，含待运行验证事项。
 - [开发记录](changelog/README.md)：GSLC 更新历史、整合包基线、FTB Quests 本地改动。
 - [遥感补丁说明与专项检查](GalaxySpace/tests/telemetry_dimension/README.md)：遥感功能实现、构建方式与验证手段，版本历史见开发记录。
 - [公共控制器补丁检查](GalaxySpace/tests/public_controller/README.md)：控制器兼容探针与验证方式。
 
-在根目录统一操作 Git；修改前保护已有工作，使用功能分支和 PR。提交信息、PR 标题和描述使用中文，附必要的验证结果；只提交源码、资源、必要构建材料和文档。正式版本发布由主维护者负责。
+在根目录统一操作 Git；修改前保护已有工作，按项目约定直接在 `main` 维护，未经允许不开新分支。提交信息、PR 标题和描述使用中文，附必要的验证结果；只提交源码、资源、必要构建材料和文档。正式版本发布由主维护者负责。
