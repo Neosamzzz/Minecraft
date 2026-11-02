@@ -1,6 +1,6 @@
 # EP 物品取舍与裁剪清单
 
-更新：2026-11-03。关联 [Issue #8](https://github.com/Neosamzzz/Minecraft/issues/8)。本清单供后续裁剪实现和验收持续维护，路线见[路线手稿](route-manuscript.md)，原料与机器配方见[星球指南](../../docs/research/planet-gameplay-guide.md)。
+更新：2026-11-03。本清单供后续裁剪实现和验收持续维护，路线见[路线手稿](route-manuscript.md)，原料与机器配方见[星球指南](../../docs/research/planet-gameplay-guide.md)。
 
 ## 范围与状态
 

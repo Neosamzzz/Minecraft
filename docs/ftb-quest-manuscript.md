@@ -174,7 +174,7 @@ FTB 记录核心、黑洞引擎与十阶飞船成品，不增加“安装核心�
 
 ## 终章预留：似曾相识
 
-终章的新维度由 [NewEarth 维度线](../NewEarth/dimension/README.md)独立推进，火箭与物品另由[物品线](../NewEarth/items/README.md)维护，两项工作统一在 `main` 中按目录维护，对应 [Project #4](https://github.com/users/Neosamzzz/projects/4/views/1) 与 [Issue #8](https://github.com/Neosamzzz/Minecraft/issues/8)。本节保留任务文案和抵达占位，基础任务书不等待终章全部完成。
+终章的新维度由 [NewEarth 维度线](../NewEarth/dimension/README.md)独立推进，火箭与物品另由[物品线](../NewEarth/items/README.md)维护，两项工作统一在 `main` 中按目录维护，对应 [Project #4](https://github.com/users/Neosamzzz/projects/4/views/1)。本节保留任务文案和抵达占位，基础任务书不等待终章全部完成。
 
 以下内容仅在发现新增行星后向玩家展示。
 
