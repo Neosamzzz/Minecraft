@@ -2,7 +2,7 @@
 
 维护分支：[main](https://github.com/Neosamzzz/Minecraft/tree/main)。更新日期：2026-11-03。
 
-本线负责七阶火箭、九阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。NewEarth 0.2.8 开发版沿用太阳系主星组合、GS 卫星改挂与阶段通行规则，取消原 EP 火箭、鼻锥、旧图纸、普通工具护甲及旧火箭实体／NASA页面注册，裁剪相应制造链，并移除 0.1.0 七阶过渡制造；环境防护、地牢奖励和新制造路线尚未接入。新增九阶载具、工具、工作台和核心尚未实现，正常航行仍待实测。
+本线负责七阶火箭、九阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。NewEarth 0.2.9 开发版沿用太阳系主星组合、GS 卫星改挂与阶段通行规则，取消原 EP 火箭、鼻锥、旧图纸、普通工具护甲及旧火箭实体／NASA页面注册，裁剪相应制造链，并移除 0.1.0 七阶过渡制造；环境防护、地牢奖励和新制造路线尚未接入。新增九阶载具、工具、工作台和核心尚未实现，正常航行仍待实测。
 
 > [!IMPORTANT]
 > **交接与设计前先读 [planet-gameplay-guide.md：星球玩法详解](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)。**
@@ -103,7 +103,13 @@
 py -3 tools/build.py --target newearth --offline
 ```
 
-首次缺少缓存时去掉 `--offline`。产物为 `build/libs/NewEarth-0.2.8.jar`；客户端与服务端都需要同版本 NewEarth，以及已有 GC、GS 2.2.0、EP 0.8.0 和它们的依赖。后续版本以 `NewEarth/gradle.properties` 为准。当前源码编译使用共用 GC 4.0.2.283 开发依赖，目标运行基线仍为 GC 4.0.6；隔离检查不证明这两个版本的完整运行兼容。
+首次缺少缓存时去掉 `--offline`。产物为 `build/libs/NewEarth-0.2.9.jar`；客户端与服务端都需要同版本 NewEarth，以及已有 GC、GS 2.2.0、EP 0.8.0 和它们的依赖。后续版本以 `NewEarth/gradle.properties` 为准。当前源码编译使用共用 GC 4.0.2.283 开发依赖，目标运行基线仍为 GC 4.0.6；隔离检查不证明这两个版本的完整运行兼容。
+
+### 0.2.9：修复GC原生图纸注册空指针
+
+用户提供的0.2.8客户端日志确认：启动进入GC初始化时，`SchematicRegistry.registerSchematicRecipe` 被新增裁剪逻辑拦截，GC原生一阶图纸的 `getRequiredItem()` 合法返回 `null`，触发 `ContentPruning.retiredOutput` 空指针。本次修复只检查EP自身图纸页面，并让空解锁物品安全通过；保留既定裁剪规则。
+
+新增GC真实一阶图纸及空解锁物品回归，制造／注册108项、太阳系344项通过。修复包以已提交的3c92803星图界面更新为基础，加本次修复隔离构建，未带入未提交改动；已备份并替换指定实例为0.2.9，核对复制哈希，配置与存档未改。0.2.8的完整启动已证实失败；0.2.9的完整启动仍待用户重启验证，不能用隔离检查宣称启动成功。
 
 ### 0.2.8：确定剔除项不再注册
 

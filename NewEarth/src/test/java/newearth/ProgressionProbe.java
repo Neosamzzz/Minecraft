@@ -43,6 +43,9 @@ public final class ProgressionProbe {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        check(!ContentPruning.retiredOutput(null), "Null unlock stack is not a retired item");
+        check(ContentPruning.allowSchematic(new micdoodle8.mods.galacticraft.core.schematic.SchematicRocketT1()),
+                "GC built-in T1 page with null required item must register");
         check(!ContentPruning.allowRegistration(new Item(), "item_tier7_rocket"), "Rocket registration is rejected");
         check(!ContentPruning.allowRegistration(new Item(), "schematic_tier7"), "Old schematic registration is rejected");
         check(!ContentPruning.allowRegistration(new Item(), "blue_diamond_helmet"), "Colored armor registration is rejected");

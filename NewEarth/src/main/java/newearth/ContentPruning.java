@@ -89,11 +89,14 @@ public final class ContentPruning {
     }
 
     public static boolean allowSchematic(micdoodle8.mods.galacticraft.api.recipe.ISchematicPage page) {
+        // GC's built-in T1 page intentionally has no unlock item. Only EP's
+        // own pages are in scope, so never query unrelated pages for an item.
+        if (!page.getClass().getName().startsWith("com.mjr.extraplanets.schematicPages.")) return true;
         return !retiredOutput(page.getRequiredItem());
     }
 
     static boolean retiredOutput(ItemStack stack) {
-        if (stack.isEmpty()) return false;
+        if (stack == null || stack.isEmpty()) return false;
         ResourceLocation id = stack.getItem().getRegistryName();
         if (id == null || !"extraplanets".equals(id.getNamespace())) return false;
         String name = id.getPath();
