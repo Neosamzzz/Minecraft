@@ -63,6 +63,15 @@ public final class SolarSystemProbe {
             check(PlanetHooks.isReplacedDummy(name), "GC fallback suppressed: " + name);
         for (String name : new String[] {"mercury", "ceres", "mars", "haumea"})
             check(!PlanetHooks.isReplacedDummy(name), "Other GC fallback untouched: " + name);
+        Moon titania = moon("titaniaep", ep.get(2), 6);
+        check(!PlanetHooks.hasReachableMoonCounterpart("titania"), "Display-only counterpart does not hide GS dummy");
+        titania.setDimensionInfo(-998, micdoodle8.mods.galacticraft.core.dimension.WorldProviderMoon.class);
+        check(PlanetHooks.hasReachableMoonCounterpart("titania"), "Reachable EP Titania replaces GS display moon");
+        Moon rhea = moon("rheaep", ep.get(1), 5);
+        rhea.setDimensionInfo(-997, micdoodle8.mods.galacticraft.core.dimension.WorldProviderMoon.class);
+        check(PlanetHooks.hasReachableMoonCounterpart("rheya"), "GS Rheya alias matches reachable EP Rhea");
+        check(!PlanetHooks.hasReachableMoonCounterpart("charon"), "Charon remains when no reachable replacement exists");
+        checkNames();
 
         String runtime = System.getenv("NEWEARTH_RUNTIME_MODS");
         if (runtime != null && !runtime.isEmpty()) transformRuntime(new File(runtime));
@@ -78,6 +87,8 @@ public final class SolarSystemProbe {
 
     private static void transformRuntime(File directory) throws Exception {
         Set<String> required = new HashSet<>(Arrays.asList(
+                "galaxyspace.systems.SolarSystem.SolarSystemBodies",
+                "com.mjr.extraplanets.client.gui.screen.CustomCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.GalacticraftCore",
                 "micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.util.WorldUtil",
@@ -139,6 +150,17 @@ public final class SolarSystemProbe {
         check(untouched > 0, "Non-target installed classes are unchanged");
         check(teleportTypes.size() == 4, "All four orbit teleport types load without interception");
         System.out.println("Verified " + untouched + " non-target classes unchanged, including four orbit teleport types");
+    }
+
+    private static void checkNames() throws Exception {
+        for (String language : new String[] {"zh_cn", "en_us"}) {
+            java.util.Properties names = new java.util.Properties();
+            try (java.io.Reader reader = new java.io.InputStreamReader(SolarSystemProbe.class.getResourceAsStream(
+                    "/assets/extraplanets/lang/" + language + ".lang"), java.nio.charset.StandardCharsets.UTF_8)) { names.load(reader); }
+            check(names.size() == 21, "All EP compatibility names supplied: " + language);
+            check(names.values().stream().noneMatch(value -> value.toString().contains("2.0")), "No 2.0 label remains: " + language);
+            check(names.getProperty("planet.MercuryEP").contains("EP"), "Dual Mercury destinations remain distinguishable: " + language);
+        }
     }
 
     private static void checkCatalogue() {

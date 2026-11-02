@@ -20,6 +20,13 @@ public final class PlanetHooks {
         return "jupiter".equals(name) || "saturn".equals(name) || "uranus".equals(name) || "neptune".equals(name);
     }
 
+    public static boolean hasReachableMoonCounterpart(String name) {
+        String counterpart = ("rheya".equals(name) ? "rhea" : name) + "ep";
+        for (Moon moon : GalaxyRegistry.getRegisteredMoons().values())
+            if (moon.getName().equalsIgnoreCase(counterpart) && moon.getReachable()) return true;
+        return false;
+    }
+
     static void validateConfiguration() {
         try {
             Class<?> ep = Class.forName("com.mjr.extraplanets.Config");

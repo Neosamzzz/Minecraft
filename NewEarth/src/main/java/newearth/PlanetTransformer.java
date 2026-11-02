@@ -14,6 +14,8 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
         String n = transformedName;
         boolean core = "micdoodle8.mods.galacticraft.core.GalacticraftCore".equals(n);
         boolean gui = "micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection".equals(n);
+        boolean epGui = "com.mjr.extraplanets.client.gui.screen.CustomCelestialSelection".equals(n);
+        boolean gsBodies = "galaxyspace.systems.SolarSystem.SolarSystemBodies".equals(n);
         boolean world = "micdoodle8.mods.galacticraft.core.util.WorldUtil".equals(n);
         boolean item = "galaxyspace.core.prefab.items.rockets.ItemTier6Rocket".equals(n);
         boolean rocket = "galaxyspace.core.prefab.entities.EntityTier6Rocket".equals(n);
@@ -24,11 +26,21 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
         boolean provider = n != null && (n.equals("com.mjr.extraplanets.planets.Neptune.WorldProviderNeptune")
                 || n.equals("com.mjr.extraplanets.planets.Pluto.WorldProviderPluto")
                 || n.equals("com.mjr.extraplanets.planets.Eris.WorldProviderEris"));
-        if (!(core || gui || world || item || rocket || provider || orbit)) return bytes;
+        if (!(core || gui || epGui || gsBodies || world || item || rocket || provider || orbit)) return bytes;
         ClassNode c = new ClassNode();
-        new ClassReader(bytes).accept(c, 0);
+        new ClassReader(bytes).accept(c, epGui ? ClassReader.EXPAND_FRAMES : 0);
         int changes = 0;
         for (MethodNode m : c.methods) {
+            if (gsBodies && m.name.equals("registerDummyMoon")) {
+                InsnList hook = new InsnList(); LabelNode proceed = new LabelNode();
+                hook.add(new VarInsnNode(ALOAD, 1));
+                hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "hasReachableMoonCounterpart", "(Ljava/lang/String;)Z", false));
+                hook.add(new JumpInsnNode(IFEQ, proceed)); hook.add(new InsnNode(ACONST_NULL)); hook.add(new InsnNode(ARETURN));
+                hook.add(proceed); hook.add(new FrameNode(F_SAME, 0, null, 0, null)); m.instructions.insert(hook); changes++;
+            }
+            if (epGui && m.name.equals("drawCustomButtons") && m.desc.equals("(II)V")) {
+                patchDetails(m); changes++;
+            }
             if (core && m.name.equals("makeDummyPlanet")) {
                 InsnList hook = new InsnList(); LabelNode proceed = new LabelNode();
                 hook.add(new VarInsnNode(ALOAD, 1));
@@ -113,6 +125,40 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         c.accept(writer);
         return writer.toByteArray();
+    }
+
+    private static void patchDetails(MethodNode m) {
+        String client = "newearth/client/CatalogueHooks";
+        JumpInsnNode guard = null;
+        for (AbstractInsnNode i : m.instructions.toArray()) if (i instanceof FieldInsnNode
+                && ((FieldInsnNode) i).name.equals("selectedBody")) {
+            AbstractInsnNode next = i.getNext();
+            while (next != null && next.getOpcode() < 0) next = next.getNext();
+            if (next != null && next.getOpcode() == IFNULL) { guard = (JumpInsnNode) next; break; }
+        }
+        if (guard == null) throw new IllegalStateException("Unsupported EP detail panel guard");
+        LabelNode originalEnd = guard.label, cleanup = new LabelNode();
+        for (AbstractInsnNode i = guard.getNext(); i != originalEnd; i = i.getNext()) {
+            if (i == null) throw new IllegalStateException("Unsupported EP detail panel range");
+            if (i instanceof JumpInsnNode && ((JumpInsnNode) i).label == originalEnd) ((JumpInsnNode) i).label = cleanup;
+        }
+        InsnList begin = new InsnList(); begin.add(new VarInsnNode(ALOAD, 0)); begin.add(new VarInsnNode(ILOAD, 2));
+        begin.add(new MethodInsnNode(INVOKESTATIC, client, "beginDetails", "(Ljava/lang/Object;I)I", false));
+        begin.add(new VarInsnNode(ISTORE, 2)); m.instructions.insert(guard, begin);
+        AbstractInsnNode frameNode = originalEnd.getNext();
+        while (frameNode != null && !(frameNode instanceof FrameNode) && frameNode.getOpcode() < 0) frameNode = frameNode.getNext();
+        if (!(frameNode instanceof FrameNode)) throw new IllegalStateException("Missing EP detail panel join frame");
+        FrameNode frame = (FrameNode) frameNode;
+        InsnList end = new InsnList(); end.add(cleanup);
+        end.add(new FrameNode(F_NEW, frame.local.size(), frame.local.toArray(), frame.stack.size(), frame.stack.toArray()));
+        end.add(new VarInsnNode(ALOAD, 0)); end.add(new VarInsnNode(ILOAD, 2));
+        end.add(new MethodInsnNode(INVOKESTATIC, client, "endDetails", "(Ljava/lang/Object;I)I", false));
+        end.add(new VarInsnNode(ISTORE, 2)); m.instructions.insertBefore(originalEnd, end);
+        for (AbstractInsnNode i : m.instructions.toArray()) if (i.getOpcode() == RETURN) {
+            InsnList finish = new InsnList(); finish.add(new VarInsnNode(ALOAD, 0)); finish.add(new VarInsnNode(ILOAD, 2));
+            finish.add(new MethodInsnNode(INVOKESTATIC, client, "endDetails", "(Ljava/lang/Object;I)I", false)); finish.add(new InsnNode(POP));
+            m.instructions.insertBefore(i, finish);
+        }
     }
 
     private static int patchCatalogue(MethodNode m) {
