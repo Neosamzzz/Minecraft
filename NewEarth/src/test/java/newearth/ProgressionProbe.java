@@ -39,10 +39,20 @@ public final class ProgressionProbe {
         ForgeRegistries.RECIPES.register(recipe);
         return recipe;
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        check(!ContentPruning.allowRegistration(new Item(), "item_tier7_rocket"), "Rocket registration is rejected");
+        check(!ContentPruning.allowRegistration(new Item(), "schematic_tier7"), "Old schematic registration is rejected");
+        check(!ContentPruning.allowRegistration(new Item(), "blue_diamond_helmet"), "Colored armor registration is rejected");
+        check(ContentPruning.allowRegistration(new Item(), "tier7_items"), "Mixed resource container remains registered");
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        check(ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"blue_diamond_helmet\"}}").getAsJsonObject(), "extraplanets"), "Skip deleted output before parsing items");
+        check(ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"minecraft:paper\"},\"key\":{\"X\":{\"item\":\"extraplanets:nose_cone_tier7\"}}}").getAsJsonObject(), "anothermod"), "Skip recipes referencing deleted inputs");
+        check(!ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"anothermod:blue_diamond_helmet\"}}").getAsJsonObject(), "extraplanets"), "Do not skip another mod's similarly named output");
+        check(!ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"tier7_items\",\"data\":5}}").getAsJsonObject(), "extraplanets"), "Preserve crystal recipes");
+        verifyContentTransforms();
         List<INasaWorkbenchRecipe> nasa = new ArrayList<>();
         for (int tier = 4; tier <= 10; tier++) {
             Item rocket = item("extraplanets:item_tier" + tier + "_rocket");
@@ -63,9 +73,11 @@ public final class ProgressionProbe {
         Item electric = item("extraplanets:item_tier10_electric_rocket");
         nasa.add(new NasaWorkbenchRecipe(new ItemStack(electric), new HashMap<>()));
         Item rover = item("extraplanets:mars_rover");
-        nasa.add(new NasaWorkbenchRecipe(new ItemStack(rover), new HashMap<>()));
-        check(ContentPruning.pruneNasa(nasa) == 29, "Remove every tier and cargo variant including electric rocket");
-        check(nasa.size() == 1 && nasa.get(0).getRecipeOutput().getItem() == rover, "Preserve rover recipe");
+        List<INasaWorkbenchRecipe> roverRecipes = new ArrayList<>();
+        roverRecipes.add(new NasaWorkbenchRecipe(new ItemStack(rover), new HashMap<>()));
+        nasa.add(new NasaWorkbenchRecipe(new ItemStack(new Item()), new HashMap<>()));
+        check(ContentPruning.pruneNasa(nasa) == 30 && nasa.isEmpty(), "Clear dedicated rocket table including outputs without registered IDs");
+        check(roverRecipes.size() == 1, "Separate rover recipe table remains intact");
         for (String color : new String[] {"blue", "red", "purple", "yellow", "green"})
             for (String part : new String[] {"pickaxe", "axe", "hoe", "shovel", "sword", "helmet", "chest", "legings", "boots"}) {
                 Item tool = item("extraplanets:" + color + "_diamond_" + part);
@@ -75,6 +87,12 @@ public final class ProgressionProbe {
         for (int meta = 0; meta <= 6; meta++)
             check(!ContentPruning.retiredOutput(new ItemStack(raw, 1, meta)), "Preserve five diamonds and platinum " + meta);
         Item other = item("anothermod:tier7_items");
+        List<ItemStack> subItems = new ArrayList<>();
+        Item container7 = ForgeRegistries.ITEMS.getValue(new ResourceLocation("extraplanets:tier7_items"));
+        for (int meta = 0; meta <= 7; meta++) subItems.add(new ItemStack(container7, 1, meta));
+        ContentPruning.filterSubItems(subItems);
+        check(subItems.size() == 3 && subItems.get(0).getMetadata() == 4 && subItems.get(2).getMetadata() == 7,
+                "Mixed container only enumerates retained crystal and gem materials");
         check(!ContentPruning.retiredOutput(new ItemStack(other)), "Do not match other mods by path alone");
         IRecipe retained = recipe("newearth:retained", new ItemStack(raw));
         check(ContentPruning.pruneCrafting(ForgeRegistries.RECIPES) == 73, "Remove 28 components and all 45 colored equipment recipes");
@@ -96,5 +114,72 @@ public final class ProgressionProbe {
         check(proxima.getTierRequirement() == 7 && barnarda.getTierRequirement() == 7 && moon.getTierRequirement() == 7, "Preserve exoplanet T7 gates");
         check(kepler.getTierRequirement() == 10, "Keep Kepler gate pending custom T9");
         System.out.println("NewEarth progression: " + checks + " checks passed (isolated; no Forge server or flight)");
+    }
+
+    public static final class PendingFixture {
+        public static int submitted;
+        public static void registerItem(Item item, String name) { submitted++; }
+    }
+
+    private static void verifyContentTransforms() throws Exception {
+        ContentTransformer transformer = new ContentTransformer();
+        String fixtureName = "newearth.ProgressionProbe$PendingFixture";
+        byte[] original;
+        try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + fixtureName.replace('.', '/') + ".class")) {
+            original = read(input);
+        }
+        final byte[] fixture = transformer.transform(fixtureName, "com.mjr.extraplanets.items.ExtraPlanets_Items", original);
+        Class<?> executed = new ClassLoader(ProgressionProbe.class.getClassLoader()) {
+            Class<?> loadFixture() { return defineClass(fixtureName, fixture, 0, fixture.length); }
+        }.loadFixture();
+        java.lang.reflect.Method submit = executed.getMethod("registerItem", Item.class, String.class);
+        submit.invoke(null, new Item(), "item_tier7_rocket");
+        submit.invoke(null, new Item(), "blue_diamond_helmet");
+        check(executed.getField("submitted").getInt(null) == 0, "Transformed registration never submits retired IDs");
+        submit.invoke(null, new Item(), "tier7_items");
+        check(executed.getField("submitted").getInt(null) == 1, "Transformed registration submits retained material container");
+        String helper = "net/minecraftforge/common/crafting/CraftingHelper";
+        try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + helper + ".class")) {
+            verifyPatched(transformer, helper.replace('/', '.'), read(input));
+        }
+        String schematicRegistry = "micdoodle8/mods/galacticraft/api/recipe/SchematicRegistry";
+        try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + schematicRegistry + ".class")) {
+            verifyPatched(transformer, schematicRegistry.replace('/', '.'), read(input));
+        }
+        String runtime = System.getenv("NEWEARTH_RUNTIME_MODS");
+        if (runtime != null && !runtime.isEmpty()) {
+            java.util.Set<String> required = new java.util.HashSet<>(java.util.Arrays.asList(
+                    "com.mjr.extraplanets.items.ExtraPlanets_Items", "com.mjr.mjrlegendslib.item.ItemBasicMeta",
+                    "com.mjr.mjrlegendslib.util.RegisterUtilities", "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry"));
+            for (java.io.File file : new java.io.File(runtime).listFiles()) if (file.getName().endsWith(".jar")) {
+                try (java.util.jar.JarFile jar = new java.util.jar.JarFile(file)) {
+                    for (String name : new ArrayList<>(required)) {
+                        java.util.jar.JarEntry entry = jar.getJarEntry(name.replace('.', '/') + ".class");
+                        if (entry == null) continue;
+                        try (java.io.InputStream input = jar.getInputStream(entry)) { verifyPatched(transformer, name, read(input)); }
+                        required.remove(name);
+                    }
+                }
+            }
+            check(required.isEmpty(), "Installed EP and MJR content targets were verified");
+        }
+    }
+
+    private static byte[] read(java.io.InputStream input) throws java.io.IOException {
+        java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+        byte[] buffer = new byte[8192]; int count;
+        while ((count = input.read(buffer)) >= 0) output.write(buffer, 0, count);
+        return output.toByteArray();
+    }
+
+    private static void verifyPatched(ContentTransformer transformer, String name, byte[] original) throws Exception {
+        byte[] patched = transformer.transform(name, name, original);
+        check(!java.util.Arrays.equals(patched, original), "Content patch applied " + name);
+        org.objectweb.asm.tree.ClassNode node = new org.objectweb.asm.tree.ClassNode();
+        new org.objectweb.asm.ClassReader(patched).accept(node, org.objectweb.asm.ClassReader.EXPAND_FRAMES);
+        for (org.objectweb.asm.tree.MethodNode method : node.methods)
+            if ((method.access & (org.objectweb.asm.Opcodes.ACC_ABSTRACT | org.objectweb.asm.Opcodes.ACC_NATIVE)) == 0)
+                new org.objectweb.asm.tree.analysis.Analyzer<>(new org.objectweb.asm.tree.analysis.BasicVerifier()).analyze(node.name, method);
+        check(true, "Content bytecode verified " + name);
     }
 }
