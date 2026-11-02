@@ -96,7 +96,7 @@ build/libs/
 | `py -3 tools/build.py` | 默认构建 GSLC，保持原有用法 |
 | `py -3 tools/build.py --target gslc` | 只构建 GSLC |
 | `py -3 tools/build.py --target ftbquests` | 只构建 FTB Quests |
-| `py -3 tools/build.py --target newearth` | 只构建 NewEarth，自动运行七阶隔离检查 |
+| `py -3 tools/build.py --target newearth` | 只构建 NewEarth，自动运行七阶与太阳系隔离检查 |
 | `py -3 tools/build.py --target all` | 依次构建 GSLC、FTB Quests、NewEarth，任一目标失败就停止 |
 | `py -3 tools/build.py --help` | 查看完整参数 |
 

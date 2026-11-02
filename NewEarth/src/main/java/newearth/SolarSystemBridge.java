@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-/** Adapts existing registered content; does not enable EP planets or change world IDs. */
+/** Adapts T7 recipes and exoplanet tiers; solar-system registration lives in PlanetHooks. */
 final class SolarSystemBridge {
     private SolarSystemBridge() { }
 
@@ -75,10 +75,10 @@ final class SolarSystemBridge {
         setTier(GalaxyRegistry.getRegisteredPlanets(), "barnarda_c", 7);
         setTier(GalaxyRegistry.getRegisteredMoons(), "barnarda_c1", 7);
         setTier(GalaxyRegistry.getRegisteredPlanets(), "tauceti_f", 7);
-        // Kepler remains at its original gate until the custom T8 ship is implemented.
+        // Kepler remains at its original gate until the custom T9 ship is implemented.
     }
 
-    private static Item requireItem(String name) {
+    static Item requireItem(String name) {
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
         if (item == null || item == Item.getItemFromBlock(Blocks.AIR)) {
             throw new IllegalStateException("NewEarth missing required item " + name

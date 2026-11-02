@@ -58,7 +58,7 @@ public final class ProgressionProbe {
         SolarSystemBridge.install(nasa);
         check(proxima.getTierRequirement() == 7 && barnarda.getTierRequirement() == 7 && moon.getTierRequirement() == 7, "Loaded exoplanets and moon require T7");
         check(mars.getTierRequirement() == 2, "Solar-system tier is unchanged");
-        check(kepler.getTierRequirement() == 10, "Kepler remains gated until custom T8 exists");
+        check(kepler.getTierRequirement() == 10, "Kepler remains gated until custom T9 exists");
         check(!GalaxyRegistry.getRegisteredPlanets().containsKey("tauceti_f"), "Disabled destination stays absent");
         Container container = new Container() {
             @Override public boolean canInteractWith(EntityPlayer player) { return true; }

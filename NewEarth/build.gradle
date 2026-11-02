@@ -30,7 +30,8 @@ processResources {
     filesMatching('mcmod.info') { expand version: project.version }
 }
 jar {
-    manifest { attributes 'Implementation-Version': project.version }
+    manifest { attributes 'Implementation-Version': project.version,
+            'FMLCorePlugin': 'newearth.PlanetLoadingPlugin', 'FMLCorePluginContainsFMLMod': 'true' }
     finalizedBy 'reobfJar'
 }
 
@@ -45,3 +46,12 @@ tasks.register('progressionCheck', JavaExec) {
     systemProperty 'java.awt.headless', 'true'
 }
 check.dependsOn progressionCheck
+tasks.register('solarSystemCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.SolarSystemProbe'
+    workingDir = rootProject.file('../build/checks/newearth/solar-system')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn solarSystemCheck
