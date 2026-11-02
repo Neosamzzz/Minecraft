@@ -102,10 +102,12 @@ public final class SolarSystemProbe {
         File[] jars = directory.listFiles((dir, name) -> name.endsWith(".jar"));
         if (jars == null) throw new IllegalArgumentException("Missing runtime mods directory " + directory);
         PlanetTransformer transformer = new PlanetTransformer();
+        File epFile = null;
         Set<String> targets = new HashSet<>(required);
         Set<String> teleportTypes = new HashSet<>();
         int untouched = 0;
         for (File file : jars) try (JarFile jar = new JarFile(file)) {
+            if (jar.getJarEntry("com/mjr/extraplanets/ExtraPlanets.class") != null) epFile = file;
             // A target-only test missed TeleportTypeSaturnOrbit being intercepted.
             // Sweep every non-target class, including all four sibling teleport types.
             Enumeration<JarEntry> entries = jar.entries();
@@ -150,6 +152,37 @@ public final class SolarSystemProbe {
         check(untouched > 0, "Non-target installed classes are unchanged");
         check(teleportTypes.size() == 4, "All four orbit teleport types load without interception");
         System.out.println("Verified " + untouched + " non-target classes unchanged, including four orbit teleport types");
+        check(epFile != null, "Installed EP resource pack found");
+        checkLanguageLoading(epFile);
+    }
+
+    private static void checkLanguageLoading(File epFile) throws Exception {
+        net.minecraft.client.resources.data.MetadataSerializer serializer = new net.minecraft.client.resources.data.MetadataSerializer();
+        serializer.registerMetadataSectionType(new net.minecraft.client.resources.data.PackMetadataSectionSerializer(),
+                net.minecraft.client.resources.data.PackMetadataSection.class);
+        net.minecraft.client.resources.IResourcePack addon = new net.minecraft.client.resources.FolderResourcePack(
+                new File(System.getProperty("newearth.resourceRoot")));
+        net.minecraft.client.resources.data.PackMetadataSection metadata = addon.getPackMetadata(serializer, "pack");
+        check(metadata != null && metadata.getPackFormat() == 3, "Forge selects modern lowercase language paths");
+        net.minecraft.client.resources.IResourcePack legacyAddon = new net.minecraft.client.resources.LegacyV2Adapter(addon);
+        net.minecraft.client.resources.IResourcePack ep = new net.minecraft.client.resources.LegacyV2Adapter(
+                new net.minecraft.client.resources.FileResourcePack(epFile));
+        net.minecraft.client.resources.SimpleReloadableResourceManager manager = new net.minecraft.client.resources.SimpleReloadableResourceManager(serializer);
+        net.minecraft.client.resources.Locale locale = new net.minecraft.client.resources.Locale();
+        manager.reloadResources(Arrays.asList(ep, legacyAddon));
+        locale.loadLocaleDataFiles(manager, Arrays.asList("en_us", "zh_cn"));
+        check(locale.formatMessage("planet.JupiterEP", new Object[0]).contains("2.0"), "Control reproduces old-format addon ignoring lowercase translations");
+        manager.reloadResources(Arrays.asList(ep, addon));
+        for (String language : new String[] {"en_us", "zh_cn"}) {
+            locale.loadLocaleDataFiles(manager, language.equals("zh_cn") ? Arrays.asList("en_us", "zh_cn") : Arrays.asList("en_us"));
+            java.util.Properties expected = new java.util.Properties();
+            try (java.io.Reader reader = new java.io.InputStreamReader(SolarSystemProbe.class.getResourceAsStream(
+                    "/assets/extraplanets/lang/" + language + ".lang"), java.nio.charset.StandardCharsets.UTF_8)) { expected.load(reader); }
+            for (String key : expected.stringPropertyNames())
+                check(locale.formatMessage(key, new Object[0]).equals(expected.getProperty(key)), "Actual Locale override: " + language + " / " + key);
+            System.out.println("Actual MC Locale " + language + ": " + locale.formatMessage("planet.JupiterEP", new Object[0])
+                    + ", " + locale.formatMessage("planet.MercuryEP", new Object[0]));
+        }
     }
 
     private static void checkNames() throws Exception {

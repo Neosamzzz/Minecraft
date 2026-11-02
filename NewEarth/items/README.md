@@ -2,7 +2,7 @@
 
 维护分支：[main](https://github.com/Neosamzzz/Minecraft/tree/main)。更新日期：2026-11-03。
 
-本线负责七阶火箭、九阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。NewEarth 0.2.4 已接入太阳系主星组合、GS 卫星改挂与阶段通行规则，保留 0.1.0 的七阶过渡制造；环境防护、地牢奖励和新制造路线尚未接入。新增九阶载具、工具、工作台和核心尚未实现，正常航行仍待实测。
+本线负责七阶火箭、九阶多人宇宙飞船、装配与能源升级，以及系外星球相关的物品和专用工具。终章新维度由[维度线](../dimension/README.md)独立推进，共同方向见[NewEarth 总览](../README.md)。NewEarth 0.2.5 已接入太阳系主星组合、GS 卫星改挂与阶段通行规则，保留 0.1.0 的七阶过渡制造；环境防护、地牢奖励和新制造路线尚未接入。新增九阶载具、工具、工作台和核心尚未实现，正常航行仍待实测。
 
 > [!IMPORTANT]
 > **交接与设计前先读 [planet-gameplay-guide.md：星球玩法详解](https://github.com/Neosamzzz/Minecraft/blob/main/docs/research/planet-gameplay-guide.md)。**
@@ -92,7 +92,15 @@
 py -3 tools/build.py --target newearth --offline
 ```
 
-首次缺少缓存时去掉 `--offline`。产物为 `build/libs/NewEarth-0.2.4.jar`；客户端与服务端都需要同版本 NewEarth，以及已有 GC、GS 2.2.0、EP 0.8.0 和它们的依赖。后续版本以 `NewEarth/gradle.properties` 为准。当前源码编译使用共用 GC 4.0.2.283 开发依赖，目标运行基线仍为 GC 4.0.6；隔离检查不证明这两个版本的完整运行兼容。
+首次缺少缓存时去掉 `--offline`。产物为 `build/libs/NewEarth-0.2.5.jar`；客户端与服务端都需要同版本 NewEarth，以及已有 GC、GS 2.2.0、EP 0.8.0 和它们的依赖。后续版本以 `NewEarth/gradle.properties` 为准。当前源码编译使用共用 GC 4.0.2.283 开发依赖，目标运行基线仍为 GC 4.0.6；隔离检查不证明这两个版本的完整运行兼容。
+
+### 0.2.5：修正名称资源的实际加载
+
+2026-11-03 用户截图确认0.2.4仍显示“木星2.0”等名称。原因是附加模组缺少 `pack.mcmeta`，Forge自动提供旧格式2声明并使用 `LegacyV2Adapter`，按 `zh_CN.lang`／`en_US.lang` 读取；0.2.4新增文件却是1.12格式的小写 `zh_cn.lang`／`en_us.lang`，因而未加载。此前检查只读文件内容，不能证明语言覆盖生效。
+
+0.2.5明确声明资源包格式3，继续使用小写语言文件。检查改为真实Minecraft `SimpleReloadableResourceManager`、`Locale` 与实例EP JAR组合：先复现旧格式下仍为“木星2.0”，再确认新格式加载21项中英文名称，逐项匹配“木星／水星（EP）”及英文结果；太阳系190项、七阶51项与离线构建通过。本次不改天体注册、面板规则、config或存档。
+
+截图中木卫一至四的两组绿色条目是GS与EP各自的可登陆地表，仍按待定取舍保留；不把它们当作红色展示节点擅自删除。修正名称后以EP来源标记区分。已备份0.2.4并部署0.2.5，客户端实际画面与详情面板完整交互仍待用户重启确认。
 
 ### 0.2.4：展示卫星去重、详情滚动与显示名
 
