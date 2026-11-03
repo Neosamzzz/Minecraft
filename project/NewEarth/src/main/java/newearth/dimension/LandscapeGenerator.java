@@ -28,18 +28,20 @@ public final class LandscapeGenerator implements IChunkGenerator {
             int wx = chunkX * 16 + x, wz = chunkZ * 16 + z;
             int top = (int) Math.floor(field.height(wx, wz));
             double slope = field.slope(wx, wz);
+            int biome = field.biome(wx, wz);
+            boolean sandy = biome == TerrainSampler.DESERT || top <= Landscape.WATER_LEVEL + 1;
             boolean rock = slope > 1.10 || (top > 190 && slope > 0.45);
             primer.setBlockState(x, 0, z, Blocks.BEDROCK.getDefaultState());
             for (int y = 1; y <= Math.max(top, Landscape.WATER_LEVEL); y++) {
                 IBlockState block = Blocks.STONE.getDefaultState();
                 if (y > top) block = Blocks.WATER.getDefaultState();
                 else if (!rock && y >= top - 3) block = y == top
-                        ? (top <= Landscape.WATER_LEVEL + 1 ? Blocks.SAND : Blocks.GRASS).getDefaultState()
-                        : Blocks.DIRT.getDefaultState();
+                        ? (sandy ? Blocks.SAND : Blocks.GRASS).getDefaultState()
+                        : (sandy ? Blocks.SAND : Blocks.DIRT).getDefaultState();
                 primer.setBlockState(x, y, z, block);
             }
-            if (top > 205 && slope < 0.7) primer.setBlockState(x, top + 1, z, Blocks.SNOW_LAYER.getDefaultState());
-            if (!rock && top > Landscape.WATER_LEVEL + 1 && top < 160 && slope < 0.6) {
+            if (biome == TerrainSampler.SNOW && top > Landscape.WATER_LEVEL && slope < 0.7) primer.setBlockState(x, top + 1, z, Blocks.SNOW_LAYER.getDefaultState());
+            if (!rock && !sandy && biome != TerrainSampler.SNOW && top > Landscape.WATER_LEVEL + 1 && top < 190 && slope < 0.6) {
                 double plant = field.unit(wx, wz, 20);
                 if (plant < 0.018) primer.setBlockState(x, top + 1, z,
                         Blocks.RED_FLOWER.getDefaultState().withProperty(Blocks.RED_FLOWER.getTypeProperty(),

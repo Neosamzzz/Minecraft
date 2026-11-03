@@ -5,11 +5,12 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = NewEarth.MOD_ID, name = "NewEarth", version = "0.2.15",
+@Mod(modid = NewEarth.MOD_ID, name = "NewEarth", version = NewEarth.VERSION,
         dependencies = "required-after:galacticraftcore;required-after:galaxyspace;required-after:extraplanets",
-        acceptableRemoteVersions = "0.2.15")
+        acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
+    public static final String VERSION = "0.2.16";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.EventHandler

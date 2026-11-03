@@ -15,10 +15,18 @@ public final class LandscapeBiomes extends BiomeProvider {
     @Override public Biome getBiome(BlockPos pos) { return getBiome(pos, Biomes.PLAINS); }
     @Override public Biome getBiome(BlockPos pos, Biome fallback) { return at(pos.getX(), pos.getZ()); }
     private Biome at(int x, int z) {
-        double h = landscape.height(x, z);
-        if (h < Landscape.WATER_LEVEL) return Biomes.RIVER;
-        if (h > 165) return Biomes.EXTREME_HILLS;
-        return landscape.woodland(x, z) > 0.5 && h < 150 ? Biomes.FOREST : Biomes.PLAINS;
+        switch (landscape.biome(x, z)) {
+            case TerrainSampler.OCEAN: return Biomes.OCEAN;
+            case TerrainSampler.RIVER: return Biomes.RIVER;
+            case TerrainSampler.FOREST: return Biomes.FOREST;
+            case TerrainSampler.TAIGA: return Biomes.TAIGA;
+            case TerrainSampler.JUNGLE: return Biomes.JUNGLE;
+            case TerrainSampler.DESERT: return Biomes.DESERT;
+            case TerrainSampler.SAVANNA: return Biomes.SAVANNA;
+            case TerrainSampler.SNOW: return Biomes.ICE_MOUNTAINS;
+            case TerrainSampler.MOUNTAIN: return Biomes.EXTREME_HILLS;
+            default: return Biomes.PLAINS;
+        }
     }
     private Biome[] sample(Biome[] out, int x, int z, int width, int depth, int scale) {
         if (out == null || out.length < width * depth) out = new Biome[width * depth];

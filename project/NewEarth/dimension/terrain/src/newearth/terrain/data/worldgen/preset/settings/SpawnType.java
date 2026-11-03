@@ -1,0 +1,2 @@
+/* SPDX-License-Identifier: MIT; adapted from ReTerraForged. See META-INF/LICENSE-ReTerraForged.txt. */
+package newearth.terrain.data.worldgen.preset.settings; public enum SpawnType {CONTINENT_CENTER,ISLANDS,WORLD_ORIGIN;}

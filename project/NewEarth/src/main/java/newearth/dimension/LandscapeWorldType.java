@@ -39,6 +39,18 @@ public final class LandscapeWorldType extends WorldType {
                 || event.getEntity().isCreatureType(EnumCreatureType.MONSTER, false)))
             event.setCanceled(true);
     }
+    @SubscribeEvent public static void createSpawn(net.minecraftforge.event.world.WorldEvent.CreateSpawnPosition event) {
+        World world = event.getWorld();
+        if (!peacefulLandscape(world.getWorldType(), world.provider.getDimension())) return;
+        int[] at = new Landscape(world.getSeed()).spawnPoint();
+        world.setSpawnPoint(new net.minecraft.util.math.BlockPos(at[0], at[1], at[2]));
+        event.setCanceled(true);
+    }
+    @SubscribeEvent public static void unload(net.minecraftforge.event.world.WorldEvent.Unload event) {
+        World world = event.getWorld();
+        if (!world.isRemote && peacefulLandscape(world.getWorldType(), world.provider.getDimension()))
+            ReterraTerrain.release(world.getSeed());
+    }
     @Override public BiomeProvider getBiomeProvider(World world) { return new LandscapeBiomes(world.getSeed()); }
     @Override public IChunkGenerator getChunkGenerator(World world, String options) {
         return new LandscapeGenerator(world);

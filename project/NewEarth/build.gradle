@@ -25,7 +25,50 @@ dependencies {
     implementation fg.deobf('libs:Galacticraft-1.12.2:4.0.2.283')
 }
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+def terrainClasses = file("$buildDir/classes/terrain")
+def terrainSources = fileTree('dimension/terrain/src') { include '**/*.java' }
+def modernJavaHome = System.getenv('NEWEARTH_JAVA_HOME')
+tasks.register('compileTerrain', Exec) {
+    inputs.files terrainSources, file('src/main/java/newearth/dimension/TerrainSampler.java')
+    inputs.files sourceSets.main.compileClasspath
+    outputs.dir terrainClasses
+    doFirst {
+        if (!modernJavaHome) throw new GradleException('Set NEWEARTH_JAVA_HOME to JDK 25')
+        delete terrainClasses
+        terrainClasses.mkdirs()
+        def argumentFile = file("$buildDir/terrain-javac.args")
+        def quote = { value -> '"' + value.toString().replace('\\', '/') + '"' }
+        argumentFile.text = ['--release', '25', '-proc:none', '-encoding', 'UTF-8',
+                '-classpath', quote(sourceSets.main.compileClasspath.asPath), '-d', quote(terrainClasses),
+                quote(file('src/main/java/newearth/dimension/TerrainSampler.java'))]
+                .plus(terrainSources.files.sort().collect { quote(it) }).join('\n')
+        commandLine file("$modernJavaHome/bin/javac" + (System.getProperty('os.name').startsWith('Windows') ? '.exe' : '')),
+                '@' + argumentFile.absolutePath
+    }
+}
+tasks.register('terrainJar', Jar) {
+    dependsOn 'compileTerrain'
+    archiveFileName = 'newearth-terrain.jar'
+    destinationDirectory = file("$buildDir/terrain")
+    from(terrainClasses) { exclude 'newearth/dimension/**' }
+    from 'dimension/terrain/resources'
+}
+tasks.register('terrainReferenceCheck', Exec) {
+    dependsOn 'compileTerrain'
+    workingDir = rootProject.file('../../build/checks/newearth/terrain')
+    doFirst {
+        workingDir.mkdirs()
+        commandLine file("$modernJavaHome/bin/java" + (System.getProperty('os.name').startsWith('Windows') ? '.exe' : '')),
+                '-Djava.awt.headless=true', '--class-path',
+                files(terrainClasses, 'dimension/terrain/resources').asPath + File.pathSeparator + sourceSets.main.compileClasspath.asPath,
+                file('dimension/terrain/test/newearth/terrain/TerrainReferenceCheck.java').absolutePath
+    }
+}
+check.dependsOn 'terrainReferenceCheck'
 processResources {
+    dependsOn 'terrainJar'
+    from(tasks.named('terrainJar')) { into 'META-INF' }
     filteringCharset = 'UTF-8'
     inputs.property 'version', project.version
     filesMatching('mcmod.info') { expand version: project.version }
@@ -76,5 +119,9 @@ tasks.register('landscapeCheck', JavaExec) {
     workingDir = rootProject.file('../../build/checks/newearth/landscape')
     doFirst { workingDir.mkdirs() }
     systemProperty 'java.awt.headless', 'true'
+    doFirst {
+        if (!modernJavaHome) throw new GradleException('Set NEWEARTH_JAVA_HOME to JDK 25')
+        executable = file("$modernJavaHome/bin/java" + (System.getProperty('os.name').startsWith('Windows') ? '.exe' : '')).absolutePath
+    }
 }
 check.dependsOn landscapeCheck
