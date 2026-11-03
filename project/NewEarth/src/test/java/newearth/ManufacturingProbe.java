@@ -16,6 +16,10 @@ public final class ManufacturingProbe {
     private static int checks;
     private static void check(boolean value,String message) {if(!value)throw new AssertionError(message);checks++;}
     static void run() throws Exception {
+        net.minecraft.item.Item six=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_tier_6");
+        net.minecraft.item.Item seven=new net.minecraft.item.Item().setRegistryName("newearth:tier7_rocket");
+        check(ManufacturingHooks.moduleType(six).equals("IonEngine"),"T6 modification table permits ion only");
+        check(ManufacturingHooks.moduleType(seven).equals("SublightEngine"),"T7 modification table permits sublight only");
         InventoryBasic inv=new InventoryBasic("test",false,27);
         inv.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,2));
         inv.setInventorySlotContents(1,new ItemStack(Items.IRON_INGOT,3));
@@ -94,6 +98,14 @@ public final class ManufacturingProbe {
                 byte[] patched=new ManufacturingTransformer().transform(name,name,first);
                 if(patched==first)continue;
                 ClassNode node=new ClassNode();new ClassReader(patched).accept(node,ClassReader.EXPAND_FRAMES);
+                if(name.equals("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket")) {
+                    int rules=0;
+                    for(MethodNode m:node.methods)if(m.name.equals("getAvailableModules"))for(AbstractInsnNode instruction:m.instructions.toArray()) {
+                        if(instruction instanceof MethodInsnNode && ((MethodInsnNode)instruction).owner.equals("newearth/ManufacturingHooks") && ((MethodInsnNode)instruction).name.equals("modulesFor"))rules++;
+                        check(!(instruction instanceof TypeInsnNode && instruction.getOpcode()==Opcodes.NEW),"No legacy unfiltered module array survives");
+                    }
+                    check(rules==1,"Installed T6/T7 item uses exactly one shared modification rule");
+                }
                 for(MethodNode m:node.methods)if((m.access&(Opcodes.ACC_ABSTRACT|Opcodes.ACC_NATIVE))==0)new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name,m);
                 check(true,"Installed transform verified: "+name);required.remove(name);if(name.startsWith("com.mjr"))bosses++;
             }

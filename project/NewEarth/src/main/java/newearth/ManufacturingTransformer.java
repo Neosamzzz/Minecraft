@@ -21,12 +21,6 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
                 reset(m);m.instructions.add(new VarInsnNode(ALOAD,0));m.instructions.add(new VarInsnNode(ALOAD,1));
                 m.instructions.add(new MethodInsnNode(INVOKESTATIC,H,"reward","(Ljava/lang/Object;Ljava/util/Random;)Lnet/minecraft/item/ItemStack;",false));m.instructions.add(new InsnNode(ARETURN));changes++;
             }
-            if(item && m.name.equals("getAvailableModules")) {
-                reset(m);m.instructions.add(new VarInsnNode(ALOAD,0));
-                m.instructions.add(new MethodInsnNode(INVOKESTATIC,H,"modulesFor","(Lnet/minecraft/item/Item;)Ljava/lang/Object;",false));
-                m.instructions.add(new TypeInsnNode(CHECKCAST,"[Lgalaxyspace/core/prefab/items/modules/ItemModule;"));
-                m.instructions.add(new InsnNode(ARETURN));changes++;
-            }
             if(item && m.name.equals("placeRocketOnPad")) {
                 int found=0;
                 for(AbstractInsnNode i:m.instructions.toArray()) if(i instanceof MethodInsnNode && (((MethodInsnNode)i).name.equals("spawnEntity")||((MethodInsnNode)i).name.equals("func_72838_d"))) {

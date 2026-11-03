@@ -82,11 +82,12 @@ public final class ManufacturingHooks {
         try {
             Class<?> base=Class.forName("galaxyspace.core.prefab.items.modules.ItemModule");
             Object result=java.lang.reflect.Array.newInstance(base,1);
-            String name=tier7(item)?"SublightEngine":"IonEngine";
+            String name=moduleType(item);
             java.lang.reflect.Array.set(result,0,Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.modules."+name).newInstance());
             return result;
         } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
     }
+    static String moduleType(Item item) { return tier7(item)?"SublightEngine":"IonEngine"; }
     public static void recover(Entity entity, Object player) {
         if(!entity.getEntityData().getBoolean(T7) || !(player instanceof EntityPlayerMP)) return;
         GCPlayerStats stats=GCPlayerStats.get((EntityPlayerMP)player);
