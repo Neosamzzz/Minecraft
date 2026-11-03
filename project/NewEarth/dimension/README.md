@@ -1,6 +1,6 @@
 # 终章维度
 
-当前处于第三阶段：普通世界地形验证。地形试验版本采用 Cleanroom + Java 25，接入 ReTerraForged 默认地形、最终密度及气候群系选择，使用 Depths Update 扩展至 Y=384。自动检查由开发侧完成，进游戏观察由用户负责；现代群系材质与植被仍通过 1.12.2 内容适配。终章维度、山顶建筑与结尾演出仍待实现。
+当前采用 OTG 9.9 + Biome Bundle 6.1，优先完成适合行走、建设与生活的地形。保留默认山地、森林与河湖，增加开阔草原和温带低地。ReTerraForged 移植原型停止迭代；扩高、山顶建筑和信标远景暂缓。进游戏观察由用户负责。
 
 ## 体验目标与开发范围
 
@@ -22,7 +22,7 @@
 | --- | --- | --- |
 | 一、独立渲染环境 | 普通主世界中验证固定运行组合的近远景、水、天空、阴影和完整重启重进 | 普通世界画面与重进已通过 |
 | 二、现有模组共存 | 加入 GC／GS 等整合包依赖，验证普通世界启动、渲染、保存与重进 | 原共存基线已通过；原型世界另行验收 |
-| 三、地形验证 | 完整学习 ReTerraForged，建立默认对照并适配，验证地貌、植被、连续生成、保存和性能 | 进行中；默认地形核心已接入；地表、植被及景观反馈仍待完善 |
+| 三、地形验证 | 完整学习 ReTerraForged，建立默认对照并适配，验证地貌、植被、连续生成、保存和性能 | 进行中；采用 Biome Bundle 配置适配，等待景观与可玩性验收 |
 | 四、终章实现与对接 | 接入维度、环境、山顶地标、呈现、飞船准入、发现和过夜演出 | 待实现；世界开发可独立于飞船推进 |
 | 五、完整旅程验收 | 验证跨维度往返、渲染与缓存恢复、多人过夜、演出和重启状态 | 待验证 |
 
@@ -59,7 +59,16 @@
 
 ### 三、地形验证（当前阶段）
 
-#### ReTerraForged 完整学习与默认对照
+#### Biome Bundle 当前方案
+
+使用 OTG `9.9` 与 Biome Bundle `6.1`，保留原预设的山体、河网、森林装饰及地貌过渡。`biome-bundle/WorldBiomes/` 保存六个群系的完整覆盖配置：Steppe、Sunflower Plains、TemperateLowlands 的区域尺寸统一为 5，权重分别为 99、99、90；FloatingPlains、FloatingJungle 权重降为 12，Caverns 降为 25。其余群系沿用原预设，不改山体高度与森林内部密度。权重不等于最终面积百分比。
+
+将 `build/libs/NewEarth-BiomeBundle-config.zip` 解压覆盖独立游戏目录，或将本目录 `biome-bundle/WorldBiomes/` 中的配置覆盖到 `mods/OpenTerrainGenerator/worlds/Biome Bundle/WorldBiomes/`。须先安装上述两个模组并生成原始预设。完全退出游戏后重新启动，通过 OTG 世界创建入口选择 Biome Bundle，新建存档；旧存档不套用新配置。无敌对生物暂用和平难度，动物保留。
+
+当前本机入口为 `C:\Users\qq106\project\Minecraft\.local\newearth-render\launch-otg.cmd`。验收重点是平原建设空间、地面通行和环境衔接；暂不扩高或实现山顶信标。
+
+
+#### ReTerraForged 移植原型（暂停）
 
 优先研究 [ReTerraForged 原项目](https://github.com/racoonman2/ReTerraForged)的完整实现及模块关系，先建立默认配置对照，再确定适配边界。源码研究起点为 `1.20.1` 分支的 `29239f1f164d19dbfcccaca4a8277d64e784207c`；运行对照以本机 Fabric 1.20.1 的 `reterraforged-0.0.6-fabric-1.20.1.jar` 为准（SHA-256：`e0fe886f45cf7e0964432c6c1a9ff4ea8d27631938586166376b815836a0eab2`）。该 JAR 的 Default 使用 `makeRTFDefault()`，与上述源码提交的 Default 入口不同，不能按版本号假定配置相同。
 
@@ -104,7 +113,7 @@ py -3 tools/build.py --target newearth --offline
 
 - [ ] 根据用户的实机反馈修正地表、植被与显示问题。
 
-RTG Plus 9.0.4、OTG 9.9／Biome Bundle 6.1 的独立普通世界保留作对照。Biome Bundle 不作为主要方案；Terralith 提供景观组织参考，现代配置不能直接用于 1.12.2。现有对照实例不等于已完成终章维度接入。
+RTG Plus 9.0.4、OTG 9.9／Biome Bundle 6.1 的独立普通世界保留作对照。Biome Bundle 为当前采用方案；Terralith 提供景观组织参考，现代配置不能直接用于 1.12.2。现有对照实例不等于已完成终章维度接入。
 
 ### 四、终章实现与对接
 
