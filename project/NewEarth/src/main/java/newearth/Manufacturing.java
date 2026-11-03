@@ -212,7 +212,7 @@ public final class Manufacturing {
         @Override public EnumBlockRenderType getRenderType(IBlockState state) { return EnumBlockRenderType.MODEL; }
         @Override public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
                 EnumHand hand, EnumFacing facing, float x, float y, float z) {
-            if (!world.isRemote) player.displayGUIChest((ManufacturingTile)world.getTileEntity(pos));
+            if (!world.isRemote) player.openGui(NewEarth.instance, ManufacturingGuiHandler.GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         @Override public void breakBlock(World world, BlockPos pos, IBlockState state) {

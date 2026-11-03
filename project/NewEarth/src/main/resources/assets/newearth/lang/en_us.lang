@@ -90,3 +90,7 @@ item.newearth.tier9_booster.name=Tier 9 Booster
 item.newearth.tier9_fin.name=Tier 9 Fin
 item.newearth.control_panel.name=Flight Control Panel
 item.newearth.blueprint_plasma.name=Plasma Engine Blueprint
+newearth.gui.status.label=Status:
+newearth.gui.status.idle=Idle
+newearth.gui.status.working=Working
+newearth.gui.status.nopower=No Power

@@ -90,3 +90,7 @@ item.newearth.tier9_booster.name=九阶助推器
 item.newearth.tier9_fin.name=九阶尾翼
 item.newearth.control_panel.name=九阶控制面板
 item.newearth.blueprint_plasma.name=等离子引擎图纸
+newearth.gui.status.label=状态：
+newearth.gui.status.idle=空闲
+newearth.gui.status.working=工作中
+newearth.gui.status.nopower=缺电
