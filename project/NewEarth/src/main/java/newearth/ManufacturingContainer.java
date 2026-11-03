@@ -15,18 +15,18 @@ public final class ManufacturingContainer extends Container {
         this.tile = tile;
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 3; col++)
-                addSlotToContainer(new Slot(tile, row * 3 + col, 18 + col * 18, 18 + row * 18));
-        addSlotToContainer(new Slot(tile, ManufacturingTile.OUTPUT_SLOT, 108, 36) {
+                addSlotToContainer(new Slot(tile, row * 3 + col, 19 + col * 18, 18 + row * 18));
+        addSlotToContainer(new Slot(tile, ManufacturingTile.OUTPUT_SLOT, 138, 36) {
             @Override public boolean isItemValid(ItemStack stack) { return false; }
         });
-        addSlotToContainer(new Slot(tile, ManufacturingTile.BATTERY_SLOT, 110, 78) {
+        addSlotToContainer(new Slot(tile, ManufacturingTile.BATTERY_SLOT, 77, 83) {
             @Override public boolean isItemValid(ItemStack stack) { return stack.hasCapability(CapabilityEnergy.ENERGY, null); }
         });
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
-                addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 124 + row * 18));
+                addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 129 + row * 18));
         for (int col = 0; col < 9; col++)
-            addSlotToContainer(new Slot(playerInventory, col, 8 + col * 18, 184));
+            addSlotToContainer(new Slot(playerInventory, col, 8 + col * 18, 187));
     }
 
     @Override public void detectAndSendChanges() {
