@@ -2,6 +2,18 @@
 
 本线负责太阳系整合、七阶制造、系外工具、九阶多人飞船与十阶能源升级。
 
+## 配方讨论工程
+
+[Recipe Studio 工程](recipe-studio.json)包含GS原版四、五、六阶的配件、材料加工与总装参考，以及引擎槽留空的七阶总装模板。原配方取自`CraftingRecipesOverworld.java`的普通火箭制造分支。
+
+将`recipe-studio`工具仓库放在Minecraft仓库的同级目录，从Minecraft仓库根目录启动：
+
+```sh
+python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.json
+```
+
+打开`http://127.0.0.1:8766/`，调整物品、数量、配方和模板。工程自动保存至上述文件；文件采用服务端的`revision`与`project`封装。需要浏览器“打开工程”格式时，使用页面“保存工程”导出。
+
 ## 当前功能
 
 - 整合太阳系主星和卫星归属，按阶段检查航行准入。
