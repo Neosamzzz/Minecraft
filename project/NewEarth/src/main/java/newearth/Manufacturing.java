@@ -193,8 +193,21 @@ public final class Manufacturing {
     }
 
     private static final class Station extends BlockContainer {
+        private static final net.minecraft.block.properties.PropertyDirection FACING = net.minecraft.block.BlockHorizontal.FACING;
         private final String id;
-        Station(String id) { super(Material.IRON); this.id = id; }
+        Station(String id) { super(Material.IRON); this.id = id; this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)); }
+        @Override protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+            return new net.minecraft.block.state.BlockStateContainer(this, FACING);
+        }
+        @Override public IBlockState getStateFromMeta(int meta) {
+            return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
+        }
+        @Override public int getMetaFromState(IBlockState state) {
+            return state.getValue(FACING).getHorizontalIndex();
+        }
+        @Override public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, net.minecraft.entity.EntityLivingBase placer, ItemStack stack) {
+            world.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
+        }
         @Override public net.minecraft.tileentity.TileEntity createNewTileEntity(World world, int meta) { return new ManufacturingTile(); }
         @Override public EnumBlockRenderType getRenderType(IBlockState state) { return EnumBlockRenderType.MODEL; }
         @Override public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
