@@ -219,8 +219,8 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 | `BASIC_DECRYSALLIZER` | 保留材料加工用途 | 6碘盐→`salt_fluid`；字段拼写保留源码原样 |
 | `BASIC_CHEMICAL_INJECTOR` | 保留材料加工用途 | 输入固定检查碘盐和钾，产出碘化钾；改成加工扩展需适配机器处理逻辑 |
 | `BASIC_PURIFIER` | 保留净水用途 | 消耗碘盐，放射性水→污染水→净水两段处理；净水还用于抗辐射饮料 |
-| `BASIC_DENSIFIER` | 保留，加工扩展待定 | 7种流体处理分支，提供冰、煤、冻结氮及食品等产出；详见下表 |
-| `BASIC_DECONTAMINATION_UNIT` | 保留，环境适配待定 | 服务 EP 玩家辐射能力；若环境适配使其失去作用，先明确承接用途再决定，连同多方块占位体处理 |
+| `BASIC_DENSIFIER` | 保留，加工扩展待定 | 7种流体处理分支，提供冰、煤、冻结氮及食品等产出 |
+| `BASIC_DECONTAMINATION_UNIT` | 保留辐射处理用途 | 处理EP玩家已有辐射累积；与多方块占位体共同保留 |
 | `VEHICLE_CHARGER` | 随漫游车保留 | 当前漫游车取舍未定；关联漫游车、电力部件及充能平台 |
 
 结晶器、逆结晶器、粉碎机、化学注入器、太阳能蒸发室、净化器及辐射消除装置受 `RADIATION` 与各机器开关共同控制。保留这些设备时维持注册依赖，辐射效果单独适配。浓缩机使用独立开关。
@@ -269,7 +269,6 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 ## 代码入口
 
 - [环境防护适配](../src/main/java/newearth/EnvironmentHooks.java)与[EP环境拦截](../src/main/java/newearth/EnvironmentTransformer.java)
-
 - [固定裁剪策略](../src/main/java/newearth/ContentPruning.java)与[注册拦截](../src/main/java/newearth/ContentTransformer.java)
 - [EP物品定义](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)、[工具](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/tools/ExtraPlanets_Tools.java)、[护甲](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/armor/ExtraPlanets_Armor.java)
 - [机器](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/machines/ExtraPlanets_Machines.java)、[流体](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/fluid/ExtraPlanets_Fluids.java)、[配方](../../../dependencies/ExtraPlanets/src/main/resources/assets/extraplanets/recipes)
