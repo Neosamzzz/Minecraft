@@ -86,14 +86,51 @@ FTB 任务定义由 `project/FTB/quest-config/solar-system/normal/` 分发到实
 ## 目录
 
 ```text
-project/       GSLC、FTB、NewEarth 开发项目
-dependencies/  上游源码与共用编译依赖
-tools/         统一构建入口
-config/        整合包运行配置
-docs/          共用玩法与资源资料
-build/         最终包与检查输出
-.local/        本机环境
-server/        服务端实例
+Minecraft/
+├── project/                    # 开发项目
+│   ├── GSLC/
+│   │   ├── src/                # 补丁源码与资源
+│   │   ├── tests/              # 专项检查
+│   │   ├── materials/          # 固定构建底包
+│   │   ├── build.py            # GSLC 构建逻辑
+│   │   ├── version.txt
+│   │   ├── README.md
+│   │   └── RELEASES.md         # 版本说明
+│   ├── FTB/
+│   │   ├── src/                # FTB Quests 源码
+│   │   ├── tests/
+│   │   ├── quest-config/       # 任务配置
+│   │   ├── build.gradle
+│   │   ├── build.py            # FTB 构建逻辑
+│   │   ├── gradle.properties   # 版本与依赖配置
+│   │   ├── README.md
+│   │   └── RELEASES.md
+│   └── NewEarth/
+│       ├── src/                # 模组源码与测试
+│       ├── items/              # 物品与制造设计
+│       ├── dimension/          # 维度与演出设计
+│       ├── build.gradle
+│       ├── build.py            # NewEarth 构建逻辑
+│       ├── gradle.properties
+│       ├── README.md
+│       └── RELEASES.md
+├── dependencies/               # 上游源码与共用编译依赖
+│   ├── GalaxySpace/
+│   ├── Galacticraft-Legacy/
+│   ├── ExtraPlanets/
+│   └── upstream.json           # 上游来源
+├── tools/                      # 统一构建入口与检查
+├── config/                     # 整合包运行配置
+├── docs/                       # 共用玩法与资源资料
+│   ├── research/
+│   └── README.md
+├── build/
+│   ├── libs/                   # 最终模组包
+│   └── checks/                 # 按模块划分的检查输出
+├── .local/                     # 本机环境
+├── server/                     # 服务端实例
+├── AGENTS.md
+└── README.md
 ```
 
 共用资料从 [docs](docs/README.md) 查阅。构建工具检查：`python3 -m unittest discover -s tools/tests`。GSLC 路径检查：`python3 -m unittest discover -s project/GSLC/tests`。
