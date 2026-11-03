@@ -1,56 +1,6 @@
 # 星球资源与玩法指南
 
-本指南是星球资源、环境、采集与既有制造关系的重要查阅依据，供整合包维护、NewEarth 物品开发及 FTB 内容编写共用，不限于任务文案。对应 [Issue #4](https://github.com/Neosamzzz/Minecraft/issues/4)；静态配置与维度注册总览见[星球现状审计](planet-gameplay-audit.md)。
-
-首次整理：2026-11-01；本次更新：2026-11-03。本次补充 EP 资源、设备原配方、GS 防护与改装依赖，并对齐太阳系整合方向；没有启动游戏、修改配置或制作新物品。
-
-**NewEarth 0.2.0 实现补充：** 已在独立附加模组中接入太阳系主星组合、GS 卫星改挂、土星 T5、海王星／冥王星 T6，以及 Eris 的 GS 六阶离子准入；环境防护、地牢奖池和新配方尚未接入，开发包未部署或完成飞行验收。以下原始资源、Provider 与历史配置事实继续保留；新实现与检查边界见[物品线](../../NewEarth/items/README.md#020太阳系注册与通行整合)。本次安装包检查发现 EP 0.8.0 的海王星、冥王星 Provider 使用天体等级，而导入源码快照写死等级；NewEarth 补丁兼容这两种门槛表达，不将源码快照等同于实际 JAR。
-
-> [!IMPORTANT]
-> **当前方向：以 GC／GS 制造和防护体系为基础，选择性保留 EP 地表、资源与地牢，重新设计配方。** 双水星、双谷神星及 EP 木星、土星、天王星、海王星、冥王星、Eris 纳入设计；GS 土卫二、天卫五拟改挂对应 EP 主星。原始实现与历史配置仍分别记录，正文中的原等级和旧奖池不因方案确认而改写；最新路线和地牢奖励统一见[物品线路线手稿](../../NewEarth/items/route-manuscript.md)。这不是当前运行配置，EP 原七阶材料链不再作为新配方前提。
-
-**NewEarth 0.2.2 配置规则：** 已移除对 GS／EP 配置的强制覆盖，使用根目录 [config](../../config/) 固定天体开关并与 JAR 一起分发；GS 四颗气态主星节点及 GS 冥王星通过原配置关闭，卫星组保留，归属由附加模组适配。其他环境、装备与待定卫星本轮未改；配置源与安装状态见[物品线](../../NewEarth/items/README.md#022固定配置与整合代码一起交付)。
-
-**0.2.3 星图修复：** 用户已用0.2.2进入测试存档并打开星图。GS主星关闭后，GC仍会在后初始化时补建同名不可登陆展示节点，配置没有覆盖回true；0.2.3仅抑制木／土／天／海四个GC占位节点，并为原GC／EP目录补滚轮和拖动条。双水星、双谷神星保留，配置未改；新版显示与鼠标操作待重启验收。详见[物品线](../../NewEarth/items/README.md#023清理-gc-占位主星与目录滚动)。
-
-**0.2.4 显示适配：** 用户已确认0.2.3目录可滚动且四颗GC重复占位主星消失。0.2.4只在EP对应卫星可登陆时去掉旧GS展示节点，补EP详情面板滚动，并按用户要求去除21项中英文“2.0”后缀；双地表用EP来源标记区分，不变更注册ID、环境或卫星地表取舍。新版画面待重启验收，见[物品线](../../NewEarth/items/README.md#024展示卫星去重详情滚动与显示名)。
-
-**0.2.5 名称加载修正：** 0.2.4截图仍有“2.0”，确认因附加模组缺少资源包格式声明，旧语言适配器没有加载小写语言路径。0.2.5声明格式3，已用真实MC资源管理器及Locale加载实例EP JAR验证中英文42项覆盖，客户端画面仍待重启确认；见[物品线](../../NewEarth/items/README.md#025修正名称资源的实际加载)。
-
-**0.2.6 用户定稿配置：** 已明确火卫一、木卫一至四、土卫六留GS，海卫一留EP；配套配置关闭另六颗EP卫星及GS海卫一，双水星与双谷神星继续保留。本次只落实天体取舍，GS Io引擎奖励、冥王星七阶／Eris亚光速图纸职责仍按路线分别实施与验收，不改写原始资源与旧奖励事实。未列卫星保持此前状态，见[路线手稿](../../NewEarth/items/route-manuscript.md#星球组合)及[实施状态](../../NewEarth/items/README.md#026按用户定稿关闭七组重复卫星)。
-
-### 星图玩法属性面板（2026-11-03）
-
-NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”提示，保留再次点击缩放、卫星展开、发射和空间站操作；右侧原有小框显示“属性：内容”条目，长内容在框内换行、滚动，切换天体重置滚动位置。空间站选择列表与重命名界面不插入这些条目。
-
-火箭等级和大气来自当前注册天体；温度优先读取当前 Provider 的无参数温度修正，并分类为寒冷／极寒／炎热／酷热，不能解释成摄氏度或最低安全温控等级。昼夜周期按游戏内 1000 tick 为一小时换算，太阳能显示 Provider 提供的系数；不把风级当成风力发电量。目标维度的 Provider 仅用于元数据查询，不创建或加载目标世界；无法安全读取的字段不显示。显示节点只标明类型与“仅供观测”，不添加可登陆环境数据。
-
-资源条目根据本指南已核对的实际来源整理，GS 与 EP 的水星、谷神星分别维护，不把两套材料混写。气压、辐射和各级温控的最低安全要求仍按前述待验边界处理，不加入确定的玩家承诺。中文和英文条目均经过实际 Minecraft Locale 加载检查，补丁经过安装包字节码数据流检查；实际画面、鼠标操作和生存防护仍需游戏内验收。
-
-## 调查基线与临时测试状态
-
-- 主体资料来自 2026-11-01 的本机 GC 4.0.6、GS 2.2.0 flight-fix、EP 0.8.0 调查；当时多数 EP 主星与火箭组关闭，曾复核的 25 个文件哈希未变化只适用于那次快照。
-- 文中的 24 个编号保留首轮已调查目的地及共存问题的索引，包含两套 Phobos。它不是当前正式保留天体数量，也不是 24 处已实测可达的名单；EP Phobos 条目主要用于历史问题排查。
-- 2026-11-02 已导入 [EP 0.8.0 源码快照](extraplanets-source-notes.md)。本轮复查磁盘发现 EP 主星、火箭组及 GS 兼容开关已开启；用户说明该组合用于那次 EP 访问测试，开关方案尚未确定。因此本指南不据此重排正式星球清单或恢复 EP 整条火箭主线。
-- 下文“首轮关闭”等描述用于解释历史调查结果。机制、资源和配方按源码或实际 JAR 的证据分别记录；新的磁盘开关不等于生成、制造、飞行与返回都已验收。
-- 已确认的 NewEarth 方向单独列在文末，不能覆盖本文记录的原有等级、配方和采集限制。最新资源与工具的具体设计仍由物品线据此核实。
-
-## 阅读方法与可信程度
-
-文中使用四种标记：
-
-| 标记 | 含义 | 能据此做什么 |
-| --- | --- | --- |
-| 配置确认 | 已读取本机磁盘上的对应开关和 ID | 判断当前准备启用的内容；不能替代启动结果 |
-| 实现确认 | 有当前源码或实际 JAR 中的实现依据 | 说明设计机制、资源来源和制作关系；不能保证生成、交互与共存效果 |
-| 编排建议 | 根据已查内容提出的任务组织方式 | 供任务作者选择，不表示已修改任务书或新增规则 |
-| 待运行验证 | 需要本次配置真正启动后检查 | 不应写成已经保证成立的玩家承诺 |
-
-本文没有完成完整游戏玩法验收的星球条目。已保留的日志可证明对应会话的部分加载行为和异常，不能替代正常飞行、采矿、防护与返航；历史日志和测试开关均不当作正式配置定案。
-
-“T3 星球”等表述指天体要求的最低火箭等级。它与火箭能否在当前星图选中目标、跨星系能力、降落方式和返航是否可用分别核对。
-
-资料保留地球准备、24 个历史调查目的地条目和轨道空间站。阅读时先看模组与维度 ID，再核对保留方向及证据层级；星图展示、注册地表与正常生存可达分别判断。
+本文列出 GC／GS／EP 原有资源、加工与环境机制；整合包采用的组合和阶段规则由玩法定稿定义。
 
 ## 一、探索前应讲清的通用玩法
 
@@ -72,7 +22,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 当前主世界的 GS 钴、镍等矿物生成开关开启。它们关系到后续火箭材料，因此不能把外太阳系同类矿物都写成唯一来源。生成开关也不会把已经生成的旧区块自动变成新矿区。
 
-参考：[GC 基础配方源码](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/recipe/RecipeManagerGC.java)、[GS 主世界配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。[GC 官方入门教程](https://galacticraft.mods.wiki/wiki/Tutorials/Galacticraft_Getting_Started_Guide)可用于理解供电、加工、燃料、氧气的关系，页面里的旧版本配方和第三方模组组合需另行筛选。
+参考：[GC 基础配方源码](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/recipe/RecipeManagerGC.java)、[GS 主世界配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。[GC 官方入门教程](https://galacticraft.mods.wiki/wiki/Tutorials/Galacticraft_Getting_Started_Guide)可用于理解供电、加工、燃料、氧气的关系，页面里的旧版本配方和第三方模组组合需另行筛选。
 
 ### 2. 出发准备分成“短途勘察”和“建立据点”
 
@@ -108,7 +58,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 | 天气与供电 | 天体大气、天气和供电实现可能不同 | 所有行星都适合使用风力，或按现实日照比例直接给出发电量 |
 | 地牢与敌人 | 一部分目的地有明确结构和 Boss；另一部分 Provider 没有标准地牢入口 | 每颗天体都有 Boss，或没有标准地牢就没有任何敌人 |
 
-### 4. 新发现：GS 气压、辐射开关不等于普通玩家实际受害
+### 4. GS 气压与辐射事件
 
 **实现确认：仓库源码与本机实际 GS JAR 的相应方法一致。**
 
@@ -124,7 +74,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 因此，本资料把气压、辐射列作待验机制，不把“开关 true”翻译为某颗星球上一定发生的伤害。此次不修复代码，也不调整防护平衡。
 
-依据：[GS 环境事件处理](../../GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../../GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。实际 JAR 的 `javap` 输出已保留在本机调查临时目录。
+依据：[GS 环境事件处理](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。实际 JAR 的 `javap` 输出已保留在本机调查临时目录。
 
 ## 二、GC 基础探索：T1～T3
 
@@ -148,7 +98,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 月球实际氧气/温度/EP 环境效果；当前地牢池；图纸解锁和制造；落地载具物资回收及返航。
 
-依据：[GC 月球 Provider](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/dimension/WorldProviderMoon.java)、[GC 初始化与一级地牢池](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/GalacticraftCore.java)、[GS 地牢池扩展](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
+依据：[GC 月球 Provider](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/dimension/WorldProviderMoon.java)、[GC 初始化与一级地牢池](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/GalacticraftCore.java)、[GS 地牢池扩展](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
 
 ### 2. 火星 Mars：戴斯、地牢与生态支线
 
@@ -171,7 +121,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 新区块的 WE 火星地貌、矿脉和地牢；Slimeling/细菌泥实际生成；T3 图纸在当前完整地牢池中的取得方式。
 
-依据：[当前火星 WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mars/dimension/WorldProviderMars_WE.java)、[GC 火星模块](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/MarsModule.java)、[火星图纸类型](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/items/ItemSchematicTier2.java)。
+依据：[当前火星 WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mars/dimension/WorldProviderMars_WE.java)、[GC 火星模块](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/MarsModule.java)、[火星图纸类型](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/mars/items/ItemSchematicTier2.java)。
 
 ### 3. 小行星带 Asteroids：钛材料与立体探索
 
@@ -189,7 +139,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 当前补丁下的移动和着陆表现、矿物产出、废弃基地、采矿设备、回程操作。
 
-依据：[GC 小行星 Provider](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/asteroids/dimension/WorldProviderAsteroids.java)、[GS 小行星混入](../../GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinWorldProviderAsteroids.java)、[GS 火箭板材配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+依据：[GC 小行星 Provider](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/asteroids/dimension/WorldProviderAsteroids.java)、[GS 小行星混入](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinWorldProviderAsteroids.java)、[GS 火箭板材配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 ### 4. 金星 Venus：恶劣环境与高级装备材料
 
@@ -207,7 +157,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 两套环境系统的实际结果、最低可用装备、具体资源加工、地牢奖励和 GS 金星空间站。
 
-依据：[GC 金星 Provider](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/venus/dimension/WorldProviderVenus.java)、[GS 金星参数及空间站注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GS 温控材料配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+依据：[GC 金星 Provider](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/planets/venus/dimension/WorldProviderVenus.java)、[GS 金星参数及空间站注册](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GS 温控材料配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 ## 三、GS 在 T2～T3 开放的补充目的地
 
@@ -227,7 +177,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 星图是否与 EP 重名、实际选中哪一套、矿物和返航表现。
 
-依据：[GS 火卫一 Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/dimension/WorldProviderPhobos.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/world/gen/BiomeDecoratorPhobos.java)。
+依据：[GS 火卫一 Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/dimension/WorldProviderPhobos.java)、[矿物生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/phobos/world/gen/BiomeDecoratorPhobos.java)。
 
 ### 6. 水星 Mercury（GS）：T4 板材的早期镁来源
 
@@ -245,7 +195,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 矿石实际生成和掉落、压缩机配方、GS 镁矿至板材的全链，以及首次落地所需温控。
 
-依据：[GS 水星 Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/dimension/WorldProviderMercury.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/world/gen/BiomeDecoratorMercury.java)、[板材与火箭配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+依据：[GS 水星 Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/dimension/WorldProviderMercury.java)、[矿物生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/mercury/world/gen/BiomeDecoratorMercury.java)、[板材与火箭配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 ### 7. 谷神星 Ceres（GS）：白云石与独立地牢
 
@@ -265,7 +215,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 矿物与地牢实际生成、回收机配方、Boss 与宝箱开启、随机池内容、两个特殊工具的使用和返回位置。
 
-依据：[谷神星 Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/dimension/WorldProviderCeres.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/world/gen/BiomeDecoratorCeres.java)、[Boss 与特殊奖励选择](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/entities/EntityBossBlaze.java)、[普通战利品表](../../GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_4.json)。实际 JAR 中的两个 GS 宝箱表已按 JSON 内容复核。
+依据：[谷神星 Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/dimension/WorldProviderCeres.java)、[矿物生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/world/gen/BiomeDecoratorCeres.java)、[Boss 与特殊奖励选择](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/ceres/entities/EntityBossBlaze.java)、[普通战利品表](../../dependencies/GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_4.json)。实际 JAR 中的两个 GS 宝箱表已按 JSON 内容复核。
 
 ## 四、GS T4：木星的四颗卫星
 
@@ -289,7 +239,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 岩浆湖与火山矿实际分布、掉落、最低可用防护、Boss 战斗、模块安装与作用、返航。
 
-依据：[当前 Io Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/dimension/WorldProviderIo.java)、[湖泊及矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/world/gen/BiomeDecoratorIo.java)、[Io 方块掉落](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/blocks/IoBlocks.java)、[Boss 奖励](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/entities/EntityBossGhast.java)、[普通战利品表](../../GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_5.json)。
+依据：[当前 Io Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/dimension/WorldProviderIo.java)、[湖泊及矿物生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/world/gen/BiomeDecoratorIo.java)、[Io 方块掉落](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/blocks/IoBlocks.java)、[Boss 奖励](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/io/entities/EntityBossGhast.java)、[普通战利品表](../../dependencies/GalaxySpace/src/main/resources/assets/galaxyspace/loot_tables/dungeon_tier_5.json)。
 
 ### 9. 木卫二 Europa：冰地貌与硅铝补给
 
@@ -307,7 +257,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** WE 地形、采集与冰类处理、供电和移动表现、火箭实际燃料行为。
 
-依据：[Europa WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/europa/dimension/WorldProviderEuropa_WE.java)。
+依据：[Europa WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/europa/dimension/WorldProviderEuropa_WE.java)。
 
 ### 10. 木卫三 Ganymede：镁与钛铁矿的补充来源
 
@@ -325,7 +275,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 矿物实际产出、与既有材料的配方匹配、出行成本与补给条件。
 
-依据：[Ganymede Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/dimension/WorldProviderGanymede.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/world/gen/BiomeDecoratorGanymede.java)。
+依据：[Ganymede Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/dimension/WorldProviderGanymede.java)、[矿物生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/ganymede/world/gen/BiomeDecoratorGanymede.java)。
 
 ### 11. 木卫四 Callisto：陨石坑、洞穴与冰资源
 
@@ -343,7 +293,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 实际地层、冰类掉落与加工、洞穴内容和基地适用性。
 
-依据：[Callisto Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/dimension/WorldProviderCallisto.java)、[当前装饰器](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/world/gen/BiomeDecoratorCallisto.java)。
+依据：[Callisto Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/dimension/WorldProviderCallisto.java)、[当前装饰器](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/callisto/world/gen/BiomeDecoratorCallisto.java)。
 
 ## 五、GS T5：土星与天王星卫星
 
@@ -365,7 +315,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** WE 冰雪地形、煤矿、温控和基地供电。
 
-依据：[Enceladus WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/enceladus/dimension/WorldProviderEnceladus_WE.java)。
+依据：[Enceladus WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/enceladus/dimension/WorldProviderEnceladus_WE.java)。
 
 ### 13. 土卫六 Titan：氮气大气与宝石资源
 
@@ -383,7 +333,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 宝石掉落、材料用途、气体相关设备是否可采集该大气、实际防护要求。
 
-依据：[Titan Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/dimension/WorldProviderTitan.java)、[矿物生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/world/gen/BiomeDecoratorTitan.java)、[大气注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
+依据：[Titan Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/dimension/WorldProviderTitan.java)、[矿物生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/titan/world/gen/BiomeDecoratorTitan.java)、[大气注册](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)。
 
 ### 14. 天卫五 Miranda：多矿种与复杂地层
 
@@ -401,7 +351,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 新区块矿脉、各矿物母岩、产出、岩浆风险和运输成本。
 
-依据：[Miranda Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/dimension/WorldProviderMiranda.java)、[矿物及地层生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/world/gen/BiomeDecoratorMiranda.java)。
+依据：[Miranda Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/dimension/WorldProviderMiranda.java)、[矿物及地层生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/miranda/world/gen/BiomeDecoratorMiranda.java)。
 
 ## 六、GS T6：外太阳系
 
@@ -421,7 +371,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 地表特征、可采集物、防护和能源条件。
 
-依据：[Triton WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/triton/dimenson/WorldProviderTriton_WE.java)。
+依据：[Triton WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/moons/triton/dimenson/WorldProviderTriton_WE.java)。
 
 ### 16. 冥王星 Pluto（GS）：极寒地层，避免混用 EP 攻略
 
@@ -439,7 +389,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 实际地形、可采集地层、基地设备和返航。
 
-依据：[GS Pluto Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/dimension/WorldProviderPluto.java)、[当前矿物装饰器](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/world/gen/BiomeDecoratorPluto.java)。
+依据：[GS Pluto Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/dimension/WorldProviderPluto.java)、[当前矿物装饰器](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/pluto/world/gen/BiomeDecoratorPluto.java)。
 
 ### 17. 柯伊伯带 Kuiper Belt：小天体与废弃基地
 
@@ -457,7 +407,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 星图入口、着陆位置、矿核与遗迹生成、移动装备和返回流程。
 
-依据：[Kuiper Belt Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/WorldProviderKuiperBelt.java)、[区块生成](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/ChunkProviderKuiperBelt.java)。
+依据：[Kuiper Belt Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/WorldProviderKuiperBelt.java)、[区块生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/kuiperbelt/dimension/ChunkProviderKuiperBelt.java)。
 
 ### 18. 妊神星 Haumea（GS）：冰类资源的极寒世界
 
@@ -477,13 +427,13 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 普通采集与特殊工具的实际掉落、回收机流体输出及后续设备、装备和基地运行。
 
-补漏依据：[冰层掉落](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/blocks/BlockSurfaceIce.java)、[晶体元数据](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/items/ItemBasicGS.java)、[回收配方](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+补漏依据：[冰层掉落](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/blocks/BlockSurfaceIce.java)、[晶体元数据](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/items/ItemBasicGS.java)、[回收配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
-依据：[Haumea WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
+依据：[Haumea WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
 
 ## 七、GS T6：系外探索
 
-**附加模组边界（2026-11-02）：** 下列 T6 为原 GS 实现与历史实例依据。新开发包 NewEarth 0.1.0 会在启动时将这四个已注册目的地调整为 T7，并通过 GS 装配机制作图纸、NASA 七阶页面组装的方式加入太阳系材料路线；开发包尚未部署或完成正常航行验收。具体构建与验证状态统一见 [物品线](../../NewEarth/items/README.md#实现状态与构建)，不把本节历史依据直接改写为新运行结果。
+**附加模组边界（2026-11-02）：** 下列 T6 为原 GS 实现与历史实例依据。新开发包 NewEarth 0.1.0 会在启动时将这四个已注册目的地调整为 T7，并通过 GS 装配机制作图纸、NASA 七阶页面组装的方式加入太阳系材料路线；开发包尚未部署或完成正常航行验收。具体构建与验证状态统一见 [物品线](../../project/NewEarth/items/README.md#当前功能)，不把本节历史依据直接改写为新运行结果。
 
 本机开启半人马座、巴纳德和鲸鱼座 τ 三组星系。以下四个世界有地表实现，注册等级均为 T6。这个等级匹配还不能证明普通引擎和当前 EP 星图能够完成跨星系往返。
 
@@ -501,13 +451,13 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **补漏：当地材料已有回收关系。** `CraftingRecipesProximaB` 列有本地两类木材的回收配方、灰岩回收燧石、冰表层回收表层并输出水，以及表层方块元数据 0 回收 `gs_basic:6`。后者经 `ItemBasicGS` 确认为赤铁矿（`HEMATITE`），不是塑料或新增稀有矿；主世界配方有赤铁矿冶炼为两枚铁锭的实现。说明其资源并非只有直接挖矿，但这些产物不是比邻星独占升级材料。某个方块枚举或回收配方存在，不单独证明当前 WE 地形会生成所有对应输入。
 
-补漏依据：[比邻星回收配方](../../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/planets/proxima_b/recipes/CraftingRecipesProximaB.java)、[赤铁矿元数据](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/items/ItemBasicGS.java)、[赤铁矿冶炼](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+补漏依据：[比邻星回收配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/planets/proxima_b/recipes/CraftingRecipesProximaB.java)、[赤铁矿元数据](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/items/ItemBasicGS.java)、[赤铁矿冶炼](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 
 **编排建议：** 跨星系准备 → 抵达 → 地貌与植物观察 → 采样 → 补给点候选。氧气提醒应明确放在出发与到达说明中。
 
 **待验证：** 当前星图的跨系选择、发动机要求、太阳能表现、植物采集和补种、实际呼吸与温控。
 
-依据：[半人马座天体注册](../../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/ACentauriSystemBodies.java)、[Proxima b WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/planets/proxima_b/dimension/WorldProviderProxima_B_WE.java)。
+依据：[半人马座天体注册](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/ACentauriSystemBodies.java)、[Proxima b WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/ACentauriSystem/planets/proxima_b/dimension/WorldProviderProxima_B_WE.java)。
 
 ### 20. 巴纳德 C Barnarda C：生态丰富的长期探索候选
 
@@ -517,7 +467,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **补漏：树汁是已有的当地特色物品。** `BRItems.BASIC` 元数据 2 对应 `tree_juice`。`Barnarda_C_Logs.onBlockActivated` 在服务端检查特定发光紫木树干状态与手持斧，满足后将其换成普通紫木并生成树汁；当前 WE 丛林实现有放置这种发光树干的代码。判断使用具体方块状态，不能扩大成所有树木、所有朝向都能采汁，也不能承诺树汁会自动再生。`BRItems.oreDictRegistration` 还把它登记为 `slimeball`，不是已实现的飞船密封材料；任何新专用用途仍待开发。
 
-依据：[树汁子项](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/core/prefab/items/ItemBasicBR.java)、[树干交互](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/blocks/Barnarda_C_Logs.java)、[WE 丛林生成](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/world/gen/we/Barnarda_C_Jungle.java)、[矿物词典登记](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/core/BRItems.java)。
+依据：[树汁子项](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/core/prefab/items/ItemBasicBR.java)、[树干交互](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/blocks/Barnarda_C_Logs.java)、[WE 丛林生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/world/gen/we/Barnarda_C_Jungle.java)、[矿物词典登记](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/core/BRItems.java)。
 
 **环境区别：** 注册的可呼吸标记为 true。这是当前几颗 GS 系外目的地中的明确区别；实际摘掉装备后的呼吸、温控和 EP 系统仍需一起验证。
 
@@ -529,7 +479,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 跨系抵达、实际可呼吸性、天气、植物与农业、矿物、发光树干生成及采汁交互、定居设备和返回地球。
 
-依据：[巴纳德天体注册](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/BarnardsSystemBodies.java)、[Barnarda C WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
+依据：[巴纳德天体注册](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/BarnardsSystemBodies.java)、[Barnarda C WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/dimension/WorldProviderBarnarda_C_WE.java)。
 
 ### 21. 巴纳德 C1 Barnarda C1：冰雪、缟玛瑙与待验地牢
 
@@ -541,7 +491,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **探索价值：** 冰雪系外卫星、缟玛瑙与结构调查。已补查 `CraftingRecipesBarnarda_C1.addCircuitFabricator`：以钻石、两份 `BRItems.BASIC:3`（缟玛瑙）、红石和 GC 部件制作 GS 现代晶圆。因此缟玛瑙已有电路制造用途，不是只有名字的收藏物；这是原有晶圆路线，不表示已实现新飞船导航部件。
 
-依据：[缟玛瑙掉落](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/blocks/Barnarda_C1_Blocks.java)、[C1 晶圆配方](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/recipes/CraftingRecipesBarnarda_C1.java)。
+依据：[缟玛瑙掉落](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/blocks/Barnarda_C1_Blocks.java)、[C1 晶圆配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/recipes/CraftingRecipesBarnarda_C1.java)。
 
 **进度关系：** 与 Barnarda C 可形成不同环境的探索分支，不代表必须先完成 C 上的全部内容才可登陆 C1。
 
@@ -549,7 +499,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 冷热与呼吸、矿物加工、地牢结构完整性和实际奖池、跨系与母星/卫星选择。
 
-依据：[Barnarda C1 WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
+依据：[Barnarda C1 WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/dimension/WorldProviderBarnarda_C1_WE.java)。
 
 ### 22. 鲸鱼座 τ f Tau Ceti f：水下探索主题
 
@@ -563,7 +513,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **补漏：珊瑚存在不等于能取得珊瑚物品。** 仓库 `TauCeti_F_Corals` 中普通掉落方法返回 `null`，`isShearable` 返回 false，`onSheared` 返回 null。由此不能承诺打碎或剪刀采集会得到可用于制造的珊瑚；创造模式选取也不证明生存可取得。该项是源码核对，没有完成当前发行 JAR 全方法比对或生存采集测试；也不据此断言其他水草、全部海洋资源都不可采集。
 
-依据：[珊瑚掉落与剪切接口](../../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/planets/tauceti_f/blocks/TauCeti_F_Corals.java)。
+依据：[珊瑚掉落与剪切接口](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/planets/tauceti_f/blocks/TauCeti_F_Corals.java)。
 
 **进度关系：** 可作为系外海洋探索分支，目前没有已确认的火箭升级独占材料。
 
@@ -571,7 +521,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 登陆位置、水面与水下呼吸、珊瑚和水草各自的生成与可采集方式、物品取得后是否有实际配方用途、温控、基地密封及回程。
 
-依据：[Tau Ceti 注册](../../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/TauCetiSystemBodies.java)、[Tau Ceti f WE Provider](../../GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/planets/tauceti_f/dimensions/WorldProviderTauCeti_F_WE.java)。
+依据：[Tau Ceti 注册](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/TauCetiSystemBodies.java)、[Tau Ceti f WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/TauCetiSystem/planets/tauceti_f/dimensions/WorldProviderTauCeti_F_WE.java)。
 
 ## 八、EP 相关地表：共存排查与按需保留
 
@@ -589,7 +539,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 若后续仍需保留或复现 EP 火卫一，先核对生成器依赖，再检查星图入口、名称、落地维度、返航与实际资源。原异常日志后续继续运行，不能将其直接描述为整个游戏崩溃，也不能以维度加载记录证明生成器正常。
 
-依据：[卫星注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/ExtraPlanets_Moons.java)、[Phobos 矿物生成器](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/Phobos/worldgen/BiomeDecoratorPhobos.java)、[方块初始化](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/ExtraPlanets_Blocks.java)，并保留本机实际 JAR 的字节码核对依据。共存事项见[调查总览](planet-gameplay-audit.md)。
+依据：[卫星注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/ExtraPlanets_Moons.java)、[Phobos 矿物生成器](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/Phobos/worldgen/BiomeDecoratorPhobos.java)、[方块初始化](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/ExtraPlanets_Blocks.java)，并保留本机实际 JAR 的字节码核对依据。共存事项见[调查总览](planet-gameplay-guide.md)。
 
 ### 24. Kepler-22b（EP）：内容存在，正常生存路线尚未落实
 
@@ -601,7 +551,7 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **补漏：主要特色材料与现有加工。** `extraplanets:tier11_items` 元数据 0～4 依次为蓝、红、紫、黄、绿钻石，5 为铂锭，6 为压缩铂。已有冶炼配方把对应矿石变成这些物品；压缩配方使用六份铂锭得到一份压缩铂。材料树、材料球是生成实现，不能据此当作已验证的可再生种植系统。具体矿物密度、采集与加工仍需运行验证。
 
-依据：[材料子项](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/items/planetAndMoonItems/ItemTier11Items.java)、[矿物生成](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/worldgen/BiomeDecoratorKepler22bOres.java)、[冶炼与压缩配方](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/recipes/ExtraPlanets_Recipes.java)。
+依据：[材料子项](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/planetAndMoonItems/ItemTier11Items.java)、[矿物生成](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/worldgen/BiomeDecoratorKepler22bOres.java)、[冶炼与压缩配方](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/recipes/ExtraPlanets_Recipes.java)。
 
 **内容价值：** 已确定作为基础九阶之后的最终核心材料目的地；不能接成现有 GS T6 的直接下一站。作者原有地牢路线将 Kepler 列为可选、T10 图纸位于 Eris，是理解旧实现的背景，不是本项目必须恢复的路线。[EP 作者地牢与图纸说明](https://docs.mjrlegends.com/ExtraPlanets/dungeons/)
 
@@ -609,11 +559,11 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 
 **待验证：** 按最终裁剪方案核对 Kepler 及其材料注册、基础九阶准入和返航、矿物与五色物品的对应、铂的冶炼压缩，以及原 EP 开关依赖。管理员访问不能代替正式生存路线验收。
 
-依据：[Kepler Provider](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/WorldProviderKepler22b.java)、[行星等级注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/ExtraPlanets_Planets.java)、[T10 物品注册](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)，并与本机实际 JAR 对照。详细条件见[调查总览](planet-gameplay-audit.md)，版本对应边界见 [EP 源码说明](extraplanets-source-notes.md)。
+依据：[Kepler Provider](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/WorldProviderKepler22b.java)、[行星等级注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/ExtraPlanets_Planets.java)、[T10 物品注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)，并与本机实际 JAR 对照。详细条件见[调查总览](planet-gameplay-guide.md)，版本对应边界见 [EP 源码说明](../../dependencies/ExtraPlanets/LOCAL-NOTES.md)。
 
-### 太阳系 EP 资源补充（2026-11-03，实现依据）
+### EP 太阳系资源
 
-以下表格补充前述历史调查未覆盖的主要地表；等级均为原 EP，不代表整合后的门槛。只列特色资源，普通铁铜锡省略。主要依据：[矿物生成与天体实现](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/)、[冶炼与压缩配方](../../ExtraPlanets/src/main/java/com/mjr/extraplanets/recipes/ExtraPlanets_Recipes.java)。
+以下表格补充前述历史调查未覆盖的主要地表；等级均为原 EP，不代表整合后的门槛。只列特色资源，普通铁铜锡省略。主要依据：[矿物生成与天体实现](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets)、[冶炼与压缩配方](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/recipes/ExtraPlanets_Recipes.java)。
 
 | 地表 | 原门槛 | 特色资源、地牢与当前设计关系 |
 | --- | --- | --- |
@@ -637,9 +587,9 @@ NewEarth 的星图补丁隐藏 EP 中央扩展详情及底部“再次点击”�
 - GS 妊神星冰晶体已有回收配方；柯伊伯带矿核是生成形态，使用既有矿石方块，不是可直接写进配方的一个新“矿核”物品。具体原料须追到实际掉落。
 - EP 木卫四有干性油、页岩油地层；不采用该地表时是否迁移或替换用途待定。EP 其他未选卫星不默认启用。
 
-### EP 原有制造设备与配方（2026-11-03）
+### EP 制造设备与配方
 
-EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工作台。下列配方来自[实际配方 JSON](../../ExtraPlanets/src/main/resources/assets/extraplanets/recipes/)；为原 EP 数量，不是新整合配方，是否加载还受配方条件控制。
+EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工作台。下列配方来自[实际配方 JSON](../../dependencies/ExtraPlanets/src/main/resources/assets/extraplanets/recipes)；为原 EP 数量，不是新整合配方，是否加载还受配方条件控制。
 
 | 加工设备 | 原制造材料合计 | 主要处理关系 |
 | --- | --- | --- |
@@ -666,10 +616,10 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 
 这些机器不等于现成的通用合金制造台。是否复用它们加工新七阶材料，要核对实际输入槽、流体和配方机制；特殊制造台的形态和加工配方未定。
 
-### GS 防护与改装依赖补充（2026-11-03）
+### GS 防护与改装依赖
 
-- 三级温控布：白云石粉4、满液氮罐1、GS 火山石2、GC 金星温控布2；四级温控布：太阳能粉尘4、冰桶1、未知晶体2、三级温控布2。再按护甲形状合成各级四件套。配方见[主世界制造](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
-- GS 土卫二裂谷实际放置晶体，普通掉落为未知晶体；木卫二两处同类生成段落被注释，不能作为备用矿源。保留并迁移土卫二可以保住原温控材料链。冰桶由空桶对普通冰使用取得，见[事件实现](../../GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)。
+- 三级温控布：白云石粉4、满液氮罐1、GS 火山石2、GC 金星温控布2；四级温控布：太阳能粉尘4、冰桶1、未知晶体2、三级温控布2。再按护甲形状合成各级四件套。配方见[主世界制造](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
+- GS 土卫二裂谷实际放置晶体，普通掉落为未知晶体；木卫二两处同类生成段落被注释，不能作为备用矿源。保留并迁移土卫二可以保住原温控材料链。冰桶由空桶对普通冰使用取得，见[事件实现](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)。
 - GS 三级／四级温控强度为3／4；EP 三级至五级为50／100／150。EP 土星和海王星在高阶温控选项下使用量级明显不同的温度修正；EP 海卫一还直接返回极寒值。降低火箭门槛或关闭一项选项不等于完整环境适配。参数不是摄氏度，也不能直接用装备强度相减判定安全。
 - 用户指定备份 `client-update-backups/20261102-061059-b1bb1581/config/ExtraPlanets.cfg` 已把 GS 普通与轻型宇航服列为 EP 一级防护兼容装备，但不代表免疫辐射或温度。EP 气压、辐射处理独立于 GS 事件；前述 GS 普通玩家事件取消异常不能当成统一防护规则。
 - 改装台可给原 GS 四／五阶装离子引擎、六阶装亚光速引擎；拆卸会返还模块。离子与亚光速原来都进入 Io 的五级特殊奖励池；新方案仅留离子，引擎逐代制造升级。六阶离子改装与新准入尚未实现。
@@ -690,7 +640,7 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 
 建设内容可以与星球采矿并行。要验收“建立可用空间站”，至少要验证供能、供氧、物资和往返；只进入一次维度不能证明这些条件。
 
-依据：[GS 空间站注册](../../GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GC 世界与空间站工具](../../Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/util/WorldUtil.java)。
+依据：[GS 空间站注册](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/SolarSystemBodies.java)、[GC 世界与空间站工具](../../dependencies/Galacticraft-Legacy/src/main/java/micdoodle8/mods/galacticraft/core/util/WorldUtil.java)。
 
 ### 2. 展示天体用于理解星系，不安排登陆任务
 
@@ -703,7 +653,7 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 
 它们可以出现在星图介绍或已有目标的说明中。当前内容方向不增加只为阅读而勾选的任务，也不把展示天体描述为已经实现的远征目的地。
 
-完整名单见[星图展示与未开放内容](planet-gameplay-audit.md#星图展示与未开放内容)。
+完整名单见[星图展示与未开放内容](planet-gameplay-guide.md)。
 
 ## 十、把资源和制造串成实际进度
 
@@ -775,149 +725,3 @@ Kepler-22b：原 EP T10 与后期基础九阶接入规划分开，不能当成�
 | GS Barnarda C1 | T6 | 月球式生成器与月球宝箱类型 | 待验复用内容，不代表独有 T7 奖励 |
 
 Boss 的特殊奖励池与宝箱 JSON 普通池分别记录，不能将其中任意一项写成每箱保底。源码注释中的旧奖励注册也不能当作当前有效奖励。
-
-## 十一、交给 FTB 与向导文本线程的使用规则
-
-本节提供资料使用方式，不直接制定最终任务线，也不代写 RPG 文案。
-
-### 1. 每颗目的地的内容可以分为不同目标
-
-| 目标 | 适合说明的内容 | 可考虑的检测方式与限制 |
-| --- | --- | --- |
-| 出发准备 | 为什么带氧气、温控、返航物资 | 物品检测或说明；当前不另加阅读勾选任务，拥有物品不证明已穿戴、已充气或已加注 |
-| 到达 | 当前具体维度和目标身份 | `DimensionTask`；同名天体必须不同 ID |
-| 采样 | 矿物、地层、冰类、生态样本 | `ItemTask`；物品可从其他地方带入，不能自动证明当地采集 |
-| 加工 | 从矿物到锭、板材、粉末和部件 | 物品/制作相关检测；机器加工事件是否覆盖需验证 |
-| 战斗 | 经确认存在的 Boss | `KillTask`；核实实体注册 ID、计数和击杀归属 |
-| 环境与景观观察 | 氧气差异、裂谷、生态和海洋 | 优先放在抵达目标的短说明中；群系或位置检测按需求核实，不为阅读增加勾选目标 |
-| 建立据点 | 可供电、供氧、补给与返航的设施 | 单一到达或物品目标不足以证明据点可用，复杂运行状态可能需额外适配 |
-| 返回 | 带回样本、安全结束远征 | 回到主世界和样本可分开检测；任务顺序与团队共享需专门设计 |
-
-源码确认当前版本有物品、维度、击杀、地点、群系、勾选、观察、交互、进度等任务类型。类型存在不等于所有复杂玩法都能直接自动检测。
-
-`DimensionTask` 按玩家当前 `dimension` 判断，约每 20 tick 尝试提交，并排除旁观模式；它不会检查玩家用了什么火箭，也不会证明完成返航、当地采矿或正常生存路线。
-
-`ItemTask` 有是否消耗、元数据和 NBT 匹配等配置。GS 多个关键物品复用相同物品 ID、依靠元数据区分；随意忽略元数据可能把火山石、空白图纸或不同许可混在一起。火箭的货舱和 NBT 匹配也需按目标单独处理。
-
-依据：[任务类型](../../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/FTBQuestsTasks.java)、[维度任务](../../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/DimensionTask.java)、[物品任务](../../FTB-Quests/src/main/java/com/feed_the_beast/ftbquests/quest/task/ItemTask.java)。
-
-### 2. 区分必要制造、资源选择和自由探索
-
-- **必要制造关系：** 已查的许可、板材与部件依赖，适合明确说明前置。
-- **资源路线选择：** 同一种材料存在多个来源时，说明可选去处；不要把每处都设置为强制前置。
-- **自由探索：** 生态、景观、遗迹、基地和非必要资源，让玩家知道值得做什么；当前不配置任务奖励，原模组的地牢战利品单独说明。
-- **暂缓发布：** 未落实生存路线的 Kepler、未确认展示/入口的同名目标、未经验证的防护承诺和具体救援操作。
-
-### 3. 文案需要避免的事实错误
-
-1. 把所有星图天体都写成可以登陆。
-2. 把 GS 和 EP 的同名地表、矿物、Boss、图纸混写。
-3. 把每一颗星球都写成“打 Boss，获得下一阶火箭”。
-4. 把注册等级当作完整到达能力，尤其 GS T6 系外飞行与 EP T10 Kepler。
-5. 把含氧大气、绿色植物、海洋与可直接呼吸等同。
-6. 用真实天文学替代游戏注册的温度、地形或资源。
-7. 在火箭升级时承诺保留旧火箭、燃料或货物。
-8. 把普通物品检测说成自动验收装备有效、基地工作或当地采集。
-9. 把临时救援物品描述成任何情况下都能安全返航。
-10. 把尚未运行验证的内容写成“已测试可用”。
-
-## 十二、剩余验证及记录格式
-
-### 1. 首次启动：先解决内容是否实际生效
-
-- [ ] 核实本次启动实例、配置和模组版本；保留新日志的时间与注册证据。
-- [ ] 检查维度注册、新错误和缺少依赖；旧日志不能作为本次结论。
-- [ ] 逐项记录星图中的可见、可选、可登陆状态，特别是两套 Phobos 和 Kepler。
-- [ ] 核对只展示的母星、卫星及调试天体，避免误算目的地。
-- [ ] 验证当前星图、GS 引擎与跨星系选择的组合。
-
-### 2. 关键流程：先抽查会卡住发展的节点
-
-| 抽查 | 要证明什么 | 尚不能由此证明什么 |
-| --- | --- | --- |
-| 镁矿 → 镁板 → HDP:0 | T3 阶段有可用镁源和材料加工 | 整艘 T4 所有部件均可制成 |
-| 谷神星晶体 → 回收机 → 白云石粉 → HDP:1 | T5 核心板材不会被错误后置 | 所有机器框架、电路和部件都已经验收 |
-| Io 火山矿 → 正确火山石 → HDP:2 | T6 材料能在 T4 目的地取得 | 已经解决 T6 跨系与环境装备 |
-| 空白图纸与三级许可 | 许可存在、输入匹配和旧火箭消耗 | 最终火箭能飞行并返航 |
-| 装配机部件 → 火箭装配机 | 当前 JAR 中部件和整箭配方有效 | 所有目标维度的着陆适配都正常 |
-| 普通生存玩家与防护对照 | 当前环境是否造成效果、装备是否改变它 | 其他星球、另一套环境系统也同样有效 |
-| 地牢与奖励 | 结构可生成、Boss 与宝箱工作、奖池可用 | 随机奖励每次都保证出现 |
-
-创造模式或管理员传送可以帮助确认世界和配方存在，但验证“正常生存可达”“装备有效”“完整制作链”需要相应的生存条件，分别记录。
-
-### 3. 每次实测的最小记录
-
-```text
-目标 / 模组 / 维度：
-实例和启动时间：
-配置或 JAR 是否变化：
-存档、区域是否新生成：
-模式、火箭与引擎：
-装备、氧气、燃料和能源：
-执行步骤：
-观察到的结果：
-是否完成返航：
-日志、截图或配方证据：
-可确认的结论：
-仍未证明的事项：
-```
-
-### 4. 当前交付状态
-
-11 月 1 日已完成详细资料整理、关键代码复核和若干错误路线排除。11 月 2 日补充 EP 源码快照与新日志中的 Phobos 异常；此前“实际启动尚未完成”不再适用于最新状态。此次源码导入没有修改游戏配置、替换模组或修复生成器；正常飞行、配方交互、地形、生存与返航验收仍未完成。
-
-后续实测结果应回填到对应目的地和流程条目，而不是把本次静态调查整体改名为“已验证”。
-
-## 十三、2026-11-02 运行日志补记
-
-下表保留此前只读核对的历史会话：当时 `logs/latest.log` 最后写入时间为 2026-11-02 02:29:37、大小 400707 字节。后续文件已被新启动覆盖，以下是固定的历史观察，不能继续称为当前最新日志，也不能据此推定当前任务数量、MixinBooter 版本或正式配置。
-
-| 时间与证据 | 可以确认 | 尚不能确认 |
-| --- | --- | --- |
-| 01:54:04、02:14:11，FTB 日志两次读取 `config/ftbquests/normal`，均为 `Loaded 3 chapters, 3 quests, 3 tasks and 0 rewards` | 三节点小样被读入；两个原测试章节也仍在索引中 | 完整七章已部署，或物品、维度条件已正确完成 |
-| 同两次记录 `Shared quest team: singleplayer` | 当前存档复用了该团队，未一律新建 `ftb_public` | 双人自动归队、进度同步、服务器重启后的保存全部通过 |
-| 联机握手列表记录 FTB Quests 1202.9.3、FTB Library 5.4.7.2、MixinBooter 12.2 | 本机会话确实加载这些版本 | 历史使用 MixinBooter 10.7 的专项探针已在 12.2 上重跑 |
-| 02:14:11 加载月球维度 -28，玩家登录该维度；02:29:37 保存并退出 | 该存档中的月球世界可以加载 | 从地球正常发射、月球着陆、装备有效、完整返航已验收 |
-| 01:41:10 多个 `WorldProvider type` 查询失败，包括 -1012、-1023、-1234、-1032 及若干 EP ID | 本会话仍有 Provider 查询错误，需结合上下文逐项定位 | 所有报错都是 ID 冲突，或所有对应目的地均不可到达 |
-
-上述是日志观察，不是亲自操作的玩法验收；已加载旧存档不能证明新区块生成与配方完整可用。此前 00:00:25 会话的 EP Phobos 空指针及源码依赖见[对应条目](#23-火卫一-phobosep先辨明入口再决定内容)，本轮没有修复，不因后续会话能进入世界就移除该已知问题。
-
-### 当前实现与新地球规划
-
-本文仍按实际注册的 GS 系外 T6 与 EP Kepler T10 说明现状。[NewEarth 物品线](../../NewEarth/items/README.md)规划为七阶复用 EP、常规系外最低 T7；基础九阶多人飞船造好后前往最低 T9 的开普勒，取得材料，以黑洞引擎完成十阶制造并满足最终能源核心条件，才能前往[终章新维度](../../NewEarth/dimension/README.md)。均为未实现的目标规则，不能据此认定当前已可制造、航行或升级；终章 H01 暂不部署。
-
-
-## 十四、补漏结论与已确定的开发方向
-
-### 1. 这份 guide 提供什么
-
-已有星球资源、取得限制与加工依据集中查本指南；NewEarth 文档只维护开发方向，不重复列另一套资源表或预定具体用法。以上补漏属于实现核对，未补造游戏内验证结论。
-
-本次重点补齐：比邻星回收与赤铁矿关系、巴纳德 C 树汁、C1 缟玛瑙晶圆、鲸鱼座 τ f 珊瑚采集限制、冰层晶体掉落与回收，以及开普勒五色和铂的实际物品对应。
-
-### 2. 以 GC / GS 为基础的深度整合
-
-最新星球组合、图纸分配与制造路线见[物品线路线手稿](../../NewEarth/items/route-manuscript.md)。保留选定 EP 地表、独立资源和地牢，以 GS 制造与防护为基础重新设计配方；不用的 EP 装备移除生存获取并隐藏。双水星、双谷神星是有意保留，不一律去重。七阶旧材料链不再约束选材；其余未选地表不默认启用，临时全开配置不是发布方案。
-
-裁剪还要核对隐含依赖：EP 七阶物品由 `URANUS` 分支初始化、注册；Kepler 材料组受 `KEPLER22B && KEPLER_SOLAR_SYSTEMS` 控制；Phobos 的化石引用又依赖部分主星。不能只关天体就假定火箭、材料与其他生成器仍完整。需通过后续适配保留所需内容，具体提取或兼容方案由物品线决定，本指南不代改配置或代码。最新方向已纳入 EP 天王星，但仍需审查其与七阶物品的绑定；开启水星、冥王星或 Eris 可满足化石初始化条件，不能据此推定全部裁剪依赖已经解决。
-
-### 3. 已确定的后期路线
-
-| 内容 | 设计要求，均待实现 |
-| --- | --- |
-| 七阶 | 复用 EP 火箭，制造条件接太阳系末段；常规系外目标最低 T7 |
-| 九阶 | 独立装配台制造全新多人宇宙飞船；以等离子引擎参与制造，可前往开普勒；不依赖后置的开普勒材料 |
-| 开普勒 | 基础九阶造好后访问，目标准入 T9；收集蓝、红、紫、黄、绿五种钻石与铂制品 |
-| 最终能源核心 | 五色全部加铂制品组合制作；用量、铂制品形式与配方布局待定；安装后获得终章资格，与黑洞引擎一起衔接十阶阶段，具体配方和安装方式待定 |
-| 终章 | 独立拟地球行星，要求实际十阶飞船与有效已安装核心；同船乘员共同到达和返航 |
-| 结尾 | 在终章按主世界正常多人睡眠规则成功过夜后触发共同演出；不按个人首次躺床分别触发，不另设集合、参与名单或投票 |
-
-终章按角色视角保留意外发现，朋友现实中知道计划不影响叙事。模型、特效、座位数、船内移动与演出文本等未定细节，不由资源调查自行推导。
-
-### 4. 各系外目的地的价值与工具
-
-每个可登陆的系外目的地都应有可利用的特色材料，并有相应专用工具或采集、处理能力支撑当地玩法。优先利用 guide 已查的原有资源；不要求每颗都新增一套矿石、工具或装备，也不在此提前规定具体用法和部件配方。
-
-这是开发要求，不是已经满足的现状：尤其比邻星的特色选材与新用途仍需确认，鲸鱼座 τ f 的生存采集链需补核；巴纳德树汁的具体状态交互同样需要实测。资源存在、可取得、能加工和有实际用途需要分别成立，前置不能循环。
-
-开发基调与分工见 [NewEarth 总览](../../NewEarth/README.md)、[物品线](../../NewEarth/items/README.md)及[维度线](../../NewEarth/dimension/README.md)。FTB 后续按实际资源、工具和成品补充轻量内容即可，不作为物品线前置；团队目标完成不代替核心安装、航行或成功过夜判定。

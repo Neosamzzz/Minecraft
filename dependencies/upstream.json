@@ -1,0 +1,26 @@
+{
+  "GalaxySpace": {
+    "url": "https://github.com/BlesseNtumble/GalaxySpace.git",
+    "branch": "dev_1.12.2",
+    "imported_commit": "e599d0d3746a10ba74b59dfddeca50da166f1785",
+    "path": "dependencies/GalaxySpace"
+  },
+  "Galacticraft-Legacy": {
+    "url": "https://github.com/TeamGalacticraft/Galacticraft-Legacy.git",
+    "branch": "master-1.12",
+    "imported_commit": "acec4429525eb30452298c2034d1e5d5d4b41046",
+    "path": "dependencies/Galacticraft-Legacy"
+  },
+  "ExtraPlanets": {
+    "url": "https://github.com/MJRLegends/ExtraPlanets.git",
+    "branch": "dev_1.12.2",
+    "imported_commit": "fc4a4cb830897da032477210db458a0567948957",
+    "path": "dependencies/ExtraPlanets"
+  },
+  "FTB": {
+    "url": "https://github.com/FTBTeam/FTB-Quests.git",
+    "branch": "1.12",
+    "imported_commit": "85b7652bd69f3bc4c03ba9ba24909ddea0605a53",
+    "path": "project/FTB"
+  }
+}
