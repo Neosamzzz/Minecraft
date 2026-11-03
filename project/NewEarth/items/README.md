@@ -62,7 +62,7 @@ python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.j
 
 ### 验收与交付
 
-- [ ] 将EP天王星主星及轨道准入统一到T5，同步星图等级。
+- [x] 将EP天王星主星及轨道准入统一到T5，同步星图等级。（2026-11-04：主星本就是sol；PlanetHooks.integrate() 里 Uranus 判入 T5，setTierRequired 同步本体/卫星/空间站与星图显示）
 - [ ] 启动客户端核对物品、JEI配方、两种制造台与图纸奖励。
 - [ ] 验证Eris六阶＋离子引擎准入：六阶未装离子时被拦截，安装后可到达并正常返航；核对回收、重进保存与七阶通行。
 - [ ] 验收地牢图纸解锁、七阶制造及首次系外往返；核对引擎返还和重进保存。

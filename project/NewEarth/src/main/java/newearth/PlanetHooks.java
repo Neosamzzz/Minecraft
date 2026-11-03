@@ -101,7 +101,7 @@ public final class PlanetHooks {
             }
             // Preserve pending satellite choices, but apply the confirmed stage to
             // every retained child of Saturn / Neptune rather than just the main body.
-            int tier = i == 1 ? 5 : (i == 3 || i == 4) ? 6 : -1;
+            int tier = (i == 1 || i == 2) ? 5 : (i == 3 || i == 4) ? 6 : -1;
             if (tier > 0) {
                 target.setTierRequired(tier);
                 for (Moon moon : GalaxyRegistry.getRegisteredMoons().values())
@@ -115,7 +115,7 @@ public final class PlanetHooks {
         for (Satellite satellite : GalaxyRegistry.getRegisteredSatellites().values())
             if (satellite.getParentPlanet() == eris) satellite.setTierRequired(6);
         GalaxyRegistry.refreshGalaxies();
-        NewEarth.LOG.info("Integrated EP main planets; GS moons reparented, Saturn T5, Neptune/Pluto T6, Eris T6 + ion");
+        NewEarth.LOG.info("Integrated EP main planets; GS moons reparented, Saturn/Uranus T5, Neptune/Pluto T6, Eris T6 + ion");
     }
 
     public static List<Integer> filterDestinations(List<Integer> dimensions, Object player) {
