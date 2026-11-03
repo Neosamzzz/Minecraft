@@ -13,10 +13,18 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         boolean meta = "com.mjr.mjrlegendslib.item.ItemBasicMeta".equals(transformedName);
         boolean entities = "com.mjr.mjrlegendslib.util.RegisterUtilities".equals(transformedName);
         boolean schematics = "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry".equals(transformedName);
-        if (!(items || recipes || meta || entities || schematics)) return bytes;
+        boolean gear = "micdoodle8.mods.galacticraft.api.GalacticraftRegistry".equals(transformedName);
+        if (!(items || recipes || meta || entities || schematics || gear)) return bytes;
         ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node, 0);
         int changes = 0;
         for (MethodNode method : node.methods) {
+            if (gear && method.name.equals("addGearObject") && method.desc.equals(
+                    "(ILmicdoodle8/mods/galacticraft/api/item/EnumExtendedInventorySlot;Ljava/lang/Object;)V")) {
+                InsnList head = new InsnList(); LabelNode keep = new LabelNode(); head.add(new VarInsnNode(ALOAD, 2));
+                head.add(new MethodInsnNode(INVOKESTATIC, "newearth/ContentPruning", "allowGear", "(Ljava/lang/Object;)Z", false));
+                head.add(new JumpInsnNode(IFNE, keep)); head.add(new InsnNode(RETURN));
+                head.add(keep); head.add(new FrameNode(F_SAME, 0, null, 0, null)); method.instructions.insert(head); changes++;
+            }
             if (entities && method.name.equals("registerNonMobEntity") && method.desc.equals(
                     "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/String;IIZ)V")) {
                 InsnList head = new InsnList(); LabelNode keep = new LabelNode();

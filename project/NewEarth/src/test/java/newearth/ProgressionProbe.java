@@ -55,6 +55,11 @@ public final class ProgressionProbe {
         check(ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"minecraft:paper\"},\"key\":{\"X\":{\"item\":\"extraplanets:nose_cone_tier7\"}}}").getAsJsonObject(), "anothermod"), "Skip recipes referencing deleted inputs");
         check(!ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"anothermod:blue_diamond_helmet\"}}").getAsJsonObject(), "extraplanets"), "Do not skip another mod's similarly named output");
         check(!ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"tier7_items\",\"data\":5}}").getAsJsonObject(), "extraplanets"), "Preserve crystal recipes");
+        check(!ContentPruning.allowRegistration(new Item(), "oxygen_tank_light_full_black"), "Colored oxygen tank is not submitted");
+        check(ContentPruning.allowRegistration(new Item(), "oxygen_tank_very_heavy_full"), "Preserve larger oxygen tanks");
+        check(ContentPruning.allowRegistration(new Item(), "oxygen_tank_extremely_heavy_full"), "Preserve largest oxygen tanks");
+        check(ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"nuclear_bomb\"}}").getAsJsonObject(), "extraplanets"), "Skip disabled nuclear bomb recipe");
+        check(ContentPruning.skipRecipe(parser.parse("{\"result\":{\"item\":\"fire_bomb\"}}").getAsJsonObject(), "extraplanets"), "Skip disabled fire bomb recipe");
         verifyContentTransforms();
         List<INasaWorkbenchRecipe> nasa = new ArrayList<>();
         for (int tier = 4; tier <= 10; tier++) {
@@ -124,6 +129,13 @@ public final class ProgressionProbe {
         public static void registerItem(Item item, String name) { submitted++; }
     }
 
+    public static final class GearFixture {
+        public static int submitted;
+        public static void addGearObject(int id, micdoodle8.mods.galacticraft.api.item.EnumExtendedInventorySlot slot, Object gear) {
+            submitted++;
+        }
+    }
+
     private static void verifyContentTransforms() throws Exception {
         ContentTransformer transformer = new ContentTransformer();
         String fixtureName = "newearth.ProgressionProbe$PendingFixture";
@@ -141,6 +153,25 @@ public final class ProgressionProbe {
         check(executed.getField("submitted").getInt(null) == 0, "Transformed registration never submits retired IDs");
         submit.invoke(null, new Item(), "tier7_items");
         check(executed.getField("submitted").getInt(null) == 1, "Transformed registration submits retained material container");
+        String gearFixtureName = "newearth.ProgressionProbe$GearFixture";
+        byte[] gearOriginal;
+        try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + gearFixtureName.replace('.', '/') + ".class")) {
+            gearOriginal = read(input);
+        }
+        final byte[] gearFixture = transformer.transform(gearFixtureName, "micdoodle8.mods.galacticraft.api.GalacticraftRegistry", gearOriginal);
+        Class<?> gearExecuted = new ClassLoader(ProgressionProbe.class.getClassLoader()) {
+            Class<?> loadFixture() { return defineClass(gearFixtureName, gearFixture, 0, gearFixture.length); }
+        }.loadFixture();
+        java.lang.reflect.Method gearSubmit = gearExecuted.getMethod("addGearObject", int.class,
+                micdoodle8.mods.galacticraft.api.item.EnumExtendedInventorySlot.class, Object.class);
+        Item retiredTank = new Item().setRegistryName("extraplanets:oxygen_tank_med_full_black");
+        Object tankSlot = micdoodle8.mods.galacticraft.api.item.EnumExtendedInventorySlot.LEFT_TANK;
+        gearSubmit.invoke(null, 9001, tankSlot, retiredTank);
+        gearSubmit.invoke(null, 9002, tankSlot, new ItemStack(retiredTank));
+        check(gearExecuted.getField("submitted").getInt(null) == 0, "Both Item and ItemStack retired gear registrations are blocked");
+        gearSubmit.invoke(null, 9003, tankSlot, new Item().setRegistryName("anothermod:oxygen_tank_med_full_black"));
+        gearSubmit.invoke(null, 9004, tankSlot, new Item().setRegistryName("extraplanets:oxygen_tank_very_heavy_full"));
+        check(gearExecuted.getField("submitted").getInt(null) == 2, "Other mod and capacity-upgrade gear remains registered");
         String helper = "net/minecraftforge/common/crafting/CraftingHelper";
         try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + helper + ".class")) {
             verifyPatched(transformer, helper.replace('/', '.'), read(input));
@@ -153,9 +184,26 @@ public final class ProgressionProbe {
         if (runtime != null && !runtime.isEmpty()) {
             java.util.Set<String> required = new java.util.HashSet<>(java.util.Arrays.asList(
                     "com.mjr.extraplanets.items.ExtraPlanets_Items", "com.mjr.mjrlegendslib.item.ItemBasicMeta",
-                    "com.mjr.mjrlegendslib.util.RegisterUtilities", "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry"));
+                    "com.mjr.mjrlegendslib.util.RegisterUtilities", "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry",
+                    "micdoodle8.mods.galacticraft.api.GalacticraftRegistry"));
+            int coloredRecipes = 0;
             for (java.io.File file : new java.io.File(runtime).listFiles()) if (file.getName().endsWith(".jar")) {
                 try (java.util.jar.JarFile jar = new java.util.jar.JarFile(file)) {
+                    if (jar.getJarEntry("com/mjr/extraplanets/ExtraPlanets.class") != null) {
+                        java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+                        while (entries.hasMoreElements()) {
+                            java.util.jar.JarEntry entry = entries.nextElement();
+                            if (!entry.getName().matches("assets/extraplanets/recipes/oxygen_tank_(light|med|heavy)_full_.*\\.json")) continue;
+                            try (java.io.InputStream input = jar.getInputStream(entry)) {
+                                com.google.gson.JsonObject json = new com.google.gson.JsonParser().parse(
+                                        new String(read(input), java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                                check(ContentPruning.skipRecipe(json, "extraplanets"), "Installed colored tank recipe filtered " + entry.getName());
+                                String output = json.getAsJsonObject("result").get("item").getAsString();
+                                check(ContentPruning.retiredItem(output.substring("extraplanets:".length())), "Installed tank ID is retired " + output);
+                                coloredRecipes++;
+                            }
+                        }
+                    }
                     for (String name : new ArrayList<>(required)) {
                         java.util.jar.JarEntry entry = jar.getJarEntry(name.replace('.', '/') + ".class");
                         if (entry == null) continue;
@@ -165,6 +213,7 @@ public final class ProgressionProbe {
                 }
             }
             check(required.isEmpty(), "Installed EP and MJR content targets were verified");
+            check(coloredRecipes == 45, "All 45 installed colored oxygen tank recipes are covered");
         }
     }
 

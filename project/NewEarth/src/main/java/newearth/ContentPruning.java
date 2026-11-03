@@ -23,6 +23,9 @@ public final class ContentPruning {
     private ContentPruning() { }
 
     public static boolean retiredItem(String name) {
+        if (name.equals("nuclear_bomb") || name.equals("fire_bomb") || name.equals("debugworldfilegen")) return true;
+        if (name.startsWith("oxygen_tank_light_full_") || name.startsWith("oxygen_tank_med_full_")
+                || name.startsWith("oxygen_tank_heavy_full_")) return true;
         for (int tier = 4; tier <= 10; tier++)
             if (name.equals("item_tier" + tier + "_rocket") || name.equals("nose_cone_tier" + tier)
                     || name.equals("schematic_tier" + tier)) return true;
@@ -78,6 +81,14 @@ public final class ContentPruning {
 
     public static void filterSubItems(List<ItemStack> stacks) {
         stacks.removeIf(ContentPruning::retiredOutput);
+    }
+
+    public static boolean allowGear(Object gear) {
+        if (gear instanceof Item) {
+            ResourceLocation name = ((Item) gear).getRegistryName();
+            return name == null || !"extraplanets".equals(name.getNamespace()) || !retiredItem(name.getPath());
+        }
+        return !(gear instanceof ItemStack) || !retiredOutput((ItemStack) gear);
     }
 
     public static boolean allowEntityRegistration(Class<?> type) {
