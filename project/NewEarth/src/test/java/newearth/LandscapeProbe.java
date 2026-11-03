@@ -78,14 +78,23 @@ public final class LandscapeProbe {
         map(field);
         System.out.println("NewEarth landscape: " + checks + " checks passed (isolated; no game, save or shaders)");
     }
-    private static void distribution(long seed) {
+    private static void distribution(long seed) throws Exception {
         Landscape field = new Landscape(seed);
-        int water = 0, meadow = 0, forest = 0, mountain = 0;
+        int water = 0, meadow = 0, forest = 0, mountain = 0, high = 0;
+        int nearbyHigh = 0, peakX = 0, peakZ = 0;
+        double peak = 0;
         double maxStep = 0;
         boolean differs = false;
         Landscape other = new Landscape(seed ^ 99);
         for (int z = -4096; z < 4096; z += 32) for (int x = -4096; x < 4096; x += 32) {
             double h = field.height(x,z);
+            if (h > 200) {
+                high++;
+                if (Math.abs(x) <= 1024 && Math.abs(z) <= 1024) nearbyHigh++;
+            }
+            if (Math.abs(x) <= 1024 && Math.abs(z) <= 1024 && h > peak) {
+                peak = h; peakX = x; peakZ = z;
+            }
             if (h < Landscape.WATER_LEVEL) water++;
             else if (h > 150) mountain++;
             else if (field.woodland(x,z) < 0.02) meadow++;
@@ -96,8 +105,36 @@ public final class LandscapeProbe {
         }
         check(water > 100 && meadow > 1000 && forest > 100 && mountain > 100,
                 "Water, open meadow, forest interiors and mountains all occupy substantial areas");
+        check(high > 1000 && nearbyHigh > 50,
+                "Substantial terrain above Y200, including a range within 1024 blocks of origin");
+        int wide = 0;
+        for (int dz = -64; dz <= 64; dz += 16) for (int dx = -64; dx <= 64; dx += 16)
+            if (field.height(peakX + dx, peakZ + dz) > 180) wide++;
+        check(wide > 50, "High peak has a substantial mountain body, not an isolated spike");
+        int viewX = peakX, viewZ = peakZ;
+        double viewHeight = peak;
+        outer: for (int radius = 128; radius <= 1408; radius += 32) {
+            for (int direction = 0; direction < 32; direction++) {
+                double angle = direction * Math.PI / 16;
+                int vx = peakX + (int) (Math.cos(angle) * radius);
+                int vz = peakZ + (int) (Math.sin(angle) * radius);
+                double h = field.height(vx,vz);
+                if (h > 70 && h < 100 && field.slope(vx,vz) < 0.25 && field.woodland(vx,vz) < 0.05) {
+                    viewX = vx; viewZ = vz; viewHeight = h;
+                    break outer;
+                }
+            }
+        }
+        check(viewHeight < 100, "Open lowland viewpoint exists near the mountain");
+        System.out.printf(java.util.Locale.ROOT, "Mountain viewpoint: /tp %d %d %d %.1f 0%n",
+                viewX, (int)Math.ceil(viewHeight)+2, viewZ,
+                Math.toDegrees(Math.atan2(-(peakX-viewX), peakZ-viewZ)));
+        if (seed == 42) profile(field, peakX, peakZ, viewX, viewZ);
         check(maxStep < 12, "No one-block discontinuities across sampled chunk and negative-coordinate boundaries");
         check(differs, "World seed changes landscape");
+        System.out.printf(java.util.Locale.ROOT,
+                "High terrain: %.1f%%; nearby peak (%d, %.1f, %d), %d nearby samples above Y200%n",
+                high/655.36, peakX, peak, peakZ, nearbyHigh);
         System.out.printf(java.util.Locale.ROOT,
                 "Seed %d: water %.1f%%, open meadow %.1f%%, forest interior %.1f%%, mountain %.1f%%; max step %.2f%n",
                 seed, water/655.36, meadow/655.36, forest/655.36, mountain/655.36, maxStep);
@@ -117,6 +154,31 @@ public final class LandscapeProbe {
             return;
         }
         throw new AssertionError("No boundary tree tested");
+    }
+    private static void profile(Landscape field, int peakX, int peakZ, int viewX, int viewZ) throws Exception {
+        BufferedImage image = new BufferedImage(1200,340,BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics2D g = image.createGraphics();
+        g.setColor(new java.awt.Color(180,210,230)); g.fillRect(0,0,1200,340);
+        double distance = Math.hypot(peakX-viewX, peakZ-viewZ);
+        double ux = (peakX-viewX)/distance, uz = (peakZ-viewZ)/distance;
+        double scale = 0.8;
+        for (int i = 0; i < 1200; i++) {
+            double along = i/scale - 250;
+            int x = viewX + (int)(ux*along), z = viewZ+(int)(uz*along);
+            double h = field.height(x,z);
+            int top = 300-(int)(h*scale);
+            g.setColor(h > 205 ? java.awt.Color.WHITE : h > 178 ? java.awt.Color.GRAY : new java.awt.Color(112,155,73));
+            g.drawLine(i,top,i,300);
+            if (h < Landscape.WATER_LEVEL) {
+                g.setColor(new java.awt.Color(55,118,164));
+                g.drawLine(i,300-(int)(Landscape.WATER_LEVEL*scale),i,top);
+            }
+        }
+        g.setColor(java.awt.Color.BLACK);
+        g.drawString("Seed 42 | terrain section through meadow viewpoint and mountain | equal horizontal / vertical scale",15,20);
+        g.drawString("Y=200",15,300-(int)(200*scale));
+        g.drawLine(75,300-(int)(200*scale),1180,300-(int)(200*scale));
+        g.dispose(); ImageIO.write(image,"png",new File("mountain-profile.png"));
     }
     private static void map(Landscape field) throws Exception {
         BufferedImage image = new BufferedImage(768,768,BufferedImage.TYPE_INT_RGB);
