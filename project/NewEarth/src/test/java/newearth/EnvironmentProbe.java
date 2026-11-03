@@ -57,6 +57,7 @@ public final class EnvironmentProbe implements Opcodes {
         check(body.atmosphere.isBreathable() && body.atmosphere.hasPrecipitation()
                 && body.atmosphere.windLevel() == 2 && body.atmosphere.relativeDensity() == 0.7F
                 && body.atmosphere.isGasPresent(EnumAtmosphericGas.OXYGEN), "Atmosphere retains air, weather, wind and density");
+        verifyPreDimensionMetadata();
         for (String id : new String[] {"tier0_space_suit_helmet", "tier4_space_suit_jetpack_chest", "tier1_un_prepared_space_suit_boots",
                 "tier1_pressure_layer", "tier4_radiation_layer", "tier3_armor_layer", "thermal_cloth", "tier5_thermal_padding",
                 "cloth", "gravity_controller", "module_items", "enviro_emergency_kit", "tier5_kit"})
@@ -66,6 +67,38 @@ public final class EnvironmentProbe implements Opcodes {
         exerciseHandler(head, chest, legs, feet);
         verifyInstalled();
         System.out.println("NewEarth environment: " + checks + " checks passed (isolated; no world or survival session)");
+    }
+
+    private static void verifyPreDimensionMetadata() {
+        // Provider type exists before GC registers the runtime dimension. It has
+        // no constructor, so this also guards against accidental instantiation.
+        ClassWriter writer = new ClassWriter(0);
+        writer.visit(V1_8, ACC_PUBLIC, "com/mjr/extraplanets/probe/MetadataProvider", null,
+                "net/minecraft/world/WorldProviderSurface", null);
+        writer.visitEnd();
+        Class<? extends net.minecraft.world.WorldProvider> provider =
+                define("com.mjr.extraplanets.probe.MetadataProvider", writer.toByteArray())
+                        .asSubclass(net.minecraft.world.WorldProvider.class);
+        Planet ep = new Planet("metadataep");
+        ep.setDimensionInfo(-16, provider);
+        ep.setAtmosphere(new AtmosphereInfo(false, false, false, -150, 0, 1));
+        Planet other = new Planet("othermetadataep");
+        other.setDimensionInfo(-9001, net.minecraft.world.WorldProviderSurface.class);
+        other.setAtmosphere(new AtmosphereInfo(false, false, false, -150, 0, 1));
+        Planet missing = new Planet("missingmetadataep");
+        missing.setDimensionInfo(-9002, null);
+        missing.setAtmosphere(new AtmosphereInfo(false, false, false, -150, 0, 1));
+        micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry.registerPlanet(ep);
+        micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry.registerPlanet(other);
+        micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry.registerPlanet(missing);
+        check(!net.minecraftforge.common.DimensionManager.isDimensionRegistered(-16), "EP dimension is not registered at post-init fixture");
+        EnvironmentHooks.adaptMetadata();
+        check(ep.atmosphere.thermalLevel() == -15, "EP metadata adapts before runtime dimension registration");
+        check(!net.minecraftforge.common.DimensionManager.isDimensionRegistered(-16), "Metadata adaptation never creates a runtime dimension");
+        check(other.atmosphere.thermalLevel() == -150 && missing.atmosphere.thermalLevel() == -150,
+                "Other-mod and missing provider types are skipped");
+        EnvironmentHooks.adaptMetadata();
+        check(ep.atmosphere.thermalLevel() == -15, "Post-init metadata adaptation remains idempotent");
     }
 
     // Normalisation/damage cadence from GS's GCPlayerHandler overwrite. Equality

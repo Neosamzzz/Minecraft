@@ -8,7 +8,6 @@ import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.DimensionManager;
 
 public final class EnvironmentHooks {
     private EnvironmentHooks() { }
@@ -43,7 +42,8 @@ public final class EnvironmentHooks {
         bodies.addAll(GalaxyRegistry.getRegisteredMoons().values());
         for (CelestialBody body : bodies) {
             if (!body.getReachable() || !body.getName().toLowerCase(java.util.Locale.ROOT).endsWith("ep")) continue;
-            if (!DimensionManager.createProviderFor(body.getDimensionID()).getClass().getName()
+            // GC registers runtime dimensions later; body metadata already owns the provider type.
+            if (body.getWorldProvider() == null || !body.getWorldProvider().getName()
                     .startsWith("com.mjr.extraplanets.")) continue;
             adaptAtmosphere(body);
         }
