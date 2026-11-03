@@ -136,8 +136,38 @@ public final class ProgressionProbe {
         }
     }
 
+    public static final class ModelFixture {
+        public static int variants, models;
+        public static void addVariants(String domain, String name, String... variants) { ModelFixture.variants++; }
+        public static void registerModel(Item item, int meta,
+                net.minecraft.client.renderer.block.model.ModelResourceLocation model) { models++; }
+    }
+
     private static void verifyContentTransforms() throws Exception {
         ContentTransformer transformer = new ContentTransformer();
+        String modelName = "newearth.ProgressionProbe$ModelFixture";
+        final byte[] modelBytes;
+        try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + modelName.replace('.', '/') + ".class")) {
+            modelBytes = transformer.transform(modelName, "com.mjr.mjrlegendslib.util.ClientUtilities", read(input));
+        }
+        Class<?> modelType = new ClassLoader(ProgressionProbe.class.getClassLoader()) {
+            Class<?> loadFixture() { return defineClass(modelName, modelBytes, 0, modelBytes.length); }
+        }.loadFixture();
+        java.lang.reflect.Method variants = modelType.getMethod("addVariants", String.class, String.class, String[].class);
+        for (String id : new String[] {"thermal_cloth", "tier3_thermal_padding", "tier4_thermal_padding", "tier5_thermal_padding",
+                "tier1_kit", "tier5_kit", "module_items"}) variants.invoke(null, "extraplanets", id, new String[] {"variant"});
+        check(modelType.getField("variants").getInt(null) == 0, "Retired model variants never resolve absent registry entries");
+        variants.invoke(null, "extraplanets", "tools", new String[] {"filter"});
+        variants.invoke(null, "anothermod", "thermal_cloth", new String[] {"cloth"});
+        check(modelType.getField("variants").getInt(null) == 2, "Retained and other-mod variants still register");
+        java.lang.reflect.Method models = modelType.getMethod("registerModel", Item.class, int.class,
+                net.minecraft.client.renderer.block.model.ModelResourceLocation.class);
+        models.invoke(null, new Item().setRegistryName("extraplanets:thermal_cloth"), 0, null);
+        models.invoke(null, new Item().setRegistryName("extraplanets:tier1_space_suit_helmet"), 0, null);
+        check(modelType.getField("models").getInt(null) == 0, "Retired item objects never reach model loader");
+        models.invoke(null, new Item().setRegistryName("extraplanets:tools"), 3, null);
+        models.invoke(null, new Item().setRegistryName("anothermod:thermal_cloth"), 0, null);
+        check(modelType.getField("models").getInt(null) == 2, "Retained and other-mod item models still register");
         String fixtureName = "newearth.ProgressionProbe$PendingFixture";
         byte[] original;
         try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + fixtureName.replace('.', '/') + ".class")) {
@@ -185,7 +215,7 @@ public final class ProgressionProbe {
             java.util.Set<String> required = new java.util.HashSet<>(java.util.Arrays.asList(
                     "com.mjr.extraplanets.items.ExtraPlanets_Items", "com.mjr.mjrlegendslib.item.ItemBasicMeta",
                     "com.mjr.mjrlegendslib.util.RegisterUtilities", "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry",
-                    "micdoodle8.mods.galacticraft.api.GalacticraftRegistry"));
+                    "micdoodle8.mods.galacticraft.api.GalacticraftRegistry", "com.mjr.mjrlegendslib.util.ClientUtilities"));
             int coloredRecipes = 0;
             for (java.io.File file : new java.io.File(runtime).listFiles()) if (file.getName().endsWith(".jar")) {
                 try (java.util.jar.JarFile jar = new java.util.jar.JarFile(file)) {

@@ -14,10 +14,29 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         boolean entities = "com.mjr.mjrlegendslib.util.RegisterUtilities".equals(transformedName);
         boolean schematics = "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry".equals(transformedName);
         boolean gear = "micdoodle8.mods.galacticraft.api.GalacticraftRegistry".equals(transformedName);
-        if (!(items || recipes || meta || entities || schematics || gear)) return bytes;
+        boolean client = "com.mjr.mjrlegendslib.util.ClientUtilities".equals(transformedName);
+        if (!(items || recipes || meta || entities || schematics || gear || client)) return bytes;
         ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node, 0);
         int changes = 0;
         for (MethodNode method : node.methods) {
+            if (client && method.name.equals("addVariants") && method.desc.equals(
+                    "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V")) {
+                InsnList head = new InsnList(); LabelNode keep = new LabelNode();
+                head.add(new VarInsnNode(ALOAD, 0)); head.add(new VarInsnNode(ALOAD, 1));
+                head.add(new MethodInsnNode(INVOKESTATIC, "newearth/ContentPruning", "allowVariants",
+                        "(Ljava/lang/String;Ljava/lang/String;)Z", false));
+                head.add(new JumpInsnNode(IFNE, keep)); head.add(new InsnNode(RETURN));
+                head.add(keep); head.add(new FrameNode(F_SAME, 0, null, 0, null));
+                method.instructions.insert(head); changes++;
+            }
+            if (client && method.name.equals("registerModel") && method.desc.equals(
+                    "(Lnet/minecraft/item/Item;ILnet/minecraft/client/renderer/block/model/ModelResourceLocation;)V")) {
+                InsnList head = new InsnList(); LabelNode keep = new LabelNode(); head.add(new VarInsnNode(ALOAD, 0));
+                head.add(new MethodInsnNode(INVOKESTATIC, "newearth/ContentPruning", "allowGear", "(Ljava/lang/Object;)Z", false));
+                head.add(new JumpInsnNode(IFNE, keep)); head.add(new InsnNode(RETURN));
+                head.add(keep); head.add(new FrameNode(F_SAME, 0, null, 0, null));
+                method.instructions.insert(head); changes++;
+            }
             if (gear && method.name.equals("addGearObject") && method.desc.equals(
                     "(ILmicdoodle8/mods/galacticraft/api/item/EnumExtendedInventorySlot;Ljava/lang/Object;)V")) {
                 InsnList head = new InsnList(); LabelNode keep = new LabelNode(); head.add(new VarInsnNode(ALOAD, 2));
@@ -69,7 +88,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 changes++;
             }
         }
-        if (changes != 1) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
+        if (changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
     }
 }

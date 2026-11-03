@@ -108,6 +108,10 @@ public final class ContentPruning {
         return !(gear instanceof ItemStack) || !retiredOutput((ItemStack) gear);
     }
 
+    public static boolean allowVariants(String domain, String name) {
+        return !"extraplanets".equals(domain) || !retiredItem(name);
+    }
+
     public static boolean allowEntityRegistration(Class<?> type) {
         if (!type.getName().startsWith("com.mjr.extraplanets.entities.")) return true;
         String name = type.getSimpleName();
