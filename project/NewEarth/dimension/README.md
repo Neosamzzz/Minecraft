@@ -12,9 +12,9 @@
 - 呼应陆地大部分被海洋吞没的地球开篇。角色视角不知道终点存在，不提前承担“寻找新地球”的使命；抵达后先留出观察、探索和安顿的空间，不强制定居。
 - 保留已有生态星球的森林、海洋与探索价值。维度线负责世界、景观和结尾机制，飞船、核心与系外工具由[物品线](../items/README.md)负责。
 
-地貌参考用于约束整体结构与尺度，不固定树种、配色或建筑样式。`terrain-default-reference.png` 保存默认地貌对照，`summit-beacon-reference.png` 保存山顶建筑结构参考。
+地貌参考用于约束整体结构与尺度，不固定树种、配色或建筑样式。`terrain-default-reference.png` 保存旧存档的原版地貌视觉参考，`summit-beacon-reference.png` 保存山顶建筑结构参考。
 
-![默认地貌的山地、草地、森林与水域关系](terrain-default-reference.png)
+![原版存档的山地、草地、森林与水域关系](terrain-default-reference.png)
 
 ## 开发阶段与验证进度
 
@@ -61,13 +61,19 @@
 
 #### ReTerraForged 完整学习与默认对照
 
-优先研究 [ReTerraForged 原项目](https://github.com/racoonman2/ReTerraForged)的完整实现及模块关系，先建立默认配置对照，再确定适配边界。研究起点固定为 `1.20.1` 分支的 `29239f1f164d19dbfcccaca4a8277d64e784207c`，默认预设的实际注册入口、参数与调用路径一并核对。
+优先研究 [ReTerraForged 原项目](https://github.com/racoonman2/ReTerraForged)的完整实现及模块关系，先建立默认配置对照，再确定适配边界。源码研究起点为 `1.20.1` 分支的 `29239f1f164d19dbfcccaca4a8277d64e784207c`；运行对照以本机 Fabric 1.20.1 的 `reterraforged-0.0.6-fabric-1.20.1.jar` 为准（SHA-256：`e0fe886f45cf7e0964432c6c1a9ff4ea8d27631938586166376b815836a0eab2`）。该 JAR 的 Default 使用 `makeRTFDefault()`，与上述源码提交的 Default 入口不同，不能按版本号假定配置相同。
 
 学习范围覆盖预设、种子与高度尺度，大陆与海岸、地貌分区与混合、山脉与平原、河网与湖泊、侵蚀与平滑、气候与群系、地表规则、植被装饰，以及区域缓存、边界和生成调度。上游区域生成与过滤关系由 [GeneratorContext](https://github.com/racoonman2/ReTerraForged/blob/29239f1f164d19dbfcccaca4a8277d64e784207c/common/src/main/java/raccoonman/reterraforged/world/worldgen/GeneratorContext.java)、`Heightmap`、`TileGenerator`、`WorldFilters` 承接；适配需要保持各环节的作用与先后关系。
 
 先理解全部生成环节及依赖，再确定 Java、Minecraft 接口和高度范围的适配方式；不先删去侵蚀、河网、群系等环节，也不以少量噪声公式和自定参数代替默认效果。项目需要的无敌对生物、局部草甸布局和特殊地标在建立完整基线后处理。
 
-- [ ] 系统学习完整生成流程与默认预设，建立原项目默认地貌的可复现对照。
+本机默认对照位于 `C:\Users\qq106\Desktop\游戏\Release\.minecraft\versions\1.20.1-Fabric 0.20.1\saves\test`，种子为 `5842795872551611497`。存档启用 `file/reterraforged-preset.zip`，实际参数保存在包内 `data/reterraforged/reterraforged/worldgen/preset/preset.json`。旧存档“新的世界”与“新的世界 (1)”使用原版生成，仅作为视觉参考。
+
+Default 的主要尺度为大陆 3000、地貌区域 1200、全局水平 1.0、垂直 0.96；Plains 权重 2.0、Steppe 1.0、Mountains 2.5。世界高度为 384，地形计算的 `terrainScaler()` 为 256；适配 1.12.2 时需分别核对计算尺度和可放置高度。
+
+使用 ReTerraForged 创建世界界面的自带参数制作后续对照，保留 `test` 默认基线。先调整 Plains／Steppe 权重比较平原覆盖，再调整气候、群系及植被以形成开阔草原；地形权重不直接决定地表树木密度。每组预设使用独立新存档，同种子比较，已生成区块不会随设置改变。
+
+- [ ] 系统学习完整生成流程与默认预设，完成默认对照的景观、连续生成与保存验收。
 - [ ] 按上游流程适配 1.12.2，修正当前过大的山体、河谷和过于平滑的台阶形态；高度映射先验证，必要时单独评估扩展。
 - [ ] 在保持整体默认关系的基础上落实草甸、林片与局部 Y>200 高山目标，并同步调整现有检查，避免为满足高度统计而强制放大环境。
 
