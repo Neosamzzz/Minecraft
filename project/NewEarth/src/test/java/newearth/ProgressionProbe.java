@@ -114,6 +114,7 @@ public final class ProgressionProbe {
         check(CompressorRecipes.getRecipeListAll().stream().noneMatch(r -> ContentPruning.retiredOutput(r.getRecipeOutput())), "No retired compressor output remains");
         check(CompressorRecipes.getRecipeListAll().stream().anyMatch(r -> r.getRecipeOutput().getItem() == parts7 && r.getRecipeOutput().getMetadata() == 4), "Preserve compressed resource recipe");
         check(ContentPruning.pruneCompressor() == 0, "Compressor cleanup is idempotent");
+        verifyMaterials();
         Planet proxima = new Planet("proxima_b"); proxima.setTierRequired(6); GalaxyRegistry.registerPlanet(proxima);
         Planet barnarda = new Planet("barnarda_c"); barnarda.setTierRequired(6); GalaxyRegistry.registerPlanet(barnarda);
         Moon moon = new Moon("barnarda_c1").setParentPlanet(barnarda); moon.setTierRequired(6); GalaxyRegistry.registerMoon(moon);
@@ -127,6 +128,70 @@ public final class ProgressionProbe {
     public static final class PendingFixture {
         public static int submitted;
         public static void registerItem(Item item, String name) { submitted++; }
+    }
+
+    public static final class MaterialFixture {
+        public static ItemStack make(Item item, int count, int meta) { return new ItemStack(item, count, meta); }
+    }
+
+    private static void verifyMaterials() throws Exception {
+        item("galaxyspace:ingots"); item("galaxyspace:compressed_plates");
+        item("galacticraftplanets:basic_item_venus"); item("extraplanets:ingot_lead");
+        String[][] rows = {
+            {"tier6_items", "5", "galaxyspace:ingots", "1"},
+            {"tier6_items", "4", "galaxyspace:compressed_plates", "2"},
+            {"tier5_items", "7", "galaxyspace:ingots", "2"},
+            {"tier5_items", "6", "galaxyspace:compressed_plates", "3"},
+            {"ingot_lead", "0", "galacticraftplanets:basic_item_venus", "1"}
+        };
+        String name = "newearth.ProgressionProbe$MaterialFixture";
+        byte[] original;
+        try (java.io.InputStream input = ProgressionProbe.class.getResourceAsStream("/" + name.replace('.', '/') + ".class")) { original = read(input); }
+        byte[] patched = new ContentTransformer().transform(name, "com.mjr.extraplanets.recipes.ExtraPlanets_Recipes", original);
+        Class<?> fixture = new ClassLoader(ProgressionProbe.class.getClassLoader()) {
+            Class<?> loadFixture() { return defineClass(name, patched, 0, patched.length); }
+        }.loadFixture();
+        for (String[] row : rows) {
+            Item old = Item.REGISTRY.getObject(new ResourceLocation("extraplanets:" + row[0]));
+            int meta = Integer.parseInt(row[1]), targetMeta = Integer.parseInt(row[3]);
+            ItemStack result = (ItemStack) fixture.getMethod("make", Item.class, int.class, int.class).invoke(null, old, 9, meta);
+            check(result.getCount() == 9 && result.getMetadata() == targetMeta
+                    && result.getItem().getRegistryName().toString().equals(row[2]), "EP bytecode emits canonical metal " + row[0] + ":" + meta);
+            ItemStack legacy = new ItemStack(old, 7, meta);
+            net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound(); tag.setString("test", "preserve"); legacy.setTagCompound(tag);
+            ItemStack converted = MaterialUnification.canonical(legacy);
+            check(converted.getCount() == 7 && converted.getTagCompound().equals(tag) && converted.getTagCompound() != tag,
+                    "Stack conversion copies count and NBT " + row[0] + ":" + meta);
+            com.google.gson.JsonObject json = new com.google.gson.JsonParser().parse("{\"result\":{\"item\":\"" + row[0]
+                    + "\",\"data\":" + meta + ",\"count\":9},\"ingredients\":[{\"item\":\"extraplanets:" + row[0] + "\",\"data\":" + meta + "}]}").getAsJsonObject();
+            check(!ContentPruning.skipRecipe(json, "extraplanets"), "Metal recipe survives pruning");
+            check(json.getAsJsonObject("result").get("item").getAsString().equals(row[2])
+                    && json.getAsJsonObject("result").get("data").getAsInt() == targetMeta
+                    && json.getAsJsonObject("result").get("count").getAsInt() == 9
+                    && json.getAsJsonArray("ingredients").get(0).getAsJsonObject().get("item").getAsString().equals(row[2]),
+                    "Both recipe inputs and storage-block unpacking outputs are canonical");
+            java.util.List<ItemStack> creative = new ArrayList<>(); creative.add(legacy); ContentPruning.filterSubItems(creative);
+            check(creative.isEmpty(), "Legacy metal is hidden from meta enumeration");
+        }
+        MaterialUnification.conversions(ForgeRegistries.RECIPES);
+        for (String[] row : rows) {
+            IRecipe conversion = ForgeRegistries.RECIPES.getValue(new ResourceLocation("newearth:convert_" + row[0] + "_" + row[1]));
+            check(conversion != null && conversion.getIngredients().size() == 1
+                    && conversion.getIngredients().get(0).apply(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("extraplanets:" + row[0])), 1, Integer.parseInt(row[1])))
+                    && conversion.getRecipeOutput().getCount() == 1 && conversion.getRecipeOutput().getItem().getRegistryName().toString().equals(row[2]),
+                    "Old stock has exact one-for-one conversion");
+        }
+        ItemStack crystal = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("extraplanets:tier7_items")), 1, 5);
+        check(MaterialUnification.canonical(crystal) == crystal, "Distinct crystal remains untouched");
+        int before = CompressorRecipes.getRecipeListAll().size();
+        MaterialUnification.addCompressor(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("galaxyspace:compressed_plates")), 1, 2), new Object[] {Items.IRON_INGOT});
+        check(CompressorRecipes.getRecipeListAll().size() == before, "EP duplicate magnesium compression is omitted");
+        Item oldLead = Item.REGISTRY.getObject(new ResourceLocation("extraplanets:ingot_lead"));
+        oldLead.setCreativeTab(net.minecraft.creativetab.CreativeTabs.MATERIALS);
+        MaterialUnification.install();
+        NonNullList<ItemStack> search = NonNullList.create();
+        oldLead.getSubItems(net.minecraft.creativetab.CreativeTabs.SEARCH, search);
+        check(search.isEmpty(), "Standalone legacy lead leaves creative/search enumeration");
     }
 
     public static final class GearFixture {
@@ -214,15 +279,29 @@ public final class ProgressionProbe {
         if (runtime != null && !runtime.isEmpty()) {
             java.util.Set<String> required = new java.util.HashSet<>(java.util.Arrays.asList(
                     "com.mjr.extraplanets.items.ExtraPlanets_Items", "com.mjr.mjrlegendslib.item.ItemBasicMeta",
+                    "com.mjr.extraplanets.recipes.ExtraPlanets_Recipes", "com.mjr.extraplanets.ExtraPlanets",
                     "com.mjr.mjrlegendslib.util.RegisterUtilities", "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry",
                     "micdoodle8.mods.galacticraft.api.GalacticraftRegistry", "com.mjr.mjrlegendslib.util.ClientUtilities"));
-            int coloredRecipes = 0;
+            int coloredRecipes = 0, metalRecipes = 0;
             for (java.io.File file : new java.io.File(runtime).listFiles()) if (file.getName().endsWith(".jar")) {
                 try (java.util.jar.JarFile jar = new java.util.jar.JarFile(file)) {
                     if (jar.getJarEntry("com/mjr/extraplanets/ExtraPlanets.class") != null) {
                         java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
                         while (entries.hasMoreElements()) {
                             java.util.jar.JarEntry entry = entries.nextElement();
+                            if (entry.getName().startsWith("assets/extraplanets/recipes/") && entry.getName().endsWith(".json")) {
+                                try (java.io.InputStream input = jar.getInputStream(entry)) {
+                                    com.google.gson.JsonElement json = new com.google.gson.JsonParser().parse(
+                                            new String(read(input), java.nio.charset.StandardCharsets.UTF_8));
+                                    String before = json.toString();
+                                    MaterialUnification.rewrite(json, "extraplanets");
+                                    if (!before.equals(json.toString())) {
+                                        metalRecipes++;
+                                        String after = json.toString(); MaterialUnification.rewrite(json, "extraplanets");
+                                        check(after.equals(json.toString()), "Installed metal recipe rewrite is stable " + entry.getName());
+                                    }
+                                }
+                            }
                             if (!entry.getName().matches("assets/extraplanets/recipes/oxygen_tank_(light|med|heavy)_full_.*\\.json")) continue;
                             try (java.io.InputStream input = jar.getInputStream(entry)) {
                                 com.google.gson.JsonObject json = new com.google.gson.JsonParser().parse(
@@ -244,6 +323,7 @@ public final class ProgressionProbe {
             }
             check(required.isEmpty(), "Installed EP and MJR content targets were verified");
             check(coloredRecipes == 45, "All 45 installed colored oxygen tank recipes are covered");
+            check(metalRecipes >= 20, "Installed EP metal recipes, machines and storage recipes are covered: " + metalRecipes);
         }
     }
 

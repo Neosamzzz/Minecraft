@@ -8,6 +8,9 @@ import org.objectweb.asm.tree.*;
 public final class ContentTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
+        if ("com.mjr.extraplanets.recipes.ExtraPlanets_Recipes".equals(transformedName)
+                || "com.mjr.extraplanets.ExtraPlanets".equals(transformedName))
+            return unifyMaterials(bytes, transformedName);
         boolean items = "com.mjr.extraplanets.items.ExtraPlanets_Items".equals(transformedName);
         boolean recipes = "net.minecraftforge.common.crafting.CraftingHelper".equals(transformedName);
         boolean meta = "com.mjr.mjrlegendslib.item.ItemBasicMeta".equals(transformedName);
@@ -89,6 +92,34 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
             }
         }
         if (changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
+    }
+
+    private static byte[] unifyMaterials(byte[] bytes, String name) {
+        ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node, 0);
+        int changes = 0;
+        for (MethodNode method : node.methods) {
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (!(instruction instanceof MethodInsnNode)) continue;
+                MethodInsnNode call = (MethodInsnNode) instruction;
+                if (call.getOpcode() == INVOKESPECIAL && call.name.equals("<init>")
+                        && call.owner.equals("net/minecraft/item/ItemStack")
+                        && (call.desc.equals("(Lnet/minecraft/item/Item;)V")
+                            || call.desc.equals("(Lnet/minecraft/item/Item;I)V")
+                            || call.desc.equals("(Lnet/minecraft/item/Item;II)V"))) {
+                    method.instructions.insert(call, new MethodInsnNode(INVOKESTATIC,
+                            "newearth/MaterialUnification", "canonical",
+                            "(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", false));
+                    changes++;
+                }
+                if (call.owner.equals("com/mjr/extraplanets/util/GCRecipeUtilities")
+                        && call.name.equals("addCompresssorShapelessRecipe")
+                        && call.desc.equals("(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V")) {
+                    call.owner = "newearth/MaterialUnification"; call.name = "addCompressor";
+                }
+            }
+        }
+        if (changes == 0) throw new IllegalStateException("Unsupported material registration target " + name);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
     }
 }

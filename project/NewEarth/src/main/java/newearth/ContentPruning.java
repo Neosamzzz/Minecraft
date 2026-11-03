@@ -52,6 +52,7 @@ public final class ContentPruning {
     }
 
     public static boolean skipRecipe(JsonObject json, String domain) {
+        MaterialUnification.rewrite(json, domain);
         // The retained machine filter originally consumed EP spacesuit cloth.
         if ("extraplanets".equals(domain) && json.has("result") && json.get("result").isJsonObject()) {
             JsonObject result = json.getAsJsonObject("result");
@@ -98,6 +99,7 @@ public final class ContentPruning {
 
     public static void filterSubItems(List<ItemStack> stacks) {
         stacks.removeIf(ContentPruning::retiredOutput);
+        stacks.removeIf(MaterialUnification::legacy);
     }
 
     public static boolean allowGear(Object gear) {
@@ -138,6 +140,7 @@ public final class ContentPruning {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void recipes(RegistryEvent.Register<IRecipe> event) {
         pruneCrafting(event.getRegistry());
+        MaterialUnification.conversions(event.getRegistry());
     }
 
     static int pruneCrafting(IForgeRegistry<IRecipe> registry) {
