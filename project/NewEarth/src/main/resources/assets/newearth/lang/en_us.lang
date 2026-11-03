@@ -56,3 +56,5 @@ newearth.map.resources.kepler22bep=Five coloured diamonds, platinum
 newearth.map.resources.proxima_b=Hematite
 newearth.map.resources.barnarda_c=Tree sap
 newearth.map.resources.barnarda_c1=Onyx
+
+generator.newearth_preview=NewEarth terrain preview

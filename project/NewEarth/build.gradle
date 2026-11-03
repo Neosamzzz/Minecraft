@@ -58,3 +58,13 @@ tasks.register('solarSystemCheck', JavaExec) {
     systemProperty 'java.awt.headless', 'true'
 }
 check.dependsOn solarSystemCheck
+
+tasks.register('landscapeCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.LandscapeProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/landscape')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn landscapeCheck
