@@ -1,6 +1,6 @@
 # EP 内容取舍清单
 
-取舍按装备、载具、材料、设备和世界内容分类。移除项取消注册及制造；环境相关项保留至防护适配完成。非合成获取入口和旧存档迁移另行核查。
+取舍按装备、载具、材料、设备和世界内容分类。移除项取消注册及制造；GS宇航服与温控装备承接环境防护。非合成获取入口和旧存档迁移另行核查。
 
 ## 装备
 
@@ -31,46 +31,36 @@
 
 | 对象 | 源码字段或范围 | 取舍与依赖 |
 | --- | --- | --- |
-| 宇航服 | 零级4件；一至四级各6件，含喷气胸甲与重力靴 | 环境适配后移除；由GS宇航服承接防护 |
-| 未完成宇航服 | `TIER_1_UNPREPARED_SPACE_SUIT_*` 至 `TIER_4_UNPREPARED_SPACE_SUIT_*`，共16件 | 随宇航服制造链处理 |
-| 气压层 | `TIER_1_PRESSURE_LAYER` 至 `TIER_4_PRESSURE_LAYER` | 随气压防护适配处理 |
-| 辐射层 | `TIER_1_RADIATION_LAYER` 至 `TIER_4_RADIATION_LAYER` | 随辐射防护适配处理 |
-| 护甲层 | `TIER_1_ARMOR_LAYER` 至 `TIER_4_ARMOR_LAYER` | 随宇航服配方处理 |
-| 温控材料 | `THERMAL_CLOTH` | 随温控设备及套件引用处理 |
-| 温控装备 | `TIER_3_THERMAL_PADDING`、`TIER_4_THERMAL_PADDING`、`TIER_5_THERMAL_PADDING` | GS温控完成适配后移除 |
+| 宇航服 | 零级4件；一至四级各6件，含喷气胸甲与重力靴 | 移除注册；由GS普通／轻型宇航服承接气压与辐射防护 |
+| 未完成宇航服 | `TIER_1_UNPREPARED_SPACE_SUIT_*` 至 `TIER_4_UNPREPARED_SPACE_SUIT_*`，共16件 | 移除注册及制造 |
+| 气压层 | `TIER_1_PRESSURE_LAYER` 至 `TIER_4_PRESSURE_LAYER` | 移除注册及制造 |
+| 辐射层 | `TIER_1_RADIATION_LAYER` 至 `TIER_4_RADIATION_LAYER` | 移除注册及制造 |
+| 护甲层 | `TIER_1_ARMOR_LAYER` 至 `TIER_4_ARMOR_LAYER` | 移除注册及压缩配方 |
+| 温控材料 | `THERMAL_CLOTH` | 移除注册及制造 |
+| 温控装备 | `TIER_3_THERMAL_PADDING`、`TIER_4_THERMAL_PADDING`、`TIER_5_THERMAL_PADDING` | 移除注册及装备槽注册；采用GC一／二级、GS三／四级温控装备 |
 
 ### 装备模块
 
 | 源码字段 | 取舍 | 用途与依赖 |
 | --- | --- | --- |
-| `CLOTH` | 剔除候选 | EP普通布，区别于温控布；已查用途集中在宇航服压力层链，保留原料与否另定 |
-| `GRAVITY_CONTROLLER` | 剔除候选 | 原配方用途为EP重力靴升级；GS有独立重力改装，不是同一接口 |
-| `MODULE_ITEMS` | 剔除候选 | 0免摔靴、1氧气控制器、2太空装备控制器；服务EP专属模块体系，不能直接装GS |
+| `CLOTH` | 移除 | 原用于宇航服防护层与过滤器；过滤器改用任意颜色羊毛 |
+| `GRAVITY_CONTROLLER` | 移除 | EP重力靴专用部件；重力改装采用GS体系 |
+| `MODULE_ITEMS` | 移除 | EP宇航服模块素材；模块注册同步移除 |
 
-`module_items`含免摔靴、氧气控制器、装备控制器3种素材。EP模块功能包括探测目镜、免摔、盖革计数、发射清单、便携NASA、氧气罐切换、自动装备、基础与高级太阳能。模块依赖EP `IModularArmor`；太阳能功能另依赖 `ElectricArmorBase`。GS改装台采用独立接口。
+EP专属模块及素材随宇航服移除；改装采用GS接口。
 
 ### 装备套件
 
 | 源码字段 | 取舍 | 用途与依赖 |
 | --- | --- | --- |
-| `ENVIRO_EMERGENCY_KIT` | 剔除候选 | 直接给予EP零级宇航服四件套；另有gckit指令事件入口，不能仅删配方 |
-| `TIER_1_EQUIPMENT_KIT` | 剔除／改造候选 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
-| `TIER_2_EQUIPMENT_KIT` | 剔除／改造候选 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
-| `TIER_4_EQUIPMENT_KIT` | 剔除／改造候选 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
-| `TIER_3_EQUIPMENT_KIT` | 剔除／改造候选 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
-| `TIER_5_EQUIPMENT_KIT` | 剔除／改造候选 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
+| `ENVIRO_EMERGENCY_KIT` | 移除 | 取消EP的gckit附加发放，保留GC原命令行为 |
+| `TIER_1_EQUIPMENT_KIT` | 移除 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
+| `TIER_2_EQUIPMENT_KIT` | 移除 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
+| `TIER_4_EQUIPMENT_KIT` | 移除 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
+| `TIER_3_EQUIPMENT_KIT` | 移除 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
+| `TIER_5_EQUIPMENT_KIT` | 移除 | 6个元数据版本，直接填充GC扩展装备槽；3级起涉及EP温控，4／5级涉及超重氧气罐 |
 
-普通套件按6种模式向空置的GC扩展装备槽填入装备：全套、基础、去供氧、去温控、仅供氧、仅防护。
-
-| 套件等级 | 温控来源 | 氧气罐来源 |
-| --- | --- | --- |
-| 1 | GC 一级 | GC 轻型 |
-| 2 | GC 金星二级 | GC 中型 |
-| 3 | EP 三级 | GC 重型 |
-| 4 | EP 四级 | EP Very Heavy |
-| 5 | EP 五级 | EP Extremely Heavy |
-
-紧急套件给予EP零级宇航服四件套；`gckit`命令事件使用该套件。套件与防护装备一并适配。
+套件注册与制造移除；EP的`gckit`附加发放移除。
 
 ## 补给
 
@@ -106,8 +96,8 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 
 | 源码字段 | 取舍 | 用途与依赖 |
 | --- | --- | --- |
-| `GEIGER_COUNTER` | 环境决定 | 读取EP辐射累积值，EP水星特殊池也产出；保留EP辐射时有用，作用范围为EP辐射系统 |
-| `ANTI_RADIATION` | 环境决定 | 有实际JSON配方与饮用逻辑；只改变EP辐射能力值，不能处理GS辐射 |
+| `GEIGER_COUNTER` | 保留 | 读取EP辐射累积值，EP水星特殊池也产出；保留EP辐射时有用，作用范围为EP辐射系统 |
+| `ANTI_RADIATION` | 保留 | 有实际JSON配方与饮用逻辑；只改变EP辐射能力值，不能处理GS辐射 |
 
 抗辐射饮料原配方：碘化钾4、压缩镁2、净水桶2、玻璃瓶1。饮用后EP辐射剩余值为原值乘配置百分比；镁统一时同步修改该配方。
 
@@ -263,6 +253,8 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 | `DEBUG_WORLD_FILE_GEN_ITEM` | 移除 | 原注册行已注释；固定裁剪策略继续拦截debugworldfilegen |
 
 ## 代码入口
+
+- [环境防护适配](../src/main/java/newearth/EnvironmentHooks.java)与[EP环境拦截](../src/main/java/newearth/EnvironmentTransformer.java)
 
 - [固定裁剪策略](../src/main/java/newearth/ContentPruning.java)与[注册拦截](../src/main/java/newearth/ContentTransformer.java)
 - [EP物品定义](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)、[工具](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/tools/ExtraPlanets_Tools.java)、[护甲](../../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/armor/ExtraPlanets_Armor.java)

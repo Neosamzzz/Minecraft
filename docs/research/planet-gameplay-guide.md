@@ -72,7 +72,7 @@
 
 这里确认的是 **GS 处理器对 AsmodeusCore 对应事件的取消行为**。不能由此宣布玩家免疫 EP 的独立气压/辐射系统，也不能保证没有其他事件订阅者改变最终结果。应在普通生存模式中分别观察 GS/AC 与 EP 的效果；创造模式不适合证明防护有效。
 
-因此，本资料把气压、辐射列作待验机制，不把“开关 true”翻译为某颗星球上一定发生的伤害。此次不修复代码，也不调整防护平衡。
+NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行为仍需生存验收。装备规则见[装备](../modpack-gameplay.md#装备)。
 
 依据：[GS 环境事件处理](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。实际 JAR 的 `javap` 输出已保留在本机调查临时目录。
 
@@ -620,10 +620,10 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 
 - 三级温控布：白云石粉4、满液氮罐1、GS 火山石2、GC 金星温控布2；四级温控布：太阳能粉尘4、冰桶1、未知晶体2、三级温控布2。再按护甲形状合成各级四件套。配方见[主世界制造](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/CraftingRecipesOverworld.java)。
 - GS 土卫二裂谷实际放置晶体，普通掉落为未知晶体；木卫二两处同类生成段落被注释，不能作为备用矿源。保留并迁移土卫二可以保住原温控材料链。冰桶由空桶对普通冰使用取得，见[事件实现](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)。
-- GS 三级／四级温控强度为3／4；EP 三级至五级为50／100／150。EP 土星和海王星在高阶温控选项下使用量级明显不同的温度修正；EP 海卫一还直接返回极寒值。降低火箭门槛或关闭一项选项不等于完整环境适配。参数不是摄氏度，也不能直接用装备强度相减判定安全。
-- 用户指定备份 `client-update-backups/20261102-061059-b1bb1581/config/ExtraPlanets.cfg` 已把 GS 普通与轻型宇航服列为 EP 一级防护兼容装备，但不代表免疫辐射或温度。EP 气压、辐射处理独立于 GS 事件；前述 GS 普通玩家事件取消异常不能当成统一防护规则。
+- GS 三级／四级温控强度为3／4。NewEarth 将 EP 绝对值超过16的温度修正缩小至原值十分之一、上限16，保留正负与昼夜变化；GC量级参数保持原值。适用装备见[温控装备](../modpack-gameplay.md#温控装备)。参数为内部温度修正。
+- EP 气压、辐射处理独立于 GS 事件。NewEarth 在 EP 防护入口识别 GS 普通／轻型宇航服完整四件套，阻止气压伤害与新增辐射暴露，保留已有辐射累积和处理用品。
 - 改装台可给原 GS 四／五阶装离子引擎、六阶装亚光速引擎；拆卸会返还模块。离子与亚光速原来都进入 Io 的五级特殊奖励池；新方案仅留离子，引擎逐代制造升级。六阶离子改装与新准入尚未实现。
-- 重型宇航服每件2个改装位，轻型每件1个。重型胸甲可装喷气背包；轻型列表没有该模块。头盔有夜视、探测、水下呼吸、自动进食等，部位和冲突受模块限制。氧气罐有 EPP 模块，气体提取器有升级电池；等离子工具可装列表为空。原模块不等于已完成 EP 环境兼容。
+- 重型宇航服每件2个改装位，轻型每件1个。重型胸甲可装喷气背包；轻型列表没有该模块。头盔有夜视、探测、水下呼吸、自动进食等，部位和冲突受模块限制。氧气罐有 EPP 模块，气体提取器有升级电池；等离子工具可装列表为空。EP宇航服专属模块及素材移除，改装采用GS接口。
 
 ## 九、空间站与展示天体
 

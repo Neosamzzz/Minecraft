@@ -59,6 +59,16 @@ tasks.register('solarSystemCheck', JavaExec) {
 }
 check.dependsOn solarSystemCheck
 
+tasks.register('environmentCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.EnvironmentProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/environment')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn environmentCheck
+
 tasks.register('landscapeCheck', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.runtimeClasspath

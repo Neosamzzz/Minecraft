@@ -23,6 +23,11 @@ public final class ContentPruning {
     private ContentPruning() { }
 
     public static boolean retiredItem(String name) {
+        if (name.matches("tier[0-4]_(space_suit|un_prepared_space_suit)_.*")
+                || name.matches("tier[1-4]_(pressure|radiation|armor)_layer")
+                || name.matches("tier[3-5]_thermal_padding") || name.matches("tier[1-5]_kit")
+                || name.equals("thermal_cloth") || name.equals("cloth") || name.equals("gravity_controller")
+                || name.equals("module_items") || name.equals("enviro_emergency_kit")) return true;
         if (name.equals("nuclear_bomb") || name.equals("fire_bomb") || name.equals("debugworldfilegen")) return true;
         if (name.startsWith("oxygen_tank_light_full_") || name.startsWith("oxygen_tank_med_full_")
                 || name.startsWith("oxygen_tank_heavy_full_")) return true;
@@ -47,6 +52,18 @@ public final class ContentPruning {
     }
 
     public static boolean skipRecipe(JsonObject json, String domain) {
+        // The retained machine filter originally consumed EP spacesuit cloth.
+        if ("extraplanets".equals(domain) && json.has("result") && json.get("result").isJsonObject()) {
+            JsonObject result = json.getAsJsonObject("result");
+            if (result.has("item") && "extraplanets:tools".equals(result.get("item").getAsString())
+                    && result.has("data") && result.get("data").getAsInt() == 3 && json.has("key")) {
+                JsonObject cloth = json.getAsJsonObject("key").getAsJsonObject("C");
+                if (cloth != null && cloth.has("item") && "extraplanets:cloth".equals(cloth.get("item").getAsString())) {
+                    cloth.addProperty("item", "minecraft:wool");
+                    cloth.addProperty("data", 32767);
+                }
+            }
+        }
         return referencesRetired(json, domain);
     }
 
