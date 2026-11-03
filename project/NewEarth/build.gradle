@@ -1,0 +1,60 @@
+buildscript {
+    repositories {
+        maven { url = 'https://repo.maven.apache.org/maven2/' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:4.0.23'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+
+version = mod_version
+group = 'newearth'
+archivesBaseName = 'NewEarth'
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+    maven { url = 'https://libraries.minecraft.net'; metadataSources { mavenPom(); artifact() } }
+    mavenCentral()
+    flatDir { dirs '../../dependencies/GalaxySpace/libs' }
+}
+minecraft { mappings channel: 'stable', version: '39-1.12' }
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+    implementation fg.deobf('libs:Galacticraft-1.12.2:4.0.2.283')
+}
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+processResources {
+    filteringCharset = 'UTF-8'
+    inputs.property 'version', project.version
+    filesMatching('mcmod.info') { expand version: project.version }
+}
+jar {
+    manifest { attributes 'Implementation-Version': project.version,
+            'FMLCorePlugin': 'newearth.PlanetLoadingPlugin', 'FMLCorePluginContainsFMLMod': 'true' }
+    finalizedBy 'reobfJar'
+}
+
+// Compile the existing GS matcher as a test input rather than duplicate its behavior.
+compileTestJava.source('../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/AssemblyRecipes.java')
+tasks.register('progressionCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.ProgressionProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/progression')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn progressionCheck
+tasks.register('solarSystemCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.SolarSystemProbe'
+    systemProperty 'newearth.configRoot', rootProject.file('../../config').absolutePath
+    systemProperty 'newearth.resourceRoot', sourceSets.main.output.resourcesDir.absolutePath
+    workingDir = rootProject.file('../../build/checks/newearth/solar-system')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn solarSystemCheck

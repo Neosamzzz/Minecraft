@@ -13,7 +13,7 @@ import io
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
-PACKAGER = ROOT / 'GalaxySpace/tests/telemetry_dimension/build_addon.py'
+PACKAGER = ROOT / 'project/GSLC/tests/telemetry_dimension/build_addon.py'
 
 SPEC = importlib.util.spec_from_file_location('build_entry', ROOT / 'tools/build.py')
 BUILD = importlib.util.module_from_spec(SPEC)
@@ -25,10 +25,11 @@ class PackagingTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.work = Path(self.tmp.name)
-        self.packager = self.work / 'GalaxySpace/tests/telemetry_dimension/build_addon.py'
+        self.packager = self.work / 'project/GSLC/tests/telemetry_dimension/build_addon.py'
         self.packager.parent.mkdir(parents=True)
         self.packager.write_bytes(PACKAGER.read_bytes())
-        (self.work / 'version.txt').write_text('9.8.7\n')
+        (self.work / 'project/GSLC').mkdir(parents=True, exist_ok=True)
+        (self.work / 'project/GSLC/version.txt').write_text('9.8.7\n')
         self.base = self.work / 'base.jar'
         self.compiled = self.work / 'compiled.jar'
         self.output = self.work / 'output.jar'
@@ -83,8 +84,8 @@ class BuildTargetTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.work = Path(self.tmp.name)
-        self.ftb = self.work / 'FTB-Quests'
-        self.ftb.mkdir()
+        self.ftb = self.work / 'project/FTB'
+        self.ftb.mkdir(parents=True)
         (self.ftb / 'gradle.properties').write_text('mod_name=FTBQuests\nmod_version=1202.9.0\n')
         (self.ftb / 'build/libs').mkdir(parents=True)
         # Old versions and sources must never be mistaken for the current mod JAR.
@@ -93,8 +94,8 @@ class BuildTargetTests(unittest.TestCase):
         self.commands = []
         self.build_number = ''
         self.emit_ftb = True
-        self.newearth = self.work / 'NewEarth'
-        self.newearth.mkdir()
+        self.newearth = self.work / 'project/NewEarth'
+        self.newearth.mkdir(parents=True)
         (self.newearth / 'gradle.properties').write_text('mod_version=0.1.0\n')
         (self.newearth / 'build/libs').mkdir(parents=True)
         self.emit_newearth = True
@@ -103,10 +104,10 @@ class BuildTargetTests(unittest.TestCase):
         self.commands.append(command)
         if '-p' in command:
             project = command[command.index('-p') + 1]
-            if project == 'FTB-Quests' and self.emit_ftb:
+            if project == 'project/FTB' and self.emit_ftb:
                 suffix = '.' + self.build_number if self.build_number else ''
                 (self.ftb / ('build/libs/FTBQuests-1202.9.0' + suffix + '.jar')).write_bytes(b'current mod')
-            elif project == 'NewEarth' and self.emit_newearth:
+            elif project == 'project/NewEarth' and self.emit_newearth:
                 with zipfile.ZipFile(self.newearth / 'build/libs/NewEarth-0.1.0.jar', 'w') as jar:
                     jar.writestr('mcmod.info', json.dumps([{'modid': 'newearth', 'version': '0.1.0'}]))
                     jar.writestr('newearth/NewEarth.class', b'entry point')
@@ -130,12 +131,13 @@ class BuildTargetTests(unittest.TestCase):
         return result, stdout.getvalue(), stderr.getvalue()
 
     def test_default_preserves_gslc_packaging_and_offline_flag(self):
-        (self.work / 'version.txt').write_text('9.8.7\n')
+        (self.work / 'project/GSLC').mkdir(parents=True, exist_ok=True)
+        (self.work / 'project/GSLC/version.txt').write_text('9.8.7\n')
         code, _, error = self.invoke('--offline')
         self.assertEqual(code, 0, error)
         self.assertEqual((self.work / 'build/libs/GSLaunchCompat-9.8.7.jar').read_bytes(), b'GSLC package')
         self.assertEqual(len(self.commands), 2)
-        self.assertIn('GalaxySpace', self.commands[0])
+        self.assertIn('dependencies/GalaxySpace', self.commands[0])
         self.assertIn('--offline', self.commands[0])
         self.assertIn('--rerun-tasks', self.commands[0])
         self.assertEqual(self.commands[0][-1], 'jar')
@@ -145,7 +147,7 @@ class BuildTargetTests(unittest.TestCase):
         code, _, error = self.invoke('--target', 'ftbquests', '--offline')
         self.assertEqual(code, 0, error)
         self.assertEqual(len(self.commands), 1)
-        self.assertIn('FTB-Quests', self.commands[0])
+        self.assertIn('project/FTB', self.commands[0])
         self.assertIn('--offline', self.commands[0])
         self.assertEqual(self.commands[0][-1], 'build')
         self.assertEqual([p.name for p in (self.work / 'build/libs').iterdir()], ['FTBQuests-1202.9.0.jar'])
@@ -168,7 +170,7 @@ class BuildTargetTests(unittest.TestCase):
         self.assertEqual(code, 0, error)
         self.assertEqual(len(self.commands), 1)
         command = self.commands[0]
-        self.assertIn('NewEarth', command)
+        self.assertIn('project/NewEarth', command)
         self.assertTrue(any('GalaxySpace' in entry and 'gradlew' in entry for entry in command))
         self.assertIn('--offline', command)
         self.assertEqual((self.work / 'build/libs/NewEarth-0.1.0.jar').read_bytes(),
@@ -200,20 +202,22 @@ class BuildTargetTests(unittest.TestCase):
         self.assertEqual(self.commands, [])
 
     def test_all_exports_three_targets_in_order(self):
-        (self.work / 'version.txt').write_text('9.8.7\n')
+        (self.work / 'project/GSLC').mkdir(parents=True, exist_ok=True)
+        (self.work / 'project/GSLC/version.txt').write_text('9.8.7\n')
         code, _, error = self.invoke('--target', 'all', '--offline')
         self.assertEqual(code, 0, error)
         self.assertEqual([p.name for p in sorted((self.work / 'build/libs').iterdir())],
                          ['FTBQuests-1202.9.0.jar', 'GSLaunchCompat-9.8.7.jar', 'NewEarth-0.1.0.jar'])
-        self.assertIn('GalaxySpace', self.commands[0])
+        self.assertIn('dependencies/GalaxySpace', self.commands[0])
         self.assertTrue(self.commands[1][1].endswith('build_addon.py'))
-        self.assertIn('FTB-Quests', self.commands[2])
+        self.assertIn('project/FTB', self.commands[2])
         self.assertIn('--offline', self.commands[2])
-        self.assertIn('NewEarth', self.commands[3])
+        self.assertIn('project/NewEarth', self.commands[3])
         self.assertIn('--offline', self.commands[3])
 
     def test_all_stops_after_first_gradle_failure(self):
-        (self.work / 'version.txt').write_text('9.8.7\n')
+        (self.work / 'project/GSLC').mkdir(parents=True, exist_ok=True)
+        (self.work / 'project/GSLC/version.txt').write_text('9.8.7\n')
         with mock.patch.object(self, 'fake_subprocess', side_effect=subprocess.CalledProcessError(7, ['gradle'])) as runner:
             code, _, error = self.invoke('--target', 'all')
         self.assertEqual(code, 1)
