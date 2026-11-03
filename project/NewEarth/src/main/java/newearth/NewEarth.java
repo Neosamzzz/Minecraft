@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
         acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
-    public static final String VERSION = "0.2.16";
+    public static final String VERSION = "0.2.17";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.EventHandler

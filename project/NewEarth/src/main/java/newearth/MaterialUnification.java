@@ -6,14 +6,10 @@ import java.util.Map;
 import micdoodle8.mods.galacticraft.api.recipe.CompressorRecipes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
-/** Canonical pack metals; old item IDs remain readable for existing saves. */
+/** Canonical pack metals and removal of superseded EP material variants. */
 public final class MaterialUnification {
     private MaterialUnification() { }
 
@@ -23,7 +19,9 @@ public final class MaterialUnification {
         {"extraplanets:tier6_items", "4", "galaxyspace:compressed_plates", "2"},
         {"extraplanets:tier5_items", "7", "galaxyspace:ingots", "2"},
         {"extraplanets:tier5_items", "6", "galaxyspace:compressed_plates", "3"},
-        {"extraplanets:ingot_lead", "0", "galacticraftplanets:basic_item_venus", "1"}
+        {"extraplanets:ingot_lead", "0", "galacticraftplanets:basic_item_venus", "1"},
+        {"extraplanets:saturn", "7", "galaxyspace:blocksmetals", "2"},
+        {"extraplanets:jupiter", "13", "galaxyspace:blocksmetals", "1"}
     };
 
     private static String[] replacement(String id, int meta) {
@@ -32,7 +30,7 @@ public final class MaterialUnification {
         return null;
     }
 
-    public static boolean legacy(ItemStack stack) {
+    public static boolean removed(ItemStack stack) {
         return stack != null && !stack.isEmpty() && stack.getItem().getRegistryName() != null
                 && replacement(stack.getItem().getRegistryName().toString(), stack.getMetadata()) != null;
     }
@@ -46,7 +44,7 @@ public final class MaterialUnification {
 
     /** Called only on stacks built by EP's recipe and salvage registration. */
     public static ItemStack canonical(ItemStack original) {
-        if (!legacy(original)) return original;
+        if (!removed(original)) return original;
         String[] row = replacement(original.getItem().getRegistryName().toString(), original.getMetadata());
         ItemStack result = stack(row[2], original.getCount(), Integer.parseInt(row[3]));
         if (original.hasTagCompound()) result.setTagCompound(original.getTagCompound().copy());
@@ -72,6 +70,34 @@ public final class MaterialUnification {
         }
     }
 
+    public static boolean storageRecipe(JsonElement element, String domain) {
+        if (element.isJsonObject()) {
+            JsonObject object = element.getAsJsonObject();
+            if (object.has("item") && object.get("item").isJsonPrimitive()) {
+                String id = object.get("item").getAsString();
+                if (id.indexOf(':') < 0) id = domain + ":" + id;
+                int meta = object.has("data") ? object.get("data").getAsInt() : 0;
+                if ((id.equals("extraplanets:saturn") && meta == 7)
+                        || (id.equals("extraplanets:jupiter") && meta == 13)) return true;
+            }
+            for (Map.Entry<String, JsonElement> entry : object.entrySet())
+                if (storageRecipe(entry.getValue(), domain)) return true;
+        } else if (element.isJsonArray()) {
+            for (JsonElement child : element.getAsJsonArray()) if (storageRecipe(child, domain)) return true;
+        }
+        return false;
+    }
+
+    public static void registerOre(String name, ItemStack value) {
+        // GS/GC register the canonical metals themselves. Do not put superseded
+        // stacks (including unregistered standalone items) in the ore dictionary.
+        if (!removed(value)) OreDictionary.registerOre(name, value);
+    }
+
+    public static boolean visible(ItemStack value) {
+        return !removed(value) && !ContentPruning.retiredOutput(value);
+    }
+
     public static void addCompressor(ItemStack output, Object[] inputs) {
         // GS already registers two ingots -> one plate using ore dictionary inputs.
         ResourceLocation id = output.getItem().getRegistryName();
@@ -81,21 +107,6 @@ public final class MaterialUnification {
     }
 
     static void install() {
-        // Mixed containers are filtered by ContentPruning; the standalone lead
-        // item uses Item's normal creative/search-tab gate instead.
-        Item lead = Item.REGISTRY.getObject(new ResourceLocation("extraplanets:ingot_lead"));
-        if (lead != null && lead != net.minecraft.init.Items.AIR) lead.setCreativeTab(null);
         for (String[] row : METALS) stack(row[2], 1, Integer.parseInt(row[3]));
-    }
-
-    static void conversions(IForgeRegistry<IRecipe> registry) {
-        for (String[] row : METALS) {
-            Item old = Item.REGISTRY.getObject(new ResourceLocation(row[0]));
-            if (old == null || old == net.minecraft.init.Items.AIR) continue;
-            NonNullList<Ingredient> inputs = NonNullList.create();
-            inputs.add(Ingredient.fromStacks(new ItemStack(old, 1, Integer.parseInt(row[1]))));
-            registry.register(new ShapelessRecipes("", stack(row[2], 1, Integer.parseInt(row[3])), inputs)
-                    .setRegistryName("newearth", "convert_" + new ResourceLocation(row[0]).getPath() + "_" + row[1]));
-        }
     }
 }

@@ -146,7 +146,7 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 | `COMPRESSED_MERCURY` | 保留 | 汞锭压缩产物；粉碎机、太阳能蒸发室的制造原料 |
 | `INGOT_URANIUM` | 保留，统一项待核对 | 化学注入器的原制造材料之一 |
 | `INGOT_MERCURY` | 保留 | 水星汞矿冶炼产物；用于压缩汞材料与汞电池 |
-| `INGOT_LEAD` | 兼容旧存档 | 冶炼及电动车辆电池部件配方统一使用GC金星铅锭；旧铅锭可1∶1转换 |
+| `INGOT_LEAD` | 移除注册 | 冶炼及电动车辆电池部件配方统一使用GC金星铅锭 |
 | `TOOLS` | 保留 | meta0巨锤、1磨轮、2线网、3过滤器；用于加工设备制造 |
 | `WAFERS` | 保留 | 钻石、碳、钛、红宝石、蓝宝石、白宝石6类晶圆；用于设备及空间站配方 |
 | `IODIDE_SALT` | 保留 | 结晶器产物；供净化器及化学注入器使用 |
@@ -159,8 +159,8 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 | 容器 | 元数据与子项 | 处理边界 |
 | --- | --- | --- |
 | `tier4_items` | 0: `tier4engine`；1: `tier4booster`；2: `tier4fin`；3: `tier4heavy_duty_plate`；4: `compressed_carbon`；5: `ingot_carbon`；6: `diamond_shard` | 0～3移除制造与枚举；矿物及通用压缩材料保留 |
-| `tier5_items` | 0: `tier5engine`；1: `tier5booster`；2: `tier5fin`；3: `tier5heavy_duty_plate`；4: `compressed_palladium`；5: `ingot_palladium`；6: `compressed_nickel`；7: `ingot_nickel`；8: `red_gem`；9: `ash`；10: `ash_shard`；11: `volcanic_shard`；12: `ingot_volcanic` | 0～3移除制造与枚举；6／7作为旧镍材料兼容身份保留；其余材料保留 |
-| `tier6_items` | 0: `tier6engine`；1: `tier6booster`；2: `tier6fin`；3: `tier6heavy_duty_plate`；4: `compressed_magnesium`；5: `ingot_magnesium` | 0～3移除制造与枚举；4／5作为旧镁材料兼容身份保留 |
+| `tier5_items` | 0: `tier5engine`；1: `tier5booster`；2: `tier5fin`；3: `tier5heavy_duty_plate`；4: `compressed_palladium`；5: `ingot_palladium`；6: `compressed_nickel`；7: `ingot_nickel`；8: `red_gem`；9: `ash`；10: `ash_shard`；11: `volcanic_shard`；12: `ingot_volcanic` | 0～3及6／7移除制造与枚举；其余材料保留 |
+| `tier6_items` | 0: `tier6engine`；1: `tier6booster`；2: `tier6fin`；3: `tier6heavy_duty_plate`；4: `compressed_magnesium`；5: `ingot_magnesium` | 整组移除注册，镁改用GS锭与板 |
 | `tier7_items` | 0: `tier7engine`；1: `tier7booster`；2: `tier7fin`；3: `tier7heavy_duty_plate`；4: `compressed_crystal`；5: `ingot_crystal`；6: `compressed_reinforced_crystal`；7: `white_gem` | 0～3移除制造与枚举；矿物及通用压缩材料保留 |
 | `tier8_items` | 0: `tier8engine`；1: `tier8booster`；2: `tier8fin`；3: `tier8heavy_duty_plate`；4: `compressed_zinc`；5: `ingot_zinc`；6: `blue_gem` | 0～3移除制造与枚举；矿物及通用压缩材料保留 |
 | `tier9_items` | 0: `tier9engine`；1: `tier9booster`；2: `tier9fin`；3: `tier9heavy_duty_plate`；4: `compressed_tungsten`；5: `ingot_tungsten` | 0～3移除制造与枚举；矿物及通用压缩材料保留 |
@@ -178,8 +178,10 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 | `tier5_items:7` 镍锭 | GS镍锭 `galaxyspace:ingots:2` |
 | `tier5_items:6` 压缩镍 | GS镍板 `galaxyspace:compressed_plates:3` |
 | `ingot_lead` 铅锭 | GC金星铅锭 `galacticraftplanets:basic_item_venus:1` |
+| `saturn:7` 镁块 | GS镁块 `galaxyspace:blocksmetals:2` |
+| `jupiter:13` 镍块 | GS镍块 `galaxyspace:blocksmetals:1` |
 
-保留EP木星镍矿、土星镁矿及铅矿，冶炼统一产出对应GS／GC锭。镁、镍沿用GS的两锭压一板配方；材料块合成与拆解、设备制造、空间站建设材料及GC回收产物使用统一材料。旧物品身份保留以读取已有存档，旧材料可在工作台中1∶1转为当前材料；普通材料枚举隐藏旧镁、镍，独立旧铅锭退出创造物品栏。
+保留EP木星镍矿、土星镁矿及铅矿，冶炼统一产出对应GS／GC锭。镁、镍沿用GS的两锭压一板配方；材料块只使用GS版本的合成与拆解，设备制造、空间站建设材料及GC回收产物使用统一材料。EP独立铅锭与原六阶材料容器取消注册；共用容器中的重复镍和储存块子项移除获取、矿词、创造栏及JEI列表入口。不提供旧材料转换或存档迁移。
 
 铀暂保留EP铀锭与GS铀碎片，二者的加工关系待定。EP水晶与GS未知晶体、EP火山锭与GS火山石分别保留。
 

@@ -23,6 +23,7 @@ public final class ContentPruning {
     private ContentPruning() { }
 
     public static boolean retiredItem(String name) {
+        if (name.equals("ingot_lead") || name.equals("tier6_items")) return true;
         if (name.matches("tier[0-4]_(space_suit|un_prepared_space_suit)_.*")
                 || name.matches("tier[1-4]_(pressure|radiation|armor)_layer")
                 || name.matches("tier[3-5]_thermal_padding") || name.matches("tier[1-5]_kit")
@@ -52,6 +53,7 @@ public final class ContentPruning {
     }
 
     public static boolean skipRecipe(JsonObject json, String domain) {
+        if (MaterialUnification.storageRecipe(json, domain)) return true;
         MaterialUnification.rewrite(json, domain);
         // The retained machine filter originally consumed EP spacesuit cloth.
         if ("extraplanets".equals(domain) && json.has("result") && json.get("result").isJsonObject()) {
@@ -99,7 +101,7 @@ public final class ContentPruning {
 
     public static void filterSubItems(List<ItemStack> stacks) {
         stacks.removeIf(ContentPruning::retiredOutput);
-        stacks.removeIf(MaterialUnification::legacy);
+        stacks.removeIf(MaterialUnification::removed);
     }
 
     public static boolean allowGear(Object gear) {
@@ -134,13 +136,12 @@ public final class ContentPruning {
         ResourceLocation id = stack.getItem().getRegistryName();
         if (id == null || !"extraplanets".equals(id.getNamespace())) return false;
         String name = id.getPath();
-        return retiredItem(name) || retiredMeta(name, stack.getMetadata());
+        return retiredItem(name) || retiredMeta(name, stack.getMetadata()) || MaterialUnification.removed(stack);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void recipes(RegistryEvent.Register<IRecipe> event) {
         pruneCrafting(event.getRegistry());
-        MaterialUnification.conversions(event.getRegistry());
     }
 
     static int pruneCrafting(IForgeRegistry<IRecipe> registry) {

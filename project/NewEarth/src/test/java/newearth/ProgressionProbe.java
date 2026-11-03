@@ -73,7 +73,7 @@ public final class ProgressionProbe {
                 recipe("newearth:retired_" + tier + "_" + meta, output);
             }
             for (int meta = 4; meta <= 7; meta++)
-                check(ContentPruning.retiredOutput(new ItemStack(parts, 1, meta)) == (tier == 7 && meta == 6),
+                check(ContentPruning.retiredOutput(new ItemStack(parts, 1, meta)) == (tier == 6 || (tier == 5 && meta >= 6) || (tier == 7 && meta == 6)),
                         "Preserve resources except old reinforced plate intermediate " + tier + ":" + meta);
             Item cone = item("extraplanets:nose_cone_tier" + tier);
             check(ContentPruning.retiredOutput(new ItemStack(cone)), "Retired nose cone " + tier);
@@ -135,7 +135,7 @@ public final class ProgressionProbe {
     }
 
     private static void verifyMaterials() throws Exception {
-        item("galaxyspace:ingots"); item("galaxyspace:compressed_plates");
+        item("galaxyspace:ingots"); item("galaxyspace:compressed_plates"); item("galaxyspace:blocksmetals");
         item("galacticraftplanets:basic_item_venus"); item("extraplanets:ingot_lead");
         String[][] rows = {
             {"tier6_items", "5", "galaxyspace:ingots", "1"},
@@ -170,28 +170,43 @@ public final class ProgressionProbe {
                     && json.getAsJsonObject("result").get("count").getAsInt() == 9
                     && json.getAsJsonArray("ingredients").get(0).getAsJsonObject().get("item").getAsString().equals(row[2]),
                     "Both recipe inputs and storage-block unpacking outputs are canonical");
+            check(!MaterialUnification.visible(legacy), "JEI registry fallback cannot restore removed material");
+            MaterialUnification.registerOre("newearthRemovedTest", legacy);
+            check(net.minecraftforge.oredict.OreDictionary.getOres("newearthRemovedTest").isEmpty(), "Removed material is not registered as an ore alias");
             java.util.List<ItemStack> creative = new ArrayList<>(); creative.add(legacy); ContentPruning.filterSubItems(creative);
             check(creative.isEmpty(), "Legacy metal is hidden from meta enumeration");
         }
-        MaterialUnification.conversions(ForgeRegistries.RECIPES);
+        ContentPruning.recipes(new net.minecraftforge.event.RegistryEvent.Register<>(new ResourceLocation("minecraft:recipes"), ForgeRegistries.RECIPES));
         for (String[] row : rows) {
             IRecipe conversion = ForgeRegistries.RECIPES.getValue(new ResourceLocation("newearth:convert_" + row[0] + "_" + row[1]));
-            check(conversion != null && conversion.getIngredients().size() == 1
-                    && conversion.getIngredients().get(0).apply(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("extraplanets:" + row[0])), 1, Integer.parseInt(row[1])))
-                    && conversion.getRecipeOutput().getCount() == 1 && conversion.getRecipeOutput().getItem().getRegistryName().toString().equals(row[2]),
-                    "Old stock has exact one-for-one conversion");
+            check(conversion == null, "No legacy conversion recipe remains");
+        }
+        check(!ContentPruning.allowRegistration(new Item(), "ingot_lead")
+                && !ContentPruning.allowRegistration(new Item(), "tier6_items"), "Standalone lead and empty magnesium container never register");
+        for (String namePart : new String[] {"ingot_lead", "tier6_items"}) {
+            Item unregistered = new Item().setHasSubtypes(true);
+            ContentPruning.allowRegistration(unregistered, namePart);
+            ItemStack canonical = MaterialUnification.canonical(new ItemStack(unregistered, 1, namePart.equals("tier6_items") ? 5 : 0));
+            check(!canonical.isEmpty() && !MaterialUnification.removed(canonical), "EP initialization redirects unregistered material objects safely");
+        }
+        for (String id : new String[] {"saturn", "jupiter"}) {
+            Item block = item("extraplanets:" + id); int meta = id.equals("saturn") ? 7 : 13;
+            ItemStack removed = new ItemStack(block, 1, meta);
+            check(!MaterialUnification.visible(removed), "Duplicate storage block cannot enter JEI");
+            check(MaterialUnification.visible(new ItemStack(block, 1, id.equals("saturn") ? 6 : 7)), "Original ore source is retained");
+            com.google.gson.JsonObject recipe = new com.google.gson.JsonParser().parse("{\"result\":{\"item\":\"extraplanets:" + id
+                    + "\",\"data\":" + meta + "}}").getAsJsonObject();
+            check(ContentPruning.skipRecipe(recipe, "extraplanets"), "EP duplicate storage crafting is removed");
+            com.google.gson.JsonObject unpack = new com.google.gson.JsonParser().parse("{\"result\":{\"item\":\"minecraft:iron_ingot\"},\"ingredients\":[{\"item\":\"extraplanets:"
+                    + id + "\",\"data\":" + meta + "}]}").getAsJsonObject();
+            check(ContentPruning.skipRecipe(unpack, "extraplanets"), "EP duplicate storage unpacking is removed");
         }
         ItemStack crystal = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("extraplanets:tier7_items")), 1, 5);
         check(MaterialUnification.canonical(crystal) == crystal, "Distinct crystal remains untouched");
         int before = CompressorRecipes.getRecipeListAll().size();
         MaterialUnification.addCompressor(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("galaxyspace:compressed_plates")), 1, 2), new Object[] {Items.IRON_INGOT});
         check(CompressorRecipes.getRecipeListAll().size() == before, "EP duplicate magnesium compression is omitted");
-        Item oldLead = Item.REGISTRY.getObject(new ResourceLocation("extraplanets:ingot_lead"));
-        oldLead.setCreativeTab(net.minecraft.creativetab.CreativeTabs.MATERIALS);
         MaterialUnification.install();
-        NonNullList<ItemStack> search = NonNullList.create();
-        oldLead.getSubItems(net.minecraft.creativetab.CreativeTabs.SEARCH, search);
-        check(search.isEmpty(), "Standalone legacy lead leaves creative/search enumeration");
     }
 
     public static final class GearFixture {
@@ -280,6 +295,10 @@ public final class ProgressionProbe {
             java.util.Set<String> required = new java.util.HashSet<>(java.util.Arrays.asList(
                     "com.mjr.extraplanets.items.ExtraPlanets_Items", "com.mjr.mjrlegendslib.item.ItemBasicMeta",
                     "com.mjr.extraplanets.recipes.ExtraPlanets_Recipes", "com.mjr.extraplanets.ExtraPlanets",
+                    "com.mjr.extraplanets.blocks.ExtraPlanets_Blocks",
+                    "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicSaturn",
+                    "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicJupiter",
+                    "mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory",
                     "com.mjr.mjrlegendslib.util.RegisterUtilities", "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry",
                     "micdoodle8.mods.galacticraft.api.GalacticraftRegistry", "com.mjr.mjrlegendslib.util.ClientUtilities"));
             int coloredRecipes = 0, metalRecipes = 0;
@@ -343,5 +362,46 @@ public final class ProgressionProbe {
             if ((method.access & (org.objectweb.asm.Opcodes.ACC_ABSTRACT | org.objectweb.asm.Opcodes.ACC_NATIVE)) == 0)
                 new org.objectweb.asm.tree.analysis.Analyzer<>(new org.objectweb.asm.tree.analysis.BasicVerifier()).analyze(node.name, method);
         check(true, "Content bytecode verified " + name);
+        if (name.equals("mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory")) verifyJeiEntry(transformer, node);
+    }
+
+    private static void verifyJeiEntry(ContentTransformer transformer, org.objectweb.asm.tree.ClassNode actual) throws Exception {
+        // Use the installed JEI entry signature and execute the injected filter.
+        // The remainder only collects a stack, avoiding a client/rendering startup.
+        String descriptor = null;
+        for (org.objectweb.asm.tree.MethodNode method : actual.methods)
+            if (method.name.equals("addItemStack")) descriptor = method.desc;
+        check(descriptor != null, "Installed JEI list entry exists");
+        org.objectweb.asm.ClassWriter writer = new org.objectweb.asm.ClassWriter(0);
+        writer.visit(52, 1, "newearth/JeiListEntry", null, "java/lang/Object", null);
+        org.objectweb.asm.MethodVisitor init = writer.visitMethod(1, "<init>", "()V", null, null);
+        init.visitCode(); init.visitVarInsn(25, 0); init.visitMethodInsn(183, "java/lang/Object", "<init>", "()V", false);
+        init.visitInsn(177); init.visitMaxs(1, 1); init.visitEnd();
+        org.objectweb.asm.MethodVisitor method = writer.visitMethod(1, "addItemStack", descriptor, null, null);
+        method.visitCode(); method.visitVarInsn(25, 3); method.visitVarInsn(25, 2);
+        method.visitMethodInsn(185, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
+        method.visitInsn(87); method.visitInsn(177); method.visitMaxs(2, 5); method.visitEnd(); writer.visitEnd();
+        final byte[] entry = transformer.transform("newearth.JeiListEntry", "mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory", writer.toByteArray());
+        ClassLoader loader = new ClassLoader(ProgressionProbe.class.getClassLoader()) {
+            @Override protected Class<?> findClass(String name) throws ClassNotFoundException {
+                if (name.equals("newearth.JeiListEntry")) return defineClass(name, entry, 0, entry.length);
+                if (name.equals("mezz.jei.startup.StackHelper")) {
+                    org.objectweb.asm.ClassWriter helper = new org.objectweb.asm.ClassWriter(0);
+                    helper.visit(52, 1, name.replace('.', '/'), null, "java/lang/Object", null); helper.visitEnd();
+                    byte[] bytes = helper.toByteArray(); return defineClass(name, bytes, 0, bytes.length);
+                }
+                throw new ClassNotFoundException(name);
+            }
+        };
+        Class<?> type = loader.loadClass("newearth.JeiListEntry");
+        Object instance = type.getConstructor().newInstance();
+        java.lang.reflect.Method add = type.getMethod("addItemStack", loader.loadClass("mezz.jei.startup.StackHelper"), ItemStack.class, List.class, java.util.Set.class);
+        List<ItemStack> values = new ArrayList<>();
+        // Simulate JEI's null-creative-tab fallback for a still registered item.
+        Item fallback = new Item().setRegistryName("extraplanets:ingot_lead");
+        add.invoke(instance, null, new ItemStack(fallback), values, new java.util.HashSet<>());
+        check(values.isEmpty(), "Actual JEI entry filter blocks the null-tab lead fallback");
+        add.invoke(instance, null, new ItemStack(Items.IRON_INGOT), values, new java.util.HashSet<>());
+        check(values.size() == 1, "JEI entry retains ordinary materials");
     }
 }

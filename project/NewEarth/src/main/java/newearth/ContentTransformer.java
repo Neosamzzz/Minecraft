@@ -18,10 +18,33 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         boolean schematics = "micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry".equals(transformedName);
         boolean gear = "micdoodle8.mods.galacticraft.api.GalacticraftRegistry".equals(transformedName);
         boolean client = "com.mjr.mjrlegendslib.util.ClientUtilities".equals(transformedName);
-        if (!(items || recipes || meta || entities || schematics || gear || client)) return bytes;
+        boolean blocks = "com.mjr.extraplanets.blocks.ExtraPlanets_Blocks".equals(transformedName);
+        boolean storage = "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicSaturn".equals(transformedName)
+                || "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicJupiter".equals(transformedName);
+        boolean jei = "mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory".equals(transformedName);
+        if (!(items || recipes || meta || entities || schematics || gear || client || blocks || storage || jei)) return bytes;
         ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node, 0);
         int changes = 0;
         for (MethodNode method : node.methods) {
+            if (items || blocks) {
+                for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                    if (!(instruction instanceof MethodInsnNode)) continue;
+                    MethodInsnNode call = (MethodInsnNode) instruction;
+                    if (call.owner.equals("com/mjr/mjrlegendslib/util/RegisterUtilities") && call.name.equals("registerOre")
+                            && call.desc.equals("(Ljava/lang/String;Lnet/minecraft/item/ItemStack;)V")) {
+                        call.owner = "newearth/MaterialUnification";
+                        if (blocks) changes++;
+                    }
+                }
+            }
+            if (jei && method.name.equals("addItemStack") && method.desc.equals(
+                    "(Lmezz/jei/startup/StackHelper;Lnet/minecraft/item/ItemStack;Ljava/util/List;Ljava/util/Set;)V")) {
+                InsnList head = new InsnList(); LabelNode keep = new LabelNode();
+                head.add(new VarInsnNode(ALOAD, 2));
+                head.add(new MethodInsnNode(INVOKESTATIC, "newearth/MaterialUnification", "visible", "(Lnet/minecraft/item/ItemStack;)Z", false));
+                head.add(new JumpInsnNode(IFNE, keep)); head.add(new InsnNode(RETURN));
+                head.add(keep); head.add(new FrameNode(F_SAME, 0, null, 0, null)); method.instructions.insert(head); changes++;
+            }
             if (client && method.name.equals("addVariants") && method.desc.equals(
                     "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V")) {
                 InsnList head = new InsnList(); LabelNode keep = new LabelNode();
@@ -81,7 +104,8 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 head.add(new JumpInsnNode(IFEQ, keep)); head.add(new InsnNode(ICONST_0)); head.add(new InsnNode(IRETURN));
                 head.add(keep); head.add(new FrameNode(F_SAME, 0, null, 0, null)); method.instructions.insert(head); changes++;
             }
-            if (meta && (method.name.equals("getSubItems") || method.name.equals("func_150895_a"))
+            if (((meta && (method.name.equals("getSubItems") || method.name.equals("func_150895_a")))
+                    || (storage && (method.name.equals("getSubBlocks") || method.name.equals("func_149666_a"))))
                     && method.desc.equals("(Lnet/minecraft/creativetab/CreativeTabs;Lnet/minecraft/util/NonNullList;)V")) {
                 for (AbstractInsnNode instruction : method.instructions.toArray()) if (instruction.getOpcode() == RETURN) {
                     InsnList tail = new InsnList(); tail.add(new VarInsnNode(ALOAD, 2));
@@ -91,7 +115,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 changes++;
             }
         }
-        if (changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
+        if (blocks ? changes == 0 : changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
     }
 
