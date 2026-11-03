@@ -17,7 +17,7 @@ python3 tools/build.py --target newearth
 ## 开发内容
 
 - [物品与制造](items/README.md)：当前功能与未完成事项。
-- [制造路线](items/route-manuscript.md)：星球取舍、图纸和引擎设计。
+- [制造路线](items/route-manuscript.md)：后续图纸、制造与引擎设计。
 - [EP 内容清单](items/ep-content-inventory.md)：物品与设备取舍。
 - [终章维度](dimension/README.md)：景观、世界生成与结尾演出。
 - [版本说明](RELEASES.md)。
