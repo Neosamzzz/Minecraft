@@ -19,6 +19,7 @@
 
 - [任务定稿](ftb-quest-content.md)：采用的文字、目标和编排。
 - [后期任务预备稿](ftb-quest-manuscript.md)：尚未接入的七阶及后期节点。
+- [关键行星节点](../NewEarth/items/route-manuscript.md#关键行星节点ftb-任务编写参考)：各阶段的探索目标、资源用途与图纸解锁，供任务编写参考。
 - [物品核对](quest-item-notes.md)：任务选材与获取条件。
 - [配置安装](quest-config/solar-system/README.md)。
 
