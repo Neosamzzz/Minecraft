@@ -23,7 +23,12 @@ public final class LandscapeGenerator implements IChunkGenerator {
 
     /** Pure chunk construction also used by the regression probe. Decoration never loads neighbours. */
     public static ChunkPrimer terrain(Landscape field, int chunkX, int chunkZ) {
-        ChunkPrimer primer = new ChunkPrimer();
+        return terrain(field,chunkX,chunkZ,new ChunkPrimer());
+    }
+
+    public static ChunkPrimer terrain(Landscape field,int chunkX,int chunkZ,ChunkPrimer primer) {
+        byte[] volume=field.terrain(chunkX,chunkZ);
+        int height=TerrainSampler.MAX_Y-TerrainSampler.MIN_Y;
         for (int x = 0; x < 16; x++) for (int z = 0; z < 16; z++) {
             int wx = chunkX * 16 + x, wz = chunkZ * 16 + z;
             int top = (int) Math.floor(field.height(wx, wz));
@@ -31,17 +36,21 @@ public final class LandscapeGenerator implements IChunkGenerator {
             int biome = field.biome(wx, wz);
             boolean sandy = biome == TerrainSampler.DESERT || top <= Landscape.WATER_LEVEL + 1;
             boolean rock = slope > 1.10 || (top > 190 && slope > 0.45);
-            primer.setBlockState(x, 0, z, Blocks.BEDROCK.getDefaultState());
-            for (int y = 1; y <= Math.max(top, Landscape.WATER_LEVEL); y++) {
-                IBlockState block = Blocks.STONE.getDefaultState();
-                if (y > top) block = Blocks.WATER.getDefaultState();
-                else if (!rock && y >= top - 3) block = y == top
-                        ? (sandy ? Blocks.SAND : Blocks.GRASS).getDefaultState()
-                        : (sandy ? Blocks.SAND : Blocks.DIRT).getDefaultState();
-                primer.setBlockState(x, y, z, block);
+            for(int y=TerrainSampler.MIN_Y;y<TerrainSampler.MAX_Y;y++) {
+                int voxel=volume[(x*16+z)*height+y-TerrainSampler.MIN_Y];
+                IBlockState block;
+                if(y==TerrainSampler.MIN_Y)block=Blocks.BEDROCK.getDefaultState();
+                else if(voxel==0)continue;
+                else if(voxel==2)block=Blocks.WATER.getDefaultState();
+                else if(voxel==3)block=Blocks.LAVA.getDefaultState();
+                else {
+                    block=Blocks.STONE.getDefaultState();
+                    if(!rock && y>=top-3 && y<=top)block=(sandy?Blocks.SAND:y==top?Blocks.GRASS:Blocks.DIRT).getDefaultState();
+                }
+                primer.setBlockState(x,y,z,block);
             }
-            if (biome == TerrainSampler.SNOW && top > Landscape.WATER_LEVEL && slope < 0.7) primer.setBlockState(x, top + 1, z, Blocks.SNOW_LAYER.getDefaultState());
-            if (!rock && !sandy && biome != TerrainSampler.SNOW && top > Landscape.WATER_LEVEL + 1 && top < 190 && slope < 0.6) {
+            if (biome == TerrainSampler.SNOW && top > Landscape.WATER_LEVEL && slope < 0.7 && primer.getBlockState(x,top,z).isFullBlock()) primer.setBlockState(x, top + 1, z, Blocks.SNOW_LAYER.getDefaultState());
+            if (!rock && !sandy && biome != TerrainSampler.SNOW && top > Landscape.WATER_LEVEL + 1 && top < TerrainSampler.MAX_Y-1 && slope < 0.6 && primer.getBlockState(x,top,z).getBlock()==Blocks.GRASS) {
                 double plant = field.unit(wx, wz, 20);
                 if (plant < 0.018) primer.setBlockState(x, top + 1, z,
                         Blocks.RED_FLOWER.getDefaultState().withProperty(Blocks.RED_FLOWER.getTypeProperty(),
@@ -52,10 +61,10 @@ public final class LandscapeGenerator implements IChunkGenerator {
         }
         // Each global cell owns a tree. Render intersecting canopies in both chunks, independent of load order.
         int startX = chunkX * 16, startZ = chunkZ * 16;
-        for (int cx = Math.floorDiv(startX - 3, 8); cx <= Math.floorDiv(startX + 18, 8); cx++)
-            for (int cz = Math.floorDiv(startZ - 3, 8); cz <= Math.floorDiv(startZ + 18, 8); cz++) {
-                int tx = cx * 8 + 1 + (int) (field.unit(cx, cz, 30) * 6);
-                int tz = cz * 8 + 1 + (int) (field.unit(cx, cz, 31) * 6);
+        for (int cx = Math.floorDiv(startX - 3, Landscape.TREE_SPACING); cx <= Math.floorDiv(startX + 18, Landscape.TREE_SPACING); cx++)
+            for (int cz = Math.floorDiv(startZ - 3, Landscape.TREE_SPACING); cz <= Math.floorDiv(startZ + 18, Landscape.TREE_SPACING); cz++) {
+                int tx = cx * Landscape.TREE_SPACING + 1 + (int) (field.unit(cx, cz, 30) * (Landscape.TREE_SPACING-2));
+                int tz = cz * Landscape.TREE_SPACING + 1 + (int) (field.unit(cx, cz, 31) * (Landscape.TREE_SPACING-2));
                 if (!field.tree(tx, tz)) continue;
                 int ground = (int) Math.floor(field.height(tx, tz));
                 int trunk = 5 + (int) (field.unit(tx, tz, 32) * 3);
@@ -73,7 +82,7 @@ public final class LandscapeGenerator implements IChunkGenerator {
         return primer;
     }
     private static void put(ChunkPrimer primer, int x, int y, int z, IBlockState state) {
-        if (x < 0 || x > 15 || z < 0 || z > 15 || y < 1 || y > 254) return;
+        if (x < 0 || x > 15 || z < 0 || z > 15 || y <= TerrainSampler.MIN_Y || y >= TerrainSampler.MAX_Y) return;
         IBlockState old = primer.getBlockState(x, y, z);
         if (old.getBlock() == Blocks.AIR || old.getBlock() == Blocks.TALLGRASS
                 || old.getBlock() == Blocks.RED_FLOWER || old.getBlock() == Blocks.LEAVES)

@@ -51,8 +51,12 @@ public final class LandscapeWorldType extends WorldType {
         if (!world.isRemote && peacefulLandscape(world.getWorldType(), world.provider.getDimension()))
             ReterraTerrain.release(world.getSeed());
     }
-    @Override public BiomeProvider getBiomeProvider(World world) { return new LandscapeBiomes(world.getSeed()); }
+    @Override public BiomeProvider getBiomeProvider(World world) {
+        HeightSupport.require(world);
+        return new LandscapeBiomes(world.getSeed());
+    }
     @Override public IChunkGenerator getChunkGenerator(World world, String options) {
+        HeightSupport.require(world);
         return new LandscapeGenerator(world);
     }
     @Override public int getMinimumSpawnHeight(World world) { return Landscape.WATER_LEVEL + 1; }
