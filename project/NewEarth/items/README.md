@@ -39,6 +39,7 @@ python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.j
 
 ### 验收与交付
 
+- [ ] 将EP天王星主星及轨道准入统一到T5，同步星图等级。
 - [ ] 启动客户端核对物品、JEI配方、两种制造台与图纸奖励。
 - [ ] 验收六阶离子改装与Eris往返、地牢图纸解锁、七阶制造及首次系外往返；核对引擎返还和重进保存。
 
