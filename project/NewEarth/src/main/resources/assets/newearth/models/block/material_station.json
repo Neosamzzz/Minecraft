@@ -6,7 +6,7 @@
     "front": "newearth:blocks/material_station_front",
     "back": "newearth:blocks/material_station_back",
     "west": "newearth:blocks/material_station_side_west",
-    "east": "newearth:blocks/material_station_side_east",
+    "east": "newearth:blocks/material_station_port",
     "particle": "newearth:blocks/material_station_side_west"
   },
   "elements": [
