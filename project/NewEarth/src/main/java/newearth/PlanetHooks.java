@@ -137,16 +137,18 @@ public final class PlanetHooks {
 
     private static boolean hasIonRocket(Object entity, Object rocket) {
         if (rocket == null && entity instanceof Entity) rocket = ((Entity) entity).getRidingEntity();
+        if (rocket instanceof Entity && ManufacturingHooks.rocketTier((Entity)rocket) == 7) return true;
         if (rocket != null && rocket.getClass().getName().equals("galaxyspace.core.prefab.entities.EntityTier6Rocket")) {
             return "ION_ENGINE".equals(engine(rocket).toString());
         }
         if (rocket instanceof EntityAutoRocket) return false;
         if (!(entity instanceof EntityPlayerMP)) return false;
         GCPlayerStats stats = GCPlayerStats.get((EntityPlayerMP) entity);
-        if (stats.getSpaceshipTier() != 6) return false;
         List<ItemStack> stacks = stats.getRocketStacks();
         if (stacks == null || stacks.isEmpty()) return false;
         ItemStack stack = stacks.get(stacks.size() - 1);
+        if (stats.getSpaceshipTier() == 7 && ManufacturingHooks.readyStack(stack)) return true;
+        if (stats.getSpaceshipTier() != 6) return false;
         return !stack.isEmpty() && stack.getItem().getClass().getName().equals("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket")
                 && stack.hasTagCompound() && stack.getTagCompound().getBoolean(ionKey());
     }

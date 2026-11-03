@@ -58,3 +58,23 @@ newearth.map.resources.barnarda_c=Tree sap
 newearth.map.resources.barnarda_c1=Onyx
 
 generator.newearth_preview=NewEarth terrain preview
+
+item.newearth.composite_plate.name=Composite Plate
+item.newearth.thermal_liner.name=Thermal Liner
+item.newearth.avionics.name=Avionics
+item.newearth.connector.name=Connector
+item.newearth.nose_cone.name=Nose Cone
+item.newearth.rocket_body.name=Rocket Body
+item.newearth.booster.name=Booster
+item.newearth.fin.name=Fin
+item.newearth.tier7_rocket.name=Tier7 Rocket
+tile.newearth.material_station.name=Material Station
+tile.newearth.engine_station.name=Engine Station
+item.newearth.blueprint_t4.name=Blueprint T4
+item.newearth.blueprint_t5.name=Blueprint T5
+item.newearth.blueprint_t6.name=Blueprint T6
+item.newearth.blueprint_engine_station.name=Blueprint Engine Station
+item.newearth.blueprint_material_station.name=Blueprint Material Station
+item.newearth.blueprint_t7.name=Blueprint T7
+item.newearth.blueprint_sublight.name=Blueprint Sublight
+item.newearth.rocket_engine.name=Tier 7 Rocket Engine

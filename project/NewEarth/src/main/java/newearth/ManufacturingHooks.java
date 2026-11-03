@@ -1,0 +1,116 @@
+package newearth;
+
+import java.util.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.*;
+import net.minecraft.init.Items;
+import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
+import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
+
+/** Hooks are dimension-specific so EP/GS shared chest tiers stay independent. */
+public final class ManufacturingHooks {
+    private static final String T7 = "newearthTier7";
+    private ManufacturingHooks() { }
+    public static ItemStack reward(Object boss, Random random) {
+        Entity entity = (Entity) boss;
+        String provider = entity.world.provider.getClass().getName();
+        String blueprint = blueprint(provider);
+        if (blueprint != null) return Manufacturing.own(blueprint);
+        // GS Io formerly selected ion/sublight from a two-entry pool (50% each).
+        if (provider.contains(".io.")) return random.nextInt(100) < 5
+                ? modules(4) : new ItemStack(Items.IRON_INGOT, 4);
+        throw new IllegalStateException("Unexpected patched boss provider: " + provider);
+    }
+    static String blueprint(String provider) {
+        if (!provider.startsWith("com.mjr.extraplanets.planets.")) return null;
+        String[] names = {"Mercury", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Eris"};
+        String[] ids = {"blueprint_t4", "blueprint_t5", "blueprint_t6", "blueprint_engine_station",
+                "blueprint_material_station", "blueprint_t7", "blueprint_sublight"};
+        for (int i=0;i<names.length;i++) if(provider.contains("."+names[i]+".")) return ids[i];
+        return null;
+    }
+    static ItemStack modules(int meta) { return new ItemStack(SolarSystemBridge.requireItem("galaxyspace:rocket_modules"),1,meta); }
+    static void cleanLoot() {
+        for (int tier=1;tier<=10;tier++) {
+            List<ItemStack> pool=GalacticraftRegistry.getDungeonLoot(tier);
+            if(pool!=null) pool.removeIf(s -> s.isEmpty() || ContentPruning.retiredOutput(s) || engineLoot(s));
+        }
+    }
+    private static boolean engineLoot(ItemStack s) {
+        return !s.isEmpty() && "galaxyspace:rocket_modules".equals(String.valueOf(s.getItem().getRegistryName()))
+                && s.getMetadata()>=4 && s.getMetadata()<=7;
+    }
+    public static boolean validRocketSlot(int index, ItemStack stack) {
+        if(stack.isEmpty() || !Manufacturing.ITEMS.containsValue(stack.getItem())) return false;
+        String id=stack.getItem().getRegistryName().getPath();
+        switch(index) {
+            case 2:return id.equals("nose_cone");
+            case 3:case 4:return id.equals("rocket_body");
+            case 5:return id.equals("rocket_engine");
+            case 6:case 7:return id.equals("booster");
+            case 8:case 9:return id.equals("fin");
+            case 10:return id.equals("blueprint_t7");
+            default:return false;
+        }
+    }
+    public static boolean tier7(Item item) { return "newearth:tier7_rocket".equals(String.valueOf(item.getRegistryName())); }
+    public static boolean readyStack(ItemStack stack) {
+        if(stack.isEmpty() || !tier7(stack.getItem()) || !stack.hasTagCompound()) return false;
+        try {
+            Class<?> type=Class.forName("asmodeuscore.core.astronomy.SpaceData$Engine_Type");
+            Object engine=type.getField("SUBLIGHT_ENGINE").get(null);
+            return stack.getTagCompound().getBoolean((String)type.getMethod("getName").invoke(engine));
+        } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
+    }
+    public static void placed(Entity entity, ItemStack stack) { entity.getEntityData().setBoolean(T7,tier7(stack.getItem())); }
+    public static int rocketTier(Entity entity) {
+        if(!entity.getEntityData().getBoolean(T7)) return 6;
+        return "SUBLIGHT_ENGINE".equals(engine(entity))?7:0;
+    }
+    public static boolean canIgnite(Entity entity) {
+        return !entity.getEntityData().getBoolean(T7) || "SUBLIGHT_ENGINE".equals(engine(entity));
+    }
+    public static Item rocketItem(Entity entity) {
+        return SolarSystemBridge.requireItem(entity.getEntityData().getBoolean(T7)?"newearth:tier7_rocket":"galaxyspace:rocket_tier_6");
+    }
+    private static String engine(Entity entity) {
+        try { return entity.getClass().getMethod("getEngine").invoke(entity).toString(); }
+        catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
+    }
+    public static Object modulesFor(Item item) {
+        try {
+            Class<?> base=Class.forName("galaxyspace.core.prefab.items.modules.ItemModule");
+            Object result=java.lang.reflect.Array.newInstance(base,1);
+            String name=tier7(item)?"SublightEngine":"IonEngine";
+            java.lang.reflect.Array.set(result,0,Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.modules."+name).newInstance());
+            return result;
+        } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
+    }
+    public static void recover(Entity entity, Object player) {
+        if(!entity.getEntityData().getBoolean(T7) || !(player instanceof EntityPlayerMP)) return;
+        GCPlayerStats stats=GCPlayerStats.get((EntityPlayerMP)player);
+        stats.setRocketItem(rocketItem(entity));
+        List<ItemStack> stacks=stats.getRocketStacks();
+        if(stacks==null || stacks.isEmpty()) throw new IllegalStateException("Missing T7 recovery inventory");
+        ItemStack stack=new ItemStack(rocketItem(entity),1,stats.getRocketType());
+        stack.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
+        try {
+            Object value=entity.getClass().getMethod("getEngine").invoke(entity);
+            String key=(String)value.getClass().getMethod("getName").invoke(value);
+            if(!"FUEL_ENGINE".equals(value.toString())) stack.getTagCompound().setBoolean(key,true);
+            String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
+            stack.getTagCompound().setInteger(count,"FUEL_ENGINE".equals(value.toString())?1:0);
+        } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        stacks.set(stacks.size()-1,stack);
+    }
+    public static List<ItemStack> dropped(List<ItemStack> stacks) {
+        for(ItemStack stack:stacks) if(!stack.isEmpty() && tier7(stack.getItem()) && stack.hasTagCompound()) {
+            try {
+                String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
+                stack.getTagCompound().setInteger(count,readyStack(stack)?0:1);
+            } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        }
+        return stacks;
+    }
+}

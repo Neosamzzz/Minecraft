@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
         acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
-    public static final String VERSION = "0.2.17";
+    public static final String VERSION = "0.2.18";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.EventHandler
@@ -21,5 +21,6 @@ public final class NewEarth {
         SolarSystemBridge.install();
         PlanetHooks.integrate();
         EnvironmentHooks.adaptMetadata();
+        Manufacturing.install();
     }
 }
