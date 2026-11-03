@@ -36,6 +36,9 @@ public final class LandscapeProbe {
         LandscapeWorldType.register(null);
         check(WorldType.byName("newearth_preview") == preview && WorldType.DEFAULT == original,
                 "Registration is idempotent and leaves default world alone");
+        check(LandscapeProbe.class.getResource("/META-INF/LICENSE-ReTerraForged.txt") != null, "Adapted algorithm ships its MIT notice");
+        check(new Landscape(0).height(0,0) != new Landscape(42).height(0,0), "Origin is not pinned to a seed-independent noise-lattice summit");
+        verifyPeacefulWorld(preview);
         for (long seed : new long[] {0, 42, -20261103L, Long.MAX_VALUE}) distribution(seed);
         Landscape field = new Landscape(42);
         LandscapeBiomes provider = new LandscapeBiomes(42);
@@ -78,6 +81,53 @@ public final class LandscapeProbe {
         map(field);
         System.out.println("NewEarth landscape: " + checks + " checks passed (isolated; no game, save or shaders)");
     }
+    // Forge injects this override at launch; the isolated runner has no event transformer.
+    private static final class JoinEvent extends net.minecraftforge.event.entity.EntityJoinWorldEvent {
+        JoinEvent(net.minecraft.entity.Entity entity, net.minecraft.world.World world) { super(entity, world); }
+        @Override public boolean isCancelable() { return true; }
+    }
+    private static void verifyPeacefulWorld(WorldType preview) throws Exception {
+        check(LandscapeWorldType.peacefulLandscape(preview, 0), "Preview overworld is peaceful");
+        check(!LandscapeWorldType.peacefulLandscape(WorldType.DEFAULT, 0), "Ordinary overworld unchanged");
+        check(!LandscapeWorldType.peacefulLandscape(preview, -1), "Nether unchanged even in a preview save");
+        check(!LandscapeWorldType.peacefulLandscape(preview, 1), "End unchanged even in a preview save");
+        java.lang.reflect.Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+        unsafeField.setAccessible(true);
+        sun.misc.Unsafe unsafe = (sun.misc.Unsafe) unsafeField.get(null);
+        net.minecraft.world.WorldServer world = (net.minecraft.world.WorldServer)
+                unsafe.allocateInstance(net.minecraft.world.WorldServer.class);
+        net.minecraft.world.storage.WorldInfo info = new net.minecraft.world.storage.WorldInfo(new net.minecraft.nbt.NBTTagCompound());
+        java.lang.reflect.Field infoField = net.minecraft.world.World.class.getDeclaredField("worldInfo");
+        infoField.setAccessible(true); infoField.set(world, info);
+        java.lang.reflect.Field providerField = net.minecraft.world.World.class.getDeclaredField("provider");
+        providerField.setAccessible(true); providerField.set(world, new net.minecraft.world.WorldProviderSurface());
+        world.provider.setDimension(0);
+        info.setTerrainType(preview);
+        net.minecraft.entity.Entity zombie = (net.minecraft.entity.Entity) unsafe.allocateInstance(net.minecraft.entity.monster.EntityZombie.class);
+        net.minecraft.entity.Entity cow = (net.minecraft.entity.Entity) unsafe.allocateInstance(net.minecraft.entity.passive.EntityCow.class);
+        net.minecraftforge.event.entity.EntityJoinWorldEvent hostile = new JoinEvent(zombie,world);
+        LandscapeWorldType.joinWorld(hostile);
+        check(hostile.isCanceled(), "Hostile joining preview is rejected, including loaded entities and eggs");
+        net.minecraftforge.event.entity.EntityJoinWorldEvent animal = new JoinEvent(cow,world);
+        LandscapeWorldType.joinWorld(animal);
+        check(!animal.isCanceled(), "Passive animals remain allowed");
+        net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn natural =
+                new net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn((net.minecraft.entity.EntityLiving)zombie,world,0,80,0);
+        LandscapeWorldType.checkSpawn(natural);
+        check(natural.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY, "Natural hostile spawning denied");
+        net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn passive =
+                new net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn((net.minecraft.entity.EntityLiving)cow,world,0,80,0);
+        LandscapeWorldType.checkSpawn(passive);
+        check(passive.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT, "Passive spawn decision unchanged");
+        info.setTerrainType(WorldType.DEFAULT);
+        net.minecraftforge.event.entity.EntityJoinWorldEvent ordinary = new JoinEvent(zombie,world);
+        LandscapeWorldType.joinWorld(ordinary);
+        check(!ordinary.isCanceled(), "Ordinary world retains hostile mobs");
+        info.setTerrainType(preview); world.provider.setDimension(-1);
+        net.minecraftforge.event.entity.EntityJoinWorldEvent nether = new JoinEvent(zombie,world);
+        LandscapeWorldType.joinWorld(nether);
+        check(!nether.isCanceled(), "Other dimensions retain hostile mobs");
+    }
     private static void distribution(long seed) throws Exception {
         Landscape field = new Landscape(seed);
         int water = 0, meadow = 0, forest = 0, mountain = 0, high = 0;
@@ -103,8 +153,8 @@ public final class LandscapeProbe {
             check(h >= 5 && h <= 245, "Terrain stays within build height");
             differs |= h != other.height(x,z);
         }
-        check(water > 100 && meadow > 1000 && forest > 100 && mountain > 100,
-                "Water, open meadow, forest interiors and mountains all occupy substantial areas");
+        check(water > 100 && meadow > 16000 && forest > 100 && mountain > 6500 && mountain < 32768,
+                "Substantial open meadow, mountain regions, woodland and water without a mountain-only world");
         check(high > 1000 && nearbyHigh > 50,
                 "Substantial terrain above Y200, including a range within 1024 blocks of origin");
         int wide = 0;

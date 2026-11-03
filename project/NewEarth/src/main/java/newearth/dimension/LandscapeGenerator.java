@@ -1,6 +1,7 @@
 package newearth.dimension;
 
 import java.util.List;
+import java.util.Collections;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
@@ -27,7 +28,7 @@ public final class LandscapeGenerator implements IChunkGenerator {
             int wx = chunkX * 16 + x, wz = chunkZ * 16 + z;
             int top = (int) Math.floor(field.height(wx, wz));
             double slope = field.slope(wx, wz);
-            boolean rock = slope > 0.85 || top > 178;
+            boolean rock = slope > 1.10 || (top > 190 && slope > 0.45);
             primer.setBlockState(x, 0, z, Blocks.BEDROCK.getDefaultState());
             for (int y = 1; y <= Math.max(top, Landscape.WATER_LEVEL); y++) {
                 IBlockState block = Blocks.STONE.getDefaultState();
@@ -86,7 +87,7 @@ public final class LandscapeGenerator implements IChunkGenerator {
     @Override public void populate(int x, int z) { }
     @Override public boolean generateStructures(Chunk chunk, int x, int z) { return false; }
     @Override public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType type, BlockPos pos) {
-        return world.getBiome(pos).getSpawnableList(type);
+        return type == EnumCreatureType.MONSTER ? Collections.emptyList() : world.getBiome(pos).getSpawnableList(type);
     }
     @Nullable @Override public BlockPos getNearestStructurePos(World w, String name, BlockPos pos, boolean unexplored) { return null; }
     @Override public void recreateStructures(Chunk chunk, int x, int z) { }
