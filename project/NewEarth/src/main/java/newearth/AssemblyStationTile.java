@@ -18,6 +18,14 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
     public static final int TOTAL_SLOTS = 11;
 
     private final ItemStack[] inventory = new ItemStack[TOTAL_SLOTS];
+    private int progressTicks;
+    private int requiredTicks = processingTime();
+    private ItemStack activeResult = ItemStack.EMPTY;
+
+    public static int processingTime() {
+        // GS advances its 3600 * coefficient work budget by 5 per normal tick.
+        return Math.max(1, (int) Math.ceil(720D * galaxyspace.core.configs.GSConfigEnergy.coefficientSpeedRocketAssembly));
+    }
 
     public AssemblyStationTile() {
         for (int i = 0; i < TOTAL_SLOTS; i++) inventory[i] = ItemStack.EMPTY;
@@ -65,11 +73,16 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
             if (ItemStack.areItemsEqual(stack, inputs(tier).get(index))) return true;
         return false;
     }
-    @Override public int getField(int id) { return 0; }
-    @Override public void setField(int id, int value) {}
-    @Override public int getFieldCount() { return 0; }
+    @Override public int getField(int id) { return id == 0 ? progressTicks : id == 1 ? requiredTicks : 0; }
+    @Override public void setField(int id, int value) {
+        if (id == 0) progressTicks = Math.max(0, value);
+        if (id == 1) requiredTicks = Math.max(0, value);
+    }
+    @Override public int getFieldCount() { return 2; }
     @Override public void clear() {
         for (int i = 0; i < TOTAL_SLOTS; i++) inventory[i] = ItemStack.EMPTY;
+        progressTicks = 0;
+        activeResult = ItemStack.EMPTY;
     }
     @Override public String getName() { return "newearth.assembly_station"; }
     @Override public boolean hasCustomName() { return false; }
@@ -93,10 +106,20 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
     }
 
     boolean process() {
-        // Check for valid recipe match
         ItemStack result = findMatchingRecipe();
-        if (!result.isEmpty() && inventory[OUTPUT_SLOT].isEmpty()) {
-            // Consume inputs and produce output
+        if (result.isEmpty() || !inventory[OUTPUT_SLOT].isEmpty()) {
+            if (progressTicks != 0) { progressTicks = 0; markDirty(); }
+            activeResult = ItemStack.EMPTY;
+            return false;
+        }
+        if (!ItemStack.areItemStacksEqual(activeResult, result)) {
+            progressTicks = 0;
+            requiredTicks = processingTime();
+            activeResult = result.copy();
+        }
+        progressTicks++;
+        markDirty();
+        if (progressTicks >= requiredTicks) {
             for (int i = 0; i < INPUT_SLOTS; i++) {
                 if (!inventory[i].isEmpty()) {
                     inventory[i].shrink(1);
@@ -104,6 +127,8 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
                 }
             }
             inventory[OUTPUT_SLOT] = result.copy();
+            progressTicks = 0;
+            activeResult = ItemStack.EMPTY;
             markDirty();
             return true;
         }
@@ -153,6 +178,10 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
             }
         }
         compound.setTag("Items", list);
+        compound.setInteger("AssemblyProgress", progressTicks);
+        compound.setInteger("AssemblyDuration", requiredTicks);
+        if (!activeResult.isEmpty()) compound.setTag("AssemblyResult", activeResult.writeToNBT(new NBTTagCompound()));
+        else compound.removeTag("AssemblyResult");
         return compound;
     }
 
@@ -166,6 +195,12 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
             if (slot >= 0 && slot < TOTAL_SLOTS) {
                 inventory[slot] = new ItemStack(tag);
             }
+        }
+        requiredTicks = compound.hasKey("AssemblyDuration") ? Math.max(1, compound.getInteger("AssemblyDuration")) : processingTime();
+        ItemStack saved = new ItemStack(compound.getCompoundTag("AssemblyResult"));
+        if (!saved.isEmpty() && inventory[OUTPUT_SLOT].isEmpty() && ItemStack.areItemStacksEqual(saved, findMatchingRecipe())) {
+            activeResult = saved;
+            progressTicks = Math.max(0, Math.min(requiredTicks - 1, compound.getInteger("AssemblyProgress")));
         }
     }
 }

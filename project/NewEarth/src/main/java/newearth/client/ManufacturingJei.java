@@ -92,11 +92,16 @@ public final class ManufacturingJei implements IModPlugin {
     /** The same GS texture and coordinates as the real assembly container. */
     private static final class AssemblyCategory implements IRecipeCategory<AssemblyWrapper> {
         final IDrawable background, slot, resultSlot;
+        final IDrawable progressTrack;
+        final IDrawableAnimated progress;
         AssemblyCategory(IGuiHelper helper) {
             net.minecraft.util.ResourceLocation texture = AssemblyStationGui.TEXTURE;
             this.background = helper.createDrawable(texture, 0, 0, 204, 150);
             this.slot = helper.createDrawable(texture, 204, 75, 20, 20);
             this.resultSlot = helper.createDrawable(texture, 215, 144, 34, 34);
+            this.progressTrack = helper.createDrawable(texture, 204, 96, 52, 9);
+            this.progress = helper.createAnimatedDrawable(helper.createDrawable(texture, 206, 230, 50, 7),
+                    newearth.AssemblyStationTile.processingTime(), IDrawableAnimated.StartDirection.LEFT, false);
         }
         @Override public String getUid() { return "newearth.assembly_station"; }
         @Override public String getTitle() { return Manufacturing.own("assembly_station").getDisplayName(); }
@@ -107,6 +112,10 @@ public final class ManufacturingJei implements IModPlugin {
                 slot.draw(mc, pos[0] - 2, pos[1] - 2);
             int[] output = newearth.AssemblyStationContainer.OUTPUT_POS;
             resultSlot.draw(mc, output[0] - 9, output[1] - 9);
+            progressTrack.draw(mc, 100, 91);
+            net.minecraft.client.renderer.GlStateManager.color(0F, 1F, 0F, 1F);
+            progress.draw(mc, 101, 92);
+            net.minecraft.client.renderer.GlStateManager.color(1F, 1F, 1F, 1F);
         }
         @Override public void setRecipe(IRecipeLayout layout, AssemblyWrapper wrapper, IIngredients ingredients) {
             for (int i = 0; i < newearth.AssemblyStationTile.INPUT_SLOTS; i++) {

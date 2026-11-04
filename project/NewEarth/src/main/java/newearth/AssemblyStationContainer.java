@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 /** GS rocket assembler layout with a separate central propulsion slot. */
 public class AssemblyStationContainer extends Container {
     private final AssemblyStationTile tile;
+    private int lastProgress = -1, lastDuration = -1;
 
     public static final int[][] INPUT_POS = {
         {40, 25},  // nose cone
@@ -53,6 +54,34 @@ public class AssemblyStationContainer extends Container {
 
     @Override public boolean canInteractWith(EntityPlayer player) {
         return tile.isUsableByPlayer(player);
+    }
+
+    private void sendProgress(net.minecraft.inventory.IContainerListener listener) {
+        for (int field = 0; field < 2; field++) {
+            int value = tile.getField(field);
+            listener.sendWindowProperty(this, field * 2, value & 0xFFFF);
+            listener.sendWindowProperty(this, field * 2 + 1, value >>> 16);
+        }
+    }
+    @Override public void addListener(net.minecraft.inventory.IContainerListener listener) {
+        super.addListener(listener);
+        sendProgress(listener);
+    }
+    @Override public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        if (lastProgress != tile.getField(0) || lastDuration != tile.getField(1)) {
+            for (net.minecraft.inventory.IContainerListener listener : listeners) sendProgress(listener);
+            lastProgress = tile.getField(0);
+            lastDuration = tile.getField(1);
+        }
+    }
+    @Override @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+    public void updateProgressBar(int id, int value) {
+        int field = id / 2;
+        if (id < 0 || id > 3) return;
+        int old = tile.getField(field);
+        tile.setField(field, id % 2 == 0 ? (old & 0xFFFF0000) | (value & 0xFFFF)
+                : (old & 0xFFFF) | ((value & 0xFFFF) << 16));
     }
 
     @Override public ItemStack transferStackInSlot(EntityPlayer player, int index) {

@@ -91,6 +91,7 @@ public final class ManufacturingProbe {
         registerPart("tier7_rocket");registerPart("tier9_rocket");registerPart("tier10_rocket");
         if (!net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.containsKey(modules.getRegistryName()))
             net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.register(modules);
+        net.minecraft.tileentity.TileEntity.register("newearth:assembly_station",AssemblyStationTile.class);
         for (int tier : new int[] {7,9,10}) {
             AssemblyStationTile station=new AssemblyStationTile();
             List<ItemStack> inputs=AssemblyStationTile.inputs(tier);
@@ -114,14 +115,43 @@ public final class ManufacturingProbe {
             station.setInventorySlotContents(8,ItemStack.EMPTY);
             check(!station.process(),"T"+tier+" cannot bypass installed propulsion module");
             station.setInventorySlotContents(8,inputs.get(8).copy());
-            check(station.process(),"T"+tier+" complete assembly succeeds");
+            check(!station.process() && station.getField(0)==1,"T"+tier+" starts processing without immediate output");
+            check(station.getStackInSlot(AssemblyStationTile.OUTPUT_SLOT).isEmpty(),"Output stays empty during processing");
+            check(!station.hasCapability(net.minecraftforge.energy.CapabilityEnergy.ENERGY,net.minecraft.util.EnumFacing.NORTH),"Assembly has no power requirement");
+            for(int slot=0;slot<inputs.size();slot++)check(station.getStackInSlot(slot).getCount()==1,"Inputs remain until assembly completes");
+            station.setInventorySlotContents(9,ItemStack.EMPTY);
+            check(!station.process() && station.getField(0)==0,"Missing part resets progress without creating a rocket");
+            station.setInventorySlotContents(9,inputs.get(9).copy());
+            int duration=AssemblyStationTile.processingTime();
+            boolean early=false;
+            for(int tick=0;tick<duration/2;tick++)early|=station.process();
+            check(!early,"No early assembly result");
+            AssemblyStationTile savedStation=new AssemblyStationTile();
+            savedStation.readFromNBT(station.writeToNBT(new net.minecraft.nbt.NBTTagCompound()));
+            check(savedStation.getField(0)==station.getField(0),"Assembly progress survives save/reload");
+            station=savedStation;
+            for(int tick=station.getField(0);tick<duration-1;tick++)early|=station.process();
+            check(!early,"Reloaded assembly waits until its final tick");
+            check(station.process(),"T"+tier+" completes after the full GS processing duration");
             check(!station.process(),"Completed assembly cannot duplicate its output");
             ItemStack rocket=station.getStackInSlot(AssemblyStationTile.OUTPUT_SLOT);
             check(rocket.getItem()==Manufacturing.ITEMS.get("tier"+tier+"_rocket"),"Assembly preserves exact tier item");
             if(tier==7)check(ManufacturingHooks.readyStack(rocket),"T7 assembled with sublight is ready for flight");
+            for(int slot=0;slot<inputs.size();slot++)station.setInventorySlotContents(slot,inputs.get(slot).copy());
+            check(!station.process() && station.getField(0)==0,"Occupied output prevents a second processing cycle");
+            for(int slot=0;slot<inputs.size();slot++)check(station.getStackInSlot(slot).getCount()==1,"Blocked output preserves every input");
             DisassemblyStationTile recycling=new DisassemblyStationTile();
             recycling.setInventorySlotContents(0,rocket.copy());recycling.process();
             for(int slot=0;slot<inputs.size();slot++)check(ItemStack.areItemsEqual(inputs.get(slot),recycling.getStackInSlot(slot+1)),"T"+tier+" recycling returns exact part "+slot);
+        }
+        AssemblyStationTile syncTile=new AssemblyStationTile();
+        AssemblyStationContainer syncContainer=new AssemblyStationContainer(new net.minecraft.entity.player.InventoryPlayer(null),syncTile);
+        for(int value:new int[]{32768,65536,200000}) {
+            syncContainer.updateProgressBar(0,(short)value);
+            syncContainer.updateProgressBar(1,(short)(value>>>16));
+            syncContainer.updateProgressBar(2,(short)value);
+            syncContainer.updateProgressBar(3,(short)(value>>>16));
+            check(syncTile.getField(0)==value && syncTile.getField(1)==value,"Progress synchronization preserves full 32-bit values "+value);
         }
         for(int i=0;i<AssemblyStationContainer.INPUT_POS.length;i++) {
             int[] a=AssemblyStationContainer.INPUT_POS[i];

@@ -14,13 +14,24 @@ import net.minecraftforge.fml.relauncher.Side;
 public final class ManufacturingModels {
     @SubscribeEvent public static void models(ModelRegistryEvent event) {
         net.minecraftforge.client.model.obj.OBJLoader.INSTANCE.addDomain(NewEarth.MOD_ID);
+        ModelLoader.setCustomStateMapper(Manufacturing.BLOCKS.get("assembly_station"),
+                new net.minecraft.client.renderer.block.statemap.StateMapperBase() {
+                    @Override protected ModelResourceLocation getModelResourceLocation(net.minecraft.block.state.IBlockState state) {
+                        return new ModelResourceLocation("galacticraftcore:rocket_workbench", "normal");
+                    }
+                });
         for(Item item:Manufacturing.ITEMS.values()) {
+            if (item.getRegistryName().getPath().equals("assembly_station")) {
+                ModelLoader.setCustomModelResourceLocation(item, 0,
+                        new ModelResourceLocation("galacticraftcore:rocket_workbench", "inventory"));
+                continue;
+            }
             int variants=item.getRegistryName().getPath().matches("tier(7|9|10)_rocket")?5:1;
             for(int meta=0;meta<variants;meta++) ModelLoader.setCustomModelResourceLocation(item,meta,new ModelResourceLocation(item.getRegistryName(),"inventory"));
         }
     }
     @SubscribeEvent public static void bake(net.minecraftforge.client.event.ModelBakeEvent event) {
-        for (String name : new String[]{"tier7_rocket", "tier9_rocket", "tier10_rocket", "assembly_station", "disassembly_station"}) {
+        for (String name : new String[]{"tier7_rocket", "tier9_rocket", "tier10_rocket", "disassembly_station"}) {
             boolean rocket = name.startsWith("tier");
             float scale = rocket ? .04F : .2F;
             net.minecraftforge.common.model.TRSRTransformation transform = new net.minecraftforge.common.model.TRSRTransformation(
