@@ -94,4 +94,4 @@ newearth.gui.status.label=状态：
 newearth.gui.status.idle=空闲
 newearth.gui.status.working=工作中
 newearth.gui.status.nopower=缺电
-tile.newearth.assembly_station.name=七阶组装台
+tile.newearth.assembly_station.name=星际组装台
