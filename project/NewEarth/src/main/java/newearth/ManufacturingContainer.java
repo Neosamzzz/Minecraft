@@ -13,15 +13,22 @@ public final class ManufacturingContainer extends Container {
 
     public ManufacturingContainer(InventoryPlayer playerInventory, ManufacturingTile tile) {
         this.tile = tile;
-        for (int row = 0; row < 3; row++)
-            for (int col = 0; col < 3; col++)
-                addSlotToContainer(new Slot(tile, row * 3 + col, 19 + col * 18, 18 + row * 18));
+        if (tile.engine()) {
+            addSlotToContainer(new Slot(tile, 0, 44, 36));
+            addSlotToContainer(new Slot(tile, 1, 80, 36));
+        } else {
+            for (int row = 0; row < 3; row++)
+                for (int col = 0; col < 3; col++)
+                    addSlotToContainer(new Slot(tile, row * 3 + col, 19 + col * 18, 18 + row * 18));
+        }
         addSlotToContainer(new Slot(tile, ManufacturingTile.OUTPUT_SLOT, 138, 36) {
             @Override public boolean isItemValid(ItemStack stack) { return false; }
         });
-        addSlotToContainer(new Slot(tile, ManufacturingTile.BATTERY_SLOT, 77, 83) {
-            @Override public boolean isItemValid(ItemStack stack) { return stack.hasCapability(CapabilityEnergy.ENERGY, null); }
-        });
+        if (!tile.engine()) {
+            addSlotToContainer(new Slot(tile, ManufacturingTile.BATTERY_SLOT, 77, 83) {
+                @Override public boolean isItemValid(ItemStack stack) { return stack.hasCapability(CapabilityEnergy.ENERGY, null); }
+            });
+        }
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
                 addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 129 + row * 18));
@@ -51,12 +58,12 @@ public final class ManufacturingContainer extends Container {
         if (slot == null || !slot.getHasStack()) return result;
         ItemStack stack = slot.getStack();
         result = stack.copy();
-        int tileSlots = ManufacturingTile.SIZE;
+        int tileSlots = tile.engine() ? 3 : ManufacturingTile.SIZE;
         if (index < tileSlots) {
             if (!mergeItemStack(stack, tileSlots, inventorySlots.size(), true)) return ItemStack.EMPTY;
-        } else if (stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
-            if (!mergeItemStack(stack, ManufacturingTile.BATTERY_SLOT, ManufacturingTile.BATTERY_SLOT + 1, false)) return ItemStack.EMPTY;
-        } else if (!mergeItemStack(stack, 0, ManufacturingTile.INPUT_COUNT, false)) {
+        } else if (!tile.engine() && stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
+            if (!mergeItemStack(stack, ManufacturingTile.INPUT_COUNT + 1, ManufacturingTile.INPUT_COUNT + 2, false)) return ItemStack.EMPTY;
+        } else if (!mergeItemStack(stack, 0, tile.inputLimit(), false)) {
             return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();

@@ -1,5 +1,6 @@
 package newearth;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
@@ -64,30 +65,46 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
         process(world.getBlockState(pos).getBlock().getRegistryName().getPath());
     }
 
+    public boolean engine() {
+        return world != null && "engine_station".equals(world.getBlockState(pos).getBlock().getRegistryName().getPath());
+    }
+
+    public int inputLimit() { return engine() ? 2 : INPUT_COUNT; }
+
+    /** Player's left while looking at the front. Only that face accepts power. */
+    EnumFacing powerFace() {
+        if (world == null) return null;
+        IBlockState state = world.getBlockState(pos);
+        if (!state.getPropertyKeys().contains(net.minecraft.block.BlockHorizontal.FACING)) return null;
+        return state.getValue(net.minecraft.block.BlockHorizontal.FACING).rotateYCCW();
+    }
+
     void process(String id) {
         if (returnLegacyItem()) return;
+        int limit = inputLimit();
         Manufacturing.Batch match = null;
         for (Manufacturing.Batch batch : Manufacturing.BATCHES) {
             if (!batch.machine.equals(id)) continue;
-            int[] plan = batch.debit(this, INPUT_COUNT);
+            int[] plan = batch.debit(this, limit);
             if (plan != null && outputFits(batch.output)) { match = batch; break; }
         }
         if (activeBatch != match) { processTicks = 0; activeBatch = match; }
         int oldStatus = status;
+        boolean powered = engine() || energy.getEnergyStored() >= ENERGY_PER_TICK;
         if (match == null) {
             processTicks = 0;
             status = STATUS_IDLE;
-        } else if (energy.getEnergyStored() < ENERGY_PER_TICK) {
+        } else if (!powered) {
             status = STATUS_NO_POWER;
         } else {
-            energy.consume(ENERGY_PER_TICK);
+            if (!engine()) energy.consume(ENERGY_PER_TICK);
             processTicks++;
             status = STATUS_WORKING;
             if (processTicks >= PROCESS_TIME) {
                 // Re-validate inputs at completion time; abort quietly if they changed.
-                int[] finalDebit = match.debit(this, INPUT_COUNT);
+                int[] finalDebit = match.debit(this, limit);
                 if (finalDebit != null && outputFits(match.output)) {
-                    for (int slot = 0; slot < INPUT_COUNT; slot++)
+                    for (int slot = 0; slot < limit; slot++)
                         if (finalDebit[slot] > 0) decrStackSize(slot, finalDebit[slot]);
                     ItemStack existing = inventory.get(OUTPUT_SLOT);
                     if (existing.isEmpty()) inventory.set(OUTPUT_SLOT, match.output.copy());
@@ -108,12 +125,16 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     }
 
     // ---- energy capability: this is what GC aluminium wire detects ----
+    private boolean acceptsPower(EnumFacing side) {
+        return !engine() && side == powerFace();
+    }
+
     @Override public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> cap, EnumFacing side) {
-        return cap == CapabilityEnergy.ENERGY || super.hasCapability(cap, side);
+        return (cap == CapabilityEnergy.ENERGY && acceptsPower(side)) || super.hasCapability(cap, side);
     }
     @Override @SuppressWarnings("unchecked")
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, EnumFacing side) {
-        if (cap == CapabilityEnergy.ENERGY) return (T) energy;
+        if (cap == CapabilityEnergy.ENERGY && acceptsPower(side)) return (T) energy;
         return super.getCapability(cap, side);
     }
 
@@ -194,8 +215,8 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     @Override public void openInventory(EntityPlayer player) { }
     @Override public void closeInventory(EntityPlayer player) { }
     @Override public boolean isItemValidForSlot(int i, ItemStack s) {
-        if (i < INPUT_COUNT) return true;
-        return i == BATTERY_SLOT && s.hasCapability(CapabilityEnergy.ENERGY, null);
+        if (i < inputLimit()) return true;
+        return !engine() && i == BATTERY_SLOT && s.hasCapability(CapabilityEnergy.ENERGY, null);
     }
     @Override public void clear() { inventory.clear(); markDirty(); }
     @Override public String getName() { return "tile.newearth." + (world == null ? "material_station" : world.getBlockState(pos).getBlock().getRegistryName().getPath()) + ".name"; }
@@ -204,11 +225,12 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     @Override public Container createContainer(InventoryPlayer playerInventory, EntityPlayer player) { return new ManufacturingContainer(playerInventory, this); }
     @Override public int[] getSlotsForFace(EnumFacing face) {
         if (face == EnumFacing.DOWN) return new int[] { OUTPUT_SLOT };
-        int[] in = new int[INPUT_COUNT];
-        for (int i = 0; i < INPUT_COUNT; i++) in[i] = i;
+        int limit = inputLimit();
+        int[] in = new int[limit];
+        for (int i = 0; i < limit; i++) in[i] = i;
         return in;
     }
-    @Override public boolean canInsertItem(int i, ItemStack s, EnumFacing face) { return i < INPUT_COUNT; }
+    @Override public boolean canInsertItem(int i, ItemStack s, EnumFacing face) { return i < inputLimit(); }
     @Override public boolean canExtractItem(int i, ItemStack s, EnumFacing face) { return i == OUTPUT_SLOT; }
 
     /** EnergyStorage with a setter so NBT and GUI sync can write back. */

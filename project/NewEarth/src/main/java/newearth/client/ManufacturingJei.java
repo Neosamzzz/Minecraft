@@ -63,13 +63,16 @@ public final class ManufacturingJei implements IModPlugin {
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
         @Override public void drawExtras(Minecraft mc) {
-            for (int i = 0; i < 6; i++) slot.draw(mc, (i % 3) * 20, (i / 3) * 20 + 10);
+            int inputs = id.equals("engine_station") ? 2 : 6;
+            int columns = id.equals("engine_station") ? 2 : 3;
+            for (int i = 0; i < inputs; i++) slot.draw(mc, (i % columns) * 20, (i / columns) * 20 + 10);
             slot.draw(mc, 124, 20);
             mc.fontRenderer.drawString("→", 90, 25, 0x555555);
         }
         @Override public void setRecipe(IRecipeLayout layout, Wrapper wrapper, IIngredients ingredients) {
+            int columns = id.equals("engine_station") ? 2 : 3;
             for (int i = 0; i < wrapper.batch.inputs.size(); i++)
-                layout.getItemStacks().init(i, true, (i % 3) * 20, (i / 3) * 20 + 10);
+                layout.getItemStacks().init(i, true, (i % columns) * 20, (i / columns) * 20 + 10);
             layout.getItemStacks().init(wrapper.batch.inputs.size(), false, 124, 20);
             layout.getItemStacks().set(ingredients);
         }

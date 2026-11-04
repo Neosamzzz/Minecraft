@@ -38,6 +38,7 @@ public final class ManufacturingGui extends GuiContainer {
         mc.getTextureManager().bindTexture(isEngine ? BG_ENGINE : BG);
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
         mc.getTextureManager().bindTexture(ATLAS);
+        boolean engine = tile.engine();
         // progress arrow fill, same math as GS renderProgressArray
         int progress = tile.getField(1);
         if (progress > 0) {
@@ -47,8 +48,8 @@ public final class ManufacturingGui extends GuiContainer {
             if (scale > ARROW_W - 8)
                 drawScaledCustomSizeModalRect(x + ARROW_X + ARROW_W, y + ARROW_Y, 209, 125, 8, 15, scale - ARROW_W, 15, 256, 256);
         }
-        // energy fill
-        int energy = tile.getField(0);
+        // energy fill; the engine station has no power interface
+        int energy = engine ? 0 : tile.getField(0);
         if (energy > 0) {
             int w = energy * ENERGY_FILL_W / ManufacturingTile.ENERGY_CAPACITY;
             if (w > 0)
@@ -60,6 +61,7 @@ public final class ManufacturingGui extends GuiContainer {
         String title = tile.getDisplayName().getUnformattedText();
         fontRenderer.drawString(title, (xSize - fontRenderer.getStringWidth(title)) / 2, 6, 0x9fe8ff);
         fontRenderer.drawString(I18n.format("container.inventory"), 8, 117, 0x9fe8ff);
+        if (tile.engine()) return;
         int status = tile.getField(2);
         String key;
         int color;
