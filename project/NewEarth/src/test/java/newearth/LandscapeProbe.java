@@ -30,6 +30,16 @@ public final class LandscapeProbe {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        check(newearth.dimension.LandingSite.safeBlocks(Blocks.GRASS.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState()), "Dry grass landing is valid");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), Blocks.AIR.getDefaultState()), "Underwater landing is rejected");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.STONE.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.STONE.getDefaultState()), "Head obstruction is rejected");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.MAGMA.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState()), "Magma landing is rejected");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.LEAVES.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState()), "Tree canopy is not landing ground");
+        newearth.dimension.LandingSite landingData = new newearth.dimension.LandingSite("test");
+        net.minecraft.nbt.NBTTagCompound landingTag = new net.minecraft.nbt.NBTTagCompound();
+        landingTag.setLong("Position", new net.minecraft.util.math.BlockPos(-51, 79, 123).toLong());
+        landingData.readFromNBT(landingTag);
+        check(landingData.writeToNBT(new net.minecraft.nbt.NBTTagCompound()).getLong("Position") == landingTag.getLong("Position"), "Landing location persists across save and reload");
         check(newearth.dimension.EndDimension.matches("Biome Bundle", 1020), "OTG destination is recognized");
         check(newearth.dimension.EndDimension.matches("Biome Bundle", 900), "Saved destination can retain its own ID");
         check(!newearth.dimension.EndDimension.matches("Biome Bundle", 0), "Preview overworld is excluded");

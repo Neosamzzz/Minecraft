@@ -5,6 +5,11 @@ import java.lang.reflect.Field;
 import java.util.List;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.DimensionType;
@@ -15,6 +20,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -126,6 +132,40 @@ public final class EndDimension {
 
     public static boolean matches(String preset, int dimension) {
         return dimension != 0 && PRESET.equals(preset);
+    }
+
+    public static BlockPos landing(WorldServer world) {
+        if (!isDestination(world)) throw new IllegalArgumentException("Not the NewEarth destination");
+        return LandingSite.get(world);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void arrived(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.player instanceof EntityPlayerMP && isDestination(event.player.world))
+            placeAtLanding((EntityPlayerMP) event.player);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void login(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.player instanceof EntityPlayerMP) || !isDestination(event.player.world)) return;
+        NBTTagCompound persisted = event.player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+        if (!persisted.getBoolean("NewEarthArrived")) placeAtLanding((EntityPlayerMP) event.player);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void respawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.player instanceof EntityPlayerMP && isDestination(event.player.world)
+                && event.player.getBedLocation(event.player.dimension) == null)
+            placeAtLanding((EntityPlayerMP) event.player);
+    }
+
+    private static void placeAtLanding(EntityPlayerMP player) {
+        BlockPos at = landing(player.getServerWorld());
+        player.setPositionAndUpdate(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+        player.fallDistance = 0;
+        NBTTagCompound persisted = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+        persisted.setBoolean("NewEarthArrived", true);
+        player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
