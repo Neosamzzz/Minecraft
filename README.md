@@ -79,6 +79,8 @@ py -3 tools/build.py --target all --offline
 
 最终包取自 `build/libs/`。退出游戏或停服后替换相应模组；FTB 和 NewEarth 的客户端、服务端使用同版本。NewEarth 同时分发根目录 `config/` 的固定配置。更新已有实例前保留原 JAR、配置与存档，避免覆盖游玩进度。
 
+正式游戏内测试使用 PCL 实例 `C:\Users\qq106\Desktop\游戏\Release\.minecraft\versions\1.12.2-NewEarth-Cleanroom`。客户端 JAR 替换该实例 `mods/` 中的同名文件。
+
 FTB 任务定义由 `project/FTB/quest-config/solar-system/normal/` 分发到实例 `config/ftbquests/normal/`；合入已有任务书前核对章节索引和 ID。
 
 ## 固定配置交付约定
