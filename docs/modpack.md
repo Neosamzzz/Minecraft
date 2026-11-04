@@ -16,7 +16,7 @@
 | MJRLegendsLib | `MJRLegendsLib-1.12.2-1.2.1.jar` | |
 | MixinBooter | `000mixinbooter-12.2.jar` | Mixin 加载依赖 |
 | GSLaunchCompat | `GSLaunchCompat-1.4.8.jar` | 遥感、地图与发射控制补丁 |
-| FTB Quests | `FTBQuests-1202.9.5.jar` | 公共团队与任务书 |
+| FTB Quests | `FTBQuests-1202.9.6.jar` | 公共团队与任务书 |
 | FTB Library | `[FTB Library（旧版）] FTBLib-5.4.7.0.jar` | 文件名标 5.4.7.0，内部元数据与启动日志为 5.4.7.2 |
 | Item Filters | `[物品过滤器] ItemFilters-1.0.4.2.jar` | |
 

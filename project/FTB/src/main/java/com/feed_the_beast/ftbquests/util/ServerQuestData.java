@@ -148,10 +148,16 @@ public class ServerQuestData extends QuestData implements NBTDataStorage.Data
 		}
 	}
 
+	/** The login event freezes the team from before shared-team assignment. */
+	static ForgeTeam questSyncTeam(ForgePlayerLoggedInEvent event)
+	{
+		return event.getPlayer().team;
+	}
+
 	@SubscribeEvent
 	public static void onPlayerLoggedIn(ForgePlayerLoggedInEvent event)
 	{
-		ServerQuestData teamData = ServerQuestData.get(event.getTeam());
+		ServerQuestData teamData = ServerQuestData.get(questSyncTeam(event));
 		EntityPlayerMP player = event.getPlayer().getPlayer();
 
 		MessageSyncQuests m = new MessageSyncQuests();

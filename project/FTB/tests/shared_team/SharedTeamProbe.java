@@ -2,6 +2,7 @@ package com.feed_the_beast.ftbquests.util;
 
 import com.feed_the_beast.ftblib.FTBLibCommon;
 import com.feed_the_beast.ftblib.FTBLibConfig;
+import com.feed_the_beast.ftblib.events.player.ForgePlayerLoggedInEvent;
 import com.feed_the_beast.ftblib.events.universe.UniverseLoadedEvent;
 import com.feed_the_beast.ftblib.events.universe.UniverseSavedEvent;
 import com.feed_the_beast.ftblib.lib.data.ForgePlayer;
@@ -104,7 +105,10 @@ public class SharedTeamProbe
 		oldTeam.owner = first;
 		universe.players.put(first.getId(), first);
 		universe.players.put(second.getId(), second);
+		ForgePlayerLoggedInEvent login = new ForgePlayerLoggedInEvent(first);
+		check(login.getTeam() == oldTeam, "login event snapshots the team before handlers");
 		SharedTeamManager.assignPlayer(first);
+		check(ServerQuestData.questSyncTeam(login) == original, "quest sync reads the team after assignment");
 		SharedTeamManager.assignPlayer(second);
 		check(first.team == original && second.team == original, "two players share the original team");
 		check(original.isModerator(first) && original.isModerator(second), "both players can manage the team");
