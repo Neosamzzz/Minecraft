@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiWinGame;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -21,6 +22,14 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
     private static GuiScreen screen;
     private static BlockPos landing;
     private static boolean regionSent;
+
+    @SubscribeEvent public static void travelSound(PlaySoundEvent event) {
+        Minecraft mc = Minecraft.getMinecraft();
+        // OTG emits effect 1032 after transfer, which vanilla maps to block.portal.travel.
+        if (mc.world != null && EndDimension.isDestination(mc.world)
+                && "minecraft:block.portal.travel".equals(event.getSound().getSoundLocation().toString()))
+            event.setResultSound(null);
+    }
 
     @Override public void receive(ArrivalNetwork.State state) {
         Minecraft.getMinecraft().addScheduledTask(() -> pending = state);
