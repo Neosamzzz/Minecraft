@@ -31,7 +31,7 @@ public final class Manufacturing {
             "nose_cone", "rocket_body", "rocket_engine", "booster", "fin", "blueprint_t4", "blueprint_t5", "blueprint_t6",
             "blueprint_engine_station", "blueprint_material_station", "blueprint_t7", "blueprint_sublight",
             "amethyst_fragment", "amethyst_ingot", "amethyst_plate", "amethyst_component",
-            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma", "tier9_rocket", "tier10_rocket"};
+            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma" };
     private Manufacturing() { }
 
     @SubscribeEvent public static void blocks(RegistryEvent.Register<Block> event) {
@@ -63,6 +63,9 @@ public final class Manufacturing {
                     .getConstructor(String.class).newInstance("newearth.tier7_rocket");
             register(event, "tier7_rocket", rocket);
         } catch (ReflectiveOperationException e) { throw new IllegalStateException("GS T6 item API changed", e); }
+        // T9/T10 multi-seat rockets (6 seats)
+        register(event, "tier9_rocket", new ItemTier9Rocket());
+        register(event, "tier10_rocket", new ItemTier10Rocket());
     }
 
     private static void register(RegistryEvent.Register<Item> event, String id, Item item) {
