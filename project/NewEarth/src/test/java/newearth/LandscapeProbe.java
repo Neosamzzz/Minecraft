@@ -55,6 +55,7 @@ public final class LandscapeProbe {
         check(new Landscape(0).height(0,0) != new Landscape(42).height(0,0), "Origin is not pinned to a seed-independent noise-lattice summit");
         verifyPeacefulWorld(preview);
         verifyDhHeightAdapter();
+        verifyDhArrivalOverride();
         for (long seed : new long[] {42, -20261103L}) distribution(seed);
         Landscape field = new Landscape(42);
         LandscapeBiomes provider = new LandscapeBiomes(42);
@@ -112,6 +113,56 @@ public final class LandscapeProbe {
         for(org.objectweb.asm.tree.MethodNode method:node.methods)for(org.objectweb.asm.tree.AbstractInsnNode insn:method.instructions.toArray())
             if(insn instanceof org.objectweb.asm.tree.MethodInsnNode && ((org.objectweb.asm.tree.MethodInsnNode)insn).owner.equals("newearth/dimension/HeightHooks"))hooks++;
         check(hooks==3,"Installed DH wrapper delegates all three height bounds to the dimension adapter");
+    }
+    private static void verifyDhArrivalOverride() throws Exception {
+        String path = System.getProperty("newearth.dhJar");
+        if (path == null) return;
+        try (java.net.URLClassLoader loader = new java.net.URLClassLoader(
+                new java.net.URL[] {new File(path).toURI().toURL()}, LandscapeProbe.class.getClassLoader())) {
+            Class<?> planType = loader.loadClass("com.seibel.distanthorizons.api.enums.worldGeneration.EDhApiGeneratorPlan");
+            Object chunks = planType.getField("CHUNKS_ONLY").get(null), disabled = planType.getField("DISABLED").get(null);
+            check(!planType.getField("surfaceGenEnabled").getBoolean(chunks)
+                    && planType.getField("chunkGenEnabled").getBoolean(chunks), "Installed DH CHUNKS_ONLY supports legacy chunk generation without surface preview");
+            Class<?> converter = loader.loadClass("com.seibel.distanthorizons.core.config.api.converters.ApiGeneratorModeToBoolConverter");
+            Object converted = converter.getMethod("convertToCoreType", Boolean.class).invoke(converter.newInstance(), true);
+            check(planType.getField("surfaceGenEnabled").getBoolean(converted), "Legacy boolean enable API selects unsupported surface preview and must be avoided");
+            Class<?> builderType = loader.loadClass("com.seibel.distanthorizons.core.config.types.ConfigEntry$Builder");
+            Object builder = builderType.newInstance();
+            builderType.getMethod("set", Object.class).invoke(builder, disabled);
+            builderType.getMethod("setUseApiOverwrite", boolean.class).invoke(builder, true);
+            Object entry = builderType.getMethod("build").invoke(builder);
+            Class<?> entryType = loader.loadClass("com.seibel.distanthorizons.core.config.types.ConfigEntry");
+            Class<?> listenerType = loader.loadClass("com.seibel.distanthorizons.core.config.listeners.IConfigListener");
+            int[] changes = {0};
+            Object listener = java.lang.reflect.Proxy.newProxyInstance(loader, new Class<?>[] {listenerType}, (proxy, method, args) -> {
+                if (method.getName().equals("onConfigValueSet")) {
+                    changes[0]++;
+                    Object effective = entryType.getMethod("get").invoke(entry);
+                    if (planType.getField("surfaceGenEnabled").getBoolean(effective))
+                        throw new AssertionError("Arrival override reentered the unsupported surface plan");
+                }
+                return null;
+            });
+            entryType.getMethod("addListener", listenerType).invoke(entry, listener);
+            Class<?> wrapperType = loader.loadClass("com.seibel.distanthorizons.core.config.api.DhApiConfigValue");
+            Object value = wrapperType.getConstructor(entryType).newInstance(entry);
+            Class<?> adapter = Class.forName("newearth.client.ArrivalDistantLoading");
+            java.lang.reflect.Field valueType = adapter.getDeclaredField("valueType"); valueType.setAccessible(true);
+            valueType.set(null, loader.loadClass("com.seibel.distanthorizons.api.interfaces.config.IDhApiConfigValue"));
+            java.lang.reflect.Method apply = adapter.getDeclaredMethod("override", Object.class, Object.class); apply.setAccessible(true);
+            java.lang.reflect.Method stop = adapter.getDeclaredMethod("stop"); stop.setAccessible(true);
+            try {
+                apply.invoke(null, value, chunks);
+                check(entryType.getMethod("get").invoke(entry) == chunks && changes[0] == 1,
+                        "Production adapter applies actual DH override without recursive config notifications");
+            } finally { stop.invoke(null); }
+            check(entryType.getMethod("get").invoke(entry) == disabled
+                    && entryType.getMethod("getApiValue").invoke(entry) == null,
+                    "Landing restores disabled DH generation and removes temporary API override");
+            entryType.getMethod("setApiValue", Object.class, String.class).invoke(entry, disabled, "existing override");
+            try { apply.invoke(null, value, chunks); } finally { stop.invoke(null); }
+            check(entryType.getMethod("getApiValue").invoke(entry) == disabled, "Landing preserves a preexisting DH API override");
+        }
     }
     private static ChunkPrimer buildTerrain(Landscape field,int x,int z) {
         return LandscapeGenerator.terrain(field,x,z,new ExtendedPrimer());

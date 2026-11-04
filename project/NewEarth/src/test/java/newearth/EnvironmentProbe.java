@@ -215,6 +215,8 @@ public final class EnvironmentProbe implements Opcodes {
         input.setTag("Completed", done);
         net.minecraft.nbt.NBTTagCompound group = new net.minecraft.nbt.NBTTagCompound();
         group.setString("Id", "saved-arrival");
+        group.setInteger("Cursor", 6000);
+        group.setLong("Center", new net.minecraft.util.math.BlockPos(-512, 70, 256).toLong());
         net.minecraft.nbt.NBTTagList members = new net.minecraft.nbt.NBTTagList();
         net.minecraft.nbt.NBTTagCompound member = new net.minecraft.nbt.NBTTagCompound();
         member.setUniqueId("Player", waiting); member.setBoolean("Ready", true); members.appendTag(member);
@@ -227,8 +229,22 @@ public final class EnvironmentProbe implements Opcodes {
         check(output.getTagList("Completed", 8).getStringTagAt(0).equals(finished.toString()), "Completed arrival survives save reload");
         net.minecraft.nbt.NBTTagCompound session = output.getTagList("Sessions", 10).getCompoundTagAt(0);
         check(session.getString("Id").equals("saved-arrival"), "Reconnect retains session identity");
+        check(session.getInteger("Cursor") == 6000 && session.getLong("Center") == group.getLong("Center"), "Preparation frontier resumes across restart");
         net.minecraft.nbt.NBTTagCompound restored = session.getTagList("Members", 10).getCompoundTagAt(0);
         check(restored.getUniqueId("Player").equals(waiting) && restored.getBoolean("Ready"), "Offline ready participant survives restart without replay");
+        Set<net.minecraft.util.math.BlockPos> spiral = new HashSet<>();
+        boolean adjacent = true;
+        net.minecraft.util.math.BlockPos previous = net.minecraft.util.math.BlockPos.ORIGIN;
+        for (int i = 0; i < 6561; i++) {
+            net.minecraft.util.math.BlockPos pos = newearth.dimension.ArrivalSession.preparationOffset(i);
+            adjacent &= i == 0 || Math.abs(pos.getX() - previous.getX()) + Math.abs(pos.getZ() - previous.getZ()) == 1;
+            spiral.add(pos); previous = pos;
+            if (i == 120) check(spiral.size() == 121 && spiral.contains(new net.minecraft.util.math.BlockPos(-5, 0, -5))
+                    && spiral.contains(new net.minecraft.util.math.BlockPos(5, 0, 5)), "Essential landing square is prepared first");
+        }
+        check(spiral.size() == 6561 && adjacent, "Preparation expands continuously without duplicate chunks");
+        check(spiral.contains(new net.minecraft.util.math.BlockPos(-40, 0, -40))
+                && spiral.contains(new net.minecraft.util.math.BlockPos(40, 0, 40)), "Preparation grows beyond ordinary 20-chunk view distance");
         newearth.dimension.ArrivalNetwork.State sent = new newearth.dimension.ArrivalNetwork.State();
         sent.session = "saved-arrival"; sent.dimension = 1020; sent.stage = 1;
         sent.landing = new net.minecraft.util.math.BlockPos(-129, 203, 514);

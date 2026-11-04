@@ -5,6 +5,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.fml.common.Mod;
@@ -25,7 +27,8 @@ public final class ArrivalSession extends WorldSavedData {
         String id;
         Set<UUID> members = new HashSet<>(), ready = new HashSet<>(), received = new HashSet<>();
         int cursor, ticks, descent;
-        BlockPos landing;
+        BlockPos landing, center;
+        Set<ChunkPos> extra = new HashSet<>();
         Group(String id) { this.id = id; }
     }
 
@@ -91,7 +94,7 @@ public final class ArrivalSession extends WorldSavedData {
         WorldServer world = (WorldServer) event.world;
         ArrivalSession saved = data(world);
         // Share one bounded generation budget across groups in this world.
-        long deadline = System.nanoTime() + 25_000_000L;
+        long deadline = System.nanoTime() + 35_000_000L;
         Iterator<Group> iterator = saved.groups.values().iterator();
         while (iterator.hasNext()) {
             Group group = iterator.next();
@@ -100,18 +103,22 @@ public final class ArrivalSession extends WorldSavedData {
                 EntityPlayerMP player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(member);
                 if (player != null && player.world == world) online.add(player);
             }
-            if (online.isEmpty()) continue;
+            if (online.isEmpty()) { releaseChunks(world, group, true); continue; }
             group.ticks++;
-            BlockPos center = world.getSpawnPoint();
-            if (group.landing == null && group.cursor >= 121) group.landing = EndDimension.landing(world);
-            if (group.landing == null) {
-                int count = 0;
-                while (group.cursor < 121 && count++ < 4 && System.nanoTime() < deadline) {
-                    int index = group.cursor++;
-                    world.getChunkProvider().provideChunk((center.getX() >> 4) + index % 11 - 5,
-                            (center.getZ() >> 4) + index / 11 - 5);
-                }
+            if (group.center == null) group.center = world.getSpawnPoint();
+            BlockPos center = group.center;
+            // Near-to-far traversal continues through poem, waiting and descent, without a radius cap.
+            int count = 0;
+            while (count++ < 16 && System.nanoTime() < deadline) {
+                BlockPos offset = preparationOffset(group.cursor++);
+                int x = (center.getX() >> 4) + offset.getX(), z = (center.getZ() >> 4) + offset.getZ();
+                if (!world.getWorldBorder().contains(new BlockPos(x * 16, 64, z * 16))) continue;
+                boolean loaded = world.getChunkProvider().getLoadedChunk(x, z) != null;
+                world.getChunkProvider().provideChunk(x, z);
+                if (!loaded && !world.getPlayerChunkMap().contains(x, z)) group.extra.add(new ChunkPos(x, z));
             }
+            if (group.landing == null && group.cursor >= 121) group.landing = EndDimension.landing(world);
+            if (group.ticks % 100 == 0) { saved.markDirty(); releaseChunks(world, group, false); }
             boolean ready = group.landing != null;
             for (EntityPlayerMP player : online) ready &= group.ready.contains(player.getUniqueID())
                     && group.received.contains(player.getUniqueID());
@@ -135,9 +142,64 @@ public final class ArrivalSession extends WorldSavedData {
             if (group.descent > 0 && ++group.descent > 41) {
                 saved.completed.addAll(group.members);
                 saved.markDirty();
-                for (EntityPlayerMP player : online) { restore(player); land(player, group.landing); }
+                for (EntityPlayerMP player : online) {
+                    restore(player); land(player, group.landing);
+                    ArrivalNetwork.send(player, group.id, ArrivalNetwork.LANDED, group.landing);
+                }
+                releaseChunks(world, group, true);
+                org.apache.logging.log4j.LogManager.getLogger("NewEarth").info(
+                        "Arrival landed; extra preparation stopped after {} chunk positions", group.cursor);
                 iterator.remove();
             }
+        }
+    }
+
+    /** Square spiral, starting at the center; each complete ring covers every nearby chunk. */
+    public static BlockPos preparationOffset(int index) {
+        if (index == 0) return BlockPos.ORIGIN;
+        int radius = (int) ((Math.sqrt(index) + 1) / 2);
+        int side = radius * 2;
+        long start = (long) (side - 1) * (side - 1);
+        int offset = (int) (index - start);
+        if (offset < side) return new BlockPos(radius, 0, -radius + 1 + offset);
+        if (offset < side * 2) return new BlockPos(radius - 1 - (offset - side), 0, radius);
+        if (offset < side * 3) return new BlockPos(-radius, 0, radius - 1 - (offset - side * 2));
+        return new BlockPos(-radius + 1 + (offset - side * 3), 0, -radius);
+    }
+
+    private static void releaseChunks(WorldServer world, Group group, boolean all) {
+        if (group.center == null) return;
+        BlockPos offset = preparationOffset(Math.max(0, group.cursor - 1));
+        int radius = Math.max(Math.abs(offset.getX()), Math.abs(offset.getZ()));
+        Iterator<ChunkPos> iterator = group.extra.iterator();
+        while (iterator.hasNext()) {
+            ChunkPos pos = iterator.next();
+            Chunk chunk = world.getChunkProvider().getLoadedChunk(pos.x, pos.z);
+            int distance = Math.max(Math.abs(pos.x - (group.center.getX() >> 4)), Math.abs(pos.z - (group.center.getZ() >> 4)));
+            if (chunk == null || world.getPlayerChunkMap().contains(pos.x, pos.z)) { iterator.remove(); continue; }
+            // Keep the generation frontier for adjacent population, then let vanilla save/unload it.
+            if (all || (distance < radius - 1 && chunk.isTerrainPopulated())) {
+                world.getChunkProvider().queueUnload(chunk);
+                iterator.remove();
+            }
+        }
+    }
+
+    public static final class ReplayCommand extends net.minecraft.command.CommandBase {
+        @Override public String getName() { return "neweartharrival"; }
+        @Override public String getUsage(net.minecraft.command.ICommandSender sender) { return "/neweartharrival"; }
+        @Override public int getRequiredPermissionLevel() { return 2; }
+        @Override public void execute(net.minecraft.server.MinecraftServer server,
+                net.minecraft.command.ICommandSender sender, String[] args) throws net.minecraft.command.CommandException {
+            EntityPlayerMP player = getCommandSenderAsPlayer(sender);
+            if (!EndDimension.isDestination(player.world))
+                throw new net.minecraft.command.CommandException("请先进入终章维度");
+            ArrivalSession saved = data(player.getServerWorld());
+            if (saved.pending(player.getUniqueID()) != null)
+                throw new net.minecraft.command.CommandException("抵达流程正在进行中");
+            saved.completed.remove(player.getUniqueID());
+            saved.markDirty();
+            enter(player, false);
         }
     }
 
@@ -196,6 +258,8 @@ public final class ArrivalSession extends WorldSavedData {
         for (int i = 0; i < sessions.tagCount(); i++) {
             NBTTagCompound entry = sessions.getCompoundTagAt(i);
             Group group = new Group(entry.getString("Id"));
+            group.cursor = Math.max(0, entry.getInteger("Cursor"));
+            if (entry.hasKey("Center")) group.center = BlockPos.fromLong(entry.getLong("Center"));
             NBTTagList members = entry.getTagList("Members", 10);
             for (int j = 0; j < members.tagCount(); j++) {
                 NBTTagCompound member = members.getCompoundTagAt(j);
@@ -213,6 +277,8 @@ public final class ArrivalSession extends WorldSavedData {
         for (Group group : groups.values()) {
             NBTTagCompound entry = new NBTTagCompound();
             entry.setString("Id", group.id);
+            entry.setInteger("Cursor", group.cursor);
+            if (group.center != null) entry.setLong("Center", group.center.toLong());
             NBTTagList members = new NBTTagList();
             for (UUID id : group.members) {
                 NBTTagCompound member = new NBTTagCompound();

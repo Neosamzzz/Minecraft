@@ -1,6 +1,5 @@
 package newearth.client;
 
-import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +20,11 @@ final class ArrivalDistantLoading {
             Class<?> root = Class.forName("com.seibel.distanthorizons.api.interfaces.config.IDhApiConfig");
             Object generation = root.getMethod("worldGenerator").invoke(config);
             Class<?> generator = Class.forName("com.seibel.distanthorizons.api.interfaces.config.both.IDhApiWorldGenerationConfig");
-            override(generator.getMethod("enableDistantWorldGeneration").invoke(generation), true);
+            // The boolean API converts true to SURFACE_THEN_CHUNKS, unsupported in 1.12.2.
+            // Its listener then recursively changes the underlying value while the override wins.
+            Class<?> planType = Class.forName("com.seibel.distanthorizons.api.enums.worldGeneration.EDhApiGeneratorPlan");
+            Object plan = planType.getField("CHUNKS_ONLY").get(null);
+            override(generator.getMethod("GeneratorPlan").invoke(generation), plan);
             Object threads = root.getMethod("multiThreading").invoke(config);
             Class<?> threading = Class.forName("com.seibel.distanthorizons.api.interfaces.config.client.IDhApiMultiThreadingConfig");
             Object count = threading.getMethod("threadCount").invoke(threads);
@@ -30,7 +33,8 @@ final class ArrivalDistantLoading {
             override(count, Math.max(current, desired));
             Object ratio = threading.getMethod("threadRuntimeRatio").invoke(threads);
             double previous = ((Number) valueType.getMethod("getValue").invoke(ratio)).doubleValue();
-            override(ratio, Math.max(previous, 0.8D));
+            override(ratio, Math.max(previous, 1.0D));
+            LogManager.getLogger("NewEarth").info("Arrival DH boost active: CHUNKS_ONLY, threads={}, runtime=1.0", Math.max(current, desired));
         } catch (ClassNotFoundException ignored) { attempted = true; }
         catch (Exception error) {
             LogManager.getLogger("NewEarth").warn("DH arrival boost unavailable; normal loading continues", error);
@@ -40,14 +44,17 @@ final class ArrivalDistantLoading {
 
     private static void override(Object value, Object desired) throws Exception {
         Object previous = valueType.getMethod("getApiValue").invoke(value);
+        if (java.util.Objects.equals(valueType.getMethod("getValue").invoke(value), desired)) return;
+        // Check the API result: a rejected override must not be reported as successful.
         PREVIOUS.put(value, previous);
-        valueType.getMethod("setValue", Object.class).invoke(value, desired);
+        if (!(Boolean) valueType.getMethod("setValue", Object.class, String.class).invoke(value, desired, "NewEarth arrival"))
+            throw new IllegalStateException("DH rejected arrival override");
     }
 
     static void stop() {
         for (Map.Entry<Object, Object> entry : PREVIOUS.entrySet()) try {
             if (entry.getValue() == null) valueType.getMethod("clearValue").invoke(entry.getKey());
-            else valueType.getMethod("setValue", Object.class).invoke(entry.getKey(), entry.getValue());
+            else valueType.getMethod("setValue", Object.class, String.class).invoke(entry.getKey(), entry.getValue(), "NewEarth arrival restore");
         } catch (Exception error) { LogManager.getLogger("NewEarth").warn("Could not restore DH API setting", error); }
         PREVIOUS.clear(); attempted = false;
     }

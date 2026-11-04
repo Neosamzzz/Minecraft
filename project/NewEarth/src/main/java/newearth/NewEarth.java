@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import newearth.dimension.EndDimension;
 import org.apache.logging.log4j.LogManager;
@@ -14,13 +15,18 @@ import org.apache.logging.log4j.Logger;
         acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
-    public static final String VERSION = "0.3.0-terrain.8";
+    public static final String VERSION = "0.3.0-terrain.9";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         EndDimension.configure(event.getModConfigurationDirectory());
         newearth.dimension.ArrivalNetwork.init();
+    }
+
+    @Mod.EventHandler
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new newearth.dimension.ArrivalSession.ReplayCommand());
     }
 
     @Mod.EventHandler

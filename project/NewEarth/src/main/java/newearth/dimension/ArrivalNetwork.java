@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.SidedProxy;
 
 public final class ArrivalNetwork {
-    public static final int POEM = 0, WAIT = 1, RELEASE = 2;
+    public static final int POEM = 0, WAIT = 1, RELEASE = 2, LANDED = 3;
     private static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel("newearth_arrival");
     @SidedProxy(modId = "newearth", clientSide = "newearth.client.ArrivalClient", serverSide = "newearth.dimension.ArrivalNetwork$ClientBridge")
     public static ClientBridge client;

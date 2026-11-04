@@ -69,7 +69,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
                 else {
                     if (mc.currentScreen == screen) mc.displayGuiScreen(null);
                     screen = null;
-                    ArrivalDistantLoading.stop();
+                    if (stage == ArrivalNetwork.LANDED) ArrivalDistantLoading.stop();
                 }
             }
         }
@@ -78,8 +78,8 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
             ArrivalNetwork.ready(session, true);
             regionSent = true;
         }
+        if (stage >= ArrivalNetwork.POEM && stage < ArrivalNetwork.LANDED && mc.world != null) ArrivalDistantLoading.start();
         if (screen != null && mc.world != null) {
-            ArrivalDistantLoading.start();
             if (mc.currentScreen != screen) mc.displayGuiScreen(screen);
         }
     }
