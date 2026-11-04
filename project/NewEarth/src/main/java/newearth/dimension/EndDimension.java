@@ -63,8 +63,10 @@ public final class EndDimension {
             if (DimensionManager.isDimensionRegistered(dimensionId))
                 throw new IllegalStateException("NewEarth dimension ID is occupied: " + dimensionId + ". Change config/newearth-dimension.cfg before creating the destination.");
             Class<?> configType = Class.forName("com.pg85.otg.configuration.dimensions.DimensionConfig");
-            Object config = configType.getConstructor(String.class, int.class, boolean.class)
-                    .newInstance(PRESET, dimensionId, false);
+            // OTG's three-argument constructor tries to load a WorldConfig before the world exists.
+            Object config = configType.getConstructor().newInstance();
+            set(config, "PresetName", PRESET);
+            set(config, "DimensionId", dimensionId);
             set(config, "Seed", Long.toString(server.getWorld(0).getSeed()));
             set(config, "ShowInWorldCreationGUI", false);
             Object settings = value(config, "Settings");
