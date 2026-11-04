@@ -2,11 +2,7 @@ package newearth;
 
 import galaxyspace.core.prefab.entities.EntityMultiSeatRocket;
 import micdoodle8.mods.galacticraft.api.prefab.entity.EntityTieredRocket.EnumRocketType;
-import micdoodle8.mods.galacticraft.api.vector.Vector3;
-import micdoodle8.mods.galacticraft.core.GalacticraftCore;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;

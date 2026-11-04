@@ -1,5 +1,4 @@
 {
   "parent": "forge:block/obj",
-  "textures": {},
-  "custom": { "model": "newearth:models/tier7_workbench.obj" }
+  "model": "newearth:models/tier7_workbench.obj"
 }

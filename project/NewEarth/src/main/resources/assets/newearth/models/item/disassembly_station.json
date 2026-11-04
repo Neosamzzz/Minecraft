@@ -1,7 +1,6 @@
 {
   "parent": "forge:item/obj",
-  "textures": {},
-  "custom": { "model": "newearth:models/tier7_workbench.obj" },
+  "model": "newearth:models/tier7_workbench.obj",
   "display": {
     "gui": { "rotation": [30, 45, 0], "scale": 0.5 },
     "ground": { "scale": 0.4 }
