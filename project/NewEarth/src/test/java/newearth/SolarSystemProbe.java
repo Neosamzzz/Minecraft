@@ -21,6 +21,18 @@ public final class SolarSystemProbe {
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         java.lang.reflect.Field home = net.minecraftforge.fml.relauncher.FMLInjectionData.class.getDeclaredField("minecraftHome");
         home.setAccessible(true); home.set(null, new File(".").getAbsoluteFile());
+        Planet earthReference = new Planet("earth_reference");
+        earthReference.setBodyIcon(new net.minecraft.util.ResourceLocation("galacticraftcore", "textures/gui/celestialbodies/earth.png"));
+        earthReference.setAtmosphere(new micdoodle8.mods.galacticraft.api.world.AtmosphereInfo(true, true, false, 0, 0, 1));
+        earthReference.atmosphere.composition.add(micdoodle8.mods.galacticraft.api.world.EnumAtmosphericGas.OXYGEN);
+        SolarSystem targetSystem = new SolarSystem("target_system", "probe");
+        Planet destination = new Planet("trars9").setParentSolarSystem(targetSystem);
+        newearth.dimension.EndDimension.bindEarthProperties(destination, earthReference, net.minecraft.world.WorldProviderSurface.class, 1020, 6);
+        check(destination.getReachable() && destination.getDimensionID() == 1020 && !destination.shouldAutoRegister(), "Destination points to OTG without duplicate registration");
+        check(destination.getParentSolarSystem() == targetSystem, "Destination remains in its original star system");
+        check(destination.getBodyIcon().equals(earthReference.getBodyIcon()) && destination.getTierRequirement() == 6, "Earth icon and test tier are applied");
+        check(destination.atmosphere != earthReference.atmosphere && destination.atmosphere.composition.equals(earthReference.atmosphere.composition), "Earth atmosphere is copied without sharing mutable gas lists");
+        check(destination.atmosphere.isBreathable() && destination.atmosphere.hasPrecipitation() && !destination.atmosphere.isCorrosive() && destination.atmosphere.thermalLevel() == 0 && destination.atmosphere.relativeDensity() == 1, "Earth environment properties are retained");
         List<Planet> gs = new ArrayList<>(), ep = new ArrayList<>();
         for (String name : new String[] {"jupiter", "saturn", "uranus", "neptune", "pluto"}) {
             gs.add(new Planet(name));

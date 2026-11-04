@@ -4,6 +4,7 @@ newearth.map.star=Star
 newearth.map.moon=Moon
 newearth.map.planet=Planet
 newearth.map.landing=Landing
+newearth.map.landable=Landable
 newearth.map.display=Display only
 newearth.map.tier=Rocket
 newearth.map.air=Air

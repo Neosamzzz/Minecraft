@@ -10,6 +10,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
+import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
+import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
+import micdoodle8.mods.galacticraft.core.GalacticraftCore;
+import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.DimensionType;
@@ -34,6 +39,9 @@ public final class EndDimension {
     private static int configuredId = 1020;
     private static boolean enabled = true;
     private static DimensionType destinationType;
+    private static Class<? extends WorldProvider> destinationProvider;
+    private static boolean tier6TestFlight;
+    public static final String BODY_NAME = "trars9";
 
     private EndDimension() { }
 
@@ -41,6 +49,7 @@ public final class EndDimension {
         Configuration config = new Configuration(new File(configDirectory, "newearth-dimension.cfg"));
         config.load();
         enabled = config.getBoolean("enabled", "dimension", true, "Create the NewEarth destination using the Biome Bundle preset.");
+        tier6TestFlight = config.getBoolean("tier6TestFlight", "dimension", false, "Allow tier 6 rockets to access the destination for integration tests only. Keep disabled in production.");
         dimensionId = config.getInt("id", "dimension", 1020, 3, 1023, "Dimension ID for new saves. Existing saves retain their OTG dimension ID.");
         configuredId = dimensionId;
         if (config.hasChanged()) config.save();
@@ -48,6 +57,7 @@ public final class EndDimension {
             try {
                 Class<? extends WorldProvider> provider = Class.forName("com.pg85.otg.forge.dimensions.OTGWorldProvider")
                         .asSubclass(WorldProvider.class);
+                destinationProvider = provider;
                 for (DimensionType type : DimensionType.values()) {
                     if (type.getId() == configuredId)
                         throw new IllegalStateException("NewEarth dimension type ID is occupied: " + configuredId);
@@ -60,6 +70,38 @@ public final class EndDimension {
                 throw new IllegalStateException("OTG 9.9 world provider is missing", error);
             }
         }
+    }
+
+    public static void bindCelestialBody() {
+        if (!enabled || destinationProvider == null) return;
+        CelestialBody body = GalaxyRegistry.getRegisteredPlanets().get(BODY_NAME);
+        if (body == null) throw new IllegalStateException("ExtraPlanets destination trars9 is disabled");
+        bindEarthProperties(body, GalacticraftCore.planetOverworld, destinationProvider, dimensionId,
+                tier6TestFlight ? 6 : 10);
+        GalaxyRegistry.refreshGalaxies();
+    }
+
+    public static void bindEarthProperties(CelestialBody body, CelestialBody earth,
+            Class<? extends WorldProvider> provider, int id, int tier) {
+        AtmosphereInfo atmosphere = earth.atmosphere;
+        AtmosphereInfo copy = new AtmosphereInfo(atmosphere.isBreathable(), atmosphere.hasPrecipitation(),
+                atmosphere.isCorrosive(), atmosphere.thermalLevel(), atmosphere.windLevel(), atmosphere.relativeDensity());
+        copy.composition.addAll(atmosphere.composition);
+        body.setAtmosphere(copy);
+        body.setBodyIcon(earth.getBodyIcon());
+        body.setRelativeSize(earth.getRelativeSize());
+        body.setDimensionInfo(id, provider, false).setTierRequired(tier);
+        body.setForceStaticLoad(false);
+    }
+
+    public static boolean isDestinationId(int id) {
+        return enabled && destinationProvider != null && id == dimensionId;
+    }
+
+    public static boolean canTravel(Object player) {
+        // Production access remains closed until the real ship/core gate is connected.
+        return tier6TestFlight && player instanceof EntityPlayerMP
+                && GCPlayerStats.get((EntityPlayerMP) player).getSpaceshipTier() >= 6;
     }
 
     public static void start(MinecraftServer server) {
@@ -83,6 +125,7 @@ public final class EndDimension {
                 dimensionId = (Integer) value(existing, "DimensionId");
                 if (!DimensionManager.isDimensionRegistered(dimensionId))
                     throw new IllegalStateException("Saved NewEarth dimension was not registered by OTG: " + dimensionId);
+                bindCelestialBody();
                 return;
             }
             if (DimensionManager.isDimensionRegistered(dimensionId))
@@ -101,6 +144,14 @@ public final class EndDimension {
             set(settings, "CanRespawnHere", true);
             set(settings, "CanDoRainSnowIce", true);
             set(settings, "CanDoLightning", true);
+            set(settings, "DoesWaterVaporize", false);
+            set(settings, "DoesXZShowFog", false);
+            set(settings, "UseCustomFogColor", false);
+            set(settings, "IsSkyColored", true);
+            set(settings, "IsNightWorld", false);
+            set(settings, "GravityFactor", 0.08D);
+            set(settings, "MovementFactor", 1);
+            set(settings, "CloudHeight", 128);
             set(settings, "RespawnDimension", dimensionId);
             Class<?> manager = Class.forName("com.pg85.otg.forge.dimensions.OTGDimensionManager");
             @SuppressWarnings("unchecked")
@@ -111,6 +162,7 @@ public final class EndDimension {
             manager.getMethod("initDimension", int.class).invoke(null, dimensionId);
             manager.getMethod("SaveDimensionData").invoke(null);
             dimensions.getClass().getMethod("save").invoke(dimensions);
+            bindCelestialBody();
             LogManager.getLogger("NewEarth").info("Registered NewEarth destination: {} (dimension {})", PRESET, dimensionId);
         } catch (ReflectiveOperationException error) {
             throw new IllegalStateException("Cannot initialize the NewEarth destination with OTG 9.9", error);

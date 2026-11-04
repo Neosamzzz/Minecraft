@@ -4,6 +4,7 @@ newearth.map.star=恒星
 newearth.map.moon=卫星
 newearth.map.planet=行星
 newearth.map.landing=登陆
+newearth.map.landable=可登陆
 newearth.map.display=仅供观测
 newearth.map.tier=火箭
 newearth.map.air=大气
