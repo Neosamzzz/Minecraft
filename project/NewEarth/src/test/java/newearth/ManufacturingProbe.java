@@ -59,7 +59,7 @@ public final class ManufacturingProbe {
         check(ManufacturingHooks.blueprint("com.mjr.extraplanets.planets.Uranus.WorldProviderUranus").equals("blueprint_engine_station"),"Uranus unlocks the engine station");
         check(ManufacturingHooks.blueprint("galaxyspace.systems.SolarSystem.moons.io.dimension.WorldProviderIo")==null,"Shared chest tier never grants EP blueprint to GS Io");
         JsonArray recipes=new JsonParser().parse(new InputStreamReader(ManufacturingProbe.class.getResourceAsStream("/assets/newearth/manufacturing.json"),"UTF-8")).getAsJsonArray();
-        check(recipes.size()==16,"Complete manufacturing recipe data");
+        check(recipes.size()==30,"Complete manufacturing recipe data");
         Set<String> machines=new HashSet<>();
         for(JsonElement e:recipes) {
             JsonObject r=e.getAsJsonObject();String machine=r.get("machine").getAsString();machines.add(machine);
@@ -68,7 +68,31 @@ public final class ManufacturingProbe {
             if(r.has("layout"))check(summary(r.getAsJsonArray("layout")).equals(summary(r.getAsJsonArray("inputs"))),"Shaped layout preserves ingredient quantities");
             if(machine.equals("RocketAssemblyRecipes"))check(slots==9,"T7 assembly requires a structural engine as well as its licence");
         }
-        check(machines.size()==4,"Both stations and both GS assemblers are connected");
+        check(machines.size()==7,"Both stations and both GS assemblers are connected");
+        JsonObject wafer=null,plasma=null;
+        int smelting=0;
+        Set<String> ownOutputs=new HashSet<>();
+        for(JsonElement e:recipes) {
+            JsonObject recipe=e.getAsJsonObject(),output=recipe.getAsJsonObject("output");
+            if(output.has("item"))ownOutputs.add(output.get("item").getAsString());
+            if(recipe.get("machine").getAsString().equals("circuit"))wafer=recipe;
+            if(recipe.get("machine").getAsString().equals("smelting"))smelting++;
+            if(output.has("field") && output.get("field").getAsString().endsWith("ROCKET_MODULES") && output.get("meta").getAsInt()==5)plasma=recipe;
+        }
+        check(smelting==2,"Both ordinary and glowing violet logs supply crystal fragments");
+        check(wafer!=null && wafer.getAsJsonObject("output").get("meta").getAsInt()==0 && wafer.getAsJsonObject("output").get("count").getAsInt()==3,"Repurposed EP diamond wafer yields three");
+        check(wafer.getAsJsonArray("inputs").get(0).getAsJsonObject().get("item").getAsString().equals("newearth:amethyst_ingot"),"Wafer requires exoplanet amethyst ingot");
+        check(plasma!=null && plasma.getAsJsonArray("inputs").size()==2,"Plasma upgrade has exactly two ingredients");
+        check(ownOutputs.containsAll(Arrays.asList("newearth:amethyst_ingot","newearth:amethyst_plate","newearth:amethyst_component","newearth:control_panel","newearth:tier9_engine")),"Exoplanet materials feed components and controls");
+        ItemStack recycledWafer=new ItemStack(Items.BOAT,3);
+        List<ItemStack> oldCircuit=Arrays.asList(new ItemStack(Items.DIAMOND),new ItemStack(Items.FLINT),new ItemStack(Items.FLINT),new ItemStack(Items.REDSTONE),new ItemStack(Items.PAPER));
+        micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.addRecipe(recycledWafer,new ArrayList<Object>(oldCircuit));
+        check(Manufacturing.processingRecipe("circuit",recycledWafer,Arrays.asList(new ItemStack(Items.IRON_INGOT),new ItemStack(Items.SLIME_BALL,2),new ItemStack(Items.REDSTONE),new ItemStack(Items.PAPER))),"Circuit processing route installed");
+        List<net.minecraft.util.NonNullList<Object>> circuits=micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.getRecipes();
+        check(circuits.size()==1,"Repurposing removes old wafer production recipe");
+        check(((ItemStack)circuits.get(0).get(1)).getItem()==Items.SLIME_BALL && ((ItemStack)circuits.get(0).get(2)).getItem()==Items.SLIME_BALL,"Two resin inputs occupy independent circuit slots");
+        check(micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.getOutput(0).getCount()==3,"Circuit output quantity preserved");
+        micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.removeRecipe(recycledWafer);
         String directory=System.getenv("NEWEARTH_RUNTIME_MODS");
         if(directory!=null) verifyInstalled(new File(directory),recipes);
         else System.out.println("Manufacturing installed binary checks skipped: NEWEARTH_RUNTIME_MODS unset");

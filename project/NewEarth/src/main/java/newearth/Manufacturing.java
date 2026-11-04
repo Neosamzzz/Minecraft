@@ -29,7 +29,9 @@ public final class Manufacturing {
     static final List<Batch> BATCHES = new ArrayList<>();
     static final String[] PARTS = {"composite_plate", "thermal_liner", "avionics", "connector",
             "nose_cone", "rocket_body", "rocket_engine", "booster", "fin", "blueprint_t4", "blueprint_t5", "blueprint_t6",
-            "blueprint_engine_station", "blueprint_material_station", "blueprint_t7", "blueprint_sublight"};
+            "blueprint_engine_station", "blueprint_material_station", "blueprint_t7", "blueprint_sublight",
+            "amethyst_fragment", "amethyst_ingot", "amethyst_plate", "amethyst_component",
+            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma"};
     private Manufacturing() { }
 
     @SubscribeEvent public static void blocks(RegistryEvent.Register<Block> event) {
@@ -112,6 +114,7 @@ public final class Manufacturing {
                 ItemStack output = resolve(recipe.getAsJsonObject("output"));
                 String machine = recipe.get("machine").getAsString();
                 if (machine.equals("material_station") || machine.equals("engine_station")) BATCHES.add(new Batch(machine, output, inputs));
+                else if (processingRecipe(machine,output,inputs)) { }
                 else {
                     if (recipe.has("layout")) addShapedGsRecipe(machine,output,recipe.getAsJsonArray("layout"));
                     else addGsRecipe(machine, output, inputs);
@@ -125,6 +128,25 @@ public final class Manufacturing {
             }
         } catch (IOException e) { throw new IllegalStateException(e); }
         ManufacturingHooks.cleanLoot();
+    }
+
+    static boolean processingRecipe(String machine, ItemStack output, List<ItemStack> inputs) {
+        if(machine.equals("smelting")) {
+            ItemStack input=inputs.get(0);
+            net.minecraft.item.crafting.FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(k -> k.getItem()==input.getItem());
+            GameRegistry.addSmelting(input,output,0.2F);
+        } else if (machine.equals("compressor")) {
+            List<Object> expanded=new ArrayList<>();
+            for(ItemStack input:inputs) for(int i=0;i<input.getCount();i++){ItemStack one=input.copy();one.setCount(1);expanded.add(one);}
+            micdoodle8.mods.galacticraft.api.recipe.CompressorRecipes.addShapelessRecipe(output,expanded.toArray());
+        } else if (machine.equals("circuit")) {
+            micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.removeRecipe(output);
+            List<Object> slots=new ArrayList<>();
+            for(ItemStack input:inputs) for(int i=0;i<input.getCount();i++){ItemStack one=input.copy();one.setCount(1);slots.add(one);}
+            if(slots.size()!=5)throw new IllegalStateException("Circuit recipe requires five slots");
+            micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.addRecipe(output,slots);
+        } else return false;
+        return true;
     }
 
     private static void addShapedGsRecipe(String machine,ItemStack output,JsonArray layout) {

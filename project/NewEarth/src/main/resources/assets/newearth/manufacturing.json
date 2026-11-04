@@ -772,5 +772,287 @@
         "field": "micdoodle8.mods.galacticraft.core.GCBlocks.oxygenPipe"
       }
     ]
+  },
+  {
+    "machine": "smelting",
+    "output": {
+      "item": "newearth:amethyst_fragment",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRBlocks.BARNARDA_C_VIOLET_LOG",
+        "meta": 32767,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "smelting",
+    "output": {
+      "item": "newearth:amethyst_fragment",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRBlocks.BARNARDA_C_VIOLET_GLOW_LOG",
+        "meta": 32767,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:amethyst_ingot",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_fragment",
+        "count": 2
+      },
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRItems.BASIC",
+        "meta": 2,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "compressor",
+    "output": {
+      "item": "newearth:amethyst_plate",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_ingot",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "circuit",
+    "output": {
+      "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+      "meta": 0,
+      "count": 3
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_ingot",
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRItems.BASIC",
+        "meta": 2,
+        "count": 2
+      },
+      {
+        "item": "minecraft:redstone"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:amethyst_component",
+      "count": 2
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 2
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "item": "newearth:connector",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_nose_cone",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:nose_cone",
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 3
+      },
+      {
+        "item": "newearth:thermal_liner",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_body",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:rocket_body",
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 4
+      },
+      {
+        "item": "newearth:amethyst_component",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_engine",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:rocket_engine",
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 2
+      },
+      {
+        "item": "newearth:amethyst_component",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_booster",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:booster",
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 2
+      },
+      {
+        "item": "newearth:connector",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_fin",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:fin",
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:control_panel",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 19,
+        "count": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0,
+        "count": 2
+      },
+      {
+        "item": "newearth:avionics",
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_component",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "engine_station",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 5,
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 6,
+        "count": 1
+      },
+      {
+        "item": "newearth:blueprint_plasma",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "field": "galaxyspace.core.GSItems.BASIC",
+      "meta": 19
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38,
+        "count": 2
+      },
+      {
+        "item": "minecraft:glass_pane",
+        "count": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6,
+        "count": 2
+      }
+    ]
   }
 ]

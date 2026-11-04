@@ -78,3 +78,15 @@ item.newearth.blueprint_material_station.name=Blueprint Material Station
 item.newearth.blueprint_t7.name=Blueprint T7
 item.newearth.blueprint_sublight.name=Blueprint Sublight
 item.newearth.rocket_engine.name=Tier 7 Rocket Engine
+
+item.newearth.amethyst_fragment.name=Amethyst Fragment
+item.newearth.amethyst_ingot.name=Amethyst Composite Ingot
+item.newearth.amethyst_plate.name=Amethyst Plate
+item.newearth.amethyst_component.name=Amethyst Composite Component
+item.newearth.tier9_nose_cone.name=Tier 9 Nose Cone
+item.newearth.tier9_body.name=Tier 9 Body
+item.newearth.tier9_engine.name=Tier 9 Thruster
+item.newearth.tier9_booster.name=Tier 9 Booster
+item.newearth.tier9_fin.name=Tier 9 Fin
+item.newearth.control_panel.name=Flight Control Panel
+item.newearth.blueprint_plasma.name=Plasma Engine Blueprint

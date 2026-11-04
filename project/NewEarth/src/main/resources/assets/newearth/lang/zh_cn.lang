@@ -78,3 +78,15 @@ item.newearth.blueprint_material_station.name=材料制造台图纸
 item.newearth.blueprint_t7.name=七阶火箭图纸
 item.newearth.blueprint_sublight.name=亚光速引擎图纸
 item.newearth.rocket_engine.name=七阶推进器
+
+item.newearth.amethyst_fragment.name=紫晶碎片
+item.newearth.amethyst_ingot.name=特殊紫晶锭
+item.newearth.amethyst_plate.name=紫晶锭板
+item.newearth.amethyst_component.name=紫晶复合组件
+item.newearth.tier9_nose_cone.name=九阶鼻锥
+item.newearth.tier9_body.name=九阶箭身
+item.newearth.tier9_engine.name=九阶推进器
+item.newearth.tier9_booster.name=九阶助推器
+item.newearth.tier9_fin.name=九阶尾翼
+item.newearth.control_panel.name=九阶控制面板
+item.newearth.blueprint_plasma.name=等离子引擎图纸

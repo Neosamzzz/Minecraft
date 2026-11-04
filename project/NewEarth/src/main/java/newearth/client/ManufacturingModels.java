@@ -18,4 +18,11 @@ public final class ManufacturingModels {
             for(int meta=0;meta<variants;meta++) ModelLoader.setCustomModelResourceLocation(item,meta,new ModelResourceLocation(item.getRegistryName(),"inventory"));
         }
     }
+    @SubscribeEvent public static void tooltip(net.minecraftforge.event.entity.player.ItemTooltipEvent event) {
+        net.minecraft.item.ItemStack stack=event.getItemStack();
+        if("extraplanets:wafer".equals(String.valueOf(stack.getItem().getRegistryName())) && stack.getMetadata()==0) {
+            String unused=net.minecraft.client.resources.I18n.format("currently.unused.name");
+            event.getToolTip().removeIf(line -> unused.equals(net.minecraft.util.text.TextFormatting.getTextWithoutFormattingCodes(line)));
+        }
+    }
 }
