@@ -68,18 +68,22 @@ public final class ManufacturingHooks {
     }
     public static boolean assemblyEngine(ItemStack stack) {
         return !stack.isEmpty() && "galaxyspace:rocket_modules".equals(String.valueOf(stack.getItem().getRegistryName()))
-                && (stack.getMetadata()==6 || stack.getMetadata()==5);
+                && (stack.getMetadata()==6 || stack.getMetadata()==5 || stack.getMetadata()==7);
     }
     public static void assemblyContainer(net.minecraft.inventory.Container container,Object tile) {
         try {
             net.minecraft.inventory.IInventory matrix=(net.minecraft.inventory.IInventory)tile.getClass().getField("rocketCraftMatrix").get(tile);
             for(net.minecraft.inventory.Slot slot:container.inventorySlots) if(slot.inventory==matrix) {
-                if(slot.getSlotIndex()==2)slot.yPos=15;
-                if(slot.getSlotIndex()==3)slot.yPos=40;
-                if(slot.getSlotIndex()==4)slot.yPos=65;
+                if(slot.getSlotIndex()==2)slot.yPos=25;
+                if(slot.getSlotIndex()==3)slot.yPos=50;
+                if(slot.getSlotIndex()==4)slot.yPos=75;
+                if(slot.getSlotIndex()==5)slot.yPos=130;
+                if(slot.getSlotIndex()==6 || slot.getSlotIndex()==7)slot.yPos=100;
+                if(slot.getSlotIndex()==8 || slot.getSlotIndex()==9)slot.yPos=130;
             }
-            net.minecraft.inventory.Slot engine=new net.minecraft.inventory.Slot(matrix,14,40,90) {
+            net.minecraft.inventory.Slot engine=new net.minecraft.inventory.Slot(matrix,14,40,100) {
                 @Override public boolean isItemValid(ItemStack stack){return assemblyEngine(stack);}
+                @Override public int getSlotStackLimit(){return 1;}
             };
             engine.slotNumber=container.inventorySlots.size();
             container.inventorySlots.add(engine);container.inventoryItemStacks.add(ItemStack.EMPTY);

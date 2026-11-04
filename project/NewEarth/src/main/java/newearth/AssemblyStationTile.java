@@ -60,7 +60,10 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
     @Override public void openInventory(EntityPlayer player) {}
     @Override public void closeInventory(EntityPlayer player) {}
     @Override public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index != OUTPUT_SLOT; // Output slot is extract-only
+        if (index < 0 || index >= INPUT_SLOTS || stack.isEmpty()) return false;
+        for (int tier : new int[] {7, 9, 10})
+            if (ItemStack.areItemsEqual(stack, inputs(tier).get(index))) return true;
+        return false;
     }
     @Override public int getField(int id) { return 0; }
     @Override public void setField(int id, int value) {}
@@ -78,7 +81,7 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
         return slots;
     }
     @Override public boolean canInsertItem(int index, ItemStack stack, EnumFacing direction) {
-        return index != OUTPUT_SLOT;
+        return isItemValidForSlot(index, stack);
     }
     @Override public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
         return index == OUTPUT_SLOT;

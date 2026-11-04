@@ -1,43 +1,48 @@
 package newearth.client;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import micdoodle8.mods.galacticraft.core.client.gui.container.GuiContainerGC;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.*;
 import newearth.AssemblyStationContainer;
 import newearth.AssemblyStationTile;
-import newearth.NewEarth;
 
-/**
- * GUI for Tier 7/9 Assembly Station.
- * 9 input slots in assembly pattern + 1 output slot.
- * No power/progress bars (manual assembly, instant on valid recipe).
- */
+/** GS rocket assembly texture and slot frames; assembly remains instant. */
 @SideOnly(Side.CLIENT)
-public final class AssemblyStationGui extends GuiContainer {
-    private static final ResourceLocation BG = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
-    private final AssemblyStationTile tile;
+public final class AssemblyStationGui extends GuiContainerGC {
+    public static final ResourceLocation TEXTURE = new ResourceLocation("galaxyspace", "textures/gui/rocket_assembly.png");
 
     public AssemblyStationGui(InventoryPlayer playerInventory, AssemblyStationTile tile) {
         super(new AssemblyStationContainer(playerInventory, tile));
-        this.tile = tile;
-        this.xSize = 176;
-        this.ySize = 202;
+        this.xSize = 204;
+        this.ySize = 256;
     }
 
     @Override protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String name = I18n.format("tile.newearth.assembly_station.name");
-        fontRenderer.drawString(name, xSize / 2 - fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
-        fontRenderer.drawString(I18n.format("container.inventory"), 8, ySize - 94, 0x404040);
+        fontRenderer.drawString(I18n.format("tile.newearth.assembly_station.name"), 19, 7, 0xFFFFFF);
+        fontRenderer.drawString(I18n.format("container.inventory"), 32, ySize - 91, 0xFFFFFF);
     }
 
     @Override protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        int x = (width - xSize) / 2, y = (height - ySize) / 2;
-        drawRect(x, y, x + xSize, y + ySize, 0xFFC6C6C6);
-        for (net.minecraft.inventory.Slot slot : inventorySlots.inventorySlots) {
-            drawRect(x + slot.xPos - 1, y + slot.yPos - 1, x + slot.xPos + 17, y + slot.yPos + 17, 0xFF373737);
-            drawRect(x + slot.xPos, y + slot.yPos, x + slot.xPos + 16, y + slot.yPos + 16, 0xFF8B8B8B);
+        mc.getTextureManager().bindTexture(TEXTURE);
+        GlStateManager.color(1F, 1F, 1F, 1F);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        for (Slot slot : inventorySlots.inventorySlots) {
+            int x = guiLeft + slot.xPos, y = guiTop + slot.yPos;
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            drawTexturedModalRect(x, y, 228, 206, 16, 16);
+            if (slot.slotNumber == AssemblyStationTile.OUTPUT_SLOT) {
+                drawTexturedModalRect(x - 9, y - 9, 215, 144, 34, 34);
+            } else {
+                boolean function = slot.slotNumber == 9;
+                if (!(slot.inventory instanceof InventoryPlayer))
+                    GlStateManager.color(function ? 1F : 0F, function ? 0F : .9F, function ? 0F : 1F, 1F);
+                drawTexturedModalRect(x - 2, y - 3, 207, function ? 203 : 182, 20, 21);
+            }
         }
+        GlStateManager.color(1F, 1F, 1F, 1F);
     }
 }

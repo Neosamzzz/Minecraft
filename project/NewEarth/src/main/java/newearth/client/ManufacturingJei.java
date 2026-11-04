@@ -89,31 +89,32 @@ public final class ManufacturingJei implements IModPlugin {
         }
     }
 
-    /** JEI category for the assembly station (9 inputs + 1 output). */
+    /** The same GS texture and coordinates as the real assembly container. */
     private static final class AssemblyCategory implements IRecipeCategory<AssemblyWrapper> {
-        final IDrawable background, slot;
+        final IDrawable background, slot, resultSlot;
         AssemblyCategory(IGuiHelper helper) {
-            this.background = helper.createBlankDrawable(180, 80);
-            this.slot = helper.getSlotDrawable();
+            net.minecraft.util.ResourceLocation texture = AssemblyStationGui.TEXTURE;
+            this.background = helper.createDrawable(texture, 0, 0, 204, 150);
+            this.slot = helper.createDrawable(texture, 204, 75, 20, 20);
+            this.resultSlot = helper.createDrawable(texture, 215, 144, 34, 34);
         }
         @Override public String getUid() { return "newearth.assembly_station"; }
         @Override public String getTitle() { return Manufacturing.own("assembly_station").getDisplayName(); }
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
         @Override public void drawExtras(Minecraft mc) {
-            // 3x3 input grid
-            for (int i = 0; i < 10; i++) {
-                slot.draw(mc, (i % 5) * 18 + 2, (i / 5) * 18 + 10);
-            }
-            // Output slot
-            slot.draw(mc, 152, 20);
-            mc.fontRenderer.drawString("→", 120, 25, 0x555555);
+            for (int[] pos : newearth.AssemblyStationContainer.INPUT_POS)
+                slot.draw(mc, pos[0] - 2, pos[1] - 2);
+            int[] output = newearth.AssemblyStationContainer.OUTPUT_POS;
+            resultSlot.draw(mc, output[0] - 9, output[1] - 9);
         }
         @Override public void setRecipe(IRecipeLayout layout, AssemblyWrapper wrapper, IIngredients ingredients) {
-            for (int i = 0; i < 10; i++) {
-                layout.getItemStacks().init(i, true, (i % 5) * 18 + 2, (i / 5) * 18 + 10);
+            for (int i = 0; i < newearth.AssemblyStationTile.INPUT_SLOTS; i++) {
+                int[] pos = newearth.AssemblyStationContainer.INPUT_POS[i];
+                layout.getItemStacks().init(i, true, pos[0] - 1, pos[1] - 1);
             }
-            layout.getItemStacks().init(10, false, 152, 20);
+            int[] output = newearth.AssemblyStationContainer.OUTPUT_POS;
+            layout.getItemStacks().init(10, false, output[0] - 1, output[1] - 1);
             layout.getItemStacks().set(ingredients);
         }
     }

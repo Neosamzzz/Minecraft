@@ -28,9 +28,12 @@ public final class ManufacturingProbe {
         ManufacturingHooks.assemblyContainer(container,fixture);
         net.minecraft.inventory.Slot central=container.inventorySlots.get(1);
         check(central.getSlotIndex()==14 && central.inventory==fixture.rocketCraftMatrix,"Central engine uses the existing spare matrix index");
-        check(prior.yPos==65 && central.yPos==90,"Body and central engine slots do not overlap");
+        check(prior.yPos==75 && central.yPos==100,"Body and central engine slots do not overlap");
         net.minecraft.item.Item modules=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_modules").setHasSubtypes(true);
         check(central.isItemValid(new ItemStack(modules,1,6)),"Central engine accepts sublight module");
+        check(central.isItemValid(new ItemStack(modules,1,5)),"Central engine accepts plasma module");
+        check(central.isItemValid(new ItemStack(modules,1,7)),"Central engine accepts black hole module");
+        check(central.getSlotStackLimit()==1,"Central engine takes a single module");
         check(!central.isItemValid(new ItemStack(modules,1,4)),"Central engine rejects ion module");
         InventoryBasic inv=new InventoryBasic("test",false,27);
         inv.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,2));
@@ -91,7 +94,20 @@ public final class ManufacturingProbe {
         for (int tier : new int[] {7,9,10}) {
             AssemblyStationTile station=new AssemblyStationTile();
             List<ItemStack> inputs=AssemblyStationTile.inputs(tier);
-            for(int slot=0;slot<inputs.size();slot++)station.setInventorySlotContents(slot,inputs.get(slot).copy());
+            net.minecraft.entity.player.InventoryPlayer playerInventory=new net.minecraft.entity.player.InventoryPlayer(null);
+            AssemblyStationContainer assemblyGui=new AssemblyStationContainer(playerInventory,station);
+            for(ItemStack input:inputs) {
+                playerInventory.setInventorySlotContents(9,input.copy());
+                check(!assemblyGui.transferStackInSlot(null,AssemblyStationTile.TOTAL_SLOTS).isEmpty(),"T"+tier+" shift-click routes "+input.getItem().getRegistryName());
+                check(playerInventory.getStackInSlot(9).isEmpty(),"Shift-click consumes exactly the routed input");
+            }
+            for(int slot=0;slot<inputs.size();slot++) {
+                check(ItemStack.areItemsEqual(inputs.get(slot),station.getStackInSlot(slot)),"T"+tier+" correct assembly slot "+slot);
+                check(assemblyGui.getSlot(slot).getSlotStackLimit()==1,"Structure slots accept one part each");
+            }
+            check(!assemblyGui.getSlot(8).isItemValid(inputs.get(7)),"Structural propulsion cannot enter the independent engine slot");
+            check(!assemblyGui.getSlot(7).isItemValid(inputs.get(8)),"Independent engine cannot enter the structural propulsion slot");
+            check(!station.canInsertItem(8,inputs.get(7),net.minecraft.util.EnumFacing.UP),"Automation respects propulsion slot roles");
             station.setInventorySlotContents(9,ItemStack.EMPTY);
             check(!station.process(),"T"+tier+" cannot bypass blueprint/control panel");
             station.setInventorySlotContents(9,inputs.get(9).copy());
@@ -99,12 +115,20 @@ public final class ManufacturingProbe {
             check(!station.process(),"T"+tier+" cannot bypass installed propulsion module");
             station.setInventorySlotContents(8,inputs.get(8).copy());
             check(station.process(),"T"+tier+" complete assembly succeeds");
+            check(!station.process(),"Completed assembly cannot duplicate its output");
             ItemStack rocket=station.getStackInSlot(AssemblyStationTile.OUTPUT_SLOT);
             check(rocket.getItem()==Manufacturing.ITEMS.get("tier"+tier+"_rocket"),"Assembly preserves exact tier item");
             if(tier==7)check(ManufacturingHooks.readyStack(rocket),"T7 assembled with sublight is ready for flight");
             DisassemblyStationTile recycling=new DisassemblyStationTile();
             recycling.setInventorySlotContents(0,rocket.copy());recycling.process();
             for(int slot=0;slot<inputs.size();slot++)check(ItemStack.areItemsEqual(inputs.get(slot),recycling.getStackInSlot(slot+1)),"T"+tier+" recycling returns exact part "+slot);
+        }
+        for(int i=0;i<AssemblyStationContainer.INPUT_POS.length;i++) {
+            int[] a=AssemblyStationContainer.INPUT_POS[i];
+            for(int j=i+1;j<AssemblyStationContainer.INPUT_POS.length;j++) {
+                int[] b=AssemblyStationContainer.INPUT_POS[j];
+                check(Math.abs(a[0]-b[0])>=20 || Math.abs(a[1]-b[1])>=21,"GS slot frames do not overlap: "+i+"/"+j);
+            }
         }
         ItemStack unpoweredSix=new ItemStack(six);
         check(!PlanetHooks.readyErisStack(6,six,unpoweredSix),"Unmodified T6 cannot reach Eris");
