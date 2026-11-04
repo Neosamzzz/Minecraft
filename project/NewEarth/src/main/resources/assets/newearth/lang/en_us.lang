@@ -59,3 +59,5 @@ newearth.map.resources.barnarda_c=Tree sap
 newearth.map.resources.barnarda_c1=Onyx
 
 generator.newearth_preview=NewEarth terrain preview
+
+newearth.arrival.wait=Preparing to land. Waiting for fellow travelers and nearby chunks...

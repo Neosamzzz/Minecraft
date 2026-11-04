@@ -66,6 +66,7 @@ public final class EnvironmentProbe implements Opcodes {
             check(!ContentPruning.retiredItem(id), "Retain useful environment processing " + id);
         exerciseHandler(head, chest, legs, feet);
         verifyInstalled();
+        arrivalPersistence();
         System.out.println("NewEarth environment: " + checks + " checks passed (isolated; no world or survival session)");
     }
 
@@ -204,6 +205,40 @@ public final class EnvironmentProbe implements Opcodes {
         check((Float) type.getMethod("getThermalLevelModifier").invoke(provider) == day, "Installed day temperature " + source.name);
         type.getField("day").setBoolean(provider, false);
         check((Float) type.getMethod("getThermalLevelModifier").invoke(provider) == night, "Installed night temperature " + source.name);
+    }
+
+    private static void arrivalPersistence() {
+        net.minecraft.nbt.NBTTagCompound input = new net.minecraft.nbt.NBTTagCompound();
+        net.minecraft.nbt.NBTTagList done = new net.minecraft.nbt.NBTTagList();
+        UUID finished = UUID.randomUUID(), waiting = UUID.randomUUID();
+        done.appendTag(new net.minecraft.nbt.NBTTagString(finished.toString()));
+        input.setTag("Completed", done);
+        net.minecraft.nbt.NBTTagCompound group = new net.minecraft.nbt.NBTTagCompound();
+        group.setString("Id", "saved-arrival");
+        net.minecraft.nbt.NBTTagList members = new net.minecraft.nbt.NBTTagList();
+        net.minecraft.nbt.NBTTagCompound member = new net.minecraft.nbt.NBTTagCompound();
+        member.setUniqueId("Player", waiting); member.setBoolean("Ready", true); members.appendTag(member);
+        group.setTag("Members", members);
+        net.minecraft.nbt.NBTTagList groups = new net.minecraft.nbt.NBTTagList(); groups.appendTag(group);
+        input.setTag("Sessions", groups);
+        newearth.dimension.ArrivalSession saved = new newearth.dimension.ArrivalSession("probe");
+        saved.readFromNBT(input);
+        net.minecraft.nbt.NBTTagCompound output = saved.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
+        check(output.getTagList("Completed", 8).getStringTagAt(0).equals(finished.toString()), "Completed arrival survives save reload");
+        net.minecraft.nbt.NBTTagCompound session = output.getTagList("Sessions", 10).getCompoundTagAt(0);
+        check(session.getString("Id").equals("saved-arrival"), "Reconnect retains session identity");
+        net.minecraft.nbt.NBTTagCompound restored = session.getTagList("Members", 10).getCompoundTagAt(0);
+        check(restored.getUniqueId("Player").equals(waiting) && restored.getBoolean("Ready"), "Offline ready participant survives restart without replay");
+        newearth.dimension.ArrivalNetwork.State sent = new newearth.dimension.ArrivalNetwork.State();
+        sent.session = "saved-arrival"; sent.dimension = 1020; sent.stage = 1;
+        sent.landing = new net.minecraft.util.math.BlockPos(-129, 203, 514);
+        io.netty.buffer.ByteBuf bytes = io.netty.buffer.Unpooled.buffer();
+        try {
+            sent.toBytes(bytes);
+            newearth.dimension.ArrivalNetwork.State received = new newearth.dimension.ArrivalNetwork.State(); received.fromBytes(bytes);
+            check(received.session.equals(sent.session) && received.dimension == 1020 && received.stage == 1
+                    && received.landing.equals(sent.landing), "Arrival packet retains dimension, session and signed landing coordinates");
+        } finally { bytes.release(); }
     }
 
     private static Class<?> define(String name, byte[] bytes) {

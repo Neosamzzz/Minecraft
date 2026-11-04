@@ -21,7 +21,7 @@ public final class LandingSite extends WorldSavedData {
             saved = new LandingSite(KEY);
             world.getPerWorldStorage().setData(KEY, saved);
         }
-        if (saved.position != null && safe(world, saved.position)) return saved.position;
+        if (saved.position != null && safe(world, saved.position) && world.canSeeSky(saved.position)) return saved.position;
         BlockPos origin = saved.position == null ? world.getSpawnPoint() : saved.position;
         // Start locally; only expand if the original OTG spawn column is unsuitable.
         for (int radius = 0; radius <= 4; radius++) {

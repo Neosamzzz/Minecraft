@@ -5,9 +5,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
@@ -194,14 +192,14 @@ public final class EndDimension {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void arrived(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.player instanceof EntityPlayerMP && isDestination(event.player.world))
-            placeAtLanding((EntityPlayerMP) event.player);
+            ArrivalSession.enter((EntityPlayerMP) event.player, true);
+        else if (event.player instanceof EntityPlayerMP) ArrivalSession.restore((EntityPlayerMP) event.player);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void login(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.player instanceof EntityPlayerMP) || !isDestination(event.player.world)) return;
-        NBTTagCompound persisted = event.player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-        if (!persisted.getBoolean("NewEarthArrived")) placeAtLanding((EntityPlayerMP) event.player);
+        ArrivalSession.enter((EntityPlayerMP) event.player, false);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -215,9 +213,6 @@ public final class EndDimension {
         BlockPos at = landing(player.getServerWorld());
         player.setPositionAndUpdate(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
         player.fallDistance = 0;
-        NBTTagCompound persisted = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-        persisted.setBoolean("NewEarthArrived", true);
-        player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
