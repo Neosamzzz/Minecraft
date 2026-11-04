@@ -76,7 +76,7 @@
 
 管理员可用 `/otg tp 1020` 进入默认终章维度，`/otg tp 0` 返回主世界；修改维度 ID 后使用对应数值。这是开发与管理入口，正式玩家入口由后续飞船接入。
 
-构建输出 `build/libs/NewEarth-BiomeBundle-<版本>.zip` 包含 NewEarth 和群系覆盖配置，须另行安装上述 OTG 与 Biome Bundle。该组合不包含 Depths Update，也不要求扩高。
+构建输出 `build/libs/NewEarth-BiomeBundle-<版本>.zip` 包含 NewEarth、群系覆盖配置及必需的 EP／GS 星球配置，须另行安装上述 OTG 与 Biome Bundle。该组合不包含 Depths Update，也不要求扩高。
 
 #### ReTerraForged 移植原型（暂停）
 
