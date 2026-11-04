@@ -1,6 +1,6 @@
 # Blender 4.2.3 LTS
 # www.blender.org
-mtllib ep7_v7.mtl
+mtllib tier7_rocket.mtl
 o Body_Rocket
 v 2.393051 2.770341 -0.991053
 v 0.991274 2.770341 -2.393051
