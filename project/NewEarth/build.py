@@ -1,7 +1,6 @@
 """Build NewEarth and export its current mod package."""
 import json
 import io
-import hashlib
 import os
 from pathlib import Path
 import re
@@ -55,18 +54,10 @@ def build(ROOT, run_gradle, env, offline):
     output.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(str(artifact), str(output))
     print('Built: {}'.format(output))
-    runtime = ROOT / 'project/NewEarth/dimension/terrain'
-    dependencies = {
-        'depthsupdate-1.12.2-1.0.0-a12.jar': '0dc5d9ee38ee728528d84a7709390f70616b77df02ea143a59a64c7a054e8759',
-        'assetmover-3.0.0.jar': '3965db64451e3ea11d9a262a24b5f874eda4f5de96c5fadfde4d09d655126589',
-    }
-    bundle = ROOT / 'build/libs' / ('NewEarth-terrain-' + version + '.zip')
+    preset = ROOT / 'project/NewEarth/dimension/biome-bundle'
+    bundle = ROOT / 'build/libs' / ('NewEarth-BiomeBundle-' + version + '.zip')
     with zipfile.ZipFile(bundle, 'w', zipfile.ZIP_DEFLATED) as archive:
         archive.write(output, 'mods/' + output.name)
-        for name, digest in dependencies.items():
-            dependency = runtime / 'materials' / name
-            if hashlib.sha256(dependency.read_bytes()).hexdigest() != digest:
-                raise ValueError('Terrain dependency checksum mismatch: ' + name)
-            archive.write(dependency, 'mods/' + name)
-        archive.write(runtime / 'depthsupdate.cfg', 'config/depthsupdate.cfg')
-    print('Terrain test bundle: {}'.format(bundle))
+        for config in sorted((preset / 'WorldBiomes').glob('*.bc')):
+            archive.write(config, 'mods/OpenTerrainGenerator/worlds/Biome Bundle/WorldBiomes/' + config.name)
+    print('Biome Bundle integration package (requires OTG 9.9 and Biome Bundle 6.1): {}'.format(bundle))

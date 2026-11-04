@@ -30,6 +30,10 @@ public final class LandscapeProbe {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        check(newearth.dimension.EndDimension.matches("Biome Bundle", 1020), "OTG destination is recognized");
+        check(newearth.dimension.EndDimension.matches("Biome Bundle", 900), "Saved destination can retain its own ID");
+        check(!newearth.dimension.EndDimension.matches("Biome Bundle", 0), "Preview overworld is excluded");
+        check(!newearth.dimension.EndDimension.matches("Moon", 1020), "Unrelated destinations are excluded");
         WorldType original = WorldType.DEFAULT;
         LandscapeWorldType.register(null);
         WorldType preview = WorldType.byName("newearth_preview");
