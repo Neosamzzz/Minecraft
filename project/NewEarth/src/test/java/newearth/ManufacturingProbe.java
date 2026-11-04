@@ -92,6 +92,31 @@ public final class ManufacturingProbe {
             if(r.has("layout"))check(summary(r.getAsJsonArray("layout")).equals(summary(r.getAsJsonArray("inputs"))),"Shaped layout preserves ingredient quantities");
             if(machine.equals("RocketAssemblyRecipes"))check(slots==10,"T7 assembly requires structural propulsion, sublight module and licence");
         }
+        for(JsonElement element:recipes) {
+            JsonObject recipe=element.getAsJsonObject();
+            if(!recipe.has("layout"))continue;
+            JsonArray layout=recipe.getAsJsonArray("layout");
+            net.minecraft.inventory.Container eventHandler=new net.minecraft.inventory.Container(){@Override public boolean canInteractWith(net.minecraft.entity.player.EntityPlayer player){return true;}};
+            net.minecraft.inventory.InventoryCrafting grid=new net.minecraft.inventory.InventoryCrafting(eventHandler,3,3);
+            Map<String,net.minecraft.item.Item> symbols=new HashMap<>();
+            StringBuilder pattern=new StringBuilder();List<Object> args=new ArrayList<>();int first=-1;
+            for(int i=0;i<9;i++) {
+                JsonElement cell=layout.get(i);
+                if(cell.isJsonNull()){pattern.append(' ');continue;}
+                if(first<0)first=i;
+                net.minecraft.item.Item item=symbols.get(cell.toString());
+                if(item==null){item=new net.minecraft.item.Item();symbols.put(cell.toString(),item);}
+                ItemStack stack=new ItemStack(item);grid.setInventorySlotContents(i,stack);
+                char symbol=(char)('A'+i);pattern.append(symbol);args.add(symbol);args.add(stack.copy());
+            }
+            List<Object> shaped=new ArrayList<>();for(int row=0;row<3;row++)shaped.add(pattern.substring(row*3,row*3+3));shaped.addAll(args);
+            galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.getRecipeList().clear();
+            galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.addRecipe(new ItemStack(Items.BOAT),shaped.toArray());
+            check(!galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.findMatchingRecipe(grid,null).isEmpty(),"Real GS assembler accepts the shaped layout");
+            grid.setInventorySlotContents(first,ItemStack.EMPTY);
+            check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.findMatchingRecipe(grid,null).isEmpty(),"Real GS assembler rejects missing shaped ingredient");
+        }
+        galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.getRecipeList().clear();
         check(machines.size()==7,"Both stations and both GS assemblers are connected");
         JsonObject wafer=null,plasma=null;
         int smelting=0;
