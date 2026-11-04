@@ -142,6 +142,20 @@ public final class Manufacturing {
             }
         } catch (IOException e) { throw new IllegalStateException(e); }
         ManufacturingHooks.cleanLoot();
+        // Barnard C1 dungeon: plasma blueprint (for T9)
+        // Added to high-tier dungeons (7-8)
+        try {
+            Class<?> registry = Class.forName("micdoodle8.mods.galacticraft.api.GalacticraftRegistry");
+            java.lang.reflect.Method addLoot = registry.getMethod("addDungeonLoot", int.class, ItemStack.class);
+            ItemStack blueprint = own("blueprint_plasma");
+            if (!blueprint.isEmpty()) {
+                for (int tier : new int[]{7, 8}) {
+                    addLoot.invoke(null, tier, blueprint.copy());
+                }
+            }
+        } catch (Exception e) {
+            // GC API not available, skip
+        }
     }
 
     static boolean processingRecipe(String machine, ItemStack output, List<ItemStack> inputs) {
