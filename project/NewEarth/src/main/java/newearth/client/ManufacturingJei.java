@@ -51,9 +51,13 @@ public final class ManufacturingJei implements IModPlugin {
             gsModuleStack(5) // plasma engine
         );
         assemblyRecipes.add(new AssemblyWrapper(t9Inputs, Manufacturing.own("tier9_rocket"), "T9"));
-        // T10: tier9_rocket + black hole engine -> tier10_rocket (upgrade only)
+        // T10: same as T9, black hole engine instead of plasma
         List<ItemStack> t10Inputs = Arrays.asList(
-            Manufacturing.own("tier9_rocket"),
+            Manufacturing.own("tier9_nose_cone"),
+            Manufacturing.own("tier9_body"), Manufacturing.own("tier9_body"),
+            Manufacturing.own("tier9_booster"), Manufacturing.own("tier9_booster"),
+            Manufacturing.own("tier9_fin"), Manufacturing.own("tier9_fin"),
+            Manufacturing.own("tier9_engine"),
             gsModuleStack(7) // black hole engine
         );
         assemblyRecipes.add(new AssemblyWrapper(t10Inputs, Manufacturing.own("tier10_rocket"), "T10"));

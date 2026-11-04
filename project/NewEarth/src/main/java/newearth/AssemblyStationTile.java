@@ -154,13 +154,16 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
     }
 
     private boolean matchesT10() {
-        // T10: only engine upgrade - tier9_rocket + black hole engine
-        return isItem(inventory[0], "tier9_rocket")
-            && isGsBlackHoleEngine(inventory[1])
-            && inventory[2].isEmpty() && inventory[3].isEmpty()
-            && inventory[4].isEmpty() && inventory[5].isEmpty()
-            && inventory[6].isEmpty() && inventory[7].isEmpty()
-            && inventory[8].isEmpty();
+        // T10: same as T9 recipe, but black hole engine instead of plasma
+        return isItem(inventory[0], "tier9_nose_cone")
+            && isItem(inventory[1], "tier9_body")
+            && isItem(inventory[2], "tier9_body")
+            && isItem(inventory[3], "tier9_booster")
+            && isItem(inventory[4], "tier9_booster")
+            && isItem(inventory[5], "tier9_fin")
+            && isItem(inventory[6], "tier9_fin")
+            && isItem(inventory[7], "tier9_engine")
+            && isGsBlackHoleEngine(inventory[8]);
     }
 
     /** GS plasma engine = ROCKET_MODULES meta 5 */
