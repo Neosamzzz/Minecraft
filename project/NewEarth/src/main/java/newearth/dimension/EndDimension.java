@@ -7,6 +7,8 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.WorldProvider;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -25,6 +27,7 @@ public final class EndDimension {
     private static int dimensionId = 1020;
     private static int configuredId = 1020;
     private static boolean enabled = true;
+    private static DimensionType destinationType;
 
     private EndDimension() { }
 
@@ -35,6 +38,22 @@ public final class EndDimension {
         dimensionId = config.getInt("id", "dimension", 1020, 3, 1023, "Dimension ID for new saves. Existing saves retain their OTG dimension ID.");
         configuredId = dimensionId;
         if (config.hasChanged()) config.save();
+        if (enabled && Loader.isModLoaded("openterraingenerator")) {
+            try {
+                Class<? extends WorldProvider> provider = Class.forName("com.pg85.otg.forge.dimensions.OTGWorldProvider")
+                        .asSubclass(WorldProvider.class);
+                for (DimensionType type : DimensionType.values()) {
+                    if (type.getId() == configuredId)
+                        throw new IllegalStateException("NewEarth dimension type ID is occupied: " + configuredId);
+                }
+                // Register enum types during mod loading, before the JVM optimizes enum lookup.
+                destinationType = DimensionType.register(PRESET, "OTG", configuredId, provider, false);
+                if (DimensionType.getById(configuredId) != destinationType)
+                    throw new IllegalStateException("NewEarth dimension type registration was not visible.");
+            } catch (ClassNotFoundException error) {
+                throw new IllegalStateException("OTG 9.9 world provider is missing", error);
+            }
+        }
     }
 
     public static void start(MinecraftServer server) {
@@ -78,9 +97,13 @@ public final class EndDimension {
             set(settings, "CanDoLightning", true);
             set(settings, "RespawnDimension", dimensionId);
             Class<?> manager = Class.forName("com.pg85.otg.forge.dimensions.OTGDimensionManager");
-            boolean created = (Boolean) manager.getMethod("createDimension", configType, long.class, boolean.class)
-                    .invoke(null, config, server.getWorld(0).getSeed(), true);
-            if (!created) throw new IllegalStateException("OTG rejected the NewEarth dimension registration.");
+            @SuppressWarnings("unchecked")
+            List<Object> configuredDimensions = (List<Object>) value(dimensions, "Dimensions");
+            configuredDimensions.add(config);
+            manager.getMethod("registerDimension", int.class, DimensionType.class)
+                    .invoke(null, dimensionId, destinationType);
+            manager.getMethod("initDimension", int.class).invoke(null, dimensionId);
+            manager.getMethod("SaveDimensionData").invoke(null);
             dimensions.getClass().getMethod("save").invoke(dimensions);
             LogManager.getLogger("NewEarth").info("Registered NewEarth destination: {} (dimension {})", PRESET, dimensionId);
         } catch (ReflectiveOperationException error) {

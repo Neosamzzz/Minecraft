@@ -70,7 +70,7 @@
 
 #### 独立终章维度
 
-安装 NewEarth `0.3.0-terrain.2`、OTG `9.9`、Biome Bundle `6.1` 及本目录的群系覆盖配置。普通主世界启动后，NewEarth 调用 OTG 原生接口创建独立目的地，预设名为 `Biome Bundle`，默认维度 ID 为 `1020`，种子沿用主世界。配置位于 `config/newearth-dimension.cfg`；ID 冲突时须先修改该配置，已有目的地沿用存档中记录的 ID。以 Biome Bundle 为主世界的旧地形对照存档不重复创建同名维度。
+安装 NewEarth `0.3.0-terrain.2`、OTG `9.9`、Biome Bundle `6.1` 及本目录的群系覆盖配置。模组初始化时预先注册 OTG 维度类型；普通主世界启动后，NewEarth 调用 OTG 原生接口创建独立目的地，预设名为 `Biome Bundle`，默认维度 ID 为 `1020`，种子沿用主世界。配置位于 `config/newearth-dimension.cfg`；ID 冲突时须先修改该配置，已有目的地沿用存档中记录的 ID。以 Biome Bundle 为主世界的旧地形对照存档不重复创建同名维度。
 
 终章保留动物，拦截敌对生物自然生成及进入，不更改全服难度。维度采用正常天空、天气和允许床睡眠的地表世界设置，关闭 OTG 方块传送门入口；飞船准入与抵达接口尚未接入。维度创建与保存交由 OTG 管理；实际加载、过夜、保存重进仍待游戏内确认。
 
