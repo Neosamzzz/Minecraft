@@ -45,13 +45,12 @@ public class EntityTier10Rocket extends EntityMultiSeatRocket {
     /**
      * Custom flame positions for T10_new model.
      * Main nozzle at center + 4 side engines.
-     * Based on EP electric T10 effect, adapted for new model.
+     * Black hole theme: blue/purple flames instead of orange.
      */
     @Override
     protected void spawnParticles(boolean launched) {
         if (this.isDead) return;
         // T10_new nozzle offsets (relative to rocket center, in blocks)
-        // Main center nozzle + 4 side engines
         double[][] nozzles = {
             {0.0, 0.0},    // 主喷口
             {1.2, 0.0},    // 右侧引擎
@@ -59,24 +58,30 @@ public class EntityTier10Rocket extends EntityMultiSeatRocket {
             {0.0, 1.2},    // 前侧引擎
             {0.0, -1.2},   // 后侧引擎
         };
-        double y = this.posY - 0.5; // 火焰在火箭下方
-        EntityLivingBase driver = getDriver();
-        Object[] rider = new Object[] { driver };
-        Vector3 motionVec = new Vector3(0, -2.0, 0); // 向下喷
+        double y = this.posY - 0.5;
+        // 黑洞主题：蓝紫色火焰 (R:0.3, G:0.5, B:1.0)
+        float r = 0.3F, g = 0.5F, b = 1.0F;
         for (double[] n : nozzles) {
             double x = this.posX + n[0];
             double z = this.posZ + n[1];
             if (launched) {
-                // 发射时：大火焰
-                for (int i = 0; i < 3; i++) {
-                    GalacticraftCore.proxy.spawnParticle("launchFlameLaunched",
-                        new Vector3(x + (rand.nextDouble() - 0.5) * 0.6, y, z + (rand.nextDouble() - 0.5) * 0.6),
-                        motionVec, rider);
+                // 大火焰：多个蓝紫色粒子
+                for (int i = 0; i < 5; i++) {
+                    double ox = (rand.nextDouble() - 0.5) * 0.8;
+                    double oz = (rand.nextDouble() - 0.5) * 0.8;
+                    double oy = rand.nextDouble() * 0.5;
+                    world.spawnParticle(net.minecraft.util.EnumParticleTypes.REDSTONE,
+                        x + ox, y + oy, z + oz, r, g, b);
+                    // 加一点烟
+                    if (rand.nextFloat() < 0.3) {
+                        world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_LARGE,
+                            x + ox, y + oy, z + oz, 0, -0.5, 0);
+                    }
                 }
-            } else if (this.ticksExisted % 2 == 0) {
-                // 待发射时：小火焰
-                GalacticraftCore.proxy.spawnParticle("launchFlameIdle",
-                    new Vector3(x, y, z), motionVec, rider);
+            } else if (this.ticksExisted % 4 == 0) {
+                // 待命：偶尔冒个小火星
+                world.spawnParticle(net.minecraft.util.EnumParticleTypes.REDSTONE,
+                    x, y, z, r, g, b);
             }
         }
     }
