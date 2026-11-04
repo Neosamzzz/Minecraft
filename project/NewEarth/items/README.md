@@ -41,7 +41,6 @@ python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.j
 
 ### 地牢与回收
 
-- [ ] 修复地牢宝箱开箱为空的问题，核对普通战利品与关键图纸的实际生成。
 - [ ] 合并统一各类地牢钥匙与宝箱，适配Boss掉落、开锁关系与各星球奖励。
 - [ ] 补齐六阶火箭的拆解器支持，核对可回收部件、数量与损耗，以及已装引擎的处理。
 
