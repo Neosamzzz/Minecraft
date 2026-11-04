@@ -38,7 +38,7 @@ public final class EndDimension {
     private static boolean enabled = true;
     private static DimensionType destinationType;
     private static Class<? extends WorldProvider> destinationProvider;
-    private static boolean tier6TestFlight;
+    public static final int REQUIRED_TIER = 10;
     public static final String BODY_NAME = "trars9";
 
     private EndDimension() { }
@@ -47,7 +47,7 @@ public final class EndDimension {
         Configuration config = new Configuration(new File(configDirectory, "newearth-dimension.cfg"));
         config.load();
         enabled = config.getBoolean("enabled", "dimension", true, "Create the NewEarth destination using the Biome Bundle preset.");
-        tier6TestFlight = config.getBoolean("tier6TestFlight", "dimension", false, "Allow tier 6 rockets to access the destination for integration tests only. Keep disabled in production.");
+        config.getCategory("dimension").remove("tier6TestFlight");
         dimensionId = config.getInt("id", "dimension", 1020, 3, 1023, "Dimension ID for new saves. Existing saves retain their OTG dimension ID.");
         configuredId = dimensionId;
         if (config.hasChanged()) config.save();
@@ -75,7 +75,7 @@ public final class EndDimension {
         CelestialBody body = GalaxyRegistry.getRegisteredPlanets().get(BODY_NAME);
         if (body == null) throw new IllegalStateException("ExtraPlanets destination trars9 is disabled");
         bindEarthProperties(body, GalacticraftCore.planetOverworld, destinationProvider, dimensionId,
-                tier6TestFlight ? 6 : 10);
+                REQUIRED_TIER);
         GalaxyRegistry.refreshGalaxies();
     }
 
@@ -97,9 +97,8 @@ public final class EndDimension {
     }
 
     public static boolean canTravel(Object player) {
-        // Production access remains closed until the real ship/core gate is connected.
-        return tier6TestFlight && player instanceof EntityPlayerMP
-                && GCPlayerStats.get((EntityPlayerMP) player).getSpaceshipTier() >= 6;
+        return player instanceof EntityPlayerMP
+                && GCPlayerStats.get((EntityPlayerMP) player).getSpaceshipTier() >= REQUIRED_TIER;
     }
 
     public static void start(MinecraftServer server) {
