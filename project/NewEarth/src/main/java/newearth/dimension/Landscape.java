@@ -3,6 +3,7 @@ package newearth.dimension;
 /** Seeded, world-coordinate fields shared by terrain, biomes and decoration. */
 public final class Landscape {
     public static final int WATER_LEVEL = 62;
+    public static final int TREE_SPACING = 5;
     private final long seed;
     private final TerrainSampler terrain;
 
@@ -20,11 +21,14 @@ public final class Landscape {
 
     public double woodland(int x, int z) { return terrain.woodland(x, z); }
     public int biome(int x, int z) { return terrain.biome(x, z); }
+    public String biomeName(int x, int z) { return terrain.biomeName(x, z); }
     public int[] spawnPoint() { return terrain.spawnPoint(); }
+    public byte[] terrain(int chunkX, int chunkZ) { return terrain.terrain(chunkX, chunkZ); }
 
     public boolean tree(int x, int z) {
         double h = height(x, z);
-        return h > WATER_LEVEL + 3 && h < 190 && slope(x, z) < 0.55
+        return h > WATER_LEVEL + 3 && h < TerrainSampler.MAX_Y - 16 && slope(x, z) < 1.0
+                && terrain.solid(x, (int)Math.floor(h), z)
                 && unit(x, z, 10) < woodland(x, z) * 0.85;
     }
 

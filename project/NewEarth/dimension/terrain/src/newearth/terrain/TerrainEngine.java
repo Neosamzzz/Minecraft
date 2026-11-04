@@ -6,16 +6,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import newearth.dimension.TerrainSampler;
+import newearth.terrain.density.DensityRouter;
 import newearth.terrain.data.worldgen.preset.PresetNoiseData;
 import newearth.terrain.data.worldgen.preset.settings.Preset;
 import newearth.terrain.world.worldgen.GeneratorContext;
 import newearth.terrain.world.worldgen.cell.Cell;
 import newearth.terrain.world.worldgen.densityfunction.tile.Tile;
 import newearth.terrain.world.worldgen.util.PosUtil;
+import newearth.terrain.world.worldgen.noise.NoiseUtil;
+import newearth.terrain.world.worldgen.cell.terrain.TerrainCategory;
 
 /** Full RTF height/climate pipeline; only the final block-height mapping is platform specific. */
 public final class TerrainEngine implements TerrainSampler {
     private final GeneratorContext context;
+    private final DensityRouter density;
     private final Map<Long, Snapshot> tiles = new LinkedHashMap<>(16, 0.75F, true);
     private static final int TILE_BITS = 7, WIDTH = 1 << TILE_BITS, MASK = WIDTH - 1;
 
@@ -32,9 +36,10 @@ public final class TerrainEngine implements TerrainSampler {
         PresetNoiseData.bootstrap(preset, registry);
         // RTF's RandomState adapter also narrows the world seed to int.
         context = GeneratorContext.makeUncached(preset, registry, (int) seed, 3, 1, 1);
+        density = new DensityRouter(seed, this::field);
     }
 
-    private record Snapshot(float[] height, byte[] biome, float[] woodland) {}
+    private record Snapshot(float[] height, byte[] biome, float[] woodland, float[][] climate, String[] names) {}
 
     private synchronized Snapshot tile(int x, int z) {
         long key = PosUtil.pack(x >> TILE_BITS, z >> TILE_BITS);
@@ -43,19 +48,29 @@ public final class TerrainEngine implements TerrainSampler {
         Tile generated = context.generator.generate(x >> TILE_BITS, z >> TILE_BITS).join();
         float[] height = new float[WIDTH * WIDTH], woodland = new float[WIDTH * WIDTH];
         byte[] biome = new byte[WIDTH * WIDTH];
+        float[][] climate = new float[5][WIDTH * WIDTH];
+        String[] names=new String[32*32];
         try {
+            for(int qz=0;qz<32;qz++)for(int qx=0;qx<32;qx++) {
+                Cell c=generated.lookup(qx*4,qz*4);
+                names[qz*32+qx]=ClimateBiomes.at(c.temperature,c.moisture,continentalness(c),c.erosion,0,c.weirdness);
+            }
             for (int dz = 0; dz < WIDTH; dz++) for (int dx = 0; dx < WIDTH; dx++) {
                 Cell cell = generated.lookup(dx, dz);
                 int index = dz * WIDTH + dx;
                 height[index] = cell.height * context.levels.worldHeight;
                 if (!Float.isFinite(height[index])) throw new IllegalStateException("Non-finite terrain height");
-                biome[index] = (byte) biome(cell, height[index]);
-                woodland[index] = woodland(cell, height[index]);
+                String name=names[(dz>>2)*32+(dx>>2)];
+                biome[index] = (byte) kind(name);
+                woodland[index] = cover(name);
+                climate[0][index]=continentalness(cell);
+                climate[1][index]=cell.erosion;climate[2][index]=cell.weirdness;
+                climate[3][index]=cell.temperature;climate[4][index]=cell.moisture;
             }
         } finally {
             generated.close();
         }
-        found = new Snapshot(height, biome, woodland);
+        found = new Snapshot(height, biome, woodland, climate, names);
         tiles.put(key, found);
         if (tiles.size() > 16) tiles.remove(tiles.keySet().iterator().next());
         return found;
@@ -63,42 +78,67 @@ public final class TerrainEngine implements TerrainSampler {
 
     private static int index(int x, int z) { return (z & MASK) * WIDTH + (x & MASK); }
 
-    /** Continuous slope at Y192; approaches Y252 without a clipped mountain plateau. */
-    public static double mapHeight(double height) {
-        return Math.max(5, height <= 192 ? height : 192 + 60 * -Math.expm1(-(height - 192) / 60));
-    }
-
-    @Override public double height(int x, int z) { return mapHeight(tile(x, z).height[index(x, z)]); }
+    @Override public double height(int x, int z) { return tile(x, z).height[index(x, z)]; }
     @Override public double woodland(int x, int z) { return tile(x, z).woodland[index(x, z)]; }
     @Override public int biome(int x, int z) { return tile(x, z).biome[index(x, z)]; }
+    @Override public String biomeName(int x,int z) {return tile(x,z).names[((z&MASK)>>2)*32+((x&MASK)>>2)];}
     @Override public synchronized void close() { tiles.clear(); context.generator.getHeightmap().continent().close(); }
 
-    private int biome(Cell cell, float height) {
-        if (cell.terrain.isDeepOcean() || cell.terrain.isShallowOcean()) return OCEAN;
-        if ((cell.terrain.isRiver() || cell.terrain.isLake()) && height <= context.levels.waterLevel) return RIVER;
-        if (height > 205) return SNOW;
-        if (height > 165) return MOUNTAIN;
-        return switch (cell.biome) {
-            case DESERT -> DESERT;
-            case SAVANNA -> SAVANNA;
-            case TROPICAL_RAINFOREST -> JUNGLE;
-            case TEMPERATE_RAINFOREST, TEMPERATE_FOREST -> FOREST;
-            case TAIGA -> TAIGA;
-            case TUNDRA, ALPINE -> SNOW;
-            default -> PLAINS;
+    public double field(String name, int x, int z) {
+        Snapshot snapshot=tile(x,z);int i=index(x,z);
+        return switch(name) {
+            case "height"->snapshot.height[i]/256F;
+            case "continent"->snapshot.climate[0][i];case "erosion"->snapshot.climate[1][i];
+            case "weirdness"->snapshot.climate[2][i];case "temperature"->snapshot.climate[3][i];
+            case "moisture"->snapshot.climate[4][i];
+            default->throw new IllegalArgumentException("Unknown terrain field "+name);
         };
     }
 
-    private static float woodland(Cell cell, float height) {
-        float cover = switch (cell.biome) {
-            case TEMPERATE_FOREST -> 0.85F;
-            case TEMPERATE_RAINFOREST, TROPICAL_RAINFOREST -> 0.95F;
-            case TAIGA -> 0.7F;
-            case SAVANNA -> 0.08F;
-            case GRASSLAND, STEPPE, COLD_STEPPE -> 0.015F;
-            default -> 0;
-        };
-        return cover * Math.max(0, Math.min(1, (190 - height) / 45));
+    private float continentalness(Cell cell) {
+        var points=context.preset.world().controlPoints;
+        if(cell.terrain.isDeepOcean())return NoiseUtil.lerp(-1.05F+.05F,-.455F,
+                NoiseUtil.lerp(NoiseUtil.clamp(cell.continentEdge,0,points.deepOcean),0,points.deepOcean,0,1));
+        if(cell.terrain.isShallowOcean())return NoiseUtil.lerp(-.455F,-.19F,
+                NoiseUtil.lerp(NoiseUtil.clamp(cell.continentEdge,points.deepOcean,points.shallowOcean),points.deepOcean,points.shallowOcean,0,.98F));
+        if(cell.terrain.getDelegate()==TerrainCategory.BEACH && cell.height+cell.beachNoise<context.levels.water(5))
+            return NoiseUtil.lerp(-.19F,-.11F,NoiseUtil.lerp(NoiseUtil.clamp(cell.continentEdge,points.shallowOcean,points.beach),points.shallowOcean,points.beach,0,1));
+        return NoiseUtil.lerp(-.04F,1F,NoiseUtil.lerp(NoiseUtil.clamp(cell.continentEdge,points.beach,points.inland),points.beach,points.inland,0,1));
+    }
+
+    @Override public synchronized boolean solid(int x,int y,int z) {return density.sample(x,y,z)>0;}
+
+    @Override public synchronized byte[] terrain(int chunkX,int chunkZ) {
+        density.beginChunk();
+        int height=MAX_Y-MIN_Y;byte[] blocks=new byte[16*16*height];
+        for(int x=0;x<16;x++)for(int z=0;z<16;z++)for(int y=MIN_Y;y<MAX_Y;y++) {
+            int wx=chunkX*16+x,wz=chunkZ*16+z;
+            blocks[(x*16+z)*height+y-MIN_Y]=(byte)(density.sample(wx,y,wz)>0?1:y<=-54?3:y<63?2:0);
+        }
+        return blocks;
+    }
+
+    private static int kind(String name) {
+        if(name.contains("ocean"))return OCEAN;
+        if(name.endsWith("river"))return RIVER;
+        if(name.contains("snow") || name.contains("frozen") || name.contains("ice_spikes") || name.endsWith("grove") && !name.endsWith("cherry_grove"))return SNOW;
+        if(name.contains("desert") || name.contains("badlands"))return DESERT;
+        if(name.contains("savanna"))return SAVANNA;
+        if(name.contains("jungle"))return JUNGLE;
+        if(name.contains("taiga"))return TAIGA;
+        if(name.contains("forest") || name.endsWith("cherry_grove"))return FOREST;
+        if(name.contains("peaks") || name.contains("hills"))return MOUNTAIN;
+        return PLAINS;
+    }
+
+    private static float cover(String name) {
+        if(name.contains("jungle"))return .95F;
+        if(name.endsWith("dark_forest"))return .95F;
+        if(name.contains("forest") || name.endsWith("grove"))return .85F;
+        if(name.contains("taiga"))return .75F;
+        if(name.contains("savanna"))return .08F;
+        if(name.endsWith("plains"))return .015F;
+        return 0;
     }
 
     @Override public int[] spawnPoint() {

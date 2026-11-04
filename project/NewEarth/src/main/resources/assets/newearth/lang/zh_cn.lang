@@ -4,6 +4,7 @@ newearth.map.star=恒星
 newearth.map.moon=卫星
 newearth.map.planet=行星
 newearth.map.landing=登陆
+newearth.map.landable=可登陆
 newearth.map.display=仅供观测
 newearth.map.tier=火箭
 newearth.map.air=大气
@@ -58,6 +59,8 @@ newearth.map.resources.barnarda_c=树汁
 newearth.map.resources.barnarda_c1=缟玛瑙
 
 generator.newearth_preview=新地球地形原型
+
+newearth.arrival.wait=正在准备降落，等待同行玩家与附近区块…
 
 item.newearth.composite_plate.name=钨基复合板
 item.newearth.thermal_liner.name=隔热衬层

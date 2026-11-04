@@ -21,7 +21,9 @@ public final class PlanetFacts {
             return rows;
         }
         if (body.getTierRequirement() > 0) add(rows, "tier", "T" + body.getTierRequirement());
-        boolean earth = body.getName().equalsIgnoreCase("overworld");
+        boolean destination = body.getName().equals(newearth.dimension.EndDimension.BODY_NAME);
+        if (destination) add(rows, "landing", text("landable"));
+        boolean earth = body.getName().equalsIgnoreCase("overworld") || destination;
         WorldProvider provider = null;
         // A provider is metadata only: do not get/init a server World or attach a fake World.
         try { provider = DimensionManager.createProviderFor(body.getDimensionID()); }
@@ -43,6 +45,7 @@ public final class PlanetFacts {
             catch (RuntimeException ignored) { }
         }
         if (earth) {
+            add(rows, "gravity", text("normal"));
             add(rows, "day", "24 h");
         } else if (provider != null) {
             try {

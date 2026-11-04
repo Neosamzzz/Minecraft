@@ -54,3 +54,14 @@ def build(ROOT, run_gradle, env, offline):
     output.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(str(artifact), str(output))
     print('Built: {}'.format(output))
+    preset = ROOT / 'project/NewEarth/dimension/biome-bundle'
+    bundle = ROOT / 'build/libs' / ('NewEarth-BiomeBundle-' + version + '.zip')
+    with zipfile.ZipFile(bundle, 'w', zipfile.ZIP_DEFLATED) as archive:
+        archive.write(output, 'mods/' + output.name)
+        for options in sorted((ROOT / 'project/NewEarth/dimension/client-config').glob('*.txt')):
+            archive.write(options, 'shaderpacks/' + options.name)
+        for name in ('ExtraPlanets.cfg', 'GalaxySpace/dimensions.conf'):
+            archive.write(ROOT / 'config' / name, 'config/' + name)
+        for config in sorted((preset / 'WorldBiomes').glob('*.bc')):
+            archive.write(config, 'mods/OpenTerrainGenerator/worlds/Biome Bundle/WorldBiomes/' + config.name)
+    print('Biome Bundle integration package (requires OTG 9.9 and Biome Bundle 6.1): {}'.format(bundle))

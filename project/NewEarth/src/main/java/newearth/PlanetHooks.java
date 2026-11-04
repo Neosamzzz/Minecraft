@@ -121,10 +121,19 @@ public final class PlanetHooks {
     public static List<Integer> filterDestinations(List<Integer> dimensions, Object player) {
         List<Integer> result = new ArrayList<>(dimensions);
         if (erisDimension != null && !hasIonRocket(player, null)) result.removeIf(PlanetHooks::isErisDestination);
+        int target = GalaxyRegistry.getRegisteredPlanets().containsKey(newearth.dimension.EndDimension.BODY_NAME)
+                ? GalaxyRegistry.getRegisteredPlanets().get(newearth.dimension.EndDimension.BODY_NAME).getDimensionID() : -1;
+        if (newearth.dimension.EndDimension.isDestinationId(target)) {
+            result.remove(Integer.valueOf(target));
+            if (newearth.dimension.EndDimension.canTravel(player)
+                    && net.minecraftforge.common.DimensionManager.isDimensionRegistered(target)) result.add(target);
+        }
         return result;
     }
 
     public static boolean allowTransfer(Object entity, int destination, Object rocket) {
+        if (newearth.dimension.EndDimension.isDestinationId(destination))
+            return newearth.dimension.EndDimension.canTravel(entity);
         return erisDimension == null || !isErisDestination(destination) || hasIonRocket(entity, rocket);
     }
 

@@ -15,16 +15,42 @@ public final class LandscapeBiomes extends BiomeProvider {
     @Override public Biome getBiome(BlockPos pos) { return getBiome(pos, Biomes.PLAINS); }
     @Override public Biome getBiome(BlockPos pos, Biome fallback) { return at(pos.getX(), pos.getZ()); }
     private Biome at(int x, int z) {
-        switch (landscape.biome(x, z)) {
-            case TerrainSampler.OCEAN: return Biomes.OCEAN;
-            case TerrainSampler.RIVER: return Biomes.RIVER;
-            case TerrainSampler.FOREST: return Biomes.FOREST;
-            case TerrainSampler.TAIGA: return Biomes.TAIGA;
-            case TerrainSampler.JUNGLE: return Biomes.JUNGLE;
-            case TerrainSampler.DESERT: return Biomes.DESERT;
-            case TerrainSampler.SAVANNA: return Biomes.SAVANNA;
-            case TerrainSampler.SNOW: return Biomes.ICE_MOUNTAINS;
-            case TerrainSampler.MOUNTAIN: return Biomes.EXTREME_HILLS;
+        String name=landscape.biomeName(x,z);
+        switch(name.substring(name.indexOf(':')+1)) {
+            case "deep_ocean": case "deep_cold_ocean": case "deep_lukewarm_ocean": case "deep_frozen_ocean": return Biomes.DEEP_OCEAN;
+            case "ocean": case "cold_ocean": case "lukewarm_ocean": case "warm_ocean": return Biomes.OCEAN;
+            case "frozen_ocean": return Biomes.FROZEN_OCEAN;
+            case "river": return Biomes.RIVER;
+            case "frozen_river": return Biomes.FROZEN_RIVER;
+            case "swamp": case "mangrove_swamp": return Biomes.SWAMPLAND;
+            case "mushroom_fields": return Biomes.MUSHROOM_ISLAND;
+            case "beach": return Biomes.BEACH;
+            case "snowy_beach": return Biomes.COLD_BEACH;
+            case "stony_shore": return Biomes.STONE_BEACH;
+            case "desert": return Biomes.DESERT;
+            case "badlands": return Biomes.MESA;
+            case "wooded_badlands": return Biomes.MESA_ROCK;
+            case "eroded_badlands": return Biomes.MUTATED_MESA;
+            case "savanna": return Biomes.SAVANNA;
+            case "savanna_plateau": return Biomes.SAVANNA_PLATEAU;
+            case "windswept_savanna": return Biomes.MUTATED_SAVANNA;
+            case "forest": case "windswept_forest": return Biomes.FOREST;
+            case "birch_forest": return Biomes.BIRCH_FOREST;
+            case "old_growth_birch_forest": return Biomes.MUTATED_BIRCH_FOREST;
+            case "dark_forest": return Biomes.ROOFED_FOREST;
+            case "flower_forest": case "cherry_grove": return Biomes.MUTATED_FOREST;
+            case "jungle": case "bamboo_jungle": return Biomes.JUNGLE;
+            case "sparse_jungle": return Biomes.JUNGLE_EDGE;
+            case "taiga": return Biomes.TAIGA;
+            case "old_growth_pine_taiga": return Biomes.REDWOOD_TAIGA;
+            case "old_growth_spruce_taiga": return Biomes.MUTATED_REDWOOD_TAIGA;
+            case "snowy_taiga": case "grove": return Biomes.COLD_TAIGA;
+            case "snowy_plains": return Biomes.ICE_PLAINS;
+            case "ice_spikes": return Biomes.MUTATED_ICE_FLATS;
+            case "snowy_slopes": case "jagged_peaks": case "frozen_peaks": return Biomes.ICE_MOUNTAINS;
+            case "windswept_hills": case "stony_peaks": return Biomes.EXTREME_HILLS;
+            case "windswept_gravelly_hills": return Biomes.MUTATED_EXTREME_HILLS;
+            case "sunflower_plains": return Biomes.MUTATED_PLAINS;
             default: return Biomes.PLAINS;
         }
     }

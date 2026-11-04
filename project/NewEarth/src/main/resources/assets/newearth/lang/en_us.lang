@@ -4,6 +4,7 @@ newearth.map.star=Star
 newearth.map.moon=Moon
 newearth.map.planet=Planet
 newearth.map.landing=Landing
+newearth.map.landable=Landable
 newearth.map.display=Display only
 newearth.map.tier=Rocket
 newearth.map.air=Air
@@ -58,6 +59,8 @@ newearth.map.resources.barnarda_c=Tree sap
 newearth.map.resources.barnarda_c1=Onyx
 
 generator.newearth_preview=NewEarth terrain preview
+
+newearth.arrival.wait=Preparing to land. Waiting for fellow travelers and nearby chunks...
 
 item.newearth.composite_plate.name=Composite Plate
 item.newearth.thermal_liner.name=Thermal Liner

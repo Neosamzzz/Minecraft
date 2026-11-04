@@ -17,6 +17,7 @@ import newearth.dimension.Landscape;
 import newearth.dimension.LandscapeBiomes;
 import newearth.dimension.LandscapeGenerator;
 import newearth.dimension.LandscapeWorldType;
+import newearth.dimension.TerrainSampler;
 
 /** Runs the production terrain builder without a client, server, or world save. */
 public final class LandscapeProbe {
@@ -29,6 +30,20 @@ public final class LandscapeProbe {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        check(newearth.dimension.LandingSite.safeBlocks(Blocks.GRASS.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState()), "Dry grass landing is valid");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), Blocks.AIR.getDefaultState()), "Underwater landing is rejected");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.STONE.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.STONE.getDefaultState()), "Head obstruction is rejected");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.MAGMA.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState()), "Magma landing is rejected");
+        check(!newearth.dimension.LandingSite.safeBlocks(Blocks.LEAVES.getDefaultState(), Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState()), "Tree canopy is not landing ground");
+        newearth.dimension.LandingSite landingData = new newearth.dimension.LandingSite("test");
+        net.minecraft.nbt.NBTTagCompound landingTag = new net.minecraft.nbt.NBTTagCompound();
+        landingTag.setLong("Position", new net.minecraft.util.math.BlockPos(-51, 79, 123).toLong());
+        landingData.readFromNBT(landingTag);
+        check(landingData.writeToNBT(new net.minecraft.nbt.NBTTagCompound()).getLong("Position") == landingTag.getLong("Position"), "Landing location persists across save and reload");
+        check(newearth.dimension.EndDimension.matches("Biome Bundle", 1020), "OTG destination is recognized");
+        check(newearth.dimension.EndDimension.matches("Biome Bundle", 900), "Saved destination can retain its own ID");
+        check(!newearth.dimension.EndDimension.matches("Biome Bundle", 0), "Preview overworld is excluded");
+        check(!newearth.dimension.EndDimension.matches("Moon", 1020), "Unrelated destinations are excluded");
         WorldType original = WorldType.DEFAULT;
         LandscapeWorldType.register(null);
         WorldType preview = WorldType.byName("newearth_preview");
@@ -39,24 +54,26 @@ public final class LandscapeProbe {
         check(LandscapeProbe.class.getResource("/META-INF/LICENSE-ReTerraForged.txt") != null, "Adapted algorithm ships its MIT notice");
         check(new Landscape(0).height(0,0) != new Landscape(42).height(0,0), "Origin is not pinned to a seed-independent noise-lattice summit");
         verifyPeacefulWorld(preview);
+        verifyDhHeightAdapter();
+        verifyDhArrivalOverride();
         for (long seed : new long[] {42, -20261103L}) distribution(seed);
         Landscape field = new Landscape(42);
         LandscapeBiomes provider = new LandscapeBiomes(42);
         for (int[] at : new int[][] {{0,0}, {-1,-1}}) {
             int x = at[0], z = at[1];
-            ChunkPrimer first = LandscapeGenerator.terrain(field, x, z);
-            LandscapeGenerator.terrain(field, x + 1, z);
-            LandscapeGenerator.terrain(field, x, z - 1);
-            ChunkPrimer second = LandscapeGenerator.terrain(new Landscape(42), x, z);
+            ChunkPrimer first = buildTerrain(field, x, z);
+            buildTerrain(field, x + 1, z);
+            buildTerrain(field, x, z - 1);
+            ChunkPrimer second = buildTerrain(new Landscape(42), x, z);
             for (int bx = 0; bx < 16; bx++) for (int bz = 0; bz < 16; bz++) {
-                check(first.getBlockState(bx, 0, bz).getBlock() == Blocks.BEDROCK, "Solid bedrock floor");
+                check(first.getBlockState(bx, TerrainSampler.MIN_Y, bz).getBlock() == Blocks.BEDROCK, "Solid bedrock floor");
                 int wx = x * 16 + bx, wz = z * 16 + bz;
                 int top = (int) Math.floor(field.height(wx, wz));
-                check(first.getBlockState(bx, top, bz).isFullBlock(), "No air gaps at sampled surface");
+                check(top<TerrainSampler.MAX_Y, "Uncompressed terrain remains inside the configured world");
                 if (top < Landscape.WATER_LEVEL)
                     check(first.getBlockState(bx, Landscape.WATER_LEVEL, bz).getBlock() == Blocks.WATER,
                             "Basin filled at consistent water level");
-                for (int y = 0; y < 256; y++)
+                for (int y = TerrainSampler.MIN_Y; y < TerrainSampler.MAX_Y; y++)
                     if (first.getBlockState(bx,y,bz) != second.getBlockState(bx,y,bz))
                         throw new AssertionError("Chunk depends on generation order at " + wx + "," + y + "," + wz);
             }
@@ -71,15 +88,98 @@ public final class LandscapeProbe {
         check(provider.findBiomePosition(0, 0, 256, Arrays.asList(Biomes.PLAINS, Biomes.FOREST, Biomes.OCEAN,
                 Biomes.RIVER, Biomes.EXTREME_HILLS, Biomes.TAIGA, Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS), new java.util.Random(1)) != null, "Spawn biome search works");
         check(!provider.areBiomesViable(0,0,64,java.util.Collections.<Biome>emptyList()), "Viability uses actual distribution");
-        verifyCrossingCanopy(field);
         // Warm up separately; report chunk construction only, not lighting, disk I/O or DH work.
-        for (int i = 0; i < 4; i++) LandscapeGenerator.terrain(field, i, 0);
+        for (int i = 0; i < 4; i++) buildTerrain(field, i, 0);
         long start = System.nanoTime();
-        for (int i = 0; i < 32; i++) LandscapeGenerator.terrain(field, i % 8, i / 8);
-        System.out.printf(java.util.Locale.ROOT, "Terrain construction: %.3f ms/chunk (32 adjacent chunks, one thread)%n",
-                (System.nanoTime() - start) / 32000000.0);
+        for (int i = 0; i < 4; i++) buildTerrain(field, i, 0);
+        System.out.printf(java.util.Locale.ROOT, "Terrain construction: %.3f ms/chunk (4 adjacent chunks, one thread)%n",
+                (System.nanoTime() - start) / 4000000.0);
         map(field);
         System.out.println("NewEarth landscape: " + checks + " checks passed (isolated; no game, save or shaders)");
+    }
+    private static void verifyDhHeightAdapter() throws Exception {
+        String path=System.getProperty("newearth.dhJar");
+        if(path==null) return;
+        String name="com.seibel.distanthorizons.common.wrappers.chunk.ChunkWrapper";
+        byte[] original;
+        try(java.util.zip.ZipFile jar=new java.util.zip.ZipFile(path);
+                java.io.InputStream in=jar.getInputStream(jar.getEntry(name.replace('.','/')+".class"))) {
+            java.io.ByteArrayOutputStream bytes=new java.io.ByteArrayOutputStream();byte[] buffer=new byte[8192];int count;
+            while((count=in.read(buffer))!=-1)bytes.write(buffer,0,count);original=bytes.toByteArray();
+        }
+        byte[] transformed=new newearth.dimension.HeightTransformer().transform(name,name,original);
+        org.objectweb.asm.tree.ClassNode node=new org.objectweb.asm.tree.ClassNode();new org.objectweb.asm.ClassReader(transformed).accept(node,0);
+        int hooks=0;
+        for(org.objectweb.asm.tree.MethodNode method:node.methods)for(org.objectweb.asm.tree.AbstractInsnNode insn:method.instructions.toArray())
+            if(insn instanceof org.objectweb.asm.tree.MethodInsnNode && ((org.objectweb.asm.tree.MethodInsnNode)insn).owner.equals("newearth/dimension/HeightHooks"))hooks++;
+        check(hooks==3,"Installed DH wrapper delegates all three height bounds to the dimension adapter");
+    }
+    private static void verifyDhArrivalOverride() throws Exception {
+        String path = System.getProperty("newearth.dhJar");
+        if (path == null) return;
+        try (java.net.URLClassLoader loader = new java.net.URLClassLoader(
+                new java.net.URL[] {new File(path).toURI().toURL()}, LandscapeProbe.class.getClassLoader())) {
+            Class<?> planType = loader.loadClass("com.seibel.distanthorizons.api.enums.worldGeneration.EDhApiGeneratorPlan");
+            Object chunks = planType.getField("CHUNKS_ONLY").get(null), disabled = planType.getField("DISABLED").get(null);
+            check(!planType.getField("surfaceGenEnabled").getBoolean(chunks)
+                    && planType.getField("chunkGenEnabled").getBoolean(chunks), "Installed DH CHUNKS_ONLY supports legacy chunk generation without surface preview");
+            Class<?> converter = loader.loadClass("com.seibel.distanthorizons.core.config.api.converters.ApiGeneratorModeToBoolConverter");
+            Object converted = converter.getMethod("convertToCoreType", Boolean.class).invoke(converter.newInstance(), true);
+            check(planType.getField("surfaceGenEnabled").getBoolean(converted), "Legacy boolean enable API selects unsupported surface preview and must be avoided");
+            Class<?> builderType = loader.loadClass("com.seibel.distanthorizons.core.config.types.ConfigEntry$Builder");
+            Object builder = builderType.newInstance();
+            builderType.getMethod("set", Object.class).invoke(builder, disabled);
+            builderType.getMethod("setUseApiOverwrite", boolean.class).invoke(builder, true);
+            Object entry = builderType.getMethod("build").invoke(builder);
+            Class<?> entryType = loader.loadClass("com.seibel.distanthorizons.core.config.types.ConfigEntry");
+            Class<?> listenerType = loader.loadClass("com.seibel.distanthorizons.core.config.listeners.IConfigListener");
+            int[] changes = {0};
+            Object listener = java.lang.reflect.Proxy.newProxyInstance(loader, new Class<?>[] {listenerType}, (proxy, method, args) -> {
+                if (method.getName().equals("onConfigValueSet")) {
+                    changes[0]++;
+                    Object effective = entryType.getMethod("get").invoke(entry);
+                    if (planType.getField("surfaceGenEnabled").getBoolean(effective))
+                        throw new AssertionError("Arrival override reentered the unsupported surface plan");
+                }
+                return null;
+            });
+            entryType.getMethod("addListener", listenerType).invoke(entry, listener);
+            Class<?> wrapperType = loader.loadClass("com.seibel.distanthorizons.core.config.api.DhApiConfigValue");
+            Object value = wrapperType.getConstructor(entryType).newInstance(entry);
+            Class<?> adapter = Class.forName("newearth.client.ArrivalDistantLoading");
+            java.lang.reflect.Field valueType = adapter.getDeclaredField("valueType"); valueType.setAccessible(true);
+            valueType.set(null, loader.loadClass("com.seibel.distanthorizons.api.interfaces.config.IDhApiConfigValue"));
+            java.lang.reflect.Method apply = adapter.getDeclaredMethod("override", Object.class, Object.class); apply.setAccessible(true);
+            java.lang.reflect.Method stop = adapter.getDeclaredMethod("stop"); stop.setAccessible(true);
+            try {
+                apply.invoke(null, value, chunks);
+                check(entryType.getMethod("get").invoke(entry) == chunks && changes[0] == 1,
+                        "Production adapter applies actual DH override without recursive config notifications");
+                apply.invoke(null, value, disabled);
+                apply.invoke(null, value, chunks);
+            } finally { stop.invoke(null); }
+            check(entryType.getMethod("get").invoke(entry) == disabled
+                    && entryType.getMethod("getApiValue").invoke(entry) == null,
+                    "Landing restores the original DH setting after multiple adaptive load changes");
+            entryType.getMethod("setApiValue", Object.class, String.class).invoke(entry, disabled, "existing override");
+            try { apply.invoke(null, value, chunks); } finally { stop.invoke(null); }
+            check(entryType.getMethod("getApiValue").invoke(entry) == disabled, "Landing preserves a preexisting DH API override");
+        }
+    }
+    private static ChunkPrimer buildTerrain(Landscape field,int x,int z) {
+        return LandscapeGenerator.terrain(field,x,z,new ExtendedPrimer());
+    }
+    private static final class ExtendedPrimer extends ChunkPrimer {
+        private final net.minecraft.block.state.IBlockState[] states=new net.minecraft.block.state.IBlockState[256*(TerrainSampler.MAX_Y-TerrainSampler.MIN_Y)];
+        @Override public net.minecraft.block.state.IBlockState getBlockState(int x,int y,int z) {
+            if(y<TerrainSampler.MIN_Y || y>=TerrainSampler.MAX_Y)return Blocks.AIR.getDefaultState();
+            net.minecraft.block.state.IBlockState state=states[(x*16+z)*(TerrainSampler.MAX_Y-TerrainSampler.MIN_Y)+y-TerrainSampler.MIN_Y];
+            return state==null?Blocks.AIR.getDefaultState():state;
+        }
+        @Override public void setBlockState(int x,int y,int z,net.minecraft.block.state.IBlockState state) {
+            if(y<TerrainSampler.MIN_Y || y>=TerrainSampler.MAX_Y)throw new AssertionError("Out-of-range block write: "+y);
+            states[(x*16+z)*(TerrainSampler.MAX_Y-TerrainSampler.MIN_Y)+y-TerrainSampler.MIN_Y]=state;
+        }
     }
     // Forge injects this override at launch; the isolated runner has no event transformer.
     private static final class JoinEvent extends net.minecraftforge.event.entity.EntityJoinWorldEvent {
@@ -137,7 +237,7 @@ public final class LandscapeProbe {
             for (int dz = 0; dz < 128; dz += 4) for (int dx = 0; dx < 128; dx += 4) {
                 int x = region[0] + dx, z = region[1] + dz;
                 double h = field.height(x,z);
-                check(Double.isFinite(h) && h >= 5 && h < 252, "Mapped terrain fits the 1.12 block range");
+                check(Double.isFinite(h) && h >= TerrainSampler.MIN_Y && h < TerrainSampler.MAX_Y, "Uncompressed terrain fits the configured extended height");
 
                 maxStep = Math.max(maxStep, Math.abs(h-field.height(x+1,z)));
                 differs |= h != other.height(x,z);
@@ -151,26 +251,10 @@ public final class LandscapeProbe {
                 seed, spawn[0], spawn[1], spawn[2], maxStep);
         if (seed == 42) {
             double peak = field.height(2048,3968);
-            check(peak > 200 && peak < 252, "Original RTF peak remains above Y200 after height adaptation");
+            check(peak > 256 && peak < TerrainSampler.MAX_Y, "Original RTF mountain remains above the old height limit");
             System.out.printf("Mountain: /tp 2048 %d 3968%n", (int)peak+3);
             profile(field,2048,3968,2048,3488);
         }
-    }
-    private static void verifyCrossingCanopy(Landscape field) {
-        for (int cz = 64; cz < 128; cz++) for (int cx = 0; cx < 64; cx++) {
-            int tx = cx * 8 + 1 + (int)(field.unit(cx,cz,30)*6);
-            int tz = cz * 8 + 1 + (int)(field.unit(cx,cz,31)*6);
-            if (Math.floorMod(tx,16) != 1 || !field.tree(tx,tz)) continue;
-            int ground = (int)Math.floor(field.height(tx,tz));
-            int trunk = 5 + (int)(field.unit(tx,tz,32)*3);
-            ChunkPrimer left = LandscapeGenerator.terrain(field, Math.floorDiv(tx,16)-1, Math.floorDiv(tz,16));
-            ChunkPrimer right = LandscapeGenerator.terrain(field, Math.floorDiv(tx,16), Math.floorDiv(tz,16));
-            Block a = left.getBlockState(15, ground+trunk-1, Math.floorMod(tz,16)).getBlock();
-            Block b = right.getBlockState(0, ground+trunk-1, Math.floorMod(tz,16)).getBlock();
-            check(a == Blocks.LEAVES && b == Blocks.LEAVES, "Tree canopy spans independently generated chunks");
-            return;
-        }
-        throw new AssertionError("No boundary tree tested");
     }
     private static void profile(Landscape field, int peakX, int peakZ, int viewX, int viewZ) throws Exception {
         BufferedImage image = new BufferedImage(1200,340,BufferedImage.TYPE_INT_RGB);

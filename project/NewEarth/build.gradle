@@ -63,7 +63,8 @@ tasks.register('terrainReferenceCheck', Exec) {
         commandLine file("$modernJavaHome/bin/java" + (System.getProperty('os.name').startsWith('Windows') ? '.exe' : '')),
                 '-Djava.awt.headless=true', '--class-path',
                 files(terrainClasses, 'dimension/terrain/resources').asPath + File.pathSeparator + sourceSets.main.compileClasspath.asPath,
-                file('dimension/terrain/test/newearth/terrain/TerrainReferenceCheck.java').absolutePath
+                file('dimension/terrain/test/newearth/terrain/TerrainReferenceCheck.java').absolutePath,
+                file('dimension/terrain/test/reference-density.bin').absolutePath
     }
 }
 check.dependsOn 'terrainReferenceCheck'
@@ -121,6 +122,7 @@ tasks.register('landscapeCheck', JavaExec) {
     workingDir = rootProject.file('../../build/checks/newearth/landscape')
     doFirst { workingDir.mkdirs() }
     systemProperty 'java.awt.headless', 'true'
+    if (System.getenv('NEWEARTH_DH_JAR')) systemProperty 'newearth.dhJar', System.getenv('NEWEARTH_DH_JAR')
     doFirst {
         if (!modernJavaHome) throw new GradleException('Set NEWEARTH_JAVA_HOME to JDK 25')
         executable = file("$modernJavaHome/bin/java" + (System.getProperty('os.name').startsWith('Windows') ? '.exe' : '')).absolutePath

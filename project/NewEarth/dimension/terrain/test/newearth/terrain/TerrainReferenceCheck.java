@@ -6,14 +6,27 @@ public final class TerrainReferenceCheck {public static void main(String[] args)
  TerrainReferenceCheck.class.getResourceAsStream("/newearth/terrain/default-preset.json"),java.nio.charset.StandardCharsets.UTF_8),Preset.class);
  var registry=new NoiseRegistry();PresetNoiseData.bootstrap(preset,registry);
  for(int seed:new int[]{42,-20261103,1992175465})run(GeneratorContext.makeUncached(preset,registry,seed,3,1,1),seed);
- for(double h=192;h<=384;h+=0.125){
-  double mapped=TerrainEngine.mapHeight(h);
-  if(mapped>=252 || mapped<=TerrainEngine.mapHeight(h-0.125))throw new AssertionError("Height mapping clips or reverses a mountain");
- }
- if(TerrainEngine.mapHeight(192)!=192 || TerrainEngine.mapHeight(272)<=200)throw new AssertionError("Height mapping changes lowlands or loses high peaks");
- System.out.println("RTF reference: 3 seeds, 49923 raw cells, 12288 filtered cells and height mapping passed");
+ verifyDensity(args[0]);
+ System.out.println("RTF terrain and final density reference checks passed");
  }
 
+ static void verifyDensity(String path)throws Exception {
+  newearth.terrain.TerrainEngine engine=null;
+  newearth.terrain.density.DensityRouter router=null;long lastSeed=0;
+  try(var in=new java.io.DataInputStream(new java.io.FileInputStream(path))) {
+   if(in.readInt()!=0x4E45444E)throw new AssertionError("Unknown density fixture");
+   int count=in.readInt();
+   for(int i=0;i<count;i++) {
+    long seed=in.readLong();int x=in.readInt(),y=in.readInt(),z=in.readInt();double expected=in.readDouble();
+    if(engine==null || seed!=lastSeed) {
+     if(engine!=null)engine.close();engine=new newearth.terrain.TerrainEngine(seed);
+     router=new newearth.terrain.density.DensityRouter(seed,engine::field);lastSeed=seed;
+    }
+    double actual=router.sample(x,y,z);
+    if(Math.abs(actual-expected)>1e-8 || (actual>0)!=(expected>0))throw new AssertionError("Final density mismatch at "+seed+":"+x+","+y+","+z+" expected "+expected+" got "+actual);
+   }
+  }finally{if(engine!=null)engine.close();}
+ }
  // Generated with the installed unmodified RTF 0.0.6 JAR (SHA-256 e0fe886f45cf7e0964432c6c1a9ff4ea8d27631938586166376b815836a0eab2).
  static final java.util.Set<String> EXPECTED=new java.util.HashSet<>(java.util.Arrays.asList(
 "42 raw 9bcdffb4467970a9d0349026332450013b0c88ba99699ea5ba796cf59973ebdf",
