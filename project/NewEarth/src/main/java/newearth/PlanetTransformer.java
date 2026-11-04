@@ -12,6 +12,7 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
         String n = transformedName;
+        boolean registry = "micdoodle8.mods.galacticraft.api.GalacticraftRegistry".equals(n);
         boolean core = "micdoodle8.mods.galacticraft.core.GalacticraftCore".equals(n);
         boolean gui = "micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection".equals(n);
         boolean epGui = "com.mjr.extraplanets.client.gui.screen.CustomCelestialSelection".equals(n);
@@ -26,11 +27,21 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
         boolean provider = n != null && (n.equals("com.mjr.extraplanets.planets.Neptune.WorldProviderNeptune")
                 || n.equals("com.mjr.extraplanets.planets.Pluto.WorldProviderPluto")
                 || n.equals("com.mjr.extraplanets.planets.Eris.WorldProviderEris"));
-        if (!(core || gui || epGui || gsBodies || world || item || rocket || provider || orbit)) return bytes;
+        if (!(registry || core || gui || epGui || gsBodies || world || item || rocket || provider || orbit)) return bytes;
         ClassNode c = new ClassNode();
         new ClassReader(bytes).accept(c, epGui ? ClassReader.EXPAND_FRAMES : 0);
         int changes = 0;
         for (MethodNode m : c.methods) {
+            if (registry && m.name.equals("getTeleportTypeForDimension")) {
+                InsnList hook = new InsnList(); LabelNode original = new LabelNode();
+                hook.add(new VarInsnNode(ALOAD, 0));
+                hook.add(new MethodInsnNode(INVOKESTATIC, "newearth/dimension/EndDimension", "teleportTypeFor",
+                        "(Ljava/lang/Class;)Lmicdoodle8/mods/galacticraft/api/world/ITeleportType;", false));
+                hook.add(new InsnNode(DUP)); hook.add(new JumpInsnNode(IFNULL, original)); hook.add(new InsnNode(ARETURN));
+                hook.add(original); hook.add(new FrameNode(F_SAME1, 0, null, 1,
+                        new Object[]{"micdoodle8/mods/galacticraft/api/world/ITeleportType"})); hook.add(new InsnNode(POP));
+                m.instructions.insert(hook); changes++;
+            }
             if (gsBodies && m.name.equals("registerDummyMoon")) {
                 InsnList hook = new InsnList(); LabelNode proceed = new LabelNode();
                 hook.add(new VarInsnNode(ALOAD, 1));

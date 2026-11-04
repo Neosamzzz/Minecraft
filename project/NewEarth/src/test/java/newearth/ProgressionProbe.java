@@ -122,7 +122,7 @@ public final class ProgressionProbe {
         Planet kepler = new Planet("kepler22b"); kepler.setTierRequired(10); GalaxyRegistry.registerPlanet(kepler);
         SolarSystemBridge.install();
         check(proxima.getTierRequirement() == 7 && barnarda.getTierRequirement() == 7 && moon.getTierRequirement() == 7, "Preserve exoplanet T7 gates");
-        check(kepler.getTierRequirement() == 10, "Keep Kepler gate pending custom T9");
+        check(kepler.getTierRequirement() == 9, "Custom T9 reaches Kepler before final core manufacture");
         System.out.println("NewEarth progression: " + checks + " checks passed (isolated; no Forge server or flight)");
     }
 
@@ -355,6 +355,20 @@ public final class ProgressionProbe {
     }
 
     private static void verifyPatched(ContentTransformer transformer, String name, byte[] original) throws Exception {
+        if(name.endsWith("BlockBasicJupiter") || name.endsWith("BlockBasicSaturn") || name.endsWith("ItemBasicMeta")) {
+            org.objectweb.asm.tree.ClassNode server=new org.objectweb.asm.tree.ClassNode();
+            new org.objectweb.asm.ClassReader(original).accept(server,0);
+            server.methods.removeIf(method -> method.name.equals("getSubBlocks") || method.name.equals("func_149666_a")
+                    || method.name.equals("getSubItems") || method.name.equals("func_150895_a"));
+            org.objectweb.asm.ClassWriter writer=new org.objectweb.asm.ClassWriter(0);server.accept(writer);
+            byte[] stripped=writer.toByteArray();
+            java.lang.reflect.Field side=net.minecraftforge.fml.relauncher.FMLLaunchHandler.class.getDeclaredField("side");
+            side.setAccessible(true);Object previous=side.get(null);
+            try {
+                side.set(null,net.minecraftforge.fml.relauncher.Side.SERVER);
+                check(transformer.transform(name,name,stripped)==stripped,"Dedicated server accepts side-stripped creative list: "+name);
+            } finally { side.set(null,previous); }
+        }
         byte[] patched = transformer.transform(name, name, original);
         check(!java.util.Arrays.equals(patched, original), "Content patch applied " + name);
         org.objectweb.asm.tree.ClassNode node = new org.objectweb.asm.tree.ClassNode();

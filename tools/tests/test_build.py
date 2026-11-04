@@ -99,8 +99,16 @@ class BuildTargetTests(unittest.TestCase):
         (self.newearth / 'gradle.properties').write_text('mod_version=0.1.0\n')
         (self.newearth / 'build/libs').mkdir(parents=True)
         self.emit_newearth = True
+        source=self.newearth / 'src/main/java/newearth/NewEarth.java'
+        source.parent.mkdir(parents=True)
+        source.write_text('public static final String VERSION = "0.1.0";')
+        (self.work / 'config/GalaxySpace').mkdir(parents=True)
+        (self.work / 'config/ExtraPlanets.cfg').write_text('fixture')
+        (self.work / 'config/GalaxySpace/dimensions.conf').write_text('fixture')
 
     def fake_subprocess(self, command, **kwargs):
+        if command[-1] == '-version':
+            return subprocess.CompletedProcess(command, 0, stdout='openjdk version "25.0.1"', stderr='')
         self.commands.append(command)
         if '-p' in command:
             project = command[command.index('-p') + 1]
@@ -111,6 +119,12 @@ class BuildTargetTests(unittest.TestCase):
                 with zipfile.ZipFile(self.newearth / 'build/libs/NewEarth-0.1.0.jar', 'w') as jar:
                     jar.writestr('mcmod.info', json.dumps([{'modid': 'newearth', 'version': '0.1.0'}]))
                     jar.writestr('newearth/NewEarth.class', b'entry point')
+                    terrain=io.BytesIO()
+                    with zipfile.ZipFile(terrain,'w') as core:
+                        core.writestr('newearth/terrain/TerrainEngine.class',bytes.fromhex('cafebabe00000045'))
+                        for resource in ['default-preset.json','biomes.png','biomes.txt']:
+                            core.writestr('newearth/terrain/'+resource,b'fixture')
+                    jar.writestr('META-INF/newearth-terrain.jar',terrain.getvalue())
         elif len(command) > 1 and command[1].endswith('build_addon.py'):
             Path(command[-2]).write_bytes(b'GSLC package')
         else:
@@ -119,7 +133,8 @@ class BuildTargetTests(unittest.TestCase):
 
     def invoke(self, *args, build_number=''):
         self.build_number = build_number
-        env = {'BUILD_NUMBER': build_number} if build_number else {}
+        env = {'NEWEARTH_JAVA_HOME': str(self.work / 'jdk25')}
+        if build_number: env['BUILD_NUMBER'] = build_number
         stdout, stderr = io.StringIO(), io.StringIO()
         with mock.patch.object(BUILD, 'ROOT', self.work), \
                 mock.patch.object(BUILD, 'check_jdk'), \
@@ -168,8 +183,9 @@ class BuildTargetTests(unittest.TestCase):
     def test_newearth_reuses_gs_wrapper_and_exports_exact_artifact(self):
         code, _, error = self.invoke('--target', 'newearth', '--offline')
         self.assertEqual(code, 0, error)
-        self.assertEqual(len(self.commands), 1)
-        command = self.commands[0]
+        self.assertEqual(len(self.commands), 2)
+        self.assertEqual(self.commands[0][-1], "deobfGSJar")
+        command = self.commands[1]
         self.assertIn('project/NewEarth', command)
         self.assertTrue(any('GalaxySpace' in entry and 'gradlew' in entry for entry in command))
         self.assertIn('--offline', command)
@@ -207,13 +223,14 @@ class BuildTargetTests(unittest.TestCase):
         code, _, error = self.invoke('--target', 'all', '--offline')
         self.assertEqual(code, 0, error)
         self.assertEqual([p.name for p in sorted((self.work / 'build/libs').iterdir())],
-                         ['FTBQuests-1202.9.0.jar', 'GSLaunchCompat-9.8.7.jar', 'NewEarth-0.1.0.jar'])
+                         ['FTBQuests-1202.9.0.jar', 'GSLaunchCompat-9.8.7.jar', 'NewEarth-0.1.0.jar', 'NewEarth-BiomeBundle-0.1.0.zip'])
         self.assertIn('dependencies/GalaxySpace', self.commands[0])
         self.assertTrue(self.commands[1][1].endswith('build_addon.py'))
         self.assertIn('project/FTB', self.commands[2])
         self.assertIn('--offline', self.commands[2])
-        self.assertIn('project/NewEarth', self.commands[3])
-        self.assertIn('--offline', self.commands[3])
+        self.assertEqual(self.commands[3][-1], 'deobfGSJar')
+        self.assertIn('project/NewEarth', self.commands[4])
+        self.assertIn('--offline', self.commands[4])
 
     def test_all_stops_after_first_gradle_failure(self):
         (self.work / 'project/GSLC').mkdir(parents=True, exist_ok=True)

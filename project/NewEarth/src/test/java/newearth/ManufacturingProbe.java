@@ -49,16 +49,91 @@ public final class ManufacturingProbe {
         Manufacturing.Batch repeated=new Manufacturing.Batch("test",new ItemStack(Items.PAPER),Arrays.asList(new ItemStack(Items.IRON_INGOT,3),new ItemStack(Items.IRON_INGOT,3)));
         inv.setInventorySlotContents(2,ItemStack.EMPTY);
         check(repeated.debit(inv,18)==null,"Repeated ingredient cannot double spend a stack");
+        net.minecraft.tileentity.TileEntity.register("newearth:manufacturing", ManufacturingTile.class);
         ManufacturingTile tile=new ManufacturingTile();
+        ManufacturingContainer powerGui=new ManufacturingContainer(new net.minecraft.entity.player.InventoryPlayer(null),tile);
+        for(int charge:new int[]{32767,32768,50000}) {
+            powerGui.updateProgressBar(0,(short)charge);
+            check(tile.getField(0)==charge,"GUI energy sync preserves unsigned 16-bit charge "+charge);
+        }
         Manufacturing.BATCHES.add(batch);
         tile.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,8));
-        for(int i=18;i<27;i++)tile.setInventorySlotContents(i,new ItemStack(Items.GOLD_INGOT,64));
-        check(!tile.process("material_station")&&tile.getStackInSlot(0).getCount()==8,"Full output does not consume inputs");
-        tile.setInventorySlotContents(18,ItemStack.EMPTY);
-        check(tile.process("material_station")&&tile.getStackInSlot(0).getCount()==4&&tile.getStackInSlot(18).getCount()==2,"Successful batch consumes once and produces exact quantity");
-        check(!tile.process("engine_station"),"Wrong station cannot run a material batch");
-        check(!tile.canInsertItem(18,new ItemStack(Items.IRON_INGOT),net.minecraft.util.EnumFacing.UP),"Automation cannot insert into output");
+        tile.setInventorySlotContents(ManufacturingTile.OUTPUT_SLOT,new ItemStack(Items.GOLD_INGOT,64));
+        tile.setField(0,8000);
+        for(int tick=0;tick<200;tick++)tile.process("material_station");
+        check(tile.getStackInSlot(0).getCount()==8 && tile.getField(0)==8000,"Full output consumes neither inputs nor power");
+        tile.setInventorySlotContents(ManufacturingTile.OUTPUT_SLOT,ItemStack.EMPTY);
+        for(int tick=0;tick<200;tick++)tile.process("material_station");
+        check(tile.getStackInSlot(0).getCount()==4 && tile.getStackInSlot(ManufacturingTile.OUTPUT_SLOT).getCount()==2,"Complete batch consumes once and produces exact quantity");
+        check(tile.getField(0)==0,"200 processing ticks consume exactly 8000 FE");
+        tile.process("material_station");
+        check(tile.getField(1)==0 && tile.getField(2)==ManufacturingTile.STATUS_NO_POWER,"Machine stops without power");
+        check(!tile.canInsertItem(ManufacturingTile.OUTPUT_SLOT,new ItemStack(Items.IRON_INGOT),net.minecraft.util.EnumFacing.UP),"Automation cannot insert into output");
+        net.minecraft.util.NonNullList<ItemStack> old=net.minecraft.util.NonNullList.withSize(27,ItemStack.EMPTY);
+        for(int i=0;i<27;i++)old.set(i,new ItemStack(Items.IRON_INGOT,i+1));
+        net.minecraft.nbt.NBTTagCompound oldTag=new net.minecraft.nbt.NBTTagCompound();
+        net.minecraft.inventory.ItemStackHelper.saveAllItems(oldTag,old);
+        ManufacturingTile migrated=new ManufacturingTile();migrated.readFromNBT(oldTag);
+        ManufacturingTile reloaded=new ManufacturingTile();reloaded.readFromNBT(migrated.writeToNBT(new net.minecraft.nbt.NBTTagCompound()));
+        int recovered=0;
+        for(int i=0;i<27;i++) {
+            reloaded.process("material_station");
+            ItemStack returned=reloaded.removeStackFromSlot(ManufacturingTile.OUTPUT_SLOT);
+            check(returned.getCount()==i+1,"Migration preserves old slot "+i);
+            recovered+=returned.getCount();
+        }
+        check(recovered==378,"All 27 legacy stacks survive save/reload and recovery");
         Manufacturing.BATCHES.clear();
+        for (String id : Manufacturing.PARTS) registerPart(id);
+        registerPart("tier7_rocket");registerPart("tier9_rocket");registerPart("tier10_rocket");
+        if (!net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.containsKey(modules.getRegistryName()))
+            net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.register(modules);
+        for (int tier : new int[] {7,9,10}) {
+            AssemblyStationTile station=new AssemblyStationTile();
+            List<ItemStack> inputs=AssemblyStationTile.inputs(tier);
+            for(int slot=0;slot<inputs.size();slot++)station.setInventorySlotContents(slot,inputs.get(slot).copy());
+            station.setInventorySlotContents(9,ItemStack.EMPTY);
+            check(!station.process(),"T"+tier+" cannot bypass blueprint/control panel");
+            station.setInventorySlotContents(9,inputs.get(9).copy());
+            station.setInventorySlotContents(8,ItemStack.EMPTY);
+            check(!station.process(),"T"+tier+" cannot bypass installed propulsion module");
+            station.setInventorySlotContents(8,inputs.get(8).copy());
+            check(station.process(),"T"+tier+" complete assembly succeeds");
+            ItemStack rocket=station.getStackInSlot(AssemblyStationTile.OUTPUT_SLOT);
+            check(rocket.getItem()==Manufacturing.ITEMS.get("tier"+tier+"_rocket"),"Assembly preserves exact tier item");
+            if(tier==7)check(ManufacturingHooks.readyStack(rocket),"T7 assembled with sublight is ready for flight");
+            DisassemblyStationTile recycling=new DisassemblyStationTile();
+            recycling.setInventorySlotContents(0,rocket.copy());recycling.process();
+            for(int slot=0;slot<inputs.size();slot++)check(ItemStack.areItemsEqual(inputs.get(slot),recycling.getStackInSlot(slot+1)),"T"+tier+" recycling returns exact part "+slot);
+        }
+        ItemStack unpoweredSix=new ItemStack(six);
+        check(!PlanetHooks.readyErisStack(6,six,unpoweredSix),"Unmodified T6 cannot reach Eris");
+        net.minecraft.nbt.NBTTagCompound ion=new net.minecraft.nbt.NBTTagCompound();
+        ion.setBoolean(asmodeuscore.core.astronomy.SpaceData.Engine_Type.ION_ENGINE.getName(),true);
+        unpoweredSix.setTagCompound(ion);
+        check(PlanetHooks.readyErisStack(6,six,unpoweredSix),"Ion-equipped T6 reaches Eris after NBT recovery");
+        check(!PlanetHooks.readyErisStack(6,Items.PAPER,unpoweredSix),"Inventory ion tag cannot authorize a different rocket item");
+        ItemStack sevenReady=AssemblyStationTile.output(7);
+        check(PlanetHooks.readyErisStack(7,sevenReady.getItem(),sevenReady),"T7 sublight remains eligible for Eris");
+        for(int tier:new int[]{9,10}) {
+            ItemStack rocket=AssemblyStationTile.output(tier);
+            check(PlanetHooks.readyErisStack(tier,rocket.getItem(),rocket),"T"+tier+" recovered ship remains eligible for Eris");
+        }
+        check(ItemTier9Rocket.completePad("galacticraftcore:landing_pad_full",0),"Complete GC launch pad accepted");
+        check(ItemTier9Rocket.completePad("galaxyspace:advanced_landing_pad_full",0),"Complete GS launch pad accepted");
+        check(!ItemTier9Rocket.completePad("galacticraftcore:landing_pad",0),"Individual pad pieces rejected");
+        check(!ItemTier9Rocket.completePad("galacticraftcore:landing_pad_full",1),"Buggy pad rejected");
+        micdoodle8.mods.galacticraft.core.util.ConfigManagerCore.rocketFuelFactor=1;
+        EntityTier9Rocket ship=new EntityTier9Rocket(null);
+        check(ship.getMaxSeats()==6 && ship.getRocketTier()==9 && ship.fuelTank.getCapacity()==1500,"T9 concrete entity has six seats and a usable fuel tank");
+        check(ship.isDockValid(new micdoodle8.mods.galacticraft.core.tile.TileEntityLandingPad()),"T9 docks on a real GC launch pad");
+        check(ship.isDockValid(new galaxyspace.systems.SolarSystem.planets.overworld.tile.TileEntityAdvLandingPad()),"T9 docks on a real GS advanced pad");
+        EntityTier10Rocket finalShip=new EntityTier10Rocket(null);
+        check(finalShip.getRocketTier()==10 && finalShip.recoveredItem().getItem()==Manufacturing.ITEMS.get("tier10_rocket"),"T10 recovers its own item");
+        for(int meta=0;meta<4;meta++) {
+            ship.setRocketType(meta);
+            check(ship.recoveredItem().getMetadata()==meta,"Recovery preserves cargo variant "+meta);
+        }
         InventoryBasic matrix=new InventoryBasic("rocket",false,14);
         net.minecraft.item.Item[] parts={Items.DIAMOND,Items.IRON_INGOT,Items.IRON_INGOT,Items.REDSTONE,Items.FLINT,Items.FLINT,Items.GOLD_INGOT,Items.GOLD_INGOT,Items.PAPER};
         Object[] required=new Object[parts.length];
@@ -81,9 +156,10 @@ public final class ManufacturingProbe {
         check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Extended assembly rejects missing control panel");
         galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.getRecipeList().clear();
         check(ManufacturingHooks.blueprint("com.mjr.extraplanets.planets.Uranus.WorldProviderUranus").equals("blueprint_engine_station"),"Uranus unlocks the engine station");
+        check("blueprint_plasma".equals(ManufacturingHooks.blueprint("galaxyspace.systems.BarnardsSystem.moons.barnarda_c1.dimension.WorldProviderBarnarda_C1_WE")),"C1 actual provider grants plasma blueprint");
         check(ManufacturingHooks.blueprint("galaxyspace.systems.SolarSystem.moons.io.dimension.WorldProviderIo")==null,"Shared chest tier never grants EP blueprint to GS Io");
         JsonArray recipes=new JsonParser().parse(new InputStreamReader(ManufacturingProbe.class.getResourceAsStream("/assets/newearth/manufacturing.json"),"UTF-8")).getAsJsonArray();
-        check(recipes.size()==30,"Complete manufacturing recipe data");
+        check(recipes.size()>=34,"Complete manufacturing recipe data");
         Set<String> machines=new HashSet<>();
         for(JsonElement e:recipes) {
             JsonObject r=e.getAsJsonObject();String machine=r.get("machine").getAsString();machines.add(machine);
@@ -128,6 +204,21 @@ public final class ManufacturingProbe {
             if(recipe.get("machine").getAsString().equals("smelting"))smelting++;
             if(output.has("field") && output.get("field").getAsString().endsWith("ROCKET_MODULES") && output.get("meta").getAsInt()==5)plasma=recipe;
         }
+        JsonObject core=null,blackHole=null;
+        for(JsonElement element:recipes) {
+            JsonObject recipe=element.getAsJsonObject(),output=recipe.getAsJsonObject("output");
+            if(output.has("item") && output.get("item").getAsString().equals("newearth:final_energy_core"))core=recipe;
+            if(output.has("field") && output.get("field").getAsString().endsWith("ROCKET_MODULES") && output.get("meta").getAsInt()==7)blackHole=recipe;
+        }
+        check(core!=null && core.getAsJsonArray("inputs").size()==6,"Core requires all five colors and platinum");
+        Set<Integer> colors=new HashSet<>();
+        for(JsonElement element:core.getAsJsonArray("inputs")) {
+            JsonObject input=element.getAsJsonObject();int meta=input.get("meta").getAsInt();
+            if(meta<5)colors.add(meta);else check(meta==6 && input.get("count").getAsInt()==4,"Core consumes four platinum plates");
+        }
+        check(colors.equals(new HashSet<>(Arrays.asList(0,1,2,3,4))),"No diamond color can be substituted");
+        check(blackHole!=null && blackHole.getAsJsonArray("inputs").get(1).getAsJsonObject().get("item").getAsString().equals("newearth:final_energy_core"),"Black-hole engine consumes final core");
+        check(ownOutputs.containsAll(Arrays.asList("newearth:assembly_station","newearth:disassembly_station")),"Both workstations have survival recipes");
         check(smelting==2,"Both ordinary and glowing violet logs supply crystal fragments");
         check(wafer!=null && wafer.getAsJsonObject("output").get("meta").getAsInt()==0 && wafer.getAsJsonObject("output").get("count").getAsInt()==3,"Repurposed EP diamond wafer yields three");
         check(wafer.getAsJsonArray("inputs").get(0).getAsJsonObject().get("item").getAsString().equals("newearth:amethyst_ingot"),"Wafer requires exoplanet amethyst ingot");
@@ -142,10 +233,46 @@ public final class ManufacturingProbe {
         check(((ItemStack)circuits.get(0).get(1)).getItem()==Items.SLIME_BALL && ((ItemStack)circuits.get(0).get(2)).getItem()==Items.SLIME_BALL,"Two resin inputs occupy independent circuit slots");
         check(micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.getOutput(0).getCount()==3,"Circuit output quantity preserved");
         micdoodle8.mods.galacticraft.api.recipe.CircuitFabricatorRecipes.removeRecipe(recycledWafer);
+        verifyModels();
         String directory=System.getenv("NEWEARTH_RUNTIME_MODS");
         if(directory!=null) verifyInstalled(new File(directory),recipes);
         else System.out.println("Manufacturing installed binary checks skipped: NEWEARTH_RUNTIME_MODS unset");
         System.out.println("NewEarth manufacturing: "+checks+" checks passed (isolated; no world or flight)");
+    }
+    private static void verifyModels() throws Exception {
+        net.minecraft.client.resources.IResourceManager manager=new net.minecraft.client.resources.IResourceManager() {
+            @Override public Set<String> getResourceDomains(){return Collections.singleton("newearth");}
+            @Override public net.minecraft.client.resources.IResource getResource(net.minecraft.util.ResourceLocation location) throws IOException {
+                InputStream stream=ManufacturingProbe.class.getResourceAsStream("/assets/"+location.getNamespace()+"/"+location.getPath());
+                if(stream==null)throw new FileNotFoundException(location.toString());
+                return new net.minecraft.client.resources.SimpleResource("probe",location,stream,null,new net.minecraft.client.resources.data.MetadataSerializer());
+            }
+            @Override public List<net.minecraft.client.resources.IResource> getAllResources(net.minecraft.util.ResourceLocation location) throws IOException {
+                return Collections.singletonList(getResource(location));
+            }
+        };
+        for(String name:new String[]{"tier7_rocket","tier9_rocket","tier10_rocket","tier7_workbench"}) {
+            net.minecraft.util.ResourceLocation location=new net.minecraft.util.ResourceLocation("newearth","models/"+name+".obj");
+            net.minecraft.client.resources.IResource resource=manager.getResource(location);
+            net.minecraftforge.client.model.IModel model;
+            try { model=new net.minecraftforge.client.model.obj.OBJModel.Parser(resource,manager).parse(); }
+            finally {resource.close();}
+            net.minecraft.client.renderer.texture.TextureAtlasSprite sprite=new net.minecraft.client.renderer.texture.TextureAtlasSprite("probe"){};
+            sprite.setIconWidth(16);sprite.setIconHeight(16);sprite.initSprite(16,16,0,0,false);
+            net.minecraft.client.renderer.block.model.IBakedModel baked=model.bake(
+                    new net.minecraftforge.client.model.obj.OBJModel.OBJState(com.google.common.collect.ImmutableList.of(net.minecraftforge.client.model.obj.OBJModel.Group.ALL),false),
+                    net.minecraft.client.renderer.vertex.DefaultVertexFormats.ITEM,texture -> sprite);
+            check(!baked.getQuads(null,null,0).isEmpty(),"Actual Forge OBJ parser and baker produce a visible mesh: "+name);
+        }
+    }
+    private static void registerPart(String id) {
+        net.minecraft.util.ResourceLocation key=new net.minecraft.util.ResourceLocation("newearth",id);
+        net.minecraft.item.Item item=net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.getValue(key);
+        if(item==null || item==net.minecraft.item.Item.getItemFromBlock(net.minecraft.init.Blocks.AIR)) {
+            item=new net.minecraft.item.Item().setRegistryName(key);
+            net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.register(item);
+        }
+        Manufacturing.ITEMS.put(id,item);
     }
     private static Map<String,Integer> summary(JsonArray specs) {
         Map<String,Integer> counts=new HashMap<>();
@@ -156,7 +283,7 @@ public final class ManufacturingProbe {
         return counts;
     }
     private static void verifyInstalled(File directory,JsonArray recipes) throws Exception {
-        Set<String> required=new HashSet<>(Arrays.asList("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket","galaxyspace.core.prefab.entities.EntityTier6Rocket","galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly","galaxyspace.systems.SolarSystem.planets.overworld.inventory.ContainerRocketAssembler","galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
+        Set<String> required=new HashSet<>(Arrays.asList("micdoodle8.mods.galacticraft.core.entities.EntitySkeletonBoss","galaxyspace.core.prefab.items.rockets.ItemTier6Rocket","galaxyspace.core.prefab.entities.EntityTier6Rocket","galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly","galaxyspace.systems.SolarSystem.planets.overworld.inventory.ContainerRocketAssembler","galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
         Map<String,Set<String>> fields=new HashMap<>();int bosses=0;
         for(File file:directory.listFiles((dir,name)->name.endsWith(".jar"))) try(JarFile jar=new JarFile(file)) {
             for(Enumeration<JarEntry> entries=jar.entries();entries.hasMoreElements();) {

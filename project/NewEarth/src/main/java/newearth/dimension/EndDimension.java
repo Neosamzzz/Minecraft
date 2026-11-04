@@ -38,6 +38,7 @@ public final class EndDimension {
     private static boolean enabled = true;
     private static DimensionType destinationType;
     private static Class<? extends WorldProvider> destinationProvider;
+    private static micdoodle8.mods.galacticraft.api.world.ITeleportType travelType;
     public static final int REQUIRED_TIER = 10;
     public static final String BODY_NAME = "trars9";
 
@@ -74,6 +75,17 @@ public final class EndDimension {
         if (!enabled || destinationProvider == null) return;
         CelestialBody body = GalaxyRegistry.getRegisteredPlanets().get(BODY_NAME);
         if (body == null) throw new IllegalStateException("ExtraPlanets destination trars9 is disabled");
+        travelType = new micdoodle8.mods.galacticraft.core.dimension.TeleportTypeOverworld() {
+                    @Override public boolean useParachute() { return false; }
+                    @Override public micdoodle8.mods.galacticraft.api.vector.Vector3 getPlayerSpawnLocation(WorldServer world, EntityPlayerMP player) {
+                        BlockPos spawn = world.getSpawnPoint();
+                        return new micdoodle8.mods.galacticraft.api.vector.Vector3(spawn.getX() + .5D, world.getActualHeight() - 4, spawn.getZ() + .5D);
+                    }
+                    @Override public micdoodle8.mods.galacticraft.api.vector.Vector3 getParaChestSpawnLocation(WorldServer world, EntityPlayerMP player, java.util.Random random) {
+                        BlockPos at = landing(world);
+                        return new micdoodle8.mods.galacticraft.api.vector.Vector3(at.getX() + 2.5D, at.getY() + 8, at.getZ() + .5D);
+                    }
+                };
         bindEarthProperties(body, GalacticraftCore.planetOverworld, destinationProvider, dimensionId,
                 REQUIRED_TIER);
         GalaxyRegistry.refreshGalaxies();
@@ -96,9 +108,16 @@ public final class EndDimension {
         return enabled && destinationProvider != null && id == dimensionId;
     }
 
+    public static micdoodle8.mods.galacticraft.api.world.ITeleportType teleportTypeFor(Class<?> provider) {
+        return enabled && provider == destinationProvider ? travelType : null;
+    }
+
+    public static int destinationId() { return destinationProvider == null || !enabled ? 0 : dimensionId; }
+
     public static boolean canTravel(Object player) {
         return player instanceof EntityPlayerMP
-                && GCPlayerStats.get((EntityPlayerMP) player).getSpaceshipTier() >= REQUIRED_TIER;
+                && GCPlayerStats.get((EntityPlayerMP) player).getSpaceshipTier() == REQUIRED_TIER
+                && newearth.PlanetHooks.sharedFlight((EntityPlayerMP)player, REQUIRED_TIER);
     }
 
     public static void start(MinecraftServer server) {
@@ -193,6 +212,7 @@ public final class EndDimension {
         if (event.player instanceof EntityPlayerMP && isDestination(event.player.world))
             ArrivalSession.enter((EntityPlayerMP) event.player, true);
         else if (event.player instanceof EntityPlayerMP) ArrivalSession.restore((EntityPlayerMP) event.player);
+        event.player.getEntityData().removeTag("newearthFlightRocket");
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

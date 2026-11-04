@@ -31,7 +31,7 @@ public final class Manufacturing {
             "nose_cone", "rocket_body", "rocket_engine", "booster", "fin", "blueprint_t4", "blueprint_t5", "blueprint_t6",
             "blueprint_engine_station", "blueprint_material_station", "blueprint_t7", "blueprint_sublight",
             "amethyst_fragment", "amethyst_ingot", "amethyst_plate", "amethyst_component",
-            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma"};
+            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma", "final_energy_core" };
     private Manufacturing() { }
 
     @SubscribeEvent public static void blocks(RegistryEvent.Register<Block> event) {
@@ -40,7 +40,17 @@ public final class Manufacturing {
                     .setTranslationKey("newearth." + id).setCreativeTab(CreativeTabs.MISC).setHardness(3F);
             BLOCKS.put(id, block); event.getRegistry().register(block);
         }
+        // Tier 7/9 Assembly Station (reuses GC NASA Workbench model)
+        Block assembly = new AssemblyStationBlock();
+        BLOCKS.put("assembly_station", assembly);
+        event.getRegistry().register(assembly);
         GameRegistry.registerTileEntity(ManufacturingTile.class, new ResourceLocation(NewEarth.MOD_ID, "manufacturing"));
+        GameRegistry.registerTileEntity(AssemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "assembly_station"));
+        // Disassembly Station
+        Block disassembly = new DisassemblyStationBlock();
+        BLOCKS.put("disassembly_station", disassembly);
+        event.getRegistry().register(disassembly);
+        GameRegistry.registerTileEntity(DisassemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "disassembly_station"));
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {
@@ -53,6 +63,9 @@ public final class Manufacturing {
                     .getConstructor(String.class).newInstance("newearth.tier7_rocket");
             register(event, "tier7_rocket", rocket);
         } catch (ReflectiveOperationException e) { throw new IllegalStateException("GS T6 item API changed", e); }
+        // T9/T10 multi-seat rockets (6 seats)
+        register(event, "tier9_rocket", new ItemTier9Rocket());
+        register(event, "tier10_rocket", new ItemTier10Rocket());
     }
 
     private static void register(RegistryEvent.Register<Item> event, String id, Item item) {
@@ -194,16 +207,30 @@ public final class Manufacturing {
     }
 
     private static final class Station extends BlockContainer {
+        private static final net.minecraft.block.properties.PropertyDirection FACING = net.minecraft.block.BlockHorizontal.FACING;
         private final String id;
-        Station(String id) { super(Material.IRON); this.id = id; }
+        Station(String id) { super(Material.IRON); this.id = id; this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)); }
+        @Override protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+            return new net.minecraft.block.state.BlockStateContainer(this, FACING);
+        }
+        @Override public IBlockState getStateFromMeta(int meta) {
+            return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
+        }
+        @Override public int getMetaFromState(IBlockState state) {
+            return state.getValue(FACING).getHorizontalIndex();
+        }
+        @Override public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, net.minecraft.entity.EntityLivingBase placer, ItemStack stack) {
+            world.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
+        }
         @Override public net.minecraft.tileentity.TileEntity createNewTileEntity(World world, int meta) { return new ManufacturingTile(); }
         @Override public EnumBlockRenderType getRenderType(IBlockState state) { return EnumBlockRenderType.MODEL; }
         @Override public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
                 EnumHand hand, EnumFacing facing, float x, float y, float z) {
-            if (!world.isRemote) player.displayGUIChest((ManufacturingTile)world.getTileEntity(pos));
+            if (!world.isRemote) player.openGui(NewEarth.instance, ManufacturingGuiHandler.MANUFACTURING_GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         @Override public void breakBlock(World world, BlockPos pos, IBlockState state) {
+            if (world.getTileEntity(pos) instanceof ManufacturingTile) ((ManufacturingTile)world.getTileEntity(pos)).dropLegacyItems();
             if (world.getTileEntity(pos) instanceof ManufacturingTile) InventoryHelper.dropInventoryItems(world, pos, (ManufacturingTile)world.getTileEntity(pos));
             super.breakBlock(world, pos, state);
         }

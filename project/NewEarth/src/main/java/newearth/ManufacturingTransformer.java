@@ -9,7 +9,8 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
     private static final String H="newearth/ManufacturingHooks";
     @Override public byte[] transform(String name,String n,byte[] bytes) {
         if(bytes==null) return null;
-        boolean boss=n!=null && (n.startsWith("com.mjr.extraplanets.entities.bosses.")
+        boolean boss=n!=null && (n.equals("micdoodle8.mods.galacticraft.core.entities.EntitySkeletonBoss")
+                || n.startsWith("com.mjr.extraplanets.entities.bosses.")
                 || n.equals("galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
         boolean item="galaxyspace.core.prefab.items.rockets.ItemTier6Rocket".equals(n);
         boolean rocket="galaxyspace.core.prefab.entities.EntityTier6Rocket".equals(n);
@@ -30,8 +31,12 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
             }
 
             if(boss && m.name.equals("getGuaranteedLoot") && m.desc.equals("(Ljava/util/Random;)Lnet/minecraft/item/ItemStack;")) {
-                reset(m);m.instructions.add(new VarInsnNode(ALOAD,0));m.instructions.add(new VarInsnNode(ALOAD,1));
-                m.instructions.add(new MethodInsnNode(INVOKESTATIC,H,"reward","(Ljava/lang/Object;Ljava/util/Random;)Lnet/minecraft/item/ItemStack;",false));m.instructions.add(new InsnNode(ARETURN));changes++;
+                InsnList hook=new InsnList();LabelNode original=new LabelNode();
+                hook.add(new VarInsnNode(ALOAD,0));hook.add(new VarInsnNode(ALOAD,1));
+                hook.add(new MethodInsnNode(INVOKESTATIC,H,"reward","(Ljava/lang/Object;Ljava/util/Random;)Lnet/minecraft/item/ItemStack;",false));
+                hook.add(new InsnNode(DUP));hook.add(new JumpInsnNode(IFNULL,original));hook.add(new InsnNode(ARETURN));
+                hook.add(original);hook.add(new FrameNode(F_SAME1,0,null,1,new Object[]{"net/minecraft/item/ItemStack"}));hook.add(new InsnNode(POP));
+                m.instructions.insert(hook);changes++;
             }
             if(item && m.name.equals("placeRocketOnPad")) {
                 int found=0;

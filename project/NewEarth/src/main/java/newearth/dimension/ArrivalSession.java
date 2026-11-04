@@ -46,6 +46,20 @@ public final class ArrivalSession extends WorldSavedData {
         return null;
     }
 
+    /** Called from the real departing ship before any member changes dimension. */
+    public static void prepareCrew(WorldServer world, List<EntityPlayerMP> crew) {
+        ArrivalSession saved = data(world);
+        Group group = new Group(UUID.randomUUID().toString());
+        for (EntityPlayerMP player : crew)
+            if (!saved.completed.contains(player.getUniqueID()) && saved.pending(player.getUniqueID()) == null)
+                group.members.add(player.getUniqueID());
+        if (!group.members.isEmpty()) {
+            if (saved.groups.isEmpty()) saved.load = new ArrivalLoadBudget(40, 60);
+            saved.groups.put(group.id, group);
+            saved.markDirty();
+        }
+    }
+
     public static void enter(EntityPlayerMP player, boolean transition) {
         WorldServer world = player.getServerWorld();
         ArrivalSession saved = data(world);

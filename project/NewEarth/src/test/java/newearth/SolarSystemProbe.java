@@ -54,7 +54,7 @@ public final class SolarSystemProbe {
         check(enceladus.getParentPlanet() == ep.get(1) && enceladus.getTierRequirement() == 5, "GS Enceladus retained at T5");
         check(titan.getParentPlanet() == ep.get(1), "Pending Titan choice is preserved");
         check(miranda.getParentPlanet() == ep.get(2) && miranda.getTierRequirement() == 5, "Miranda stays T5 under pending Uranus gate");
-        check(ep.get(2).getTierRequirement() == 9, "Uranus main gate is not redesigned");
+        check(ep.get(2).getTierRequirement() == 5, "Uranus main gate agrees with its T5 exploration stage");
         check(triton.getTierRequirement() == 6 && ep.get(3).getTierRequirement() == 6, "Neptune and EP Triton agree at T6");
         check(station.getParentPlanet() == ep.get(4) && station.getTierRequirement() == 6, "Pluto station parent and stage agree");
         check(GalaxyRegistry.getMoonsForPlanet(gs.get(1)).isEmpty(), "Old moon index removed");
@@ -102,6 +102,7 @@ public final class SolarSystemProbe {
                 "galaxyspace.systems.SolarSystem.SolarSystemBodies",
                 "com.mjr.extraplanets.client.gui.screen.CustomCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.GalacticraftCore",
+                "micdoodle8.mods.galacticraft.api.GalacticraftRegistry",
                 "micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.util.WorldUtil",
                 "galaxyspace.core.prefab.items.rockets.ItemTier6Rocket", "galaxyspace.core.prefab.entities.EntityTier6Rocket",

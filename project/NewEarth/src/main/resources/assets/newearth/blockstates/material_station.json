@@ -1,1 +1,8 @@
-{"variants": {"normal": {"model": "newearth:material_station"}}}
+{
+  "variants": {
+    "facing=north": { "model": "newearth:material_station" },
+    "facing=east":  { "model": "newearth:material_station", "y": 90 },
+    "facing=south": { "model": "newearth:material_station", "y": 180 },
+    "facing=west":  { "model": "newearth:material_station", "y": 270 }
+  }
+}

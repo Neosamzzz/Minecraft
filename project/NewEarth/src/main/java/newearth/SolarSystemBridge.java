@@ -18,7 +18,7 @@ final class SolarSystemBridge {
         setTier(GalaxyRegistry.getRegisteredPlanets(), "barnarda_c", 7);
         setTier(GalaxyRegistry.getRegisteredMoons(), "barnarda_c1", 7);
         setTier(GalaxyRegistry.getRegisteredPlanets(), "tauceti_f", 7);
-        // Kepler remains at its original gate until the custom T9 ship is implemented.
+        setTier(GalaxyRegistry.getRegisteredPlanets(), "kepler22b", 9);
     }
 
     static Item requireItem(String name) {

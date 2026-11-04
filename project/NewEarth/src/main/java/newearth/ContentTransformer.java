@@ -115,6 +115,9 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 changes++;
             }
         }
+        // Forge's side transformer removes creative-list methods before us on a dedicated server.
+        if ((storage || meta) && changes == 0
+                && net.minecraftforge.fml.relauncher.FMLLaunchHandler.side() == net.minecraftforge.fml.relauncher.Side.SERVER) return bytes;
         if (blocks ? changes == 0 : changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
     }

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "newearth:items/tier10_rocket"
+  }
+}

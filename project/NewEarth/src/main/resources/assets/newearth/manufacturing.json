@@ -1344,5 +1344,105 @@
         "meta": 6
       }
     ]
+  },
+  {
+    "machine": "engine_station",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 7,
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "item": "newearth:final_energy_core",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:assembly_station"
+    },
+    "inputs": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 4
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "item": "newearth:connector",
+        "count": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9,
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:disassembly_station"
+    },
+    "inputs": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 4
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "item": "newearth:connector",
+        "count": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9,
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:final_energy_core"
+    },
+    "inputs": [
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_11_ITEMS",
+        "meta": 0
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_11_ITEMS",
+        "meta": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_11_ITEMS",
+        "meta": 2
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_11_ITEMS",
+        "meta": 3
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_11_ITEMS",
+        "meta": 4
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_11_ITEMS",
+        "meta": 6,
+        "count": 4
+      }
+    ]
   }
 ]

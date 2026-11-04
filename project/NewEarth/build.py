@@ -11,6 +11,15 @@ import zipfile
 
 def build(ROOT, run_gradle, env, offline):
     env = dict(env)
+    properties = (ROOT / 'project/NewEarth/gradle.properties').read_text(encoding='utf-8')
+    match = re.search(r'^mod_version=([A-Za-z0-9][A-Za-z0-9._+-]*)$', properties, re.MULTILINE)
+    if not match:
+        raise ValueError('Invalid NewEarth mod_version.')
+    version = match.group(1)
+    entrypoint = (ROOT / 'project/NewEarth/src/main/java/newearth/NewEarth.java').read_text(encoding='utf-8')
+    declared = re.search(r'public static final String VERSION = "([^"]+)";', entrypoint)
+    if not declared or declared.group(1) != version:
+        raise ValueError('NewEarth.VERSION must match gradle.properties mod_version.')
     modern_home = env.get('NEWEARTH_JAVA_HOME')
     if not modern_home and os.name == 'nt' and env.get('APPDATA'):
         candidate = Path(env['APPDATA']) / '.minecraft/runtime/java-runtime-epsilon'
@@ -24,15 +33,7 @@ def build(ROOT, run_gradle, env, offline):
         if result.returncode or not re.search(r'\b25(?:[.\s"-]|$)', result.stdout + result.stderr):
             raise ValueError('NEWEARTH_JAVA_HOME must contain JDK 25 java and javac.')
     env['NEWEARTH_JAVA_HOME'] = str(Path(modern_home).resolve())
-    properties = (ROOT / 'project/NewEarth/gradle.properties').read_text(encoding='utf-8')
-    match = re.search(r'^mod_version=([A-Za-z0-9][A-Za-z0-9._+-]*)$', properties, re.MULTILINE)
-    if not match:
-        raise ValueError('Invalid NewEarth mod_version.')
-    version = match.group(1)
-    entrypoint = (ROOT / 'project/NewEarth/src/main/java/newearth/NewEarth.java').read_text(encoding='utf-8')
-    declared = re.search(r'public static final String VERSION = "([^"]+)";', entrypoint)
-    if not declared or declared.group(1) != version:
-        raise ValueError('NewEarth.VERSION must match gradle.properties mod_version.')
+    run_gradle('dependencies/GalaxySpace', 'deobfGSJar', env, offline)
     run_gradle('project/NewEarth', 'build', env, offline, wrapper='dependencies/GalaxySpace')
     artifact = ROOT / 'project/NewEarth/build/libs' / ('NewEarth-' + version + '.jar')
     if not artifact.is_file():

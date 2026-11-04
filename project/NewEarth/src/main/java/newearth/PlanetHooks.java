@@ -101,7 +101,7 @@ public final class PlanetHooks {
             }
             // Preserve pending satellite choices, but apply the confirmed stage to
             // every retained child of Saturn / Neptune rather than just the main body.
-            int tier = i == 1 ? 5 : (i == 3 || i == 4) ? 6 : -1;
+            int tier = (i == 1 || i == 2) ? 5 : (i == 3 || i == 4) ? 6 : -1;
             if (tier > 0) {
                 target.setTierRequired(tier);
                 for (Moon moon : GalaxyRegistry.getRegisteredMoons().values())
@@ -115,7 +115,7 @@ public final class PlanetHooks {
         for (Satellite satellite : GalaxyRegistry.getRegisteredSatellites().values())
             if (satellite.getParentPlanet() == eris) satellite.setTierRequired(6);
         GalaxyRegistry.refreshGalaxies();
-        NewEarth.LOG.info("Integrated EP main planets; GS moons reparented, Saturn T5, Neptune/Pluto T6, Eris T6 + ion");
+        NewEarth.LOG.info("Integrated EP main planets; GS moons reparented, Saturn/Uranus T5, Neptune/Pluto T6, Eris T6 + ion");
     }
 
     public static List<Integer> filterDestinations(List<Integer> dimensions, Object player) {
@@ -133,20 +133,25 @@ public final class PlanetHooks {
 
     public static boolean allowTransfer(Object entity, int destination, Object rocket) {
         if (newearth.dimension.EndDimension.isDestinationId(destination))
-            return newearth.dimension.EndDimension.canTravel(entity);
+            return rocket instanceof EntityTier10Rocket || entity instanceof EntityTier10Rocket
+                    || newearth.dimension.EndDimension.canTravel(entity);
         return erisDimension == null || !isErisDestination(destination) || hasIonRocket(entity, rocket);
     }
 
     private static boolean isErisDestination(int destination) {
         if (erisDimension == null) return false;
         if (destination == erisDimension) return true;
-        net.minecraft.world.WorldProvider provider = WorldUtil.getProviderForDimensionServer(destination);
+        if (!net.minecraftforge.common.DimensionManager.isDimensionRegistered(destination)) return false;
+        // Inspect the provider type without loading every destination world while filtering the star map.
+        net.minecraft.world.WorldProvider provider = net.minecraftforge.common.DimensionManager.getProvider(destination);
+        if (provider == null) provider = net.minecraftforge.common.DimensionManager.createProviderFor(destination);
         return provider != null && provider.getClass().getName().equals("com.mjr.extraplanets.planets.Eris.spacestation.WorldProviderErisOrbit");
     }
 
     private static boolean hasIonRocket(Object entity, Object rocket) {
         if (rocket == null && entity instanceof Entity) rocket = ((Entity) entity).getRidingEntity();
-        if (rocket instanceof Entity && ManufacturingHooks.rocketTier((Entity)rocket) == 7) return true;
+        if (rocket instanceof micdoodle8.mods.galacticraft.api.entity.IRocketType
+                && ((micdoodle8.mods.galacticraft.api.entity.IRocketType)rocket).getRocketTier() >= 7) return true;
         if (rocket != null && rocket.getClass().getName().equals("galaxyspace.core.prefab.entities.EntityTier6Rocket")) {
             return "ION_ENGINE".equals(engine(rocket).toString());
         }
@@ -154,12 +159,27 @@ public final class PlanetHooks {
         if (!(entity instanceof EntityPlayerMP)) return false;
         GCPlayerStats stats = GCPlayerStats.get((EntityPlayerMP) entity);
         List<ItemStack> stacks = stats.getRocketStacks();
-        if (stacks == null || stacks.isEmpty()) return false;
-        ItemStack stack = stacks.get(stacks.size() - 1);
-        if (stats.getSpaceshipTier() == 7 && ManufacturingHooks.readyStack(stack)) return true;
-        if (stats.getSpaceshipTier() != 6) return false;
-        return !stack.isEmpty() && stack.getItem().getClass().getName().equals("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket")
-                && stack.hasTagCompound() && stack.getTagCompound().getBoolean(ionKey());
+        ItemStack stack = stacks == null || stacks.isEmpty() ? ItemStack.EMPTY : stacks.get(stacks.size() - 1);
+        if (stats.getSpaceshipTier() >= 7) return readyErisStack(stats.getSpaceshipTier(), stats.getRocketItem(), stack)
+                || sharedFlight((EntityPlayerMP)entity, stats.getSpaceshipTier());
+        return readyErisStack(stats.getSpaceshipTier(), stats.getRocketItem(), stack);
+    }
+
+    public static boolean sharedFlight(EntityPlayerMP player, int tier) {
+        String id = player.getEntityData().getString("newearthFlightRocket");
+        return (tier == 9 || tier == 10) && id.equals("newearth:tier" + tier + "_rocket")
+                && GCPlayerStats.get(player).getRocketItem() != null
+                && id.equals(String.valueOf(GCPlayerStats.get(player).getRocketItem().getRegistryName()));
+    }
+
+    static boolean readyErisStack(int tier, net.minecraft.item.Item item, ItemStack stack) {
+        if (item == null || stack.isEmpty() || item != stack.getItem()) return false;
+        String id = String.valueOf(item.getRegistryName());
+        if (tier == 6) return id.equals("galaxyspace:rocket_tier_6") && stack.hasTagCompound()
+                && stack.getTagCompound().getBoolean(ionKey());
+        if (tier == 7) return ManufacturingHooks.readyStack(stack);
+        return (tier == 9 && id.equals("newearth:tier9_rocket"))
+                || (tier == 10 && id.equals("newearth:tier10_rocket"));
     }
 
     public static void preserveEngine(Object rocket, Object player) {

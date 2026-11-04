@@ -20,9 +20,10 @@ public final class ManufacturingHooks {
         // GS Io formerly selected ion/sublight from a two-entry pool (50% each).
         if (provider.contains(".io.")) return random.nextInt(100) < 5
                 ? modules(4) : new ItemStack(Items.IRON_INGOT, 4);
-        throw new IllegalStateException("Unexpected patched boss provider: " + provider);
+        return null;
     }
     static String blueprint(String provider) {
+        if (provider.equals("galaxyspace.systems.BarnardsSystem.moons.barnarda_c1.dimension.WorldProviderBarnarda_C1_WE")) return "blueprint_plasma";
         if (!provider.startsWith("com.mjr.extraplanets.planets.")) return null;
         String[] names = {"Mercury", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Eris"};
         String[] ids = {"blueprint_t4", "blueprint_t5", "blueprint_t6", "blueprint_engine_station",

@@ -23,6 +23,13 @@ minecraft { mappings channel: 'stable', version: '39-1.12' }
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
     implementation fg.deobf('libs:Galacticraft-1.12.2:4.0.2.283')
+    compileOnly files('../../dependencies/GalaxySpace/build/libs/GalaxySpace-1.12.2-dev.jar',
+            '../../dependencies/GalaxySpace/libs/AsmodeusCore-1.12.2-1.0.4-dev.jar')
+    testImplementation files('../../dependencies/GalaxySpace/build/libs/GalaxySpace-1.12.2-dev.jar',
+            '../../dependencies/GalaxySpace/libs/AsmodeusCore-1.12.2-1.0.4-dev.jar')
+    testRuntimeOnly files('../../dependencies/GalaxySpace/libs/RedstoneFlux-1.12-2.1.0.6-universal.jar',
+            '../../dependencies/GalaxySpace/libs/industrialcraft-2-2.8.222-ex112-api.jar',
+            '../../dependencies/GalaxySpace/libs/Mekanism-1.12.2-9.4.13.349-api.jar')
     compileOnly files('../../dependencies/GalaxySpace/libs/jei_1.12.2-4.13.1.220.jar')
 }
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }

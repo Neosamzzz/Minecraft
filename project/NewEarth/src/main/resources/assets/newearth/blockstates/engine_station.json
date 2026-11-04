@@ -1,1 +1,8 @@
-{"variants": {"normal": {"model": "newearth:engine_station"}}}
+{
+  "variants": {
+    "facing=north": { "model": "newearth:engine_station" },
+    "facing=east":  { "model": "newearth:engine_station", "y": 90 },
+    "facing=south": { "model": "newearth:engine_station", "y": 180 },
+    "facing=west":  { "model": "newearth:engine_station", "y": 270 }
+  }
+}
