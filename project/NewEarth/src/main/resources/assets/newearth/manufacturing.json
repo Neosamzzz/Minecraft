@@ -893,22 +893,53 @@
     },
     "inputs": [
       {
-        "item": "newearth:nose_cone",
-        "count": 1
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_plate",
-        "count": 3
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:thermal_liner",
-        "count": 2
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      {
+        "item": "newearth:nose_cone"
+      },
+      {
+        "item": "newearth:thermal_liner"
       },
       {
         "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
-        "meta": 1,
-        "count": 1
+        "meta": 1
       }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      {
+        "item": "newearth:nose_cone"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      null,
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      },
+      null
     ]
   },
   {
@@ -919,21 +950,64 @@
     },
     "inputs": [
       {
-        "item": "newearth:rocket_body",
-        "count": 1
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_plate",
-        "count": 4
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_component",
-        "count": 2
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_body"
+      },
+      {
+        "item": "newearth:amethyst_component"
       },
       {
         "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
-        "meta": 1,
-        "count": 2
+        "meta": 1
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_body"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
       }
     ]
   },
@@ -945,16 +1019,60 @@
     },
     "inputs": [
       {
-        "item": "newearth:rocket_engine",
-        "count": 1
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_plate",
-        "count": 2
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_component",
-        "count": 2
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_engine"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_engine"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
       }
     ]
   },
@@ -966,16 +1084,60 @@
     },
     "inputs": [
       {
-        "item": "newearth:booster",
-        "count": 1
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_plate",
-        "count": 2
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:connector",
-        "count": 2
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:booster"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:booster"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
       }
     ]
   },
@@ -987,13 +1149,41 @@
     },
     "inputs": [
       {
-        "item": "newearth:fin",
-        "count": 1
+        "item": "newearth:amethyst_plate"
       },
       {
-        "item": "newearth:amethyst_plate",
-        "count": 2
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:fin"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
       }
+    ],
+    "layout": [
+      null,
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      null,
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:fin"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      null,
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      null
     ]
   },
   {
@@ -1004,22 +1194,70 @@
     },
     "inputs": [
       {
-        "field": "galaxyspace.core.GSItems.BASIC",
-        "meta": 19,
-        "count": 1
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
       },
       {
         "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
-        "meta": 0,
-        "count": 2
+        "meta": 0
       },
       {
-        "item": "newearth:avionics",
-        "count": 1
+        "item": "newearth:amethyst_component"
       },
       {
-        "item": "newearth:amethyst_component",
-        "count": 2
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 19
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      }
+    ],
+    "layout": [
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 19
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
       }
     ]
   },
@@ -1051,21 +1289,59 @@
     "inputs": [
       {
         "field": "galaxyspace.core.GSItems.BASIC",
-        "meta": 5
+        "meta": 38
       },
       {
         "field": "galaxyspace.core.GSItems.BASIC",
-        "meta": 38,
-        "count": 2
+        "meta": 38
       },
       {
-        "item": "minecraft:glass_pane",
-        "count": 2
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "item": "minecraft:glass_pane"
       },
       {
         "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
-        "meta": 6,
-        "count": 2
+        "meta": 6
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
+      }
+    ],
+    "layout": [
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38
+      },
+      null,
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38
+      },
+      {
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
+      },
+      null,
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
       }
     ]
   },
