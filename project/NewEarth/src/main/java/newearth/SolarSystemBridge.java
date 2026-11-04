@@ -13,8 +13,7 @@ final class SolarSystemBridge {
     private SolarSystemBridge() { }
 
     static void install() {
-        // The original T7 bridge recipes are intentionally retired with the EP chain.
-        // New T7 manufacturing will be selected and implemented separately.
+        // Manufacturing owns the custom T7 recipes; this bridge only sets tiers.
         setTier(GalaxyRegistry.getRegisteredPlanets(), "proxima_b", 7);
         setTier(GalaxyRegistry.getRegisteredPlanets(), "barnarda_c", 7);
         setTier(GalaxyRegistry.getRegisteredMoons(), "barnarda_c1", 7);

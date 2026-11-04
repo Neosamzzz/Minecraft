@@ -115,6 +115,7 @@ public final class ProgressionProbe {
         check(CompressorRecipes.getRecipeListAll().stream().anyMatch(r -> r.getRecipeOutput().getItem() == parts7 && r.getRecipeOutput().getMetadata() == 4), "Preserve compressed resource recipe");
         check(ContentPruning.pruneCompressor() == 0, "Compressor cleanup is idempotent");
         verifyMaterials();
+        ManufacturingProbe.run();
         Planet proxima = new Planet("proxima_b"); proxima.setTierRequired(6); GalaxyRegistry.registerPlanet(proxima);
         Planet barnarda = new Planet("barnarda_c"); barnarda.setTierRequired(6); GalaxyRegistry.registerPlanet(barnarda);
         Moon moon = new Moon("barnarda_c1").setParentPlanet(barnarda); moon.setTierRequired(6); GalaxyRegistry.registerMoon(moon);

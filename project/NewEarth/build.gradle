@@ -23,6 +23,7 @@ minecraft { mappings channel: 'stable', version: '39-1.12' }
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
     implementation fg.deobf('libs:Galacticraft-1.12.2:4.0.2.283')
+    compileOnly files('../../dependencies/GalaxySpace/libs/jei_1.12.2-4.13.1.220.jar')
 }
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
@@ -82,6 +83,7 @@ jar {
 
 // Compile the existing GS matcher as a test input rather than duplicate its behavior.
 compileTestJava.source('../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/AssemblyRecipes.java')
+compileTestJava.source('../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/RocketAssemblyRecipes.java')
 tasks.register('progressionCheck', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.runtimeClasspath

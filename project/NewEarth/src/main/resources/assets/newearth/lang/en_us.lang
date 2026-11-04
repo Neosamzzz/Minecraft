@@ -61,3 +61,35 @@ newearth.map.resources.barnarda_c1=Onyx
 generator.newearth_preview=NewEarth terrain preview
 
 newearth.arrival.wait=Preparing to land. Waiting for fellow travelers and nearby chunks...
+
+item.newearth.composite_plate.name=Composite Plate
+item.newearth.thermal_liner.name=Thermal Liner
+item.newearth.avionics.name=Avionics
+item.newearth.connector.name=Connector
+item.newearth.nose_cone.name=Nose Cone
+item.newearth.rocket_body.name=Rocket Body
+item.newearth.booster.name=Booster
+item.newearth.fin.name=Fin
+item.newearth.tier7_rocket.name=Tier7 Rocket
+tile.newearth.material_station.name=Material Station
+tile.newearth.engine_station.name=Engine Station
+item.newearth.blueprint_t4.name=Blueprint T4
+item.newearth.blueprint_t5.name=Blueprint T5
+item.newearth.blueprint_t6.name=Blueprint T6
+item.newearth.blueprint_engine_station.name=Blueprint Engine Station
+item.newearth.blueprint_material_station.name=Blueprint Material Station
+item.newearth.blueprint_t7.name=Blueprint T7
+item.newearth.blueprint_sublight.name=Blueprint Sublight
+item.newearth.rocket_engine.name=Tier 7 Rocket Engine
+
+item.newearth.amethyst_fragment.name=Amethyst Fragment
+item.newearth.amethyst_ingot.name=Amethyst Composite Ingot
+item.newearth.amethyst_plate.name=Amethyst Plate
+item.newearth.amethyst_component.name=Amethyst Composite Component
+item.newearth.tier9_nose_cone.name=Tier 9 Nose Cone
+item.newearth.tier9_body.name=Tier 9 Body
+item.newearth.tier9_engine.name=Tier 9 Thruster
+item.newearth.tier9_booster.name=Tier 9 Booster
+item.newearth.tier9_fin.name=Tier 9 Fin
+item.newearth.control_panel.name=Flight Control Panel
+item.newearth.blueprint_plasma.name=Plasma Engine Blueprint

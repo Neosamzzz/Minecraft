@@ -242,7 +242,8 @@ public final class SolarSystemProbe {
             java.util.Properties names = new java.util.Properties();
             try (java.io.Reader reader = new java.io.InputStreamReader(SolarSystemProbe.class.getResourceAsStream(
                     "/assets/extraplanets/lang/" + language + ".lang"), java.nio.charset.StandardCharsets.UTF_8)) { names.load(reader); }
-            check(names.size() == 21, "All EP compatibility names supplied: " + language);
+            check(names.stringPropertyNames().stream().filter(key -> key.startsWith("planet.") || key.startsWith("moon.")).count() == 21, "All EP compatibility celestial names supplied: " + language);
+            check(names.getProperty("item.wafer.diamond_wafer.name") != null, "Repurposed wafer has a localized name: " + language);
             check(names.values().stream().noneMatch(value -> value.toString().contains("2.0")), "No 2.0 label remains: " + language);
             check(names.getProperty("planet.MercuryEP").contains("EP"), "Dual Mercury destinations remain distinguishable: " + language);
             check(names.values().stream().filter(value -> value.toString().contains("EP")).count() == 2,

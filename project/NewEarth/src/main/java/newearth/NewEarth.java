@@ -43,5 +43,6 @@ public final class NewEarth {
         PlanetHooks.integrate();
         EnvironmentHooks.adaptMetadata();
         EndDimension.bindCelestialBody();
+        Manufacturing.install();
     }
 }

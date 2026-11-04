@@ -1,0 +1,1348 @@
+[
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:composite_plate",
+      "count": 2
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 3
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_9_ITEMS",
+        "meta": 4,
+        "count": 2
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_5_ITEMS",
+        "meta": 4,
+        "count": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_5_ITEMS",
+        "meta": 12,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:thermal_liner",
+      "count": 2
+    },
+    "inputs": [
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_4_ITEMS",
+        "meta": 4,
+        "count": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 8,
+        "count": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.blocks.ExtraPlanets_Blocks.FROZEN_NITROGEN",
+        "meta": 0,
+        "count": 4
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38,
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:avionics",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_8_ITEMS",
+        "meta": 6,
+        "count": 2
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_8_ITEMS",
+        "meta": 4,
+        "count": 1
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_7_ITEMS",
+        "meta": 4,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:material_station",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "item": "newearth:blueprint_material_station"
+      }
+    ],
+    "layout": [
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9
+      },
+      {
+        "item": "newearth:blueprint_material_station"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:nose_cone",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.sealableBlock",
+        "meta": 14,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.oxTankHeavy",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.sealableBlock",
+        "meta": 14,
+        "count": 1
+      },
+      {
+        "item": "newearth:thermal_liner",
+        "count": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:thermal_liner",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      null,
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.sealableBlock",
+        "meta": 14,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.oxTankHeavy",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.sealableBlock",
+        "meta": 14,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:rocket_body",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 20,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.oxygenConcentrator",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 3,
+        "count": 1
+      },
+      {
+        "item": "newearth:avionics",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:connector",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 20,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.oxygenConcentrator",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 3,
+        "count": 1
+      },
+      {
+        "item": "newearth:avionics",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:connector",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:booster",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.oxygenPipe",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.fuelCanister",
+        "meta": 1,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:thermal_liner",
+        "count": 1
+      },
+      {
+        "item": "newearth:connector",
+        "count": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.oxygenPipe",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.fuelCanister",
+        "meta": 1,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:thermal_liner",
+        "count": 1
+      },
+      {
+        "item": "newearth:connector",
+        "count": 1
+      },
+      null
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:fin",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:thermal_liner",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.planets.asteroids.items.AsteroidsItems.basicItem",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.planets.asteroids.items.AsteroidsItems.basicItem",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:thermal_liner",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.planets.asteroids.items.AsteroidsItems.basicItem",
+        "meta": 5,
+        "count": 1
+      },
+      null,
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.planets.asteroids.items.AsteroidsItems.basicItem",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      },
+      null,
+      {
+        "item": "newearth:composite_plate",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "RocketAssemblyRecipes",
+    "output": {
+      "item": "newearth:tier7_rocket",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:nose_cone",
+        "count": 1
+      },
+      {
+        "item": "newearth:rocket_body",
+        "count": 1
+      },
+      {
+        "item": "newearth:rocket_body",
+        "count": 1
+      },
+      {
+        "item": "newearth:booster",
+        "count": 1
+      },
+      {
+        "item": "newearth:booster",
+        "count": 1
+      },
+      {
+        "item": "newearth:fin",
+        "count": 1
+      },
+      {
+        "item": "newearth:fin",
+        "count": 1
+      },
+      {
+        "item": "newearth:blueprint_t7",
+        "count": 1
+      },
+      {
+        "item": "newearth:rocket_engine"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 6
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:connector",
+      "count": 2
+    },
+    "inputs": [
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.TIER_8_ITEMS",
+        "meta": 4,
+        "count": 4
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6,
+        "count": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 11,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:engine_station",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9,
+        "count": 1
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2,
+        "count": 1
+      },
+      {
+        "item": "newearth:blueprint_engine_station"
+      }
+    ],
+    "layout": [
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9
+      },
+      {
+        "item": "newearth:blueprint_engine_station"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 9
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "field": "galaxyspace.core.GSItems.HDP",
+        "meta": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 8
+    },
+    "inputs": [
+      {
+        "item": "newearth:blueprint_t4"
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 9
+    },
+    "inputs": [
+      {
+        "item": "newearth:blueprint_t5"
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 10
+    },
+    "inputs": [
+      {
+        "item": "newearth:blueprint_t6"
+      }
+    ]
+  },
+  {
+    "machine": "engine_station",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 6
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 4
+      },
+      {
+        "item": "newearth:blueprint_sublight"
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:rocket_engine"
+    },
+    "inputs": [
+      {
+        "item": "newearth:composite_plate",
+        "count": 4
+      },
+      {
+        "item": "minecraft:flint_and_steel"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.oxygenPipe",
+        "count": 2
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 3
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_PARTS",
+        "meta": 8
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:composite_plate"
+      },
+      {
+        "item": "minecraft:flint_and_steel"
+      },
+      {
+        "item": "newearth:composite_plate"
+      },
+      {
+        "item": "newearth:composite_plate"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 3
+      },
+      {
+        "item": "newearth:composite_plate"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.oxygenPipe"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_PARTS",
+        "meta": 8
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCBlocks.oxygenPipe"
+      }
+    ]
+  },
+  {
+    "machine": "smelting",
+    "output": {
+      "item": "newearth:amethyst_fragment",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRBlocks.BARNARDA_C_VIOLET_LOG",
+        "meta": 32767,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "smelting",
+    "output": {
+      "item": "newearth:amethyst_fragment",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRBlocks.BARNARDA_C_VIOLET_GLOW_LOG",
+        "meta": 32767,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:amethyst_ingot",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_fragment",
+        "count": 2
+      },
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRItems.BASIC",
+        "meta": 2,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "compressor",
+    "output": {
+      "item": "newearth:amethyst_plate",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_ingot",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "circuit",
+    "output": {
+      "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+      "meta": 0,
+      "count": 3
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_ingot",
+        "count": 1
+      },
+      {
+        "field": "galaxyspace.systems.BarnardsSystem.core.BRItems.BASIC",
+        "meta": 2,
+        "count": 2
+      },
+      {
+        "item": "minecraft:redstone"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5,
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "material_station",
+    "output": {
+      "item": "newearth:amethyst_component",
+      "count": 2
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate",
+        "count": 2
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0,
+        "count": 1
+      },
+      {
+        "item": "newearth:connector",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_nose_cone",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      {
+        "item": "newearth:nose_cone"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      {
+        "item": "newearth:nose_cone"
+      },
+      {
+        "item": "newearth:thermal_liner"
+      },
+      null,
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      },
+      null
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_body",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_body"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_body"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_engine",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_engine"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:rocket_engine"
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_booster",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:booster"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ],
+    "layout": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:booster"
+      },
+      {
+        "item": "newearth:connector"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:tier9_fin",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:fin"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      }
+    ],
+    "layout": [
+      null,
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      null,
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      {
+        "item": "newearth:fin"
+      },
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      null,
+      {
+        "item": "newearth:amethyst_plate"
+      },
+      null
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "item": "newearth:control_panel",
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 19
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      }
+    ],
+    "layout": [
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 19
+      },
+      {
+        "item": "newearth:amethyst_component"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      },
+      {
+        "item": "newearth:avionics"
+      },
+      {
+        "field": "com.mjr.extraplanets.items.ExtraPlanets_Items.WAFERS",
+        "meta": 0
+      }
+    ]
+  },
+  {
+    "machine": "engine_station",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 5,
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 6,
+        "count": 1
+      },
+      {
+        "item": "newearth:blueprint_plasma",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "machine": "AssemblyRecipes",
+    "output": {
+      "field": "galaxyspace.core.GSItems.BASIC",
+      "meta": 19
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38
+      },
+      {
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
+      }
+    ],
+    "layout": [
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38
+      },
+      null,
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 38
+      },
+      {
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.BASIC",
+        "meta": 5
+      },
+      {
+        "item": "minecraft:glass_pane"
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
+      },
+      null,
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.basicItem",
+        "meta": 6
+      }
+    ]
+  }
+]

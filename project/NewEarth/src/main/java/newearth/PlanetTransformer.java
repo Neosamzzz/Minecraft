@@ -86,17 +86,10 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
             if (item && m.name.equals("getAvailableModules")) {
                 m.instructions.clear(); m.tryCatchBlocks.clear();
                 if (m.localVariables != null) m.localVariables.clear();
-                String base = "galaxyspace/core/prefab/items/modules/ItemModule";
-                m.instructions.add(new InsnNode(ICONST_2));
-                m.instructions.add(new TypeInsnNode(ANEWARRAY, base));
-                int index = 0;
-                for (String module : new String[] {"IonEngine", "SublightEngine"}) {
-                    String type = "galaxyspace/systems/SolarSystem/planets/overworld/items/modules/" + module;
-                    m.instructions.add(new InsnNode(DUP)); m.instructions.add(new InsnNode(ICONST_0 + index++));
-                    m.instructions.add(new TypeInsnNode(NEW, type)); m.instructions.add(new InsnNode(DUP));
-                    m.instructions.add(new MethodInsnNode(INVOKESPECIAL, type, "<init>", "()V", false));
-                    m.instructions.add(new InsnNode(AASTORE));
-                }
+                m.instructions.add(new VarInsnNode(ALOAD, 0));
+                m.instructions.add(new MethodInsnNode(INVOKESTATIC, "newearth/ManufacturingHooks", "modulesFor",
+                        "(Lnet/minecraft/item/Item;)Ljava/lang/Object;", false));
+                m.instructions.add(new TypeInsnNode(CHECKCAST, "[Lgalaxyspace/core/prefab/items/modules/ItemModule;"));
                 m.instructions.add(new InsnNode(ARETURN)); changes++;
             }
             if (rocket && m.name.equals("onTeleport")) {
