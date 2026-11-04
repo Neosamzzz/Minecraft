@@ -28,28 +28,13 @@
 | G07 | EP 铂锭 `extraplanets:tier11_items:5` | `ItemTier11Items.getItemList`；Kepler 的 `BiomeDecoratorKepler22bOres` 有铂矿生成分支 | 系外路线适配与掉落、冶炼待验；压缩铂为同物品元数据 6，不能混成铂锭 |
 | G08 | EP 彩色钻石 `extraplanets:tier11_items:0～4` | `ItemTier11Items.getItemList`；Kepler 地形装饰器有多色材料树和材料球实现 | 样本目标任一种即可，不接受普通钻石；最终核心配方另要求五色全部参与 |
 
-其中 G07、G08 随 Kepler 分支待接入，不是当前即可发布的生存任务。推进顺序为先造基础九阶飞船，再到开普勒收集已有特色资源并合成最终能源核心；材料组合确定为蓝、红、紫、黄、绿五种钻石全部加铂制品，不另新增一种“特殊材料”。具体数量、铂制品形式与配方布局待定；这些后期材料不作为基础九阶或装配台的必需输入。已有物品的注册与生成依据不代表新增核心配方已经实现。
-
-## 制造路线物品
-
-| 阶段 | 物品与标识 | FTB编排 |
-| --- | --- | --- |
-| 四至六阶 | `newearth:blueprint_t4`、`blueprint_t5`、`blueprint_t6` | 分别承接EP水星、木星、土星地牢图纸目标 |
-| 五阶 | 引擎升级台图纸 `newearth:blueprint_engine_station`；引擎升级台 `newearth:engine_station` | 放在天王星节点说明中 |
-| 六阶 | 材料制造台图纸 `newearth:blueprint_material_station`；材料制造台 `newearth:material_station` | 海王星图纸与制造台成品目标 |
-| 六阶 | 七阶火箭图纸 `newearth:blueprint_t7`；亚光速引擎图纸 `newearth:blueprint_sublight` | 分别承接冥王星与Eris |
-| 七阶 | 七阶火箭 `newearth:tier7_rocket` | 主体制造里程碑；航行另需亚光速引擎 |
-| 九阶原料 | 巴纳德C树脂 `galaxyspace:br_basic:2`；C1缟玛瑙 `galaxyspace:br_basic:3` | 树脂接向制造主线；缟玛瑙为可选样本 |
-| 九阶加工 | 紫晶碎片、特殊紫晶锭、紫晶锭板、新晶圆、复合物品 | 设计已编排，物品／配方待实现；选关键加工成品设任务 |
-
-新晶圆复用闲置EP晶圆，具体子项与名称待定；加工槽位、原料和数量由[路线手稿](../NewEarth/items/route-manuscript.md#九阶材料与制造方向)维护。
+G07、G08随开普勒阶段接入；彩钻样本目标接受任一种，核心目标检测成品。
 
 ## 暂不直接加入的候选
 
 | 物品 | 取舍 |
 | --- | --- |
 | GS 应急便携传送器、临时防护控制器 | 既有资料有地牢池依据，但传送目的地、触发、消耗和保护效果需验证；先不把它们写成安全保证 |
-| GS 亚光速引擎模块 | 有跨系模块描述，现有星图与 T7 准入规则仍需对接；不新增未经确认的强制安装节点 |
 | EP 超重型氧气罐 | 本机开关开启，但配方使用 EP `tier5_items:5`，须核对该材料在现行星球组合中的获取链 |
 | EP 终极、巨型电池 | 配方涉及多个 EP 行星材料，需核对当前阶段可达性 |
 | EP 盖革计数器 | 已注册不等于配方和共存读数均已落实；不以此验收 GS / EP 全部环境防护 |
