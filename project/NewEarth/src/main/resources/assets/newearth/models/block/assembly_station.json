@@ -1,0 +1,4 @@
+{
+  "parent": "forge:block/obj",
+  "model": "newearth:models/tier7_workbench.obj"
+}

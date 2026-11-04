@@ -40,7 +40,12 @@ public final class Manufacturing {
                     .setTranslationKey("newearth." + id).setCreativeTab(CreativeTabs.MISC).setHardness(3F);
             BLOCKS.put(id, block); event.getRegistry().register(block);
         }
+        // Tier 7/9 Assembly Station (reuses GC NASA Workbench model)
+        Block assembly = new AssemblyStationBlock();
+        BLOCKS.put("assembly_station", assembly);
+        event.getRegistry().register(assembly);
         GameRegistry.registerTileEntity(ManufacturingTile.class, new ResourceLocation(NewEarth.MOD_ID, "manufacturing"));
+        GameRegistry.registerTileEntity(AssemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "assembly_station"));
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {

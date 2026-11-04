@@ -94,3 +94,4 @@ newearth.gui.status.label=Status:
 newearth.gui.status.idle=Idle
 newearth.gui.status.working=Working
 newearth.gui.status.nopower=No Power
+tile.newearth.assembly_station.name=Tier 7 Assembly Station

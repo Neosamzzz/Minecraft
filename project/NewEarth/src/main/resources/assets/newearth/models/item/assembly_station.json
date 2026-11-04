@@ -1,0 +1,10 @@
+{
+  "parent": "forge:item/obj",
+  "model": "newearth:models/tier7_workbench.obj",
+  "display": {
+    "gui": {
+      "rotation": [ 30, 45, 0 ],
+      "scale": [ 0.5, 0.5, 0.5 ]
+    }
+  }
+}
