@@ -65,17 +65,21 @@ public class EntityTier10Rocket extends EntityMultiSeatRocket {
             double x = this.posX + n[0];
             double z = this.posZ + n[1];
             if (launched) {
-                // 大火焰：多个蓝紫色粒子
-                for (int i = 0; i < 5; i++) {
-                    double ox = (rand.nextDouble() - 0.5) * 0.8;
-                    double oz = (rand.nextDouble() - 0.5) * 0.8;
-                    double oy = rand.nextDouble() * 0.5;
+                // 大火焰：更多粒子，更快下喷
+                for (int i = 0; i < 8; i++) {
+                    double ox = (rand.nextDouble() - 0.5) * 1.0;
+                    double oz = (rand.nextDouble() - 0.5) * 1.0;
+                    double oy = rand.nextDouble() * 0.3;
+                    // 蓝紫色火星
                     world.spawnParticle(net.minecraft.util.EnumParticleTypes.REDSTONE,
                         x + ox, y + oy, z + oz, r, g, b);
-                    // 加一点烟
-                    if (rand.nextFloat() < 0.3) {
-                        world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_LARGE,
-                            x + ox, y + oy, z + oz, 0, -0.5, 0);
+                    // 高速下喷的烟（速度-2.0）
+                    world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_LARGE,
+                        x + ox * 0.5, y + oy, z + oz * 0.5, 0, -2.0, 0);
+                    // 火焰粒子（有速度）
+                    if (rand.nextFloat() < 0.5) {
+                        world.spawnParticle(net.minecraft.util.EnumParticleTypes.FLAME,
+                            x + ox, y + oy, z + oz, 0, -1.5, 0);
                     }
                 }
             } else if (this.ticksExisted % 4 == 0) {
