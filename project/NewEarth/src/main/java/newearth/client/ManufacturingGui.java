@@ -14,6 +14,7 @@ import newearth.NewEarth;
 @SideOnly(Side.CLIENT)
 public final class ManufacturingGui extends GuiContainer {
     private static final ResourceLocation BG = new ResourceLocation(NewEarth.MOD_ID, "textures/gui/manufacturing.png");
+    private static final ResourceLocation BG_ENGINE = new ResourceLocation(NewEarth.MOD_ID, "textures/gui/engine_station.png");
     private static final ResourceLocation ATLAS = new ResourceLocation(NewEarth.MOD_ID, "textures/gui/gs_machine.png");
     private static final int ARROW_X = 86, ARROW_Y = 38, ARROW_W = 35;
     private static final int ENERGY_X = 5, ENERGY_Y = 85, ENERGY_FILL_W = 52;
@@ -28,7 +29,13 @@ public final class ManufacturingGui extends GuiContainer {
 
     @Override protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         int x = (width - xSize) / 2, y = (height - ySize) / 2;
-        mc.getTextureManager().bindTexture(BG);
+        // 引擎台用用户手绘界面，材料台用原版
+        boolean isEngine = false;
+        try {
+            String blockId = String.valueOf(tile.getWorld().getBlockState(tile.getPos()).getBlock().getRegistryName());
+            isEngine = blockId.equals("newearth:engine_station");
+        } catch (Exception e) { }
+        mc.getTextureManager().bindTexture(isEngine ? BG_ENGINE : BG);
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
         mc.getTextureManager().bindTexture(ATLAS);
         // progress arrow fill, same math as GS renderProgressArray
