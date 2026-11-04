@@ -58,6 +58,8 @@ def build(ROOT, run_gradle, env, offline):
     bundle = ROOT / 'build/libs' / ('NewEarth-BiomeBundle-' + version + '.zip')
     with zipfile.ZipFile(bundle, 'w', zipfile.ZIP_DEFLATED) as archive:
         archive.write(output, 'mods/' + output.name)
+        for options in sorted((ROOT / 'project/NewEarth/dimension/client-config').glob('*.txt')):
+            archive.write(options, 'shaderpacks/' + options.name)
         for name in ('ExtraPlanets.cfg', 'GalaxySpace/dimensions.conf'):
             archive.write(ROOT / 'config' / name, 'config/' + name)
         for config in sorted((preset / 'WorldBiomes').glob('*.bc')):

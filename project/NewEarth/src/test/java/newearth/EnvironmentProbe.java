@@ -67,6 +67,7 @@ public final class EnvironmentProbe implements Opcodes {
         exerciseHandler(head, chest, legs, feet);
         verifyInstalled();
         arrivalPersistence();
+        arrivalLoadBudget();
         System.out.println("NewEarth environment: " + checks + " checks passed (isolated; no world or survival session)");
     }
 
@@ -246,15 +247,33 @@ public final class EnvironmentProbe implements Opcodes {
         check(spiral.contains(new net.minecraft.util.math.BlockPos(-40, 0, -40))
                 && spiral.contains(new net.minecraft.util.math.BlockPos(40, 0, 40)), "Preparation grows beyond ordinary 20-chunk view distance");
         newearth.dimension.ArrivalNetwork.State sent = new newearth.dimension.ArrivalNetwork.State();
-        sent.session = "saved-arrival"; sent.dimension = 1020; sent.stage = 1;
+        sent.session = "saved-arrival"; sent.dimension = 1020; sent.stage = 1; sent.loadLevel = -1;
         sent.landing = new net.minecraft.util.math.BlockPos(-129, 203, 514);
         io.netty.buffer.ByteBuf bytes = io.netty.buffer.Unpooled.buffer();
         try {
             sent.toBytes(bytes);
             newearth.dimension.ArrivalNetwork.State received = new newearth.dimension.ArrivalNetwork.State(); received.fromBytes(bytes);
             check(received.session.equals(sent.session) && received.dimension == 1020 && received.stage == 1
-                    && received.landing.equals(sent.landing), "Arrival packet retains dimension, session and signed landing coordinates");
+                    && received.landing.equals(sent.landing) && received.loadLevel == -1, "Arrival packet retains dimension, session and signed landing coordinates");
         } finally { bytes.release(); }
+    }
+
+    private static void arrivalLoadBudget() {
+        newearth.dimension.ArrivalLoadBudget budget = new newearth.dimension.ArrivalLoadBudget(40, 60);
+        check(budget.level(0) == 0 && budget.attempts(0) == 1 && budget.nanos(0) == 2_000_000L,
+                "Arrival starts with one chunk attempt and a small budget");
+        for (int i = 0; i <= 300; i++) budget.sample(i * 100_000_000L, 20);
+        check(budget.level(30_000_000_000L) == newearth.dimension.ArrivalLoadBudget.MAX_LEVEL,
+                "Sustained healthy ticks gradually unlock the full budget");
+        budget.sample(31_000_000_000L, 200);
+        check(budget.level(31_000_000_000L) == -1 && budget.nanos(31_000_000_000L) == 0
+                && budget.attempts(31_000_000_000L) == 0, "A long tick immediately suspends extra generation");
+        budget.sample(32_600_000_000L, 20);
+        check(budget.level(32_600_000_000L) < newearth.dimension.ArrivalLoadBudget.MAX_LEVEL,
+                "Recovery resumes below the previous load instead of jumping back to maximum");
+        newearth.dimension.ArrivalLoadBudget frames = new newearth.dimension.ArrivalLoadBudget(24, 45);
+        for (int i = 0; i < 10; i++) frames.sample(i * 100_000_000L, 60);
+        check(frames.level(900_000_000L) == -1, "Sustained low frame rate causes client-side backoff");
     }
 
     private static Class<?> define(String name, byte[] bytes) {

@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 @Mod.EventBusSubscriber(modid = "newearth")
 public final class ArrivalSession extends WorldSavedData {
     private static final String KEY = "newearth_arrival", HOLD = "NewEarthArrivalHold";
+    private ArrivalLoadBudget load = new ArrivalLoadBudget(40, 60);
     private final Set<UUID> completed = new HashSet<>();
     private final Map<String, Group> groups = new LinkedHashMap<>();
 
@@ -66,6 +67,7 @@ public final class ArrivalSession extends WorldSavedData {
                     group.members.add(other.getUniqueID());
             }
             group.members.add(player.getUniqueID());
+            if (saved.groups.isEmpty()) saved.load = new ArrivalLoadBudget(40, 60);
             saved.groups.put(group.id, group);
             saved.markDirty();
         }
@@ -75,6 +77,8 @@ public final class ArrivalSession extends WorldSavedData {
         group.received.remove(player.getUniqueID());
         ArrivalNetwork.send(player, group.id, group.ready.contains(player.getUniqueID()) ? ArrivalNetwork.WAIT : ArrivalNetwork.POEM, group.landing);
     }
+
+    public static int loadLevel(WorldServer world) { return data(world).load.level(System.nanoTime()); }
 
     public static void ready(EntityPlayerMP player, String id, boolean region) {
         if (!EndDimension.isDestination(player.world)) return;
@@ -93,8 +97,28 @@ public final class ArrivalSession extends WorldSavedData {
         if (event.phase != TickEvent.Phase.END || event.world.isRemote || !EndDimension.isDestination(event.world)) return;
         WorldServer world = (WorldServer) event.world;
         ArrivalSession saved = data(world);
-        // Share one bounded generation budget across groups in this world.
-        long deadline = System.nanoTime() + 35_000_000L;
+        if (saved.groups.isEmpty()) return;
+        boolean active = false;
+        for (EntityPlayerMP player : world.getMinecraftServer().getPlayerList().getPlayers())
+            if (player.world == world && saved.pending(player.getUniqueID()) != null) { active = true; break; }
+        if (!active) {
+            for (Group group : saved.groups.values()) releaseChunks(world, group, true);
+            saved.load = new ArrivalLoadBudget(40, 60);
+            return;
+        }
+        long now = System.nanoTime();
+        net.minecraft.server.MinecraftServer server = world.getMinecraftServer();
+        long previousTick = server.tickTimeArray[Math.floorMod(server.getTickCounter() - 1, server.tickTimeArray.length)];
+        saved.load.sample(now, previousTick == 0 ? 20 : previousTick / 1_000_000.0);
+        // Slow ramp with a world-wide budget; a long tick pauses extra generation before retrying.
+        long deadline = now + saved.load.nanos(now);
+        int remaining = saved.load.attempts(now);
+        // Rotate independent groups so one viewer cannot monopolize the shared generation budget.
+        if (saved.groups.size() > 1) {
+            String first = saved.groups.keySet().iterator().next();
+            Group head = saved.groups.remove(first);
+            saved.groups.put(first, head);
+        }
         Iterator<Group> iterator = saved.groups.values().iterator();
         while (iterator.hasNext()) {
             Group group = iterator.next();
@@ -108,8 +132,7 @@ public final class ArrivalSession extends WorldSavedData {
             if (group.center == null) group.center = world.getSpawnPoint();
             BlockPos center = group.center;
             // Near-to-far traversal continues through poem, waiting and descent, without a radius cap.
-            int count = 0;
-            while (count++ < 16 && System.nanoTime() < deadline) {
+            while (remaining-- > 0 && System.nanoTime() < deadline) {
                 BlockPos offset = preparationOffset(group.cursor++);
                 int x = (center.getX() >> 4) + offset.getX(), z = (center.getZ() >> 4) + offset.getZ();
                 if (!world.getWorldBorder().contains(new BlockPos(x * 16, 64, z * 16))) continue;

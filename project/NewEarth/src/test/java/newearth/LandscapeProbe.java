@@ -155,10 +155,12 @@ public final class LandscapeProbe {
                 apply.invoke(null, value, chunks);
                 check(entryType.getMethod("get").invoke(entry) == chunks && changes[0] == 1,
                         "Production adapter applies actual DH override without recursive config notifications");
+                apply.invoke(null, value, disabled);
+                apply.invoke(null, value, chunks);
             } finally { stop.invoke(null); }
             check(entryType.getMethod("get").invoke(entry) == disabled
                     && entryType.getMethod("getApiValue").invoke(entry) == null,
-                    "Landing restores disabled DH generation and removes temporary API override");
+                    "Landing restores the original DH setting after multiple adaptive load changes");
             entryType.getMethod("setApiValue", Object.class, String.class).invoke(entry, disabled, "existing override");
             try { apply.invoke(null, value, chunks); } finally { stop.invoke(null); }
             check(entryType.getMethod("getApiValue").invoke(entry) == disabled, "Landing preserves a preexisting DH API override");

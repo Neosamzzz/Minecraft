@@ -25,14 +25,16 @@ public final class ArrivalNetwork {
     }
 
     public static void send(EntityPlayerMP player, String session, int stage, BlockPos landing) {
-        CHANNEL.sendTo(new State(session, player.dimension, stage, landing), player);
+        State state = new State(session, player.dimension, stage, landing);
+        state.loadLevel = ArrivalSession.loadLevel(player.getServerWorld());
+        CHANNEL.sendTo(state, player);
     }
 
     public static void ready(String session, boolean region) { CHANNEL.sendToServer(new Ready(session, region)); }
 
     public static class State implements IMessage {
         public String session;
-        public int dimension, stage;
+        public int dimension, stage, loadLevel;
         public BlockPos landing;
         public State() { }
         State(String session, int dimension, int stage, BlockPos landing) {
@@ -41,10 +43,12 @@ public final class ArrivalNetwork {
         public void fromBytes(ByteBuf buf) {
             session = ByteBufUtils.readUTF8String(buf); dimension = buf.readInt(); stage = buf.readUnsignedByte();
             landing = buf.readBoolean() ? BlockPos.fromLong(buf.readLong()) : null;
+            loadLevel = Math.max(-1, Math.min(ArrivalLoadBudget.MAX_LEVEL, buf.readByte()));
         }
         public void toBytes(ByteBuf buf) {
             ByteBufUtils.writeUTF8String(buf, session); buf.writeInt(dimension); buf.writeByte(stage);
             buf.writeBoolean(landing != null); if (landing != null) buf.writeLong(landing.toLong());
+            buf.writeByte(loadLevel);
         }
     }
 

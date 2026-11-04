@@ -22,6 +22,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
     private static GuiScreen screen;
     private static BlockPos landing;
     private static boolean regionSent;
+    private static int serverLevel;
 
     @SubscribeEvent public static void travelSound(PlaySoundEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
@@ -40,7 +41,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.getConnection() == null || (mc.world != null && !EndDimension.isDestination(mc.world))) {
             pending = null; session = null; stage = -1;
-            landing = null; regionSent = false;
+            landing = null; regionSent = false; serverLevel = 0;
             if (screen != null && mc.currentScreen == screen) mc.displayGuiScreen(null);
             screen = null;
             ArrivalDistantLoading.stop();
@@ -49,6 +50,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
         if (pending != null && mc.world != null && mc.player != null && mc.player.dimension == pending.dimension) {
             ArrivalNetwork.State state = pending;
             pending = null;
+            serverLevel = state.loadLevel;
             if (!state.session.equals(session)) { session = state.session; stage = -1; regionSent = false; landing = null; }
             if (state.landing != null && !state.landing.equals(landing)) { landing = state.landing; regionSent = false; }
             if (state.stage > stage) {
@@ -78,10 +80,15 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
             ArrivalNetwork.ready(session, true);
             regionSent = true;
         }
-        if (stage >= ArrivalNetwork.POEM && stage < ArrivalNetwork.LANDED && mc.world != null) ArrivalDistantLoading.start();
+        if (stage >= ArrivalNetwork.POEM && stage < ArrivalNetwork.LANDED && mc.world != null) ArrivalDistantLoading.tick(serverLevel);
         if (screen != null && mc.world != null) {
             if (mc.currentScreen != screen) mc.displayGuiScreen(screen);
         }
+    }
+
+    @SubscribeEvent public static void frame(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && stage >= ArrivalNetwork.POEM && stage < ArrivalNetwork.LANDED)
+            ArrivalDistantLoading.frame();
     }
 
     private static final class Waiting extends GuiScreen {
