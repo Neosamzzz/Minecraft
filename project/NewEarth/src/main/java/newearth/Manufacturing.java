@@ -122,6 +122,7 @@ public final class Manufacturing {
                 JsonObject recipe = element.getAsJsonObject(); List<ItemStack> inputs = new ArrayList<>();
                 for (JsonElement input : recipe.getAsJsonArray("inputs")) inputs.add(resolve(input.getAsJsonObject()));
                 ItemStack output = resolve(recipe.getAsJsonObject("output"));
+                if (ManufacturingHooks.tier7(output.getItem())) ManufacturingHooks.powered(output);
                 String machine = recipe.get("machine").getAsString();
                 if (machine.equals("material_station") || machine.equals("engine_station")) BATCHES.add(new Batch(machine, output, inputs));
                 else if (processingRecipe(machine,output,inputs)) { }

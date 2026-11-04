@@ -547,6 +547,10 @@
       },
       {
         "item": "newearth:rocket_engine"
+      },
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 6
       }
     ]
   },
@@ -899,6 +903,11 @@
       {
         "item": "newearth:thermal_liner",
         "count": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1,
+        "count": 1
       }
     ]
   },
@@ -919,6 +928,11 @@
       },
       {
         "item": "newearth:amethyst_component",
+        "count": 2
+      },
+      {
+        "field": "micdoodle8.mods.galacticraft.core.GCItems.partBuggy",
+        "meta": 1,
         "count": 2
       }
     ]
