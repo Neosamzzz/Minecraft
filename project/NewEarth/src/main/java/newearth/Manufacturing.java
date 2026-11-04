@@ -31,7 +31,7 @@ public final class Manufacturing {
             "nose_cone", "rocket_body", "rocket_engine", "booster", "fin", "blueprint_t4", "blueprint_t5", "blueprint_t6",
             "blueprint_engine_station", "blueprint_material_station", "blueprint_t7", "blueprint_sublight",
             "amethyst_fragment", "amethyst_ingot", "amethyst_plate", "amethyst_component",
-            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma"};
+            "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma", "tier9_rocket", "tier10_rocket"};
     private Manufacturing() { }
 
     @SubscribeEvent public static void blocks(RegistryEvent.Register<Block> event) {
@@ -46,6 +46,11 @@ public final class Manufacturing {
         event.getRegistry().register(assembly);
         GameRegistry.registerTileEntity(ManufacturingTile.class, new ResourceLocation(NewEarth.MOD_ID, "manufacturing"));
         GameRegistry.registerTileEntity(AssemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "assembly_station"));
+        // Disassembly Station
+        Block disassembly = new DisassemblyStationBlock();
+        BLOCKS.put("disassembly_station", disassembly);
+        event.getRegistry().register(disassembly);
+        GameRegistry.registerTileEntity(DisassemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "disassembly_station"));
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {

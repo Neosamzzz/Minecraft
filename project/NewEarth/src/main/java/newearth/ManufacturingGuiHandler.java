@@ -10,6 +10,7 @@ import net.minecraftforge.fml.relauncher.*;
 public final class ManufacturingGuiHandler implements IGuiHandler {
     public static final int MANUFACTURING_GUI_ID = 1;
     public static final int ASSEMBLY_GUI_ID = 2;
+    public static final int DISASSEMBLY_GUI_ID = 3;
 
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
@@ -19,6 +20,9 @@ public final class ManufacturingGuiHandler implements IGuiHandler {
         }
         if (id == ASSEMBLY_GUI_ID && te instanceof AssemblyStationTile) {
             return new AssemblyStationContainer(player.inventory, (AssemblyStationTile) te);
+        }
+        if (id == DISASSEMBLY_GUI_ID && te instanceof DisassemblyStationTile) {
+            return new DisassemblyStationContainer(player.inventory, (DisassemblyStationTile) te);
         }
         return null;
     }
@@ -32,6 +36,9 @@ public final class ManufacturingGuiHandler implements IGuiHandler {
         }
         if (id == ASSEMBLY_GUI_ID && te instanceof AssemblyStationTile) {
             return new newearth.client.AssemblyStationGui(player.inventory, (AssemblyStationTile) te);
+        }
+        if (id == DISASSEMBLY_GUI_ID && te instanceof DisassemblyStationTile) {
+            return new newearth.client.DisassemblyStationGui(player.inventory, (DisassemblyStationTile) te);
         }
         return null;
     }

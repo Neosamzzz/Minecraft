@@ -95,3 +95,6 @@ newearth.gui.status.idle=Idle
 newearth.gui.status.working=Working
 newearth.gui.status.nopower=No Power
 tile.newearth.assembly_station.name=Stellar Assembly Station
+item.newearth.tier10_rocket.name=十阶火箭
+item.newearth.tier9_rocket.name=Tier 9 Rocket
+tile.newearth.disassembly_station.name=Disassembly Station

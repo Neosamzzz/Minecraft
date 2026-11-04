@@ -1054,5 +1054,24 @@
         "count": 2
       }
     ]
+  },
+  {
+    "machine": "engine_station",
+    "output": {
+      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+      "meta": 7,
+      "count": 1
+    },
+    "inputs": [
+      {
+        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
+        "meta": 5,
+        "count": 1
+      },
+      {
+        "item": "newearth:amethyst_component",
+        "count": 2
+      }
+    ]
   }
 ]

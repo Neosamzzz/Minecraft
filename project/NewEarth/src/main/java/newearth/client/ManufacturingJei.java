@@ -18,6 +18,7 @@ public final class ManufacturingJei implements IModPlugin {
             registration.addRecipeCategories(new Category(id, helper));
         }
         registration.addRecipeCategories(new AssemblyCategory(helper));
+        registration.addRecipeCategories(new DisassemblyCategory(helper));
     }
 
     @Override public void register(IModRegistry registry) {
@@ -28,7 +29,7 @@ public final class ManufacturingJei implements IModPlugin {
             registry.addRecipes(recipes, "newearth." + id);
             registry.addRecipeCatalyst(Manufacturing.own(id), "newearth." + id);
         }
-        // Assembly station recipes (T7/T9)
+        // Assembly station recipes (T7/T9/T10)
         List<AssemblyWrapper> assemblyRecipes = new ArrayList<>();
         // T7: nose_cone x1, rocket_body x2, booster x2, fin x2, rocket_engine x1, blueprint_t7 x1 -> tier7_rocket
         List<ItemStack> t7Inputs = Arrays.asList(
@@ -40,9 +41,68 @@ public final class ManufacturingJei implements IModPlugin {
             Manufacturing.own("blueprint_t7")
         );
         assemblyRecipes.add(new AssemblyWrapper(t7Inputs, Manufacturing.own("tier7_rocket"), "T7"));
-        // TODO: T9 recipe when tier9 items are finalized
+        // T9: tier9 parts + tier9_engine + plasma engine -> tier9_rocket
+        List<ItemStack> t9Inputs = Arrays.asList(
+            Manufacturing.own("tier9_nose_cone"),
+            Manufacturing.own("tier9_body"), Manufacturing.own("tier9_body"),
+            Manufacturing.own("tier9_booster"), Manufacturing.own("tier9_booster"),
+            Manufacturing.own("tier9_fin"), Manufacturing.own("tier9_fin"),
+            Manufacturing.own("tier9_engine"),
+            gsModuleStack(5) // plasma engine
+        );
+        assemblyRecipes.add(new AssemblyWrapper(t9Inputs, Manufacturing.own("tier9_rocket"), "T9"));
+        // T10: tier9_rocket + black hole engine -> tier10_rocket (upgrade only)
+        List<ItemStack> t10Inputs = Arrays.asList(
+            Manufacturing.own("tier9_rocket"),
+            gsModuleStack(7) // black hole engine
+        );
+        assemblyRecipes.add(new AssemblyWrapper(t10Inputs, Manufacturing.own("tier10_rocket"), "T10"));
         registry.addRecipes(assemblyRecipes, "newearth.assembly_station");
         registry.addRecipeCatalyst(Manufacturing.own("assembly_station"), "newearth.assembly_station");
+        // Disassembly station recipes
+        List<DisassemblyWrapper> disassemblyRecipes = new ArrayList<>();
+        disassemblyRecipes.add(new DisassemblyWrapper(
+            Manufacturing.own("tier7_rocket"),
+            Arrays.asList(
+                Manufacturing.own("nose_cone"),
+                Manufacturing.own("rocket_body"), Manufacturing.own("rocket_body"),
+                Manufacturing.own("booster"), Manufacturing.own("booster"),
+                Manufacturing.own("fin"), Manufacturing.own("fin"),
+                Manufacturing.own("rocket_engine"),
+                Manufacturing.own("blueprint_t7")
+            )));
+        disassemblyRecipes.add(new DisassemblyWrapper(
+            Manufacturing.own("tier9_rocket"),
+            Arrays.asList(
+                Manufacturing.own("tier9_nose_cone"),
+                Manufacturing.own("tier9_body"), Manufacturing.own("tier9_body"),
+                Manufacturing.own("tier9_booster"), Manufacturing.own("tier9_booster"),
+                Manufacturing.own("tier9_fin"), Manufacturing.own("tier9_fin"),
+                Manufacturing.own("tier9_engine"),
+                gsModuleStack(5)
+            )));
+        disassemblyRecipes.add(new DisassemblyWrapper(
+            Manufacturing.own("tier10_rocket"),
+            Arrays.asList(
+                Manufacturing.own("tier9_nose_cone"),
+                Manufacturing.own("tier9_body"), Manufacturing.own("tier9_body"),
+                Manufacturing.own("tier9_booster"), Manufacturing.own("tier9_booster"),
+                Manufacturing.own("tier9_fin"), Manufacturing.own("tier9_fin"),
+                Manufacturing.own("tier9_engine"),
+                gsModuleStack(7)
+            )));
+        registry.addRecipes(disassemblyRecipes, "newearth.disassembly_station");
+        registry.addRecipeCatalyst(Manufacturing.own("disassembly_station"), "newearth.disassembly_station");
+    }
+
+    private static ItemStack gsModuleStack(int meta) {
+        try {
+            Class<?> cls = Class.forName("galaxyspace.core.GSItems");
+            Object item = cls.getField("ROCKET_MODULES").get(null);
+            return new ItemStack((net.minecraft.item.Item) item, 1, meta);
+        } catch (Exception e) {
+            return ItemStack.EMPTY;
+        }
     }
 
     private static final class Wrapper implements IRecipeWrapper {
@@ -117,6 +177,46 @@ public final class ManufacturingJei implements IModPlugin {
                 layout.getItemStacks().init(i, true, (i % 3) * 20 + 10, (i / 3) * 20 + 10);
             }
             layout.getItemStacks().init(9, false, 120, 40);
+            layout.getItemStacks().set(ingredients);
+        }
+    }
+
+    /** Wrapper for disassembly station recipes (1 rocket -> 9 parts). */
+    private static final class DisassemblyWrapper implements IRecipeWrapper {
+        final ItemStack input;
+        final List<ItemStack> outputs;
+        DisassemblyWrapper(ItemStack input, List<ItemStack> outputs) {
+            this.input = input; this.outputs = outputs;
+        }
+        @Override public void getIngredients(IIngredients ingredients) {
+            ingredients.setInput(ItemStack.class, input);
+            ingredients.setOutputs(ItemStack.class, outputs);
+        }
+    }
+
+    /** JEI category for the disassembly station (1 input + 9 outputs). */
+    private static final class DisassemblyCategory implements IRecipeCategory<DisassemblyWrapper> {
+        final IDrawable background, slot;
+        DisassemblyCategory(IGuiHelper helper) {
+            this.background = helper.createBlankDrawable(160, 100);
+            this.slot = helper.getSlotDrawable();
+        }
+        @Override public String getUid() { return "newearth.disassembly_station"; }
+        @Override public String getTitle() { return Manufacturing.own("disassembly_station").getDisplayName(); }
+        @Override public String getModName() { return "NewEarth"; }
+        @Override public IDrawable getBackground() { return background; }
+        @Override public void drawExtras(Minecraft mc) {
+            slot.draw(mc, 10, 40); // input
+            for (int i = 0; i < 9; i++) {
+                slot.draw(mc, (i % 3) * 20 + 80, (i / 3) * 20 + 10);
+            }
+            mc.fontRenderer.drawString("→", 55, 45, 0x555555);
+        }
+        @Override public void setRecipe(IRecipeLayout layout, DisassemblyWrapper wrapper, IIngredients ingredients) {
+            layout.getItemStacks().init(0, true, 10, 40);
+            for (int i = 0; i < 9; i++) {
+                layout.getItemStacks().init(1 + i, false, (i % 3) * 20 + 80, (i / 3) * 20 + 10);
+            }
             layout.getItemStacks().set(ingredients);
         }
     }

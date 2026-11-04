@@ -118,8 +118,14 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
         if (matchesT7()) {
             return Manufacturing.own("tier7_rocket");
         }
-        // T9: tier9 parts + plasma engine (same station, different recipe)
-        // TODO: Implement when tier9 items are finalized
+        // T9: tier9 parts + tier9_engine + plasma engine (GS ROCKET_MODULES:5)
+        if (matchesT9()) {
+            return Manufacturing.own("tier9_rocket");
+        }
+        // T10: tier9_rocket + black hole engine (upgrade only)
+        if (matchesT10()) {
+            return Manufacturing.own("tier10_rocket");
+        }
         return ItemStack.EMPTY;
     }
 
@@ -133,6 +139,43 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
             && isItem(inventory[6], "fin")
             && isItem(inventory[7], "rocket_engine")
             && isItem(inventory[8], "blueprint_t7");
+    }
+
+    private boolean matchesT9() {
+        return isItem(inventory[0], "tier9_nose_cone")
+            && isItem(inventory[1], "tier9_body")
+            && isItem(inventory[2], "tier9_body")
+            && isItem(inventory[3], "tier9_booster")
+            && isItem(inventory[4], "tier9_booster")
+            && isItem(inventory[5], "tier9_fin")
+            && isItem(inventory[6], "tier9_fin")
+            && isItem(inventory[7], "tier9_engine")
+            && isGsPlasmaEngine(inventory[8]);
+    }
+
+    private boolean matchesT10() {
+        // T10: only engine upgrade - tier9_rocket + black hole engine
+        return isItem(inventory[0], "tier9_rocket")
+            && isGsBlackHoleEngine(inventory[1])
+            && inventory[2].isEmpty() && inventory[3].isEmpty()
+            && inventory[4].isEmpty() && inventory[5].isEmpty()
+            && inventory[6].isEmpty() && inventory[7].isEmpty()
+            && inventory[8].isEmpty();
+    }
+
+    /** GS plasma engine = ROCKET_MODULES meta 5 */
+    private boolean isGsPlasmaEngine(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        String name = stack.getItem().getRegistryName().toString();
+        return name.equals("galaxyspace:rocket_modules") && stack.getMetadata() == 5;
+    }
+
+    /** GS black hole engine = ROCKET_MODULES meta (TBD - check GS) */
+    private boolean isGsBlackHoleEngine(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        String name = stack.getItem().getRegistryName().toString();
+        // Black hole engine meta - verify in GSItems
+        return name.equals("galaxyspace:rocket_modules") && stack.getMetadata() == 7;
     }
 
     private boolean isItem(ItemStack stack, String id) {

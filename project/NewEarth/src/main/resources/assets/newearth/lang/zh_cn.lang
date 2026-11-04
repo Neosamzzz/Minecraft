@@ -95,3 +95,6 @@ newearth.gui.status.idle=空闲
 newearth.gui.status.working=工作中
 newearth.gui.status.nopower=缺电
 tile.newearth.assembly_station.name=星际组装台
+item.newearth.tier9_rocket.name=九阶火箭
+item.newearth.tier10_rocket.name=十阶火箭
+tile.newearth.disassembly_station.name=拆解台
