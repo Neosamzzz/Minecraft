@@ -14,9 +14,21 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
         boolean item="galaxyspace.core.prefab.items.rockets.ItemTier6Rocket".equals(n);
         boolean rocket="galaxyspace.core.prefab.entities.EntityTier6Rocket".equals(n);
         boolean slot="galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly".equals(n);
-        if(!(boss||item||rocket||slot)) return bytes;
+        boolean container="galaxyspace.systems.SolarSystem.planets.overworld.inventory.ContainerRocketAssembler".equals(n);
+        if(!(boss||item||rocket||slot||container)) return bytes;
         ClassNode c=new ClassNode();new ClassReader(bytes).accept(c,0);int changes=0;
         for(MethodNode m:c.methods) {
+            if(container && m.name.equals("<init>")) for(AbstractInsnNode instruction:m.instructions.toArray()) if(instruction.getOpcode()==RETURN) {
+                InsnList hook=new InsnList();hook.add(new VarInsnNode(ALOAD,0));hook.add(new VarInsnNode(ALOAD,2));
+                hook.add(new MethodInsnNode(INVOKESTATIC,H,"assemblyContainer","(Lnet/minecraft/inventory/Container;Ljava/lang/Object;)V",false));m.instructions.insertBefore(instruction,hook);changes++;
+            }
+            if(container && (m.name.equals("transferStackInSlot")||m.name.equals("func_82846_b"))) {
+                InsnList hook=new InsnList();LabelNode original=new LabelNode();hook.add(new VarInsnNode(ALOAD,0));hook.add(new VarInsnNode(ALOAD,1));hook.add(new VarInsnNode(ILOAD,2));
+                hook.add(new MethodInsnNode(INVOKESTATIC,H,"transferAssemblyEngine","(Lnet/minecraft/inventory/Container;Lnet/minecraft/entity/player/EntityPlayer;I)Lnet/minecraft/item/ItemStack;",false));
+                hook.add(new InsnNode(DUP));hook.add(new JumpInsnNode(IFNULL,original));hook.add(new InsnNode(ARETURN));hook.add(original);
+                hook.add(new FrameNode(F_SAME1,0,null,1,new Object[]{"net/minecraft/item/ItemStack"}));hook.add(new InsnNode(POP));m.instructions.insert(hook);changes++;
+            }
+
             if(boss && m.name.equals("getGuaranteedLoot") && m.desc.equals("(Ljava/util/Random;)Lnet/minecraft/item/ItemStack;")) {
                 reset(m);m.instructions.add(new VarInsnNode(ALOAD,0));m.instructions.add(new VarInsnNode(ALOAD,1));
                 m.instructions.add(new MethodInsnNode(INVOKESTATIC,H,"reward","(Ljava/lang/Object;Ljava/util/Random;)Lnet/minecraft/item/ItemStack;",false));m.instructions.add(new InsnNode(ARETURN));changes++;

@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.analysis.*;
 
 /** Transactional material debits and installed GS/EP bytecode compatibility. */
 public final class ManufacturingProbe {
+    public static final class AssemblyFixture {public final InventoryBasic rocketCraftMatrix=new InventoryBasic("assembly",false,16);}
     private static int checks;
     private static void check(boolean value,String message) {if(!value)throw new AssertionError(message);checks++;}
     static void run() throws Exception {
@@ -20,6 +21,17 @@ public final class ManufacturingProbe {
         net.minecraft.item.Item seven=new net.minecraft.item.Item().setRegistryName("newearth:tier7_rocket");
         check(ManufacturingHooks.moduleType(six).equals("IonEngine"),"T6 modification table permits ion only");
         check(ManufacturingHooks.moduleType(seven).equals("SublightEngine"),"T7 modification table permits sublight only");
+        AssemblyFixture fixture=new AssemblyFixture();
+        net.minecraft.inventory.Container container=new net.minecraft.inventory.Container(){@Override public boolean canInteractWith(net.minecraft.entity.player.EntityPlayer player){return true;}};
+        net.minecraft.inventory.Slot prior=new net.minecraft.inventory.Slot(fixture.rocketCraftMatrix,4,40,85);
+        container.inventorySlots.add(prior);container.inventoryItemStacks.add(ItemStack.EMPTY);
+        ManufacturingHooks.assemblyContainer(container,fixture);
+        net.minecraft.inventory.Slot central=container.inventorySlots.get(1);
+        check(central.getSlotIndex()==14 && central.inventory==fixture.rocketCraftMatrix,"Central engine uses the existing spare matrix index");
+        check(prior.yPos==65 && central.yPos==90,"Body and central engine slots do not overlap");
+        net.minecraft.item.Item modules=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_modules").setHasSubtypes(true);
+        check(central.isItemValid(new ItemStack(modules,1,6)),"Central engine accepts sublight module");
+        check(!central.isItemValid(new ItemStack(modules,1,4)),"Central engine rejects ion module");
         InventoryBasic inv=new InventoryBasic("test",false,27);
         inv.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,2));
         inv.setInventorySlotContents(1,new ItemStack(Items.IRON_INGOT,3));
@@ -78,7 +90,7 @@ public final class ManufacturingProbe {
             int slots=0;for(JsonElement i:r.getAsJsonArray("inputs"))slots+=i.getAsJsonObject().has("count")?i.getAsJsonObject().get("count").getAsInt():1;
             if(machine.equals("AssemblyRecipes"))check(slots<=9,"GS component recipe fits nine input slots");
             if(r.has("layout"))check(summary(r.getAsJsonArray("layout")).equals(summary(r.getAsJsonArray("inputs"))),"Shaped layout preserves ingredient quantities");
-            if(machine.equals("RocketAssemblyRecipes"))check(slots==9,"T7 assembly requires a structural engine as well as its licence");
+            if(machine.equals("RocketAssemblyRecipes"))check(slots==10,"T7 assembly requires structural propulsion, sublight module and licence");
         }
         check(machines.size()==7,"Both stations and both GS assemblers are connected");
         JsonObject wafer=null,plasma=null;
@@ -119,7 +131,7 @@ public final class ManufacturingProbe {
         return counts;
     }
     private static void verifyInstalled(File directory,JsonArray recipes) throws Exception {
-        Set<String> required=new HashSet<>(Arrays.asList("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket","galaxyspace.core.prefab.entities.EntityTier6Rocket","galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly","galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
+        Set<String> required=new HashSet<>(Arrays.asList("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket","galaxyspace.core.prefab.entities.EntityTier6Rocket","galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly","galaxyspace.systems.SolarSystem.planets.overworld.inventory.ContainerRocketAssembler","galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
         Map<String,Set<String>> fields=new HashMap<>();int bosses=0;
         for(File file:directory.listFiles((dir,name)->name.endsWith(".jar"))) try(JarFile jar=new JarFile(file)) {
             for(Enumeration<JarEntry> entries=jar.entries();entries.hasMoreElements();) {

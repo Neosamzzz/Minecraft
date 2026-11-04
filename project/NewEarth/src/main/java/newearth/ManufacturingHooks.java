@@ -55,6 +55,53 @@ public final class ManufacturingHooks {
         }
     }
     public static boolean tier7(Item item) { return "newearth:tier7_rocket".equals(String.valueOf(item.getRegistryName())); }
+    public static void powered(ItemStack stack) {
+        try {
+            Class<?> type=Class.forName("asmodeuscore.core.astronomy.SpaceData$Engine_Type");
+            Object engine=type.getField("SUBLIGHT_ENGINE").get(null);
+            if(!stack.hasTagCompound())stack.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
+            stack.getTagCompound().setBoolean((String)type.getMethod("getName").invoke(engine),true);
+            String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
+            stack.getTagCompound().setInteger(count,0);
+        } catch(ReflectiveOperationException e) {throw new IllegalStateException(e);}
+    }
+    public static boolean assemblyEngine(ItemStack stack) {
+        return !stack.isEmpty() && "galaxyspace:rocket_modules".equals(String.valueOf(stack.getItem().getRegistryName()))
+                && (stack.getMetadata()==6 || stack.getMetadata()==5);
+    }
+    public static void assemblyContainer(net.minecraft.inventory.Container container,Object tile) {
+        try {
+            net.minecraft.inventory.IInventory matrix=(net.minecraft.inventory.IInventory)tile.getClass().getField("rocketCraftMatrix").get(tile);
+            for(net.minecraft.inventory.Slot slot:container.inventorySlots) if(slot.inventory==matrix) {
+                if(slot.getSlotIndex()==2)slot.yPos=15;
+                if(slot.getSlotIndex()==3)slot.yPos=40;
+                if(slot.getSlotIndex()==4)slot.yPos=65;
+            }
+            net.minecraft.inventory.Slot engine=new net.minecraft.inventory.Slot(matrix,14,40,90) {
+                @Override public boolean isItemValid(ItemStack stack){return assemblyEngine(stack);}
+            };
+            engine.slotNumber=container.inventorySlots.size();
+            container.inventorySlots.add(engine);container.inventoryItemStacks.add(ItemStack.EMPTY);
+        } catch(ReflectiveOperationException e) {throw new IllegalStateException(e);}
+    }
+    public static ItemStack transferAssemblyEngine(net.minecraft.inventory.Container container,net.minecraft.entity.player.EntityPlayer player,int index) {
+        net.minecraft.inventory.Slot source=container.inventorySlots.get(index);
+        net.minecraft.inventory.Slot engine=container.inventorySlots.get(container.inventorySlots.size()-1);
+        if(!source.getHasStack())return null;
+        ItemStack stack=source.getStack(),copy=stack.copy();
+        if(source==engine) {
+            if(!player.inventory.addItemStackToInventory(stack))return ItemStack.EMPTY;
+            if(stack.isEmpty())source.putStack(ItemStack.EMPTY);else source.onSlotChanged();
+            return copy;
+        }
+        if(source.inventory==player.inventory && assemblyEngine(stack)) {
+            if(engine.getHasStack())return ItemStack.EMPTY;
+            ItemStack one=stack.copy();one.setCount(1);engine.putStack(one);stack.shrink(1);
+            if(stack.isEmpty())source.putStack(ItemStack.EMPTY);else source.onSlotChanged();
+            return copy;
+        }
+        return null;
+    }
     public static boolean readyStack(ItemStack stack) {
         if(stack.isEmpty() || !tier7(stack.getItem()) || !stack.hasTagCompound()) return false;
         try {
