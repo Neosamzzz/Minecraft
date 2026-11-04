@@ -56,6 +56,18 @@ public final class ManufacturingProbe {
         matrix.setInventorySlotContents(5,ItemStack.EMPTY);
         check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(matrix,null).isEmpty(),"Real GS matcher rejects rocket assembly without the engine");
         galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.getRecipeList().clear();
+        InventoryBasic nineMatrix=new InventoryBasic("extendedRocket",false,15);
+        Object[] nineRequired=Arrays.copyOf(required,10);
+        nineRequired[9]=new ItemStack(Items.EMERALD);
+        for(int i=0;i<parts.length;i++)nineMatrix.setInventorySlotContents(i+2,new ItemStack(parts[i]));
+        nineMatrix.setInventorySlotContents(14,new ItemStack(Items.EMERALD));
+        galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.addShapelessRecipe(new ItemStack(Items.MINECART),nineRequired);
+        check(!galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Real GS matcher supports ten required inputs in an extended assembly matrix");
+        nineMatrix.setInventorySlotContents(14,ItemStack.EMPTY);
+        check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Extended assembly rejects missing central propulsion module");
+        nineMatrix.setInventorySlotContents(14,new ItemStack(Items.EMERALD));nineMatrix.setInventorySlotContents(10,ItemStack.EMPTY);
+        check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Extended assembly rejects missing control panel");
+        galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.getRecipeList().clear();
         check(ManufacturingHooks.blueprint("com.mjr.extraplanets.planets.Uranus.WorldProviderUranus").equals("blueprint_engine_station"),"Uranus unlocks the engine station");
         check(ManufacturingHooks.blueprint("galaxyspace.systems.SolarSystem.moons.io.dimension.WorldProviderIo")==null,"Shared chest tier never grants EP blueprint to GS Io");
         JsonArray recipes=new JsonParser().parse(new InputStreamReader(ManufacturingProbe.class.getResourceAsStream("/assets/newearth/manufacturing.json"),"UTF-8")).getAsJsonArray();
