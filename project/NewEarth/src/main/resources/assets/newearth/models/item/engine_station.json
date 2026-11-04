@@ -1,1 +1,7 @@
-{"parent": "newearth:block/engine_station"}
+{
+  "parent": "newearth:block/engine_station",
+  "display": {
+    "gui": { "rotation": [30, 45, 0], "scale": 0.8 },
+    "ground": { "scale": 0.6 }
+  }
+}
