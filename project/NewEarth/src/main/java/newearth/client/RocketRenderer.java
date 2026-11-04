@@ -1,59 +1,91 @@
 package newearth.client;
 
-import com.google.common.collect.ImmutableList;
+import newearth.EntityTier10Rocket;
 import newearth.EntityTier9Rocket;
 import micdoodle8.mods.galacticraft.api.prefab.entity.EntityAutoRocket;
-import newearth.EntityTier10Rocket;
-import newearth.NewEarth;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.obj.OBJModel;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import micdoodle8.mods.galacticraft.core.client.model.OBJLoaderGC;
-import micdoodle8.mods.galacticraft.core.util.ClientUtil;
+import org.lwjgl.opengl.GL11;
 
+/** Draws the placed hull with ExtraPlanets' own rocket model and transform. */
 @SideOnly(Side.CLIENT)
 public final class RocketRenderer extends Render<EntityAutoRocket> {
-    private final String modelName;
-    private IBakedModel baked;
-    private Object textureAtlas;
+    private final String registryName;
+    private final boolean tier10;
+    private Object model;
+
     public static void register() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityTier9Rocket.class, manager -> new RocketRenderer(manager, "tier9_rocket"));
-        RenderingRegistry.registerEntityRenderingHandler(EntityTier10Rocket.class, manager -> new RocketRenderer(manager, "tier10_rocket"));
+        RenderingRegistry.registerEntityRenderingHandler(EntityTier9Rocket.class, manager -> new RocketRenderer(manager, "rocket_t9", false));
+        RenderingRegistry.registerEntityRenderingHandler(EntityTier10Rocket.class, manager -> new RocketRenderer(manager, "rocket_t10_new", true));
     }
-    private RocketRenderer(RenderManager manager, String name) { super(manager); modelName = name; shadowSize = 2F; }
-    @Override protected ResourceLocation getEntityTexture(EntityAutoRocket rocket) { return TextureMap.LOCATION_BLOCKS_TEXTURE; }
-    @Override public boolean shouldRender(EntityAutoRocket rocket, net.minecraft.client.renderer.culling.ICamera camera, double x, double y, double z) {
-        return rocket.isInRangeToRender3d(x, y, z) && camera.isBoundingBoxInFrustum(rocket.getEntityBoundingBox().grow(3D, 1D, 3D));
+
+    private RocketRenderer(RenderManager manager, String registryName, boolean tier10) {
+        super(manager);
+        this.registryName = registryName;
+        this.tier10 = tier10;
+        shadowSize = 2F;
     }
-    @Override public void doRender(EntityAutoRocket rocket, double x, double y, double z, float yaw, float partial) {
+
+    private void updateModel() throws ReflectiveOperationException {
+        if (model != null) return;
+        Class<?> utilities = Class.forName("com.mjr.mjrlegendslib.util.ModelUtilities");
+        model = utilities.getMethod("getModelFromRegistry", String.class, String.class)
+                .invoke(null, "extraplanets:", registryName);
+    }
+
+    private void drawModel() throws ReflectiveOperationException {
+        Class<?> utilities = Class.forName("com.mjr.mjrlegendslib.util.ModelUtilities");
+        utilities.getMethod("drawBakedModel", net.minecraft.client.renderer.block.model.IBakedModel.class)
+                .invoke(null, model);
+    }
+
+    @Override protected ResourceLocation getEntityTexture(EntityAutoRocket entity) {
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+    }
+
+    @Override public void doRender(EntityAutoRocket entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.pushMatrix();
+        float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks + 180;
+        if (tier10) GlStateManager.translate((float) x, (float) y - 0.2F, (float) z);
+        else GlStateManager.translate((float) x, (float) y, (float) z + 0.6F);
+        GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-pitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager.translate(0.0F, entity.getRenderOffsetY(), 0.0F);
+        float roll = entity.rollAmplitude / 3 - partialTicks;
+        if (roll > 0.0F) {
+            float wobble = entity.getLaunched() ? (5 - MathHelper.floor(entity.timeUntilLaunch / 85)) / 10F : 0.3F;
+            GlStateManager.rotate(MathHelper.sin(roll) * roll * wobble * partialTicks, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(MathHelper.sin(roll) * roll * wobble * partialTicks, 1.0F, 0.0F, 1.0F);
+        }
         try {
-            Object currentAtlas = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/stone");
-            if (baked == null || textureAtlas != currentAtlas) {
-            textureAtlas = currentAtlas;
-            IModel model = OBJLoaderGC.instance.loadModel(new ResourceLocation(NewEarth.MOD_ID, "models/" + modelName + ".obj"));
-            baked = model.bake(new OBJModel.OBJState(ImmutableList.of(OBJModel.Group.ALL), false), DefaultVertexFormats.ITEM,
-                    texture -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString()));
-            }
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(x, y, z);
-            GlStateManager.rotate(180F - yaw, 0F, 1F, 0F);
-            GlStateManager.rotate(rocket.prevRotationPitch + (rocket.rotationPitch - rocket.prevRotationPitch) * partial, 0F, 0F, 1F);
-            GlStateManager.scale(.4F, .4F, .4F);
+            updateModel();
             bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-            GlStateManager.disableCull();
-            ClientUtil.drawBakedModel(baked);
-            GlStateManager.enableCull();
-            GlStateManager.popMatrix();
-        } catch (java.io.IOException error) { throw new IllegalStateException("Missing rocket hull " + modelName, error); }
+            GlStateManager.shadeModel(Minecraft.isAmbientOcclusionEnabled() ? GL11.GL_SMOOTH : GL11.GL_FLAT);
+            GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+            float scale = tier10 ? 0.7F : 1.1F;
+            GlStateManager.scale(scale, scale, scale);
+            drawModel();
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Missing ExtraPlanets rocket model " + registryName, error);
+        }
+        GlStateManager.popMatrix();
+        RenderHelper.enableStandardItemLighting();
+    }
+
+    @Override public boolean shouldRender(EntityAutoRocket rocket, ICamera camera, double camX, double camY, double camZ) {
+        AxisAlignedBB box = rocket.getEntityBoundingBox().grow(0.6D, 0, 0.6D);
+        return rocket.isInRangeToRender3d(camX, camY, camZ) && camera.isBoundingBoxInFrustum(box);
     }
 }
