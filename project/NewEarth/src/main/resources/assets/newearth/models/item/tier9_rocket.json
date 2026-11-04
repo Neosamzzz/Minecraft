@@ -1,6 +1,9 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "newearth:items/tier9_rocket"
+  "parent": "forge:item/obj",
+  "model": "newearth:models/tier9_rocket.obj",
+  "display": {
+    "gui": { "rotation": [30, 45, 0], "scale": [0.6, 0.6, 0.6] },
+    "ground": { "scale": [0.4, 0.4, 0.4] },
+    "thirdperson_righthand": { "rotation": [0, 90, 0], "scale": [0.4, 0.4, 0.4] }
   }
 }
