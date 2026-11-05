@@ -97,6 +97,9 @@ newearth.gui.status.nopower=缺电
 tile.newearth.assembly_station.name=星际组装台
 item.newearth.tier9_rocket.name=九阶火箭
 item.newearth.tier10_rocket.name=十阶火箭
+entity.tier7_rocket.name=七阶火箭
+entity.tier9_rocket.name=九阶火箭
+entity.tier10_rocket.name=十阶火箭
 tile.newearth.disassembly_station.name=拆解台
 
 item.newearth.final_energy_core.name=最终能源核心

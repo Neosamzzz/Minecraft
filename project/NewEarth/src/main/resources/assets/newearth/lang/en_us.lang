@@ -97,6 +97,9 @@ newearth.gui.status.nopower=No Power
 tile.newearth.assembly_station.name=Stellar Assembly Station
 item.newearth.tier10_rocket.name=十阶火箭
 item.newearth.tier9_rocket.name=Tier 9 Rocket
+entity.tier7_rocket.name=Tier 7 Rocket
+entity.tier9_rocket.name=Tier 9 Rocket
+entity.tier10_rocket.name=Tier 10 Rocket
 tile.newearth.disassembly_station.name=Disassembly Station
 
 item.newearth.final_energy_core.name=Final Energy Core
