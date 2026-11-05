@@ -194,6 +194,7 @@ public final class ManufacturingProbe {
         check(ship.getSizeInventory()==micdoodle8.mods.galacticraft.api.entity.IRocketType.EnumRocketType.INVENTORY54.getInventorySpace(),"Cargo variant uses the GC inventory size");
         ship.setRocketType(micdoodle8.mods.galacticraft.api.entity.IRocketType.EnumRocketType.PREFUELED.getIndex());
         check(ship.getType().getPreFueled() && tier9Item instanceof micdoodle8.mods.galacticraft.api.item.IHoldableItem && tier10Item instanceof micdoodle8.mods.galacticraft.api.item.IHoldableItem,"Creative variant is pre-fueled and both items use the GC hold pose");
+        check(new Tier6IonModule().getForrbidenModules()==null,"Tier 6 modification list hides the sublight conflict icon");
         ship.setRocketType(0);
         check(ship.isDockValid(new micdoodle8.mods.galacticraft.core.tile.TileEntityLandingPad()),"T9 docks on a real GC launch pad");
         check(ship.isDockValid(new galaxyspace.systems.SolarSystem.planets.overworld.tile.TileEntityAdvLandingPad()),"T9 docks on a real GS advanced pad");

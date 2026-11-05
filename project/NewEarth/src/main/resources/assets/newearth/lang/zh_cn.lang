@@ -103,3 +103,7 @@ item.newearth.tier10_rocket.name=十阶火箭
 tile.newearth.disassembly_station.name=拆解台
 
 item.newearth.final_energy_core.name=最终能源核心
+gui.module.ion_engine=离子引擎
+gui.module.ion_engine.desc=六阶火箭的离子推进。
+gui.module.passive=被动模块
+gui.module.count=剩余改装槽位: 

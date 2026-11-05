@@ -16,7 +16,8 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
         boolean rocket="galaxyspace.core.prefab.entities.EntityTier6Rocket".equals(n);
         boolean slot="galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly".equals(n);
         boolean container="galaxyspace.systems.SolarSystem.planets.overworld.inventory.ContainerRocketAssembler".equals(n);
-        if(!(boss||item||rocket||slot||container)) return bytes;
+        boolean table="galaxyspace.systems.SolarSystem.planets.overworld.gui.GuiModificationTable".equals(n);
+        if(!(boss||item||rocket||slot||container||table)) return bytes;
         ClassNode c=new ClassNode();new ClassReader(bytes).accept(c,0);int changes=0;
         for(MethodNode m:c.methods) {
             if(container && m.name.equals("<init>")) for(AbstractInsnNode instruction:m.instructions.toArray()) if(instruction.getOpcode()==RETURN) {
@@ -71,6 +72,11 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
                     m.instructions.insertBefore(i,new MethodInsnNode(INVOKESTATIC,H,"dropped","(Ljava/util/List;)Ljava/util/List;",false));changes++;
                 }
             }
+            if(table) for(AbstractInsnNode instruction:m.instructions.toArray()) if(instruction instanceof LdcInsnNode && "Mod. count: ".equals(((LdcInsnNode)instruction).cst)) {
+                ((LdcInsnNode)instruction).cst="gui.module.count";
+                m.instructions.insert(instruction,new MethodInsnNode(INVOKESTATIC,"micdoodle8/mods/galacticraft/core/util/GCCoreUtil","translate","(Ljava/lang/String;)Ljava/lang/String;",false));
+                changes++;
+            }
             if(slot && (m.name.equals("isItemValid")||m.name.equals("func_75214_a"))) {
                 InsnList hook=new InsnList();LabelNode original=new LabelNode();
                 hook.add(new VarInsnNode(ALOAD,0));hook.add(new FieldInsnNode(GETFIELD,c.name,"index","I"));hook.add(new VarInsnNode(ALOAD,1));
@@ -78,6 +84,7 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
                 hook.add(new JumpInsnNode(IFEQ,original));hook.add(new InsnNode(ICONST_1));hook.add(new InsnNode(IRETURN));hook.add(original);hook.add(new FrameNode(F_SAME,0,null,0,null));m.instructions.insert(hook);changes++;
             }
         }
+        if(table && changes==0) return bytes;
         if(!boss && changes==0) throw new IllegalStateException("Missing manufacturing hooks: "+n);
         if(changes==0) return bytes;
         ClassWriter w=new ClassWriter(ClassWriter.COMPUTE_MAXS);c.accept(w);return w.toByteArray();

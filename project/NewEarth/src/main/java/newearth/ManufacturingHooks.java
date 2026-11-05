@@ -141,8 +141,10 @@ public final class ManufacturingHooks {
         try {
             Class<?> base=Class.forName("galaxyspace.core.prefab.items.modules.ItemModule");
             Object result=java.lang.reflect.Array.newInstance(base,1);
-            String name=moduleType(item);
-            java.lang.reflect.Array.set(result,0,Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.modules."+name).newInstance());
+            String name=tier7(item)
+                    ? "galaxyspace.systems.SolarSystem.planets.overworld.items.modules.SublightEngine"
+                    : "newearth.Tier6IonModule";
+            java.lang.reflect.Array.set(result,0,Class.forName(name).newInstance());
             return result;
         } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
     }

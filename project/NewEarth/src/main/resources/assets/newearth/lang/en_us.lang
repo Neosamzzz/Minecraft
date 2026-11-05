@@ -103,3 +103,7 @@ item.newearth.tier9_rocket.name=Tier 9 Rocket
 tile.newearth.disassembly_station.name=Disassembly Station
 
 item.newearth.final_energy_core.name=Final Energy Core
+gui.module.ion_engine=Ion Engine
+gui.module.ion_engine.desc=Ion propulsion for the tier 6 rocket.
+gui.module.passive=Passive module
+gui.module.count=Slots left: 
