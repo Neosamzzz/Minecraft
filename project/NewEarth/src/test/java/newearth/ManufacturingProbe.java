@@ -52,6 +52,15 @@ public final class ManufacturingProbe {
         Manufacturing.Batch repeated=new Manufacturing.Batch("test",new ItemStack(Items.PAPER),Arrays.asList(new ItemStack(Items.IRON_INGOT,3),new ItemStack(Items.IRON_INGOT,3)));
         inv.setInventorySlotContents(2,ItemStack.EMPTY);
         check(repeated.debit(inv,18)==null,"Repeated ingredient cannot double spend a stack");
+        Manufacturing.Batch upgrade=new Manufacturing.Batch("engine_station",new ItemStack(Items.EMERALD),Arrays.asList(new ItemStack(Items.IRON_INGOT),new ItemStack(Items.PAPER)));
+        InventoryBasic engineSlots=new InventoryBasic("engine",false,2);
+        engineSlots.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT));
+        engineSlots.setInventorySlotContents(1,new ItemStack(Items.PAPER));
+        int[] order=upgrade.debit(engineSlots,2);
+        check(order!=null&&order[0]==1&&order[1]==1,"Engine station takes the engine from the upper slot");
+        engineSlots.setInventorySlotContents(0,new ItemStack(Items.PAPER));
+        engineSlots.setInventorySlotContents(1,new ItemStack(Items.IRON_INGOT));
+        check(upgrade.debit(engineSlots,2)==null,"Engine station rejects the two inputs swapped");
         class GcCell extends net.minecraft.item.Item implements micdoodle8.mods.galacticraft.api.item.IItemElectric {
             public float recharge(ItemStack s, float e, boolean d) { return 0; }
             public float discharge(ItemStack s, float e, boolean d) { return 0; }

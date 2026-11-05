@@ -84,6 +84,7 @@ public final class Manufacturing {
         }
         /** Computes a complete debit plan before consuming any inventory. */
         int[] debit(net.minecraft.inventory.IInventory inventory, int limit) {
+            if ("engine_station".equals(machine)) return fixedSlots(inventory, limit);
             int[] used = new int[limit];
             for (ItemStack need : inputs) {
                 int left = need.getCount();
@@ -98,6 +99,20 @@ public final class Manufacturing {
             }
             // Reject unexpected ingredients rather than silently consuming a subset.
             for (int i = 0; i < limit; i++) if (!inventory.getStackInSlot(i).isEmpty() && used[i] == 0) return null;
+            return used;
+        }
+
+        /** Upper slot is the engine, lower slot is the upgrade material. */
+        private int[] fixedSlots(net.minecraft.inventory.IInventory inventory, int limit) {
+            if (inputs.size() != limit) return null;
+            int[] used = new int[limit];
+            for (int i = 0; i < limit; i++) {
+                ItemStack need = inputs.get(i);
+                ItemStack have = inventory.getStackInSlot(i);
+                if (have.getCount() < need.getCount() || !ItemStack.areItemsEqual(have, need)
+                        || !ItemStack.areItemStackTagsEqual(have, need)) return null;
+                used[i] = need.getCount();
+            }
             return used;
         }
     }
