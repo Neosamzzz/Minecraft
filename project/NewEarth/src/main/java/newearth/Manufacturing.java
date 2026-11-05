@@ -54,7 +54,7 @@ public final class Manufacturing {
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {
-        for (String id : PARTS) register(event, id, new Item().setCreativeTab(CreativeTabs.MISC));
+        for (String id : PARTS) register(event, id, id.equals("control_panel") ? new ControlPanelItem() : new Item().setCreativeTab(CreativeTabs.MISC));
         for (Map.Entry<String, Block> block : BLOCKS.entrySet()) register(event, block.getKey(), new ItemBlock(block.getValue()));
         try {
             // Reuse GS's placement and modification interfaces; the transformer
