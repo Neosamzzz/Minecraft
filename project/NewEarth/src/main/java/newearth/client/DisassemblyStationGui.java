@@ -1,43 +1,47 @@
 package newearth.client;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import micdoodle8.mods.galacticraft.core.client.gui.container.GuiContainerGC;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.*;
+import net.minecraft.inventory.Slot;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import newearth.DisassemblyStationContainer;
 import newearth.DisassemblyStationTile;
-import newearth.NewEarth;
 
-/**
- * GUI for Disassembly Station.
- * 1 input (rocket) + 9 outputs (parts).
- */
+/** GS rocket assembly screen, with the rocket on the result slot and parts in the part slots. */
 @SideOnly(Side.CLIENT)
-public final class DisassemblyStationGui extends GuiContainer {
-    private static final ResourceLocation BG = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
+public final class DisassemblyStationGui extends GuiContainerGC {
     private final DisassemblyStationTile tile;
 
     public DisassemblyStationGui(InventoryPlayer playerInventory, DisassemblyStationTile tile) {
         super(new DisassemblyStationContainer(playerInventory, tile));
         this.tile = tile;
-        this.xSize = 176;
-        this.ySize = 166;
+        this.xSize = 204;
+        this.ySize = 256;
     }
 
     @Override protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String name = I18n.format("tile.newearth.disassembly_station.name");
-        this.fontRenderer.drawString(name, 8, 6, 0x404040);
-        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, 72, 0x404040);
-        this.fontRenderer.drawString("→", 60, 39, 0x555555);
+        fontRenderer.drawString(I18n.format("tile.newearth.disassembly_station.name"), 19, 7, 0xFFFFFF);
+        fontRenderer.drawString(I18n.format("container.inventory"), 32, ySize - 91, 0xFFFFFF);
     }
 
     @Override protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        int x = guiLeft, y = guiTop;
-        drawRect(x, y, x + xSize, y + ySize, 0xFFC6C6C6);
-        for (net.minecraft.inventory.Slot slot : inventorySlots.inventorySlots) {
-            drawRect(x + slot.xPos - 1, y + slot.yPos - 1, x + slot.xPos + 17, y + slot.yPos + 17, 0xFF373737);
-            drawRect(x + slot.xPos, y + slot.yPos, x + slot.xPos + 16, y + slot.yPos + 16, 0xFF8B8B8B);
+        mc.getTextureManager().bindTexture(AssemblyStationGui.TEXTURE);
+        GlStateManager.color(1F, 1F, 1F, 1F);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        for (Slot slot : inventorySlots.inventorySlots) {
+            int x = guiLeft + slot.xPos, y = guiTop + slot.yPos;
+            drawTexturedModalRect(x, y, 228, 206, 16, 16);
+            if (slot.inventory instanceof InventoryPlayer) continue;
+            if (slot.getSlotIndex() == 0) {
+                drawTexturedModalRect(x - 9, y - 9, 215, 144, 34, 34);
+            } else {
+                GlStateManager.color(0F, 0.9F, 1F, 1F);
+                drawTexturedModalRect(x - 2, y - 3, 207, 182, 20, 21);
+                GlStateManager.color(1F, 1F, 1F, 1F);
+            }
         }
     }
 }
