@@ -33,6 +33,14 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
 
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final MachineEnergy energy = new MachineEnergy(ENERGY_CAPACITY, ENERGY_MAX_RECEIVE);
+    private final IEnergyStorage energyView = new IEnergyStorage() {
+        @Override public int getEnergyStored() { return energy.getEnergyStored(); }
+        @Override public int getMaxEnergyStored() { return energy.getMaxEnergyStored(); }
+        @Override public int receiveEnergy(int amount, boolean simulate) { return 0; }
+        @Override public int extractEnergy(int amount, boolean simulate) { return 0; }
+        @Override public boolean canReceive() { return false; }
+        @Override public boolean canExtract() { return false; }
+    };
     private final NonNullList<ItemStack> legacyItems = NonNullList.withSize(27, ItemStack.EMPTY);
     private int processTicks;
     private Manufacturing.Batch activeBatch;
@@ -160,11 +168,16 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     }
 
     @Override public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> cap, EnumFacing side) {
-        return (cap == CapabilityEnergy.ENERGY && acceptsPower(side)) || super.hasCapability(cap, side);
+        if (cap == CapabilityEnergy.ENERGY) return !engine() && (side == null || acceptsPower(side));
+        return super.hasCapability(cap, side);
     }
     @Override @SuppressWarnings("unchecked")
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, EnumFacing side) {
-        if (cap == CapabilityEnergy.ENERGY && acceptsPower(side)) return (T) energy;
+        if (cap == CapabilityEnergy.ENERGY) {
+            if (!engine() && side == null) return CapabilityEnergy.ENERGY.cast(energyView);
+            if (acceptsPower(side)) return CapabilityEnergy.ENERGY.cast(energy);
+            return null;
+        }
         return super.getCapability(cap, side);
     }
 
