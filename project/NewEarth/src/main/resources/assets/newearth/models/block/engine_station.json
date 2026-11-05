@@ -6,7 +6,7 @@
     "front": "newearth:blocks/engine_station_front",
     "back": "newearth:blocks/engine_station_back",
     "west": "newearth:blocks/engine_station_side",
-    "east": "newearth:blocks/engine_station_port",
+    "east": "newearth:blocks/engine_station_side",
     "particle": "newearth:blocks/engine_station_side"
   },
   "elements": [
