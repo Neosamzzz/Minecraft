@@ -49,7 +49,6 @@ python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.j
 
 ### 材料与美术
 
-- [ ] 星际装配机图纸还没有专属贴图，物品栏仍是纸张。引擎升级台图纸同样没有专属贴图。
 - [ ] 补齐紫晶复合组件的独立美术图标，替换GS通用模块图标。
 
 ### 火箭操作与展示
