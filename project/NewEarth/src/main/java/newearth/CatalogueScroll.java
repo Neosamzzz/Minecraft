@@ -9,7 +9,12 @@ public final class CatalogueScroll {
     public int maximum() { return Math.max(0, contentHeight - viewportHeight); }
     public int rowY(int original) { return original - offset; }
     public void clamp() { offset = Math.max(0, Math.min(maximum(), offset)); }
-    public void wheel(int delta) { offset -= Integer.signum(delta) * 28; clamp(); }
+    public boolean wheel(int delta) {
+        int before = offset;
+        offset -= Integer.signum(delta) * 28;
+        clamp();
+        return offset != before;
+    }
     public int thumbHeight() {
         return Math.min(viewportHeight, Math.max(12, viewportHeight * viewportHeight / Math.max(1, contentHeight)));
     }

@@ -256,8 +256,12 @@ public final class SolarSystemProbe {
         CatalogueScroll scroll = new CatalogueScroll();
         scroll.contentHeight = 700; scroll.viewportHeight = 200;
         check(scroll.maximum() == 500, "Expanded catalogue overflow measured");
-        scroll.wheel(120); check(scroll.offset == 0, "Wheel clamps at first row");
-        scroll.wheel(-120); check(scroll.offset == 28, "Wheel moves two rows");
+        scroll.offset = 500;
+        check(!scroll.wheel(-120) && scroll.offset == 500, "Bottom boundary releases wheel input for map zoom");
+        check(scroll.wheel(120) && scroll.offset == 472, "Reversing at bottom scrolls the catalogue");
+        scroll.offset = 0;
+        check(!scroll.wheel(120) && scroll.offset == 0, "Top boundary releases wheel input for map zoom");
+        check(scroll.wheel(-120) && scroll.offset == 28, "Scrollable catalogue consumes wheel and moves two rows");
         check(scroll.rowY(78) == 50 && scroll.rowY(92) == 64, "Drawing and hit tests use the same row offset");
         scroll.drag(10000); check(scroll.offset == 500, "Dragging reaches last row");
         check(scroll.thumbTop() + scroll.thumbHeight() == 200, "Scrollbar reaches bottom of track");
