@@ -52,6 +52,17 @@ public final class ManufacturingProbe {
         Manufacturing.Batch repeated=new Manufacturing.Batch("test",new ItemStack(Items.PAPER),Arrays.asList(new ItemStack(Items.IRON_INGOT,3),new ItemStack(Items.IRON_INGOT,3)));
         inv.setInventorySlotContents(2,ItemStack.EMPTY);
         check(repeated.debit(inv,18)==null,"Repeated ingredient cannot double spend a stack");
+        class GcCell extends net.minecraft.item.Item implements micdoodle8.mods.galacticraft.api.item.IItemElectric {
+            public float recharge(ItemStack s, float e, boolean d) { return 0; }
+            public float discharge(ItemStack s, float e, boolean d) { return 0; }
+            public float getElectricityStored(ItemStack s) { return 0; }
+            public float getMaxElectricityStored(ItemStack s) { return 0; }
+            public void setElectricity(ItemStack s, float j) { }
+            public float getTransfer(ItemStack s) { return 0; }
+            public int getTierGC(ItemStack s) { return 1; }
+        }
+        check(ManufacturingTile.battery(new ItemStack(new GcCell())),"Material station accepts a GC electric item");
+        check(!ManufacturingTile.battery(new ItemStack(Items.STICK)),"Plain items are not batteries");
         check(ManufacturingTile.powerSide(net.minecraft.util.EnumFacing.SOUTH) == net.minecraft.util.EnumFacing.WEST, "South front takes power from the player's left");
         check(ManufacturingTile.powerSide(net.minecraft.util.EnumFacing.NORTH) == net.minecraft.util.EnumFacing.EAST, "North front takes power from the player's left");
         net.minecraft.tileentity.TileEntity.register("newearth:manufacturing", ManufacturingTile.class);

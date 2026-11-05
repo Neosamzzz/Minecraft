@@ -38,10 +38,26 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     private Manufacturing.Batch activeBatch;
     private int status = STATUS_IDLE;
 
+    public static boolean battery(ItemStack stack) {
+        return !stack.isEmpty() && (stack.hasCapability(CapabilityEnergy.ENERGY, null)
+                || stack.getItem() instanceof micdoodle8.mods.galacticraft.api.item.IItemElectric);
+    }
+
     /** Drains an energy item in the battery slot into internal storage. */
     private void chargeFromBattery() {
+        if (engine()) return;
         ItemStack battery = inventory.get(BATTERY_SLOT);
-        if (battery.isEmpty() || !battery.hasCapability(CapabilityEnergy.ENERGY, null)) return;
+        if (battery.isEmpty()) return;
+        if (battery.getItem() instanceof micdoodle8.mods.galacticraft.api.item.IItemElectric) {
+            int room = Math.min(ENERGY_MAX_RECEIVE, energy.getMaxEnergyStored() - energy.getEnergyStored());
+            if (room <= 0) return;
+            float joules = room * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.RF_RATIO;
+            float got = micdoodle8.mods.galacticraft.api.item.ElectricItemHelper.dischargeItem(battery, joules);
+            int fe = Math.round(got * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.TO_RF_RATIO);
+            if (fe > 0 && energy.receiveEnergy(Math.min(fe, room), false) > 0) markDirty();
+            return;
+        }
+        if (!battery.hasCapability(CapabilityEnergy.ENERGY, null)) return;
         IEnergyStorage cap = battery.getCapability(CapabilityEnergy.ENERGY, null);
         if (cap == null || !cap.canExtract()) return;
         int moved = energy.receiveEnergy(cap.extractEnergy(ENERGY_MAX_RECEIVE, true), false);
@@ -218,7 +234,7 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     @Override public void closeInventory(EntityPlayer player) { }
     @Override public boolean isItemValidForSlot(int i, ItemStack s) {
         if (i < inputLimit()) return true;
-        return !engine() && i == BATTERY_SLOT && s.hasCapability(CapabilityEnergy.ENERGY, null);
+        return !engine() && i == BATTERY_SLOT && battery(s);
     }
     @Override public void clear() { inventory.clear(); markDirty(); }
     @Override public String getName() { return "tile.newearth." + (world == null ? "material_station" : world.getBlockState(pos).getBlock().getRegistryName().getPath()) + ".name"; }

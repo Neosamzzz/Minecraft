@@ -26,7 +26,7 @@ public final class ManufacturingContainer extends Container {
         });
         if (!tile.engine()) {
             addSlotToContainer(new Slot(tile, ManufacturingTile.BATTERY_SLOT, 77, 83) {
-                @Override public boolean isItemValid(ItemStack stack) { return stack.hasCapability(CapabilityEnergy.ENERGY, null); }
+                @Override public boolean isItemValid(ItemStack stack) { return ManufacturingTile.battery(stack); }
             });
         }
         for (int row = 0; row < 3; row++)
@@ -61,7 +61,7 @@ public final class ManufacturingContainer extends Container {
         int tileSlots = tile.engine() ? 3 : ManufacturingTile.SIZE;
         if (index < tileSlots) {
             if (!mergeItemStack(stack, tileSlots, inventorySlots.size(), true)) return ItemStack.EMPTY;
-        } else if (!tile.engine() && stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
+        } else if (!tile.engine() && ManufacturingTile.battery(stack)) {
             if (!mergeItemStack(stack, ManufacturingTile.INPUT_COUNT + 1, ManufacturingTile.INPUT_COUNT + 2, false)) return ItemStack.EMPTY;
         } else if (!mergeItemStack(stack, 0, tile.inputLimit(), false)) {
             return ItemStack.EMPTY;
