@@ -1,14 +1,9 @@
 package newearth;
 
-import java.util.ArrayList;
-import java.util.List;
 import micdoodle8.mods.galacticraft.api.prefab.entity.EntitySpaceshipBase;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 /**
  * Tier 10 multi-seat rocket (6 seats).
@@ -71,29 +66,6 @@ public class EntityTier10Rocket extends EntityTier9Rocket {
 
     @Override public void onReachAtmosphere() {
         if (arrivalHold) return;
-        if (newearth.dimension.EndDimension.isDestination(world)) { super.onReachAtmosphere(); return; }
-        if (world.isRemote) { stopRocketSound(); return; }
-        int target = newearth.dimension.EndDimension.destinationId();
-        if (target == 0 || !net.minecraftforge.common.DimensionManager.isDimensionRegistered(target)) return;
-        WorldServer destination = world.getMinecraftServer().getWorld(target);
-        if (destination == null) return;
-        List<Entity> crew = new ArrayList<>(getPassengers());
-        List<EntityPlayerMP> players = new ArrayList<>();
-        for (Entity passenger : crew) if (passenger instanceof EntityPlayerMP) players.add((EntityPlayerMP) passenger);
-        if (players.isEmpty()) return;
-        newearth.dimension.ArrivalSession.prepareCrew(destination, players);
-        EntityPlayerMP pilot = getDriver() instanceof EntityPlayerMP ? (EntityPlayerMP) getDriver() : players.get(0);
-        for (EntityPlayerMP player : players) onTeleport(player);
-        Entity moved = micdoodle8.mods.galacticraft.core.util.WorldUtil.transferEntityToDimension(pilot, target, destination, false, this);
-        if (moved == null || !(pilot.getRidingEntity() instanceof EntityTier10Rocket)) return;
-        EntityTier10Rocket ship = (EntityTier10Rocket) pilot.getRidingEntity();
-        for (Entity member : crew) if (member instanceof EntityPlayerMP && member != pilot) {
-            Entity transferred = micdoodle8.mods.galacticraft.core.util.WorldUtil.transferEntityToDimension(member, target, destination, false, null);
-            if (transferred != null) member.startRiding(ship, true);
-        }
-        pilot.dismountRidingEntity();
-        pilot.startRiding(ship, true);
-        ship.setWaitForPlayer(false);
-        ship.holdAbove(destination.getSpawnPoint(), destination.getActualHeight() - 4);
+        super.onReachAtmosphere();
     }
 }
