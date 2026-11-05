@@ -75,6 +75,17 @@ public final class ManufacturingProbe {
             check(tile.getField(0)==charge,"GUI energy sync preserves unsigned 16-bit charge "+charge);
         }
         Manufacturing.BATCHES.add(batch);
+        ManufacturingTile crafting=new ManufacturingTile();
+        crafting.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,8));
+        crafting.setField(0,8000);
+        for(int tick=0;tick<50;tick++)crafting.process("material_station");
+        ManufacturingTile resumed=new ManufacturingTile();
+        resumed.readFromNBT(crafting.writeToNBT(new net.minecraft.nbt.NBTTagCompound()));
+        check(resumed.getField(1)==50 && resumed.getField(0)==6000,"Processing progress and stored energy survive reload");
+        for(int tick=0;tick<149;tick++)resumed.process("material_station");
+        check(resumed.getStackInSlot(ManufacturingTile.OUTPUT_SLOT).isEmpty(),"Saved progress does not complete early");
+        resumed.process("material_station");
+        check(resumed.getStackInSlot(0).getCount()==4 && resumed.getStackInSlot(ManufacturingTile.OUTPUT_SLOT).getCount()==2,"Saved progress completes on the remaining tick");
         tile.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,8));
         tile.setInventorySlotContents(ManufacturingTile.OUTPUT_SLOT,new ItemStack(Items.GOLD_INGOT,64));
         tile.setField(0,8000);

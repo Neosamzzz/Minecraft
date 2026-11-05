@@ -115,7 +115,10 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
             int[] plan = batch.debit(this, limit);
             if (plan != null && outputFits(batch.output)) { match = batch; break; }
         }
-        if (activeBatch != match) { processTicks = 0; activeBatch = match; }
+        if (activeBatch != match) {
+            if (activeBatch != null) processTicks = 0;
+            activeBatch = match;
+        }
         int oldStatus = status;
         boolean powered = engine() || energy.getEnergyStored() >= ENERGY_PER_TICK;
         if (match == null) {
@@ -207,7 +210,7 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
             ItemStackHelper.loadAllItems(tag.getCompoundTag("LegacyInventory"), legacyItems);
         }
         energy.setEnergy(tag.getInteger("Energy"));
-        processTicks = 0;
+        processTicks = tag.getInteger("ProcessTicks");
         activeBatch = null;
     }
 
