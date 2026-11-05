@@ -1,8 +1,14 @@
 package newearth;
 
+import java.util.List;
+import micdoodle8.mods.galacticraft.api.entity.IRocketType.EnumRocketType;
+import micdoodle8.mods.galacticraft.api.item.IHoldableItem;
 import micdoodle8.mods.galacticraft.api.tile.IFuelDock;
 import micdoodle8.mods.galacticraft.core.GCFluids;
+import micdoodle8.mods.galacticraft.core.util.EnumColor;
+import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -12,8 +18,10 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemTier9Rocket extends Item {
+public class ItemTier9Rocket extends Item implements IHoldableItem {
     public ItemTier9Rocket() {
         setMaxStackSize(1);
         setHasSubtypes(true);
@@ -52,4 +60,23 @@ public class ItemTier9Rocket extends Item {
         }
         return EnumActionResult.FAIL;
     }
+
+    @Override public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (tab != getCreativeTab() && tab != CreativeTabs.SEARCH) return;
+        for (int i = 0; i < EnumRocketType.values().length; i++) items.add(new ItemStack(this, 1, i));
+    }
+
+    @Override @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag flag) {
+        EnumRocketType[] types = EnumRocketType.values();
+        EnumRocketType type = types[Math.max(0, Math.min(stack.getMetadata(), types.length - 1))];
+        if (!type.getTooltip().isEmpty()) tooltip.add(type.getTooltip());
+        if (type.getPreFueled()) tooltip.add(EnumColor.RED + "\u00a7o" + GCCoreUtil.translate("gui.creative_only.desc"));
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("RocketFuel"))
+            tooltip.add(GCCoreUtil.translate("gui.message.fuel.name") + ": " + stack.getTagCompound().getInteger("RocketFuel") + " / " + 1500);
+    }
+
+    @Override public boolean shouldHoldLeftHandUp(EntityPlayer player) { return true; }
+    @Override public boolean shouldHoldRightHandUp(EntityPlayer player) { return true; }
+    @Override public boolean shouldCrouch(EntityPlayer player) { return true; }
 }
