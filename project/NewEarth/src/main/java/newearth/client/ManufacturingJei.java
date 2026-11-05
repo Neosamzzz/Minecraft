@@ -55,7 +55,7 @@ public final class ManufacturingJei implements IModPlugin {
         final String id; final IDrawable background, slot;
         Category(String id, IGuiHelper helper) {
             this.id = id;
-            this.background = helper.createBlankDrawable(150, 66);
+            this.background = helper.createBlankDrawable(id.equals("material_station") ? 160 : 150, id.equals("material_station") ? 80 : 66);
             this.slot = helper.getSlotDrawable();
         }
         @Override public String getUid() { return "newearth." + id; }
@@ -63,17 +63,25 @@ public final class ManufacturingJei implements IModPlugin {
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
         @Override public void drawExtras(Minecraft mc) {
-            int inputs = id.equals("engine_station") ? 2 : 6;
-            int columns = id.equals("engine_station") ? 2 : 3;
-            for (int i = 0; i < inputs; i++) slot.draw(mc, (i % columns) * 20, (i / columns) * 20 + 10);
+            if (id.equals("material_station")) {
+                for (int i = 0; i < 9; i++) slot.draw(mc, 19 + (i % 3) * 18, 18 + (i / 3) * 18);
+                slot.draw(mc, 138, 36);
+                return;
+            }
+            for (int i = 0; i < 2; i++) slot.draw(mc, i * 20, 10);
             slot.draw(mc, 124, 20);
             mc.fontRenderer.drawString("→", 90, 25, 0x555555);
         }
         @Override public void setRecipe(IRecipeLayout layout, Wrapper wrapper, IIngredients ingredients) {
-            int columns = id.equals("engine_station") ? 2 : 3;
-            for (int i = 0; i < wrapper.batch.inputs.size(); i++)
-                layout.getItemStacks().init(i, true, (i % columns) * 20, (i / columns) * 20 + 10);
-            layout.getItemStacks().init(wrapper.batch.inputs.size(), false, 124, 20);
+            if (id.equals("material_station")) {
+                for (int i = 0; i < wrapper.batch.inputs.size(); i++)
+                    layout.getItemStacks().init(i, true, 19 + (i % 3) * 18, 18 + (i / 3) * 18);
+                layout.getItemStacks().init(wrapper.batch.inputs.size(), false, 138, 36);
+            } else {
+                for (int i = 0; i < wrapper.batch.inputs.size(); i++)
+                    layout.getItemStacks().init(i, true, i * 20, 10);
+                layout.getItemStacks().init(wrapper.batch.inputs.size(), false, 124, 20);
+            }
             layout.getItemStacks().set(ingredients);
         }
     }

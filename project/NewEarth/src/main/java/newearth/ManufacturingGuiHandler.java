@@ -32,7 +32,10 @@ public final class ManufacturingGuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
         TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
         if (id == MANUFACTURING_GUI_ID && te instanceof ManufacturingTile) {
-            return new newearth.client.ManufacturingGui(player.inventory, (ManufacturingTile) te);
+            ManufacturingTile station = (ManufacturingTile) te;
+            return station.engine()
+                    ? new newearth.client.ManufacturingGui(player.inventory, station)
+                    : new newearth.client.MaterialStationGui(player.inventory, station);
         }
         if (id == ASSEMBLY_GUI_ID && te instanceof AssemblyStationTile) {
             return new newearth.client.AssemblyStationGui(player.inventory, (AssemblyStationTile) te);

@@ -71,12 +71,14 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
 
     public int inputLimit() { return engine() ? 2 : INPUT_COUNT; }
 
-    /** Player's left while looking at the front. Only that face accepts power. */
+    /** Same side as GS's component assembler: the player's left while facing the front. */
+    static EnumFacing powerSide(EnumFacing front) { return front.rotateY(); }
+
     EnumFacing powerFace() {
         if (world == null) return null;
         IBlockState state = world.getBlockState(pos);
         if (!state.getPropertyKeys().contains(net.minecraft.block.BlockHorizontal.FACING)) return null;
-        return state.getValue(net.minecraft.block.BlockHorizontal.FACING).rotateYCCW();
+        return powerSide(state.getValue(net.minecraft.block.BlockHorizontal.FACING));
     }
 
     void process(String id) {

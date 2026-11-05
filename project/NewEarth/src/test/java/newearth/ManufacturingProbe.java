@@ -52,6 +52,8 @@ public final class ManufacturingProbe {
         Manufacturing.Batch repeated=new Manufacturing.Batch("test",new ItemStack(Items.PAPER),Arrays.asList(new ItemStack(Items.IRON_INGOT,3),new ItemStack(Items.IRON_INGOT,3)));
         inv.setInventorySlotContents(2,ItemStack.EMPTY);
         check(repeated.debit(inv,18)==null,"Repeated ingredient cannot double spend a stack");
+        check(ManufacturingTile.powerSide(net.minecraft.util.EnumFacing.SOUTH) == net.minecraft.util.EnumFacing.WEST, "South front takes power from the player's left");
+        check(ManufacturingTile.powerSide(net.minecraft.util.EnumFacing.NORTH) == net.minecraft.util.EnumFacing.EAST, "North front takes power from the player's left");
         net.minecraft.tileentity.TileEntity.register("newearth:manufacturing", ManufacturingTile.class);
         ManufacturingTile tile=new ManufacturingTile();
         ManufacturingContainer powerGui=new ManufacturingContainer(new net.minecraft.entity.player.InventoryPlayer(null),tile);

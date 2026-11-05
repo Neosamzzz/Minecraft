@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.relauncher.*;
 
-/** Slot layout mirrors ManufacturingGui: 3x3 input, output, battery, player inventory. */
+/** Material slots match GS ContainerAssembler. The engine station uses two inputs and no battery. */
 public final class ManufacturingContainer extends Container {
     private final ManufacturingTile tile;
     private int lastEnergy = -1, lastProgress = -1, lastStatus = -1;
