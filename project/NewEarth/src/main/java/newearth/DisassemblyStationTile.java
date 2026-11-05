@@ -13,7 +13,7 @@ import net.minecraft.util.NonNullList;
 
 /**
  * Disassembly Station Tile: 1 input (rocket) -> 10 outputs (parts).
- * Instant disassembly when recipe matches and outputs are empty.
+ * Disassembles when each part can stack into its output slot.
  */
 public class DisassemblyStationTile extends TileEntity implements ISidedInventory, ITickable {
     private static final int INPUT_SLOT = 0;
@@ -28,19 +28,27 @@ public class DisassemblyStationTile extends TileEntity implements ISidedInventor
 
     void process() {
         if (inventory.get(INPUT_SLOT).isEmpty()) return;
-        // Check outputs are empty
-        for (int i = OUTPUT_START; i < TOTAL_SLOTS; i++) {
-            if (!inventory.get(i).isEmpty()) return;
-        }
         ItemStack[] parts = findDisassembly(inventory.get(INPUT_SLOT));
-        if (parts == null) return;
-        // Consume input, produce outputs
+        if (parts == null || !outputsAccept(parts)) return;
         inventory.get(INPUT_SLOT).shrink(1);
         if (inventory.get(INPUT_SLOT).getCount() <= 0) inventory.set(INPUT_SLOT, ItemStack.EMPTY);
         for (int i = 0; i < parts.length && i < TOTAL_SLOTS - 1; i++) {
-            inventory.set(OUTPUT_START + i, parts[i].copy());
+            ItemStack dest = inventory.get(OUTPUT_START + i);
+            if (dest.isEmpty()) inventory.set(OUTPUT_START + i, parts[i].copy());
+            else dest.grow(parts[i].getCount());
         }
         markDirty();
+    }
+
+    private boolean outputsAccept(ItemStack[] parts) {
+        for (int i = 0; i < parts.length && i < TOTAL_SLOTS - 1; i++) {
+            ItemStack dest = inventory.get(OUTPUT_START + i);
+            ItemStack part = parts[i];
+            if (dest.isEmpty()) continue;
+            if (!ItemStack.areItemsEqual(dest, part) || !ItemStack.areItemStackTagsEqual(dest, part)) return false;
+            if (dest.getCount() + part.getCount() > dest.getMaxStackSize()) return false;
+        }
+        return true;
     }
 
     public static java.util.List<ItemStack> parts(ItemStack rocket) {
