@@ -26,12 +26,19 @@ public final class ManufacturingModels {
                         new ModelResourceLocation("galacticraftcore:rocket_workbench", "inventory"));
                 continue;
             }
-            int variants=item.getRegistryName().getPath().matches("tier(7|9|10)_rocket")?5:1;
+            String path = item.getRegistryName().getPath();
+            if (path.equals("tier9_rocket") || path.equals("tier10_rocket")) {
+                String model = path.equals("tier9_rocket") ? "extraplanets:rocket_t9" : "extraplanets:rocket_t10_new";
+                for (int meta = 0; meta < 5; meta++)
+                    ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(model, "inventory"));
+                continue;
+            }
+            int variants=path.equals("tier7_rocket")?5:1;
             for(int meta=0;meta<variants;meta++) ModelLoader.setCustomModelResourceLocation(item,meta,new ModelResourceLocation(item.getRegistryName(),"inventory"));
         }
     }
     @SubscribeEvent public static void bake(net.minecraftforge.client.event.ModelBakeEvent event) {
-        for (String name : new String[]{"tier7_rocket", "tier9_rocket", "tier10_rocket", "disassembly_station"}) {
+        for (String name : new String[]{"tier7_rocket", "disassembly_station"}) {
             boolean rocket = name.startsWith("tier");
             float scale = rocket ? .04F : .2F;
             net.minecraftforge.common.model.TRSRTransformation transform = new net.minecraftforge.common.model.TRSRTransformation(

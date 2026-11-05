@@ -1,11 +1,14 @@
 package newearth;
 
+import micdoodle8.mods.galacticraft.api.vector.Vector3;
+import micdoodle8.mods.galacticraft.core.GalacticraftCore;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 /**
  * Tier 10 multi-seat rocket (6 seats).
  * Same hull as T9, black hole engine.
- * Custom exhaust flame positions for the T10_new model.
+ * Exhaust uses ExtraPlanets' tier-10 launch flames.
  */
 public class EntityTier10Rocket extends EntityTier9Rocket {
     public EntityTier10Rocket(World world) { super(world); }
@@ -34,51 +37,59 @@ public class EntityTier10Rocket extends EntityTier9Rocket {
         setDead();
     }
 
-    /**
-     * Custom flame positions for T10_new model.
-     * Main nozzle at center + 4 side engines.
-     * Black hole theme: blue/purple flames instead of orange.
-     */
     @Override
     protected void spawnParticles(boolean launched) {
         if (this.isDead) return;
-        // T10_new nozzle offsets (relative to rocket center, in blocks)
-        double[][] nozzles = {
-            {0.0, 0.0},    // 主喷口
-            {1.2, 0.0},    // 右侧引擎
-            {-1.2, 0.0},   // 左侧引擎
-            {0.0, 1.2},    // 前侧引擎
-            {0.0, -1.2},   // 后侧引擎
-        };
-        double y = this.posY - 0.5;
-        // 黑洞主题：蓝紫色火焰 (R:0.3, G:0.5, B:1.0)
-        float r = 0.3F, g = 0.5F, b = 1.0F;
-        for (double[] n : nozzles) {
-            double x = this.posX + n[0];
-            double z = this.posZ + n[1];
-            if (launched) {
-                // 大火焰：更多粒子，更快下喷
-                for (int i = 0; i < 8; i++) {
-                    double ox = (rand.nextDouble() - 0.5) * 1.0;
-                    double oz = (rand.nextDouble() - 0.5) * 1.0;
-                    double oy = rand.nextDouble() * 0.3;
-                    // 蓝紫色火星
-                    world.spawnParticle(net.minecraft.util.EnumParticleTypes.REDSTONE,
-                        x + ox, y + oy, z + oz, r, g, b);
-                    // 高速下喷的烟（速度-2.0）
-                    world.spawnParticle(net.minecraft.util.EnumParticleTypes.SMOKE_LARGE,
-                        x + ox * 0.5, y + oy, z + oz * 0.5, 0, -2.0, 0);
-                    // 火焰粒子（有速度）
-                    if (rand.nextFloat() < 0.5) {
-                        world.spawnParticle(net.minecraft.util.EnumParticleTypes.FLAME,
-                            x + ox, y + oy, z + oz, 0, -1.5, 0);
-                    }
-                }
-            } else if (this.ticksExisted % 4 == 0) {
-                // 待命：偶尔冒个小火星
-                world.spawnParticle(net.minecraft.util.EnumParticleTypes.REDSTONE,
-                    x, y, z, r, g, b);
-            }
+        double sinPitch = Math.sin(Math.toRadians(this.rotationPitch));
+        double x1 = 3.2 * Math.cos(Math.toRadians(this.rotationYaw)) * sinPitch;
+        double z1 = 3.2 * Math.sin(Math.toRadians(this.rotationYaw)) * sinPitch;
+        double y1 = 3.2 * Math.cos(Math.toRadians(this.rotationPitch - 180));
+        if (this.launchPhase == micdoodle8.mods.galacticraft.api.prefab.entity.EntitySpaceshipBase.EnumLaunchPhase.LANDING.ordinal() && this.targetVec != null) {
+            double modifier = Math.max(this.posY - this.targetVec.getY(), 180.0);
+            x1 *= modifier / 200.0D;
+            y1 *= Math.min(modifier / 200.0D, 2.5D);
+            z1 *= modifier / 200.0D;
         }
+        double y2 = this.prevPosY + (this.posY - this.prevPosY) + y1 - 0.75 * this.motionY - 0.3 + 1.2D;
+        double x2 = this.posX + x1 + this.motionX;
+        double z2 = this.posZ + z1 + this.motionZ;
+        Vector3 motionVec = new Vector3(x1 + this.motionX, y1 + this.motionY, z1 + this.motionZ);
+        Vector3 d1 = new Vector3(y1 * 0.1D, -x1 * 0.1D, z1 * 0.1D).rotate(315 - this.rotationYaw, motionVec);
+        Vector3 d2 = new Vector3(x1 * 0.1D, -z1 * 0.1D, y1 * 0.1D).rotate(315 - this.rotationYaw, motionVec);
+        Vector3 d3 = new Vector3(-y1 * 0.1D, x1 * 0.1D, z1 * 0.1D).rotate(315 - this.rotationYaw, motionVec);
+        Vector3 d4 = new Vector3(x1 * 0.1D, z1 * 0.1D, -y1 * 0.1D).rotate(315 - this.rotationYaw, motionVec);
+        EntityLivingBase rider = this.getPassengers().isEmpty() || !(this.getPassengers().get(0) instanceof EntityLivingBase)
+                ? null : (EntityLivingBase) this.getPassengers().get(0);
+        Object[] riderArg = new Object[] { rider };
+        makeFlame(x2 + d1.x, y2 + d1.y, z2 + d1.z, motionVec.clone().translate(d1), launched, riderArg);
+        makeFlame(x2 + d2.x, y2 + d2.y, z2 + d2.z, motionVec.clone().translate(d2), launched, riderArg);
+        makeFlame(x2 + d3.x, y2 + d3.y, z2 + d3.z, motionVec.clone().translate(d3), launched, riderArg);
+        makeFlame(x2 + d4.x, y2 + d4.y, z2 + d4.z, motionVec.clone().translate(d4), launched, riderArg);
+    }
+
+    private void makeFlame(double x2, double y2, double z2, Vector3 motionVec, boolean launched, Object[] rider) {
+        if (launched) {
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2 + 0.4 - this.rand.nextDouble() / 10, y2, z2 + 0.4 - this.rand.nextDouble() / 10), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2 - 0.4 + this.rand.nextDouble() / 10, y2, z2 + 0.4 - this.rand.nextDouble() / 10), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2 - 0.4 + this.rand.nextDouble() / 10, y2, z2 - 0.4 + this.rand.nextDouble() / 10), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2 + 0.4 - this.rand.nextDouble() / 10, y2, z2 - 0.4 + this.rand.nextDouble() / 10), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2, y2, z2), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2 + 0.4, y2, z2), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2 - 0.4, y2, z2), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2, y2, z2 + 0.4D), motionVec, rider);
+            GalacticraftCore.proxy.spawnParticle("launchFlameLaunched", new Vector3(x2, y2, z2 - 0.4D), motionVec, rider);
+            return;
+        }
+        if (this.ticksExisted % 2 == 0) return;
+        y2 += 1.2D;
+        double x1 = motionVec.x, y1 = motionVec.y, z1 = motionVec.z;
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2 + 0.4 - this.rand.nextDouble() / 10, y2, z2 + 0.4 - this.rand.nextDouble() / 10), new Vector3(x1 + 0.5D, y1 - 0.3D, z1 + 0.5D), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2 - 0.4 + this.rand.nextDouble() / 10, y2, z2 + 0.4 - this.rand.nextDouble() / 10), new Vector3(x1 - 0.5D, y1 - 0.3D, z1 + 0.5D), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2 - 0.4 + this.rand.nextDouble() / 10, y2, z2 - 0.4 + this.rand.nextDouble() / 10), new Vector3(x1 - 0.5D, y1 - 0.3D, z1 - 0.5D), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2 + 0.4 - this.rand.nextDouble() / 10, y2, z2 - 0.4 + this.rand.nextDouble() / 10), new Vector3(x1 + 0.5D, y1 - 0.3D, z1 - 0.5D), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2 + 0.4, y2, z2), new Vector3(x1 + 0.8D, y1 - 0.3D, z1), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2 - 0.4, y2, z2), new Vector3(x1 - 0.8D, y1 - 0.3D, z1), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2, y2, z2 + 0.4D), new Vector3(x1, y1 - 0.3D, z1 + 0.8D), rider);
+        GalacticraftCore.proxy.spawnParticle("launchFlameIdle", new Vector3(x2, y2, z2 - 0.4D), new Vector3(x1, y1 - 0.3D, z1 - 0.8D), rider);
     }
 }
