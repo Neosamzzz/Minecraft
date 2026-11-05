@@ -207,6 +207,7 @@ public final class ManufacturingProbe {
         EntityTier9Rocket ship=new EntityTier9Rocket(null);
         check(ship.getMaxSeats()==6 && ship.getRocketTier()==9 && ship.fuelTank.getCapacity()==1500,"T9 concrete entity has six seats and a usable fuel tank");
         check(ship.getRotateOffset()==4.0F && ship.getOnPadYOffset()==0.8D && ship.getRenderOffsetY()==1.1F,"T9 uses the EP tier-9 pad height, camera pivot and model offset");
+        check(ItemTier9Rocket.placedY(ship,64D)==64D+0.4D+0.8D,"T9 placement adds the EP pad offset above the 0.4 base");
         net.minecraft.util.NonNullList<ItemStack> creative=net.minecraft.util.NonNullList.create();
         ItemTier9Rocket tier9Item=new ItemTier9Rocket();
         tier9Item.getSubItems(tier9Item.getCreativeTab(),creative);
@@ -226,6 +227,7 @@ public final class ManufacturingProbe {
         EntityTier10Rocket finalShip=new EntityTier10Rocket(null);
         check(finalShip.getRocketTier()==10 && finalShip.recoveredItem().getItem()==Manufacturing.ITEMS.get("tier10_rocket"),"T10 recovers its own item");
         check(finalShip.getRotateOffset()==5.8F && finalShip.getOnPadYOffset()==1.0D && finalShip.getRenderOffsetY()==1.1F,"T10 uses the EP tier-10 pad height, camera pivot and model offset");
+        check(ItemTier9Rocket.placedY(finalShip,64D)==64D+0.4D+1.0D,"T10 placement adds the EP pad offset above the 0.4 base");
         for(int meta=0;meta<4;meta++) {
             ship.setRocketType(meta);
             check(ship.recoveredItem().getMetadata()==meta,"Recovery preserves cargo variant "+meta);

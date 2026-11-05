@@ -30,6 +30,10 @@ public class ItemTier9Rocket extends Item implements IHoldableItem {
     protected EntityTier9Rocket createRocket(World world, double x, double y, double z) {
         return new EntityTier9Rocket(world, x, y, z);
     }
+    /** Same pad seat as EP and GC: the 0.4 block base, then the rocket's own pad offset. */
+    static double placedY(EntityTier9Rocket rocket, double padY) {
+        return padY + 0.4D + rocket.getOnPadYOffset();
+    }
     public static boolean completePad(String id, int meta) {
         return "galaxyspace:advanced_landing_pad_full".equals(id)
                 || ("galacticraftcore:landing_pad_full".equals(id) && meta == 0);
@@ -46,6 +50,7 @@ public class ItemTier9Rocket extends Item implements IHoldableItem {
             TileEntity tile = world.getTileEntity(center);
             if (!(tile instanceof IFuelDock) || ((IFuelDock)tile).getDockedEntity() != null) continue;
             EntityTier9Rocket rocket = createRocket(world, center.getX() + .5D, center.getY() + .4D, center.getZ() + .5D);
+            rocket.setPosition(rocket.posX, placedY(rocket, center.getY()), rocket.posZ);
             if (!rocket.isDockValid((IFuelDock)tile)) continue;
             rocket.setRocketType(stack.getMetadata());
             rocket.rotationYaw = player.rotationYaw + 45F;
