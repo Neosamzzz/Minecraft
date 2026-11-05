@@ -8,24 +8,27 @@ import net.minecraft.item.ItemStack;
 
 /**
  * Container for Disassembly Station.
- * 1 input slot (rocket) + 9 output slots (parts in 3x3 grid).
+ * Rocket in the result slot. Parts come out in the same order as assembly.
  */
 public class DisassemblyStationContainer extends Container {
+    public static final int[] ROCKET_POS = {174, 87};
+    public static final int[][] PART_POS = {
+        {40, 25}, {40, 55}, {40, 85},
+        {16, 90}, {64, 90},
+        {16, 120}, {64, 120},
+        {40, 110},
+        {130, 35}, {100, 35}
+    };
     private final DisassemblyStationTile tile;
 
     public DisassemblyStationContainer(InventoryPlayer playerInv, DisassemblyStationTile tile) {
         this.tile = tile;
 
-        // Rocket goes in the GS result slot. Parts come out in the part slots.
-        addSlotToContainer(new Slot(tile, 0, 174, 87));
+        // Same order as AssemblyStationTile.inputs: nose, bodies, boosters, fins, engine, module, blueprint.
+        addSlotToContainer(new Slot(tile, 0, ROCKET_POS[0], ROCKET_POS[1]));
 
-        int[][] partSlots = {
-            {40, 25}, {40, 55}, {40, 85}, {40, 110},
-            {16, 90}, {64, 90}, {16, 120}, {64, 120},
-            {100, 35}, {130, 35}
-        };
-        for (int i = 0; i < partSlots.length; i++) {
-            int x = partSlots[i][0], y = partSlots[i][1];
+        for (int i = 0; i < PART_POS.length; i++) {
+            int x = PART_POS[i][0], y = PART_POS[i][1];
             addSlotToContainer(new Slot(tile, 1 + i, x, y) {
                 @Override public boolean isItemValid(ItemStack stack) { return false; }
             });

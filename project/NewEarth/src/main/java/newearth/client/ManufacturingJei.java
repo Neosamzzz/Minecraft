@@ -156,25 +156,25 @@ public final class ManufacturingJei implements IModPlugin {
     private static final class DisassemblyCategory implements IRecipeCategory<DisassemblyWrapper> {
         final IDrawable background, slot;
         DisassemblyCategory(IGuiHelper helper) {
-            this.background = helper.createBlankDrawable(180, 80);
-            this.slot = helper.getSlotDrawable();
+            this.background = helper.createDrawable(AssemblyStationGui.TEXTURE, 0, 0, 204, 150);
+            this.slot = helper.createDrawable(AssemblyStationGui.TEXTURE, 204, 75, 20, 20);
         }
         @Override public String getUid() { return "newearth.disassembly_station"; }
         @Override public String getTitle() { return Manufacturing.own("disassembly_station").getDisplayName(); }
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
         @Override public void drawExtras(Minecraft mc) {
-            slot.draw(mc, 10, 40); // input
-            for (int i = 0; i < 10; i++) {
-                slot.draw(mc, (i % 5) * 18 + 80, (i / 5) * 18 + 10);
-            }
-            mc.fontRenderer.drawString("→", 55, 45, 0x555555);
+            int[] rocket = newearth.DisassemblyStationContainer.ROCKET_POS;
+            slot.draw(mc, rocket[0] - 2, rocket[1] - 2);
+            for (int[] pos : newearth.DisassemblyStationContainer.PART_POS)
+                slot.draw(mc, pos[0] - 2, pos[1] - 2);
         }
         @Override public void setRecipe(IRecipeLayout layout, DisassemblyWrapper wrapper, IIngredients ingredients) {
-            layout.getItemStacks().init(0, true, 10, 40);
-            for (int i = 0; i < 10; i++) {
-                layout.getItemStacks().init(1 + i, false, (i % 5) * 18 + 80, (i / 5) * 18 + 10);
-            }
+            int[] rocket = newearth.DisassemblyStationContainer.ROCKET_POS;
+            layout.getItemStacks().init(0, true, rocket[0] - 1, rocket[1] - 1);
+            int[][] parts = newearth.DisassemblyStationContainer.PART_POS;
+            for (int i = 0; i < parts.length; i++)
+                layout.getItemStacks().init(1 + i, false, parts[i][0] - 1, parts[i][1] - 1);
             layout.getItemStacks().set(ingredients);
         }
     }
