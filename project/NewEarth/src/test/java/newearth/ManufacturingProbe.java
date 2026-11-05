@@ -228,6 +228,8 @@ public final class ManufacturingProbe {
         check(ManufacturingHooks.blueprint("com.mjr.extraplanets.planets.Uranus.WorldProviderUranus").equals("blueprint_engine_station"),"Uranus unlocks the engine station");
         check("blueprint_plasma".equals(ManufacturingHooks.blueprint("galaxyspace.systems.BarnardsSystem.moons.barnarda_c1.dimension.WorldProviderBarnarda_C1_WE")),"C1 actual provider grants plasma blueprint");
         check(ManufacturingHooks.blueprint("galaxyspace.systems.SolarSystem.moons.io.dimension.WorldProviderIo")==null,"Shared chest tier never grants EP blueprint to GS Io");
+        check(ManufacturingHooks.licenseMeta("blueprint_t4")==8 && ManufacturingHooks.licenseMeta("blueprint_t5")==9 && ManufacturingHooks.licenseMeta("blueprint_t6")==10,"Tier 4/5/6 dungeons grant the GS rocket licences");
+        check(ManufacturingHooks.licenseMeta("blueprint_t7")<0,"Later blueprints stay NewEarth items");
         JsonArray recipes=new JsonParser().parse(new InputStreamReader(ManufacturingProbe.class.getResourceAsStream("/assets/newearth/manufacturing.json"),"UTF-8")).getAsJsonArray();
         check(recipes.size()>=34,"Complete manufacturing recipe data");
         Set<String> machines=new HashSet<>();
