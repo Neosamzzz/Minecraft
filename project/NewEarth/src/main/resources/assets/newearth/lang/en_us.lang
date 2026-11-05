@@ -103,6 +103,9 @@ item.newearth.tier9_rocket.name=Tier 9 Rocket
 tile.newearth.disassembly_station.name=Disassembly Station
 
 item.newearth.final_energy_core.name=Final Energy Core
+item.wafer.diamond_wafer.name=Amethyst Wafer
+item.newearth.amethyst_wafer.name=Amethyst Wafer
+item.newearth.amethyst_wafer.desc=Made from an amethyst ingot in the circuit fabricator, used for amethyst components.
 gui.module.ion_engine=Ion Engine
 gui.module.ion_engine.desc=Ion propulsion for the tier 6 rocket.
 gui.module.passive=Passive module

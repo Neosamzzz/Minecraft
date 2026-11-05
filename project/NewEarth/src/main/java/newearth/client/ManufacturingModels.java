@@ -55,7 +55,10 @@ public final class ManufacturingModels {
         net.minecraft.item.ItemStack stack=event.getItemStack();
         if("extraplanets:wafer".equals(String.valueOf(stack.getItem().getRegistryName())) && stack.getMetadata()==0) {
             String unused=net.minecraft.client.resources.I18n.format("currently.unused.name");
-            event.getToolTip().removeIf(line -> unused.equals(net.minecraft.util.text.TextFormatting.getTextWithoutFormattingCodes(line)));
+            java.util.List<String> tip=event.getToolTip();
+            tip.removeIf(line -> unused.equals(net.minecraft.util.text.TextFormatting.getTextWithoutFormattingCodes(line)));
+            if(!tip.isEmpty()) tip.set(0, net.minecraft.client.resources.I18n.format("item.newearth.amethyst_wafer.name"));
+            tip.add(net.minecraft.client.resources.I18n.format("item.newearth.amethyst_wafer.desc"));
         }
     }
 }

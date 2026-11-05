@@ -103,6 +103,9 @@ item.newearth.tier10_rocket.name=十阶火箭
 tile.newearth.disassembly_station.name=拆解台
 
 item.newearth.final_energy_core.name=最终能源核心
+item.wafer.diamond_wafer.name=紫晶晶圆
+item.newearth.amethyst_wafer.name=紫晶晶圆
+item.newearth.amethyst_wafer.desc=电路制造机用紫晶锭制作，用于紫晶复合组件。
 gui.module.ion_engine=离子引擎
 gui.module.ion_engine.desc=六阶火箭的离子推进。
 gui.module.passive=被动模块
