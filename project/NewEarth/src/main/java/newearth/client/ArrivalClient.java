@@ -47,6 +47,12 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
             ArrivalDistantLoading.stop();
             return;
         }
+        if (mc.world != null && EndDimension.isDestination(mc.world)) {
+            // GC waits for downward motion to close this screen, while arrival holds the player aloft.
+            net.minecraft.client.gui.GuiScreen legacy = micdoodle8.mods.galacticraft.core.tick.TickHandlerClient.teleportingGui;
+            micdoodle8.mods.galacticraft.core.tick.TickHandlerClient.teleportingGui = null;
+            if (legacy != null && mc.currentScreen == legacy) mc.displayGuiScreen(null);
+        }
         if (pending != null && mc.world != null && mc.player != null && mc.player.dimension == pending.dimension) {
             ArrivalNetwork.State state = pending;
             pending = null;

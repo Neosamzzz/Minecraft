@@ -24,6 +24,13 @@ public final class CatalogueHooks {
     private static final Field PARENT = field("selectedParent"), BODY = field("selectedBody"),
             ANIMATION = field("animateGrandchildren"), BORDER = field("BORDER_SIZE"), EDGE = field("BORDER_EDGE_SIZE"), VIEW = field("viewState");
     private static final Method ZOOMED = method("isZoomed"), CHILDREN = method("getChildren", Object.class);
+    private static final int WHEEL_UNITS = wheelUnits();
+    private static int wheelUnits() {
+        try {
+            Class.forName("org.lwjglx.input.Mouse", false, CatalogueHooks.class.getClassLoader());
+            return 1;
+        } catch (ClassNotFoundException ignored) { return 120; }
+    }
     private CatalogueHooks() { }
 
     private static final class State {
@@ -84,8 +91,8 @@ public final class CatalogueHooks {
         State s = state(gui);
         if (insideDetails(s, s.x, s.y) && s.details.wheel(delta)) return 0;
         if (inside(s, s.x, s.y) && s.scroll.wheel(delta)) return 0;
-        // GC divides overview wheel input by 500, then scales it down again by 10.
-        return delta * 4;
+        // Cleanroom reports notches, whereas LWJGL 2 reports about 120 units per notch.
+        return CatalogueScroll.zoomWheel(delta, WHEEL_UNITS);
     }
 
     public static boolean click(Object gui, int x, int y, int button) {

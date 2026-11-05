@@ -272,6 +272,9 @@ public final class SolarSystemProbe {
     }
 
     private static void checkCatalogue() {
+        check(CatalogueScroll.zoomWheel(1, 1) == CatalogueScroll.zoomWheel(120, 120), "Cleanroom and LWJGL 2 notches produce equal zoom input");
+        check(CatalogueScroll.zoomWheel(-1, 1) == -600 && CatalogueScroll.zoomWheel(0, 1) == 0, "Zoom normalization preserves direction and idle input");
+        check(CatalogueScroll.zoomWheel(3, 1) == 1800 && CatalogueScroll.zoomWheel(360, 120) == 1800, "Multiple wheel notches retain their full zoom distance");
         CatalogueScroll scroll = new CatalogueScroll();
         scroll.contentHeight = 700; scroll.viewportHeight = 200;
         check(scroll.maximum() == 500, "Expanded catalogue overflow measured");

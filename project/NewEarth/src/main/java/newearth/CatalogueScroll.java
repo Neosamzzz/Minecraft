@@ -6,6 +6,11 @@ public final class CatalogueScroll {
     public int contentHeight;
     public int viewportHeight;
 
+    public static int zoomWheel(int delta, int unitsPerNotch) {
+        long scaled = Math.round((double) delta * 600 / unitsPerNotch);
+        return (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, scaled));
+    }
+
     public int maximum() { return Math.max(0, contentHeight - viewportHeight); }
     public int rowY(int original) { return original - offset; }
     public void clamp() { offset = Math.max(0, Math.min(maximum(), offset)); }
