@@ -38,6 +38,10 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
     private Manufacturing.Batch activeBatch;
     private int status = STATUS_IDLE;
 
+    static int forgeEnergyFromJoules(float joules) {
+        return Math.max(0, Math.round(joules * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.TO_RF_RATIO));
+    }
+
     public static boolean battery(ItemStack stack) {
         return !stack.isEmpty() && (stack.hasCapability(CapabilityEnergy.ENERGY, null)
                 || stack.getItem() instanceof micdoodle8.mods.galacticraft.api.item.IItemElectric);
@@ -51,10 +55,15 @@ public final class ManufacturingTile extends TileEntityLockable implements ITick
         if (battery.getItem() instanceof micdoodle8.mods.galacticraft.api.item.IItemElectric) {
             int room = Math.min(ENERGY_MAX_RECEIVE, energy.getMaxEnergyStored() - energy.getEnergyStored());
             if (room <= 0) return;
-            float joules = room * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.RF_RATIO;
-            float got = micdoodle8.mods.galacticraft.api.item.ElectricItemHelper.dischargeItem(battery, joules);
-            int fe = Math.round(got * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.TO_RF_RATIO);
-            if (fe > 0 && energy.receiveEnergy(Math.min(fe, room), false) > 0) markDirty();
+            micdoodle8.mods.galacticraft.api.item.IItemElectric electric =
+                    (micdoodle8.mods.galacticraft.api.item.IItemElectric) battery.getItem();
+            float limit = Math.min(electric.getMaxElectricityStored(battery),
+                    room * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.RF_RATIO);
+            int fe = Math.min(room, forgeEnergyFromJoules(electric.discharge(battery, limit, false)));
+            if (fe <= 0) return;
+            float taken = electric.discharge(battery, fe * micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.RF_RATIO, true);
+            int stored = Math.min(room, forgeEnergyFromJoules(taken));
+            if (stored > 0 && energy.receiveEnergy(stored, false) > 0) markDirty();
             return;
         }
         if (!battery.hasCapability(CapabilityEnergy.ENERGY, null)) return;

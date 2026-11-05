@@ -62,6 +62,8 @@ public final class ManufacturingProbe {
             public int getTierGC(ItemStack s) { return 1; }
         }
         check(ManufacturingTile.battery(new ItemStack(new GcCell())),"Material station accepts a GC electric item");
+        check(ManufacturingTile.forgeEnergyFromJoules(0F)==0,"A GC battery is not drained when it converts to no FE");
+        check(ManufacturingTile.forgeEnergyFromJoules(micdoodle8.mods.galacticraft.core.energy.EnergyConfigHandler.RF_RATIO)==1,"One RF of Galacticraft energy becomes one FE");
         check(!ManufacturingTile.battery(new ItemStack(Items.STICK)),"Plain items are not batteries");
         check(ManufacturingTile.powerSide(net.minecraft.util.EnumFacing.SOUTH) == net.minecraft.util.EnumFacing.WEST, "South front takes power from the player's left");
         check(ManufacturingTile.powerSide(net.minecraft.util.EnumFacing.NORTH) == net.minecraft.util.EnumFacing.EAST, "North front takes power from the player's left");
