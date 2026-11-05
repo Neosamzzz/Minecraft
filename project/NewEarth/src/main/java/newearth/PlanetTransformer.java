@@ -119,6 +119,16 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 }
                 changes++;
             }
+            if (world && m.name.equals("getArrayOfPossibleDimensions")) {
+                int returns = 0;
+                for (AbstractInsnNode i : m.instructions.toArray()) if (i.getOpcode() == ARETURN) {
+                    InsnList hook = new InsnList(); hook.add(new InsnNode(DUP)); hook.add(new VarInsnNode(ALOAD, 1));
+                    hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "addEndDestination", "(Ljava/util/HashMap;Ljava/lang/Object;)V", false));
+                    m.instructions.insertBefore(i, hook); returns++;
+                }
+                if (returns != 1) throw new IllegalStateException("Unsupported GC destination map returns " + returns);
+                changes++;
+            }
             if (world && m.name.equals("transferEntityToDimension") && Type.getArgumentTypes(m.desc).length == 5) {
                 InsnList hook = new InsnList(); LabelNode proceed = new LabelNode();
                 hook.add(new VarInsnNode(ALOAD, 0)); hook.add(new VarInsnNode(ILOAD, 1)); hook.add(new VarInsnNode(ALOAD, 4));
@@ -127,7 +137,7 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 m.instructions.insert(hook); changes++;
             }
         }
-        int expected = gui ? 6 : epGui ? 2 : world ? 2 : 1;
+        int expected = gui ? 6 : epGui ? 2 : world ? 3 : 1;
         if (changes != expected) throw new IllegalStateException("Unsupported solar-system patch target " + n + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         c.accept(writer);

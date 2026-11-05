@@ -131,6 +131,17 @@ public final class PlanetHooks {
         return result;
     }
 
+    public static void addEndDestination(java.util.HashMap<String, Integer> destinations, Object player) {
+        CelestialBody body = GalaxyRegistry.getRegisteredPlanets().get(newearth.dimension.EndDimension.BODY_NAME);
+        if (body == null) return;
+        int target = body.getDimensionID();
+        // GC omits non-GC providers when converting the allowed IDs into the client map.
+        if (newearth.dimension.EndDimension.isDestinationId(target)
+                && newearth.dimension.EndDimension.canTravel(player)
+                && net.minecraftforge.common.DimensionManager.isDimensionRegistered(target))
+            destinations.put(body.getName(), target);
+    }
+
     public static boolean allowTransfer(Object entity, int destination, Object rocket) {
         if (newearth.dimension.EndDimension.isDestinationId(destination))
             return rocket instanceof EntityTier10Rocket || entity instanceof EntityTier10Rocket

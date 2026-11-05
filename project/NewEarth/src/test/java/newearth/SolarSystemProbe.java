@@ -155,6 +155,15 @@ public final class SolarSystemProbe {
                         new Analyzer<>(new BasicVerifier()).analyze(node.name, method);
                 }
                 check(true, "Installed bytecode dataflow valid: " + name);
+                if (name.endsWith("WorldUtil")) {
+                    int mapHooks = 0;
+                    for (MethodNode method : node.methods) if (method.name.equals("getArrayOfPossibleDimensions"))
+                        for (AbstractInsnNode instruction : method.instructions.toArray()) if (instruction instanceof MethodInsnNode) {
+                            MethodInsnNode call = (MethodInsnNode) instruction;
+                            if (call.owner.equals("newearth/PlanetHooks") && call.name.equals("addEndDestination")) mapHooks++;
+                        }
+                    check(mapHooks == 1, "Allowed OTG destination survives GC client-map conversion");
+                }
                 if (name.endsWith("GuiCelestialSelection") || name.endsWith("CustomCelestialSelection")) checkMapPatch(node);
                 if (name.endsWith("WorldProviderNeptune") || name.endsWith("WorldProviderPluto") || name.endsWith("WorldProviderEris"))
                     executeGate(node);
