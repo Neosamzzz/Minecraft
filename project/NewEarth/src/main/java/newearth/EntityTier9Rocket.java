@@ -36,9 +36,9 @@ public class EntityTier9Rocket extends EntityMultiSeatRocket {
     @Override public int getMaxSeats() { return 6; }
     @Override public int getRocketTier() { return 9; }
     @Override public double getYOffset() { return 1.5D; }
-    @Override public float getRotateOffset() { return 1.5F; }
-    @Override public double getOnPadYOffset() { return 0D; }
-    @Override public float getRenderOffsetY() { return -1F; }
+    @Override public float getRotateOffset() { return 4.0F; }
+    @Override public double getOnPadYOffset() { return 0.8D; }
+    @Override public float getRenderOffsetY() { return 1.1F; }
     @Override public float getCameraZoom() { return 15F; }
     @Override public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
         if (hand != EnumHand.MAIN_HAND) return false;

@@ -25,6 +25,8 @@ public class EntityTier10Rocket extends EntityTier9Rocket {
     public EntityTier10Rocket(World world) { super(world); }
     public EntityTier10Rocket(World world, double x, double y, double z) { super(world, x, y, z); }
     @Override public int getRocketTier() { return 10; }
+    @Override public float getRotateOffset() { return 5.8F; }
+    @Override public double getOnPadYOffset() { return 1.0D; }
     @Override protected String itemId() { return "tier10_rocket"; }
 
     /** Pin the hull, with whoever is still aboard, until the arrival session moves or releases it. */
