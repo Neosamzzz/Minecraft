@@ -28,6 +28,7 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
     public static void register() {
         RenderingRegistry.registerEntityRenderingHandler(EntityTier9Rocket.class, manager -> new RocketRenderer(manager, "rocket_t9", false));
         RenderingRegistry.registerEntityRenderingHandler(EntityTier10Rocket.class, manager -> new RocketRenderer(manager, "rocket_t10_new", true));
+        RenderingRegistry.registerEntityRenderingHandler(newearth.EntityTier7Rocket.class, Tier7Renderer::new);
     }
 
     private RocketRenderer(RenderManager manager, String registryName, boolean tier10) {

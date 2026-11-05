@@ -39,6 +39,13 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
                 m.instructions.insert(hook);changes++;
             }
             if(item && m.name.equals("placeRocketOnPad")) {
+                for(AbstractInsnNode i:m.instructions.toArray()) if(i instanceof MethodInsnNode && ((MethodInsnNode)i).name.equals("<init>") && ((MethodInsnNode)i).owner.equals("galaxyspace/core/prefab/entities/EntityTier6Rocket") && ((MethodInsnNode)i).desc.startsWith("(Lnet/minecraft/world/World;DDD")) {
+                    InsnList hook=new InsnList();hook.add(new VarInsnNode(ALOAD,1));
+                    hook.add(new MethodInsnNode(INVOKESTATIC,H,"swapIfTier7","(Lnet/minecraft/entity/Entity;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/entity/Entity;",false));
+                    m.instructions.insert(i,hook);changes++;
+                }
+            }
+            if(item && m.name.equals("placeRocketOnPad")) {
                 int found=0;
                 for(AbstractInsnNode i:m.instructions.toArray()) if(i instanceof MethodInsnNode && (((MethodInsnNode)i).name.equals("spawnEntity")||((MethodInsnNode)i).name.equals("func_72838_d"))) {
                     // Stack is World,Entity. Leave both operands for the original call.

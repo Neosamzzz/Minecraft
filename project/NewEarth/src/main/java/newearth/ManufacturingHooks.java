@@ -115,6 +115,13 @@ public final class ManufacturingHooks {
             return stack.getTagCompound().getBoolean((String)type.getMethod("getName").invoke(engine));
         } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
     }
+    public static Entity swapIfTier7(Entity created, ItemStack stack) {
+        if (stack == null || stack.isEmpty() || !tier7(stack.getItem())) return created;
+        if (!(created instanceof galaxyspace.core.prefab.entities.EntityTier6Rocket)) return created;
+        galaxyspace.core.prefab.entities.EntityTier6Rocket old = (galaxyspace.core.prefab.entities.EntityTier6Rocket) created;
+        return new EntityTier7Rocket(created.world, old.posX, old.posY, old.posZ, old.getType());
+    }
+
     public static void placed(Entity entity, ItemStack stack) { entity.getEntityData().setBoolean(T7,tier7(stack.getItem())); }
     public static int rocketTier(Entity entity) {
         if(!entity.getEntityData().getBoolean(T7)) return 6;
