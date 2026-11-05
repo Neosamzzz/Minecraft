@@ -188,7 +188,7 @@ public final class PlanetHooks {
         String id = String.valueOf(item.getRegistryName());
         if (tier == 6) return id.equals("galaxyspace:rocket_tier_6") && stack.hasTagCompound()
                 && stack.getTagCompound().getBoolean(ionKey());
-        if (tier == 7) return ManufacturingHooks.readyStack(stack);
+        if (tier == 7) return ManufacturingHooks.tier7(item);
         return (tier == 9 && id.equals("newearth:tier9_rocket"))
                 || (tier == 10 && id.equals("newearth:tier10_rocket"));
     }

@@ -90,7 +90,6 @@ jar {
 
 // Compile the existing GS matcher as a test input rather than duplicate its behavior.
 compileTestJava.source('../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/AssemblyRecipes.java')
-compileTestJava.source('../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/overworld/recipes/RocketAssemblyRecipes.java')
 tasks.register('progressionCheck', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.runtimeClasspath

@@ -507,54 +507,6 @@
     ]
   },
   {
-    "machine": "RocketAssemblyRecipes",
-    "output": {
-      "item": "newearth:tier7_rocket",
-      "count": 1
-    },
-    "inputs": [
-      {
-        "item": "newearth:nose_cone",
-        "count": 1
-      },
-      {
-        "item": "newearth:rocket_body",
-        "count": 1
-      },
-      {
-        "item": "newearth:rocket_body",
-        "count": 1
-      },
-      {
-        "item": "newearth:booster",
-        "count": 1
-      },
-      {
-        "item": "newearth:booster",
-        "count": 1
-      },
-      {
-        "item": "newearth:fin",
-        "count": 1
-      },
-      {
-        "item": "newearth:fin",
-        "count": 1
-      },
-      {
-        "item": "newearth:blueprint_t7",
-        "count": 1
-      },
-      {
-        "item": "newearth:rocket_engine"
-      },
-      {
-        "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
-        "meta": 6
-      }
-    ]
-  },
-  {
     "machine": "material_station",
     "output": {
       "item": "newearth:connector",

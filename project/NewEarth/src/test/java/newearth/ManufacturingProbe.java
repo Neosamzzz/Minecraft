@@ -13,7 +13,6 @@ import org.objectweb.asm.tree.analysis.*;
 
 /** Transactional material debits and installed GS/EP bytecode compatibility. */
 public final class ManufacturingProbe {
-    public static final class AssemblyFixture {public final InventoryBasic rocketCraftMatrix=new InventoryBasic("assembly",false,16);}
     private static int checks;
     private static void check(boolean value,String message) {if(!value)throw new AssertionError(message);checks++;}
     static void run() throws Exception {
@@ -30,20 +29,6 @@ public final class ManufacturingProbe {
         net.minecraft.item.Item seven=new net.minecraft.item.Item().setRegistryName("newearth:tier7_rocket");
         check(ManufacturingHooks.moduleType(six).equals("IonEngine"),"T6 modification table permits ion only");
         check(ManufacturingHooks.moduleType(seven).equals("SublightEngine"),"T7 modification table permits sublight only");
-        AssemblyFixture fixture=new AssemblyFixture();
-        net.minecraft.inventory.Container container=new net.minecraft.inventory.Container(){@Override public boolean canInteractWith(net.minecraft.entity.player.EntityPlayer player){return true;}};
-        net.minecraft.inventory.Slot prior=new net.minecraft.inventory.Slot(fixture.rocketCraftMatrix,4,40,85);
-        container.inventorySlots.add(prior);container.inventoryItemStacks.add(ItemStack.EMPTY);
-        ManufacturingHooks.assemblyContainer(container,fixture);
-        net.minecraft.inventory.Slot central=container.inventorySlots.get(1);
-        check(central.getSlotIndex()==14 && central.inventory==fixture.rocketCraftMatrix,"Central engine uses the existing spare matrix index");
-        check(prior.yPos==75 && central.yPos==100,"Body and central engine slots do not overlap");
-        net.minecraft.item.Item modules=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_modules").setHasSubtypes(true);
-        check(central.isItemValid(new ItemStack(modules,1,6)),"Central engine accepts sublight module");
-        check(central.isItemValid(new ItemStack(modules,1,5)),"Central engine accepts plasma module");
-        check(central.isItemValid(new ItemStack(modules,1,7)),"Central engine accepts black hole module");
-        check(central.getSlotStackLimit()==1,"Central engine takes a single module");
-        check(!central.isItemValid(new ItemStack(modules,1,4)),"Central engine rejects ion module");
         InventoryBasic inv=new InventoryBasic("test",false,27);
         inv.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,2));
         inv.setInventorySlotContents(1,new ItemStack(Items.IRON_INGOT,3));
@@ -141,6 +126,7 @@ public final class ManufacturingProbe {
         Manufacturing.BATCHES.clear();
         for (String id : Manufacturing.PARTS) registerPart(id);
         registerPart("tier7_rocket");registerPart("tier9_rocket");registerPart("tier10_rocket");
+        net.minecraft.item.Item modules=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_modules").setHasSubtypes(true);
         if (!net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.containsKey(modules.getRegistryName()))
             net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.register(modules);
         net.minecraft.tileentity.TileEntity.register("newearth:assembly_station",AssemblyStationTile.class);
@@ -188,7 +174,7 @@ public final class ManufacturingProbe {
             check(!station.process(),"Completed assembly cannot duplicate its output");
             ItemStack rocket=station.getStackInSlot(AssemblyStationTile.OUTPUT_SLOT);
             check(rocket.getItem()==Manufacturing.ITEMS.get("tier"+tier+"_rocket"),"Assembly preserves exact tier item");
-            if(tier==7)check(ManufacturingHooks.readyStack(rocket),"T7 assembled with sublight is ready for flight");
+            if(tier==7)check(ManufacturingHooks.hasSublightModule(rocket),"T7 assembly installs the supplied module");
             for(int slot=0;slot<inputs.size();slot++)station.setInventorySlotContents(slot,inputs.get(slot).copy());
             check(!station.process() && station.getField(0)==0,"Occupied output prevents a second processing cycle");
             for(int slot=0;slot<inputs.size();slot++)check(station.getStackInSlot(slot).getCount()==1,"Blocked output preserves every input");
@@ -219,8 +205,8 @@ public final class ManufacturingProbe {
         unpoweredSix.setTagCompound(ion);
         check(PlanetHooks.readyErisStack(6,six,unpoweredSix),"Ion-equipped T6 reaches Eris after NBT recovery");
         check(!PlanetHooks.readyErisStack(6,Items.PAPER,unpoweredSix),"Inventory ion tag cannot authorize a different rocket item");
-        ItemStack sevenReady=AssemblyStationTile.output(7);
-        check(PlanetHooks.readyErisStack(7,sevenReady.getItem(),sevenReady),"T7 sublight remains eligible for Eris");
+        ItemStack sevenReady=new ItemStack(Manufacturing.ITEMS.get("tier7_rocket"));
+        check(PlanetHooks.readyErisStack(7,sevenReady.getItem(),sevenReady),"T7 is eligible for Eris without module NBT");
         for(int tier:new int[]{9,10}) {
             ItemStack rocket=AssemblyStationTile.output(tier);
             check(PlanetHooks.readyErisStack(tier,rocket.getItem(),rocket),"T"+tier+" recovered ship remains eligible for Eris");
@@ -231,6 +217,7 @@ public final class ManufacturingProbe {
         check(!ItemTier9Rocket.completePad("galacticraftcore:landing_pad_full",1),"Buggy pad rejected");
         micdoodle8.mods.galacticraft.core.util.ConfigManagerCore.rocketFuelFactor=1;
         EntityTier7Rocket sevenHull=new EntityTier7Rocket(null);
+        check(sevenHull.getRocketTier()==7,"Unmodified T7 retains its flight tier");
         double sevenHeight=10.3157D*EntityTier7Rocket.HULL_SCALE_Y;
         double sevenWidth=5.9794D*EntityTier7Rocket.HULL_SCALE_XZ;
         check(sevenHeight>12.1862D && sevenHeight<17.6751D,"T7 visible height lies between GS T6 and EP new T9");
@@ -280,27 +267,6 @@ public final class ManufacturingProbe {
             ship.setRocketType(meta);
             check(ship.recoveredItem().getMetadata()==meta,"Recovery preserves cargo variant "+meta);
         }
-        InventoryBasic matrix=new InventoryBasic("rocket",false,14);
-        net.minecraft.item.Item[] parts={Items.DIAMOND,Items.IRON_INGOT,Items.IRON_INGOT,Items.REDSTONE,Items.FLINT,Items.FLINT,Items.GOLD_INGOT,Items.GOLD_INGOT,Items.PAPER};
-        Object[] required=new Object[parts.length];
-        for(int i=0;i<parts.length;i++){required[i]=new ItemStack(parts[i]);matrix.setInventorySlotContents(i+2,new ItemStack(parts[i]));}
-        galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.addShapelessRecipe(new ItemStack(Items.BOAT),required);
-        check(!galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(matrix,null).isEmpty(),"Real GS matcher accepts complete nine-part rocket assembly");
-        matrix.setInventorySlotContents(5,ItemStack.EMPTY);
-        check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(matrix,null).isEmpty(),"Real GS matcher rejects rocket assembly without the engine");
-        galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.getRecipeList().clear();
-        InventoryBasic nineMatrix=new InventoryBasic("extendedRocket",false,15);
-        Object[] nineRequired=Arrays.copyOf(required,10);
-        nineRequired[9]=new ItemStack(Items.EMERALD);
-        for(int i=0;i<parts.length;i++)nineMatrix.setInventorySlotContents(i+2,new ItemStack(parts[i]));
-        nineMatrix.setInventorySlotContents(14,new ItemStack(Items.EMERALD));
-        galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.addShapelessRecipe(new ItemStack(Items.MINECART),nineRequired);
-        check(!galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Real GS matcher supports ten required inputs in an extended assembly matrix");
-        nineMatrix.setInventorySlotContents(14,ItemStack.EMPTY);
-        check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Extended assembly rejects missing central propulsion module");
-        nineMatrix.setInventorySlotContents(14,new ItemStack(Items.EMERALD));nineMatrix.setInventorySlotContents(10,ItemStack.EMPTY);
-        check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.findMatchingRecipe(nineMatrix,null).isEmpty(),"Extended assembly rejects missing control panel");
-        galaxyspace.systems.SolarSystem.planets.overworld.recipes.RocketAssemblyRecipes.getRecipeList().clear();
         check(ManufacturingHooks.blueprint("com.mjr.extraplanets.planets.Uranus.WorldProviderUranus").equals("blueprint_engine_station"),"Uranus unlocks the engine station");
         check("blueprint_plasma".equals(ManufacturingHooks.blueprint("galaxyspace.systems.BarnardsSystem.moons.barnarda_c1.dimension.WorldProviderBarnarda_C1_WE")),"C1 actual provider grants plasma blueprint");
         check(ManufacturingHooks.blueprint("galaxyspace.systems.SolarSystem.moons.io.dimension.WorldProviderIo")==null,"Shared chest tier never grants EP blueprint to GS Io");
@@ -321,7 +287,7 @@ public final class ManufacturingProbe {
             int slots=0;for(JsonElement i:r.getAsJsonArray("inputs"))slots+=i.getAsJsonObject().has("count")?i.getAsJsonObject().get("count").getAsInt():1;
             if(machine.equals("AssemblyRecipes"))check(slots<=9,"GS component recipe fits nine input slots");
             if(r.has("layout"))check(summary(r.getAsJsonArray("layout")).equals(summary(r.getAsJsonArray("inputs"))),"Shaped layout preserves ingredient quantities");
-            if(machine.equals("RocketAssemblyRecipes"))check(slots==10,"T7 assembly requires structural propulsion, sublight module and licence");
+            check(!machine.equals("RocketAssemblyRecipes"),"NewEarth rockets are assembled only at the shared station");
         }
         for(JsonElement element:recipes) {
             JsonObject recipe=element.getAsJsonObject();
@@ -348,7 +314,8 @@ public final class ManufacturingProbe {
             check(galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.findMatchingRecipe(grid,null).isEmpty(),"Real GS assembler rejects missing shaped ingredient");
         }
         galaxyspace.systems.SolarSystem.planets.overworld.recipes.AssemblyRecipes.getRecipeList().clear();
-        check(machines.size()==7,"Both stations and both GS assemblers are connected");
+        check(machines.equals(new HashSet<>(Arrays.asList("AssemblyRecipes", "circuit", "compressor", "engine_station", "material_station", "smelting"))),
+                "Manufacturing data contains only the supported part and material machines");
         JsonObject wafer=null,plasma=null;
         int smelting=0;
         Set<String> ownOutputs=new HashSet<>();
@@ -442,7 +409,7 @@ public final class ManufacturingProbe {
         return counts;
     }
     private static void verifyInstalled(File directory,JsonArray recipes) throws Exception {
-        Set<String> required=new HashSet<>(Arrays.asList("micdoodle8.mods.galacticraft.core.entities.EntitySkeletonBoss","galaxyspace.core.prefab.items.rockets.ItemTier6Rocket","galaxyspace.core.prefab.entities.EntityTier6Rocket","galaxyspace.systems.SolarSystem.planets.overworld.inventory.SlotRocketAssembly","galaxyspace.systems.SolarSystem.planets.overworld.inventory.ContainerRocketAssembler","galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
+        Set<String> required=new HashSet<>(Arrays.asList("micdoodle8.mods.galacticraft.core.entities.EntitySkeletonBoss","galaxyspace.core.prefab.items.rockets.ItemTier6Rocket","galaxyspace.core.prefab.entities.EntityTier6Rocket","galaxyspace.systems.SolarSystem.moons.io.entities.EntityBossGhast"));
         Map<String,Set<String>> fields=new HashMap<>();int bosses=0;
         for(File file:directory.listFiles((dir,name)->name.endsWith(".jar"))) try(JarFile jar=new JarFile(file)) {
             for(Enumeration<JarEntry> entries=jar.entries();entries.hasMoreElements();) {

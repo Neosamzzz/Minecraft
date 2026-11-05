@@ -52,19 +52,6 @@ public final class ManufacturingHooks {
         return !s.isEmpty() && "galaxyspace:rocket_modules".equals(String.valueOf(s.getItem().getRegistryName()))
                 && s.getMetadata()>=4 && s.getMetadata()<=7;
     }
-    public static boolean validRocketSlot(int index, ItemStack stack) {
-        if(stack.isEmpty() || !Manufacturing.ITEMS.containsValue(stack.getItem())) return false;
-        String id=stack.getItem().getRegistryName().getPath();
-        switch(index) {
-            case 2:return id.equals("nose_cone");
-            case 3:case 4:return id.equals("rocket_body");
-            case 5:return id.equals("rocket_engine");
-            case 6:case 7:return id.equals("booster");
-            case 8:case 9:return id.equals("fin");
-            case 10:return id.equals("blueprint_t7");
-            default:return false;
-        }
-    }
     public static boolean tier7(Item item) { return "newearth:tier7_rocket".equals(String.valueOf(item.getRegistryName())); }
     public static void powered(ItemStack stack) {
         try {
@@ -76,48 +63,7 @@ public final class ManufacturingHooks {
             stack.getTagCompound().setInteger(count,0);
         } catch(ReflectiveOperationException e) {throw new IllegalStateException(e);}
     }
-    public static boolean assemblyEngine(ItemStack stack) {
-        return !stack.isEmpty() && "galaxyspace:rocket_modules".equals(String.valueOf(stack.getItem().getRegistryName()))
-                && (stack.getMetadata()==6 || stack.getMetadata()==5 || stack.getMetadata()==7);
-    }
-    public static void assemblyContainer(net.minecraft.inventory.Container container,Object tile) {
-        try {
-            net.minecraft.inventory.IInventory matrix=(net.minecraft.inventory.IInventory)tile.getClass().getField("rocketCraftMatrix").get(tile);
-            for(net.minecraft.inventory.Slot slot:container.inventorySlots) if(slot.inventory==matrix) {
-                if(slot.getSlotIndex()==2)slot.yPos=25;
-                if(slot.getSlotIndex()==3)slot.yPos=50;
-                if(slot.getSlotIndex()==4)slot.yPos=75;
-                if(slot.getSlotIndex()==5)slot.yPos=130;
-                if(slot.getSlotIndex()==6 || slot.getSlotIndex()==7)slot.yPos=100;
-                if(slot.getSlotIndex()==8 || slot.getSlotIndex()==9)slot.yPos=130;
-            }
-            net.minecraft.inventory.Slot engine=new net.minecraft.inventory.Slot(matrix,14,40,100) {
-                @Override public boolean isItemValid(ItemStack stack){return assemblyEngine(stack);}
-                @Override public int getSlotStackLimit(){return 1;}
-            };
-            engine.slotNumber=container.inventorySlots.size();
-            container.inventorySlots.add(engine);container.inventoryItemStacks.add(ItemStack.EMPTY);
-        } catch(ReflectiveOperationException e) {throw new IllegalStateException(e);}
-    }
-    public static ItemStack transferAssemblyEngine(net.minecraft.inventory.Container container,net.minecraft.entity.player.EntityPlayer player,int index) {
-        net.minecraft.inventory.Slot source=container.inventorySlots.get(index);
-        net.minecraft.inventory.Slot engine=container.inventorySlots.get(container.inventorySlots.size()-1);
-        if(!source.getHasStack())return null;
-        ItemStack stack=source.getStack(),copy=stack.copy();
-        if(source==engine) {
-            if(!player.inventory.addItemStackToInventory(stack))return ItemStack.EMPTY;
-            if(stack.isEmpty())source.putStack(ItemStack.EMPTY);else source.onSlotChanged();
-            return copy;
-        }
-        if(source.inventory==player.inventory && assemblyEngine(stack)) {
-            if(engine.getHasStack())return ItemStack.EMPTY;
-            ItemStack one=stack.copy();one.setCount(1);engine.putStack(one);stack.shrink(1);
-            if(stack.isEmpty())source.putStack(ItemStack.EMPTY);else source.onSlotChanged();
-            return copy;
-        }
-        return null;
-    }
-    public static boolean readyStack(ItemStack stack) {
+    public static boolean hasSublightModule(ItemStack stack) {
         if(stack.isEmpty() || !tier7(stack.getItem()) || !stack.hasTagCompound()) return false;
         try {
             Class<?> type=Class.forName("asmodeuscore.core.astronomy.SpaceData$Engine_Type");
@@ -133,19 +79,8 @@ public final class ManufacturingHooks {
     }
 
     public static void placed(Entity entity, ItemStack stack) { entity.getEntityData().setBoolean(T7,tier7(stack.getItem())); }
-    public static int rocketTier(Entity entity) {
-        if(!entity.getEntityData().getBoolean(T7)) return 6;
-        return "SUBLIGHT_ENGINE".equals(engine(entity))?7:0;
-    }
-    public static boolean canIgnite(Entity entity) {
-        return !entity.getEntityData().getBoolean(T7) || "SUBLIGHT_ENGINE".equals(engine(entity));
-    }
     public static Item rocketItem(Entity entity) {
         return SolarSystemBridge.requireItem(entity.getEntityData().getBoolean(T7)?"newearth:tier7_rocket":"galaxyspace:rocket_tier_6");
-    }
-    private static String engine(Entity entity) {
-        try { return entity.getClass().getMethod("getEngine").invoke(entity).toString(); }
-        catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
     }
     public static Object modulesFor(Item item) {
         try {
@@ -180,7 +115,7 @@ public final class ManufacturingHooks {
         for(ItemStack stack:stacks) if(!stack.isEmpty() && tier7(stack.getItem()) && stack.hasTagCompound()) {
             try {
                 String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
-                stack.getTagCompound().setInteger(count,readyStack(stack)?0:1);
+                stack.getTagCompound().setInteger(count,hasSublightModule(stack)?0:1);
             } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
         }
         return stacks;

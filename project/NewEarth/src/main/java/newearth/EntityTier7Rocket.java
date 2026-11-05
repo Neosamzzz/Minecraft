@@ -10,6 +10,8 @@ public class EntityTier7Rocket extends EntityTier6Rocket {
     public static final float HULL_SCALE_XZ = 0.97F;
     public static final float HULL_SCALE_Y = 1.36F;
 
+    @Override public int getRocketTier() { return 7; }
+
     @Override public float getRenderOffsetY() { return -0.021F; }
 
     public EntityTier7Rocket(World world) {
