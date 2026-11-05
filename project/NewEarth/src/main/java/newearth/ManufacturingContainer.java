@@ -8,20 +8,23 @@ import net.minecraftforge.fml.relauncher.*;
 
 /** Material slots match GS ContainerAssembler. The engine station uses two inputs and no battery. */
 public final class ManufacturingContainer extends Container {
+    public static final int[][] ENGINE_INPUT_POS = {{44, 36}, {80, 36}};
+    public static final int[] ENGINE_OUTPUT_POS = {138, 36};
     private final ManufacturingTile tile;
     private int lastEnergy = -1, lastProgress = -1, lastStatus = -1;
 
     public ManufacturingContainer(InventoryPlayer playerInventory, ManufacturingTile tile) {
         this.tile = tile;
         if (tile.engine()) {
-            addSlotToContainer(new Slot(tile, 0, 44, 36));
-            addSlotToContainer(new Slot(tile, 1, 80, 36));
+            addSlotToContainer(new Slot(tile, 0, ENGINE_INPUT_POS[0][0], ENGINE_INPUT_POS[0][1]));
+            addSlotToContainer(new Slot(tile, 1, ENGINE_INPUT_POS[1][0], ENGINE_INPUT_POS[1][1]));
         } else {
             for (int row = 0; row < 3; row++)
                 for (int col = 0; col < 3; col++)
                     addSlotToContainer(new Slot(tile, row * 3 + col, 19 + col * 18, 18 + row * 18));
         }
-        addSlotToContainer(new Slot(tile, ManufacturingTile.OUTPUT_SLOT, 138, 36) {
+        int[] output = tile.engine() ? ENGINE_OUTPUT_POS : new int[] {138, 36};
+        addSlotToContainer(new Slot(tile, ManufacturingTile.OUTPUT_SLOT, output[0], output[1]) {
             @Override public boolean isItemValid(ItemStack stack) { return false; }
         });
         if (!tile.engine()) {

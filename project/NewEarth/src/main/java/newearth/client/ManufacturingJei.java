@@ -55,7 +55,9 @@ public final class ManufacturingJei implements IModPlugin {
         final String id; final IDrawable background, slot;
         Category(String id, IGuiHelper helper) {
             this.id = id;
-            this.background = helper.createBlankDrawable(id.equals("material_station") ? 160 : 150, id.equals("material_station") ? 80 : 66);
+            this.background = id.equals("engine_station")
+                    ? helper.createDrawable(new net.minecraft.util.ResourceLocation(newearth.NewEarth.MOD_ID, "textures/gui/engine_station.png"), 0, 0, 176, 100)
+                    : helper.createBlankDrawable(160, 80);
             this.slot = helper.getSlotDrawable();
         }
         @Override public String getUid() { return "newearth." + id; }
@@ -68,9 +70,9 @@ public final class ManufacturingJei implements IModPlugin {
                 slot.draw(mc, 138, 36);
                 return;
             }
-            for (int i = 0; i < 2; i++) slot.draw(mc, i * 20, 10);
-            slot.draw(mc, 124, 20);
-            mc.fontRenderer.drawString("→", 90, 25, 0x555555);
+            for (int[] pos : newearth.ManufacturingContainer.ENGINE_INPUT_POS) slot.draw(mc, pos[0], pos[1]);
+            int[] output = newearth.ManufacturingContainer.ENGINE_OUTPUT_POS;
+            slot.draw(mc, output[0], output[1]);
         }
         @Override public void setRecipe(IRecipeLayout layout, Wrapper wrapper, IIngredients ingredients) {
             if (id.equals("material_station")) {
@@ -78,9 +80,11 @@ public final class ManufacturingJei implements IModPlugin {
                     layout.getItemStacks().init(i, true, 19 + (i % 3) * 18, 18 + (i / 3) * 18);
                 layout.getItemStacks().init(wrapper.batch.inputs.size(), false, 138, 36);
             } else {
-                for (int i = 0; i < wrapper.batch.inputs.size(); i++)
-                    layout.getItemStacks().init(i, true, i * 20, 10);
-                layout.getItemStacks().init(wrapper.batch.inputs.size(), false, 124, 20);
+                int[][] inputs = newearth.ManufacturingContainer.ENGINE_INPUT_POS;
+                for (int i = 0; i < wrapper.batch.inputs.size() && i < inputs.length; i++)
+                    layout.getItemStacks().init(i, true, inputs[i][0], inputs[i][1]);
+                int[] output = newearth.ManufacturingContainer.ENGINE_OUTPUT_POS;
+                layout.getItemStacks().init(wrapper.batch.inputs.size(), false, output[0], output[1]);
             }
             layout.getItemStacks().set(ingredients);
         }
