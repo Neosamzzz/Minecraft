@@ -121,12 +121,4 @@ public class EntityTier9Rocket extends EntityMultiSeatRocket {
             stats.setRocketStacks(NonNullList.create());
         }
     }
-    @Override public void updatePassenger(Entity passenger) {
-        if (!isPassenger(passenger)) return;
-        int seat = getPassengers().indexOf(passenger);
-        double side = (seat % 2 == 0 ? -.45D : .45D);
-        double angle = Math.toRadians(rotationYaw);
-        passenger.setPosition(posX + side * Math.cos(angle), posY + 1.2D + (seat / 2) * 1.8D,
-                posZ + side * Math.sin(angle));
-    }
 }
