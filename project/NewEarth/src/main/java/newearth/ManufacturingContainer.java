@@ -8,8 +8,8 @@ import net.minecraftforge.fml.relauncher.*;
 
 /** Material slots match GS ContainerAssembler. The engine station uses two inputs and no battery. */
 public final class ManufacturingContainer extends Container {
-    public static final int[][] ENGINE_INPUT_POS = {{44, 36}, {80, 36}};
-    public static final int[] ENGINE_OUTPUT_POS = {138, 36};
+    public static final int[][] ENGINE_INPUT_POS = {{40, 50}, {40, 72}};
+    public static final int[] ENGINE_OUTPUT_POS = {112, 60};
     private final ManufacturingTile tile;
     private int lastEnergy = -1, lastProgress = -1, lastStatus = -1;
 
