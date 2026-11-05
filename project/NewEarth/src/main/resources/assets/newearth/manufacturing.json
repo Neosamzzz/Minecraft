@@ -668,42 +668,6 @@
     ]
   },
   {
-    "machine": "AssemblyRecipes",
-    "output": {
-      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
-      "meta": 8
-    },
-    "inputs": [
-      {
-        "item": "newearth:blueprint_t4"
-      }
-    ]
-  },
-  {
-    "machine": "AssemblyRecipes",
-    "output": {
-      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
-      "meta": 9
-    },
-    "inputs": [
-      {
-        "item": "newearth:blueprint_t5"
-      }
-    ]
-  },
-  {
-    "machine": "AssemblyRecipes",
-    "output": {
-      "field": "galaxyspace.core.GSItems.ROCKET_MODULES",
-      "meta": 10
-    },
-    "inputs": [
-      {
-        "item": "newearth:blueprint_t6"
-      }
-    ]
-  },
-  {
     "machine": "engine_station",
     "output": {
       "field": "galaxyspace.core.GSItems.ROCKET_MODULES",

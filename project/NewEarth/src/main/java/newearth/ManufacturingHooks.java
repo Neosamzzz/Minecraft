@@ -15,29 +15,28 @@ public final class ManufacturingHooks {
     public static ItemStack reward(Object boss, Random random) {
         Entity entity = (Entity) boss;
         String provider = entity.world.provider.getClass().getName();
+        int license = licenseMeta(provider);
+        if (license >= 0) return modules(license);
         String blueprint = blueprint(provider);
-        if (blueprint != null) {
-            int license = licenseMeta(blueprint);
-            if (license >= 0) return modules(license);
-            return Manufacturing.own(blueprint);
-        }
+        if (blueprint != null) return Manufacturing.own(blueprint);
         // GS Io formerly selected ion/sublight from a two-entry pool (50% each).
         if (provider.contains(".io.")) return random.nextInt(100) < 5
                 ? modules(4) : new ItemStack(Items.IRON_INGOT, 4);
         return null;
     }
     /** GS rocket-module metas already accepted by the tier 4/5/6 rocket recipes. */
-    static int licenseMeta(String blueprint) {
-        if ("blueprint_t4".equals(blueprint)) return 8;
-        if ("blueprint_t5".equals(blueprint)) return 9;
-        if ("blueprint_t6".equals(blueprint)) return 10;
+    static int licenseMeta(String provider) {
+        if (!provider.startsWith("com.mjr.extraplanets.planets.")) return -1;
+        if (provider.contains(".Mercury.")) return 8;
+        if (provider.contains(".Jupiter.")) return 9;
+        if (provider.contains(".Saturn.")) return 10;
         return -1;
     }
     static String blueprint(String provider) {
         if (provider.equals("galaxyspace.systems.BarnardsSystem.moons.barnarda_c1.dimension.WorldProviderBarnarda_C1_WE")) return "blueprint_plasma";
         if (!provider.startsWith("com.mjr.extraplanets.planets.")) return null;
-        String[] names = {"Mercury", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Eris"};
-        String[] ids = {"blueprint_t4", "blueprint_t5", "blueprint_t6", "blueprint_engine_station",
+        String[] names = {"Uranus", "Neptune", "Pluto", "Eris"};
+        String[] ids = {"blueprint_engine_station",
                 "blueprint_material_station", "blueprint_t7", "blueprint_sublight"};
         for (int i=0;i<names.length;i++) if(provider.contains("."+names[i]+".")) return ids[i];
         return null;

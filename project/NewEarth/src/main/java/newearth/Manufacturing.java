@@ -28,7 +28,7 @@ public final class Manufacturing {
     public static final Map<String, Block> BLOCKS = new LinkedHashMap<>();
     static final List<Batch> BATCHES = new ArrayList<>();
     static final String[] PARTS = {"composite_plate", "thermal_liner", "avionics", "connector",
-            "nose_cone", "rocket_body", "rocket_engine", "booster", "fin", "blueprint_t4", "blueprint_t5", "blueprint_t6",
+            "nose_cone", "rocket_body", "rocket_engine", "booster", "fin",
             "blueprint_engine_station", "blueprint_material_station", "blueprint_t7", "blueprint_sublight",
             "amethyst_fragment", "amethyst_ingot", "amethyst_plate", "amethyst_component",
             "tier9_nose_cone", "tier9_body", "tier9_engine", "tier9_booster", "tier9_fin", "control_panel", "blueprint_plasma", "final_energy_core" };

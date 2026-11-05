@@ -296,10 +296,17 @@ public final class ManufacturingProbe {
         check(ManufacturingHooks.blueprint("com.mjr.extraplanets.planets.Uranus.WorldProviderUranus").equals("blueprint_engine_station"),"Uranus unlocks the engine station");
         check("blueprint_plasma".equals(ManufacturingHooks.blueprint("galaxyspace.systems.BarnardsSystem.moons.barnarda_c1.dimension.WorldProviderBarnarda_C1_WE")),"C1 actual provider grants plasma blueprint");
         check(ManufacturingHooks.blueprint("galaxyspace.systems.SolarSystem.moons.io.dimension.WorldProviderIo")==null,"Shared chest tier never grants EP blueprint to GS Io");
-        check(ManufacturingHooks.licenseMeta("blueprint_t4")==8 && ManufacturingHooks.licenseMeta("blueprint_t5")==9 && ManufacturingHooks.licenseMeta("blueprint_t6")==10,"Tier 4/5/6 dungeons grant the GS rocket licences");
-        check(ManufacturingHooks.licenseMeta("blueprint_t7")<0,"Later blueprints stay NewEarth items");
+        String[] licensePlanets={"Mercury","Jupiter","Saturn"};
+        for(int i=0;i<licensePlanets.length;i++) {
+            String provider="com.mjr.extraplanets.planets."+licensePlanets[i]+".WorldProvider"+licensePlanets[i];
+            check(ManufacturingHooks.licenseMeta(provider)==8+i,"EP dungeon grants its matching GS licence");
+            check(ManufacturingHooks.blueprint(provider)==null,"Licence dungeon does not request a NewEarth blueprint");
+        }
+        check(ManufacturingHooks.licenseMeta("galaxyspace.systems.SolarSystem.planets.mercury.dimension.WorldProviderMercury")<0,"GS Mercury does not share the EP licence reward");
+        check(ManufacturingHooks.licenseMeta("com.mjr.extraplanets.planets.Pluto.WorldProviderPluto")<0,"Later dungeons keep their blueprint rewards");
+        for(String part:Manufacturing.PARTS)check(!part.matches("blueprint_t[456]"),"Retired paper blueprints are not registered");
         JsonArray recipes=new JsonParser().parse(new InputStreamReader(ManufacturingProbe.class.getResourceAsStream("/assets/newearth/manufacturing.json"),"UTF-8")).getAsJsonArray();
-        check(recipes.size()>=34,"Complete manufacturing recipe data");
+        check(!recipes.toString().matches("(?s).*newearth:blueprint_t[456].*"),"Manufacturing data has no retired paper blueprint conversions");
         Set<String> machines=new HashSet<>();
         for(JsonElement e:recipes) {
             JsonObject r=e.getAsJsonObject();String machine=r.get("machine").getAsString();machines.add(machine);
