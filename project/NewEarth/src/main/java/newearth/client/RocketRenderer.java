@@ -86,7 +86,9 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
     }
 
     @Override public boolean shouldRender(EntityAutoRocket rocket, ICamera camera, double camX, double camY, double camZ) {
-        AxisAlignedBB box = rocket.getEntityBoundingBox().grow(0.6D, 0, 0.6D);
+        // The collision box stays upright. The drawn hull rotates with pitch, so the cull box has to cover that swing.
+        double reach = rocket.height * 0.5D + 1.0D;
+        AxisAlignedBB box = rocket.getEntityBoundingBox().grow(reach, reach, reach);
         return rocket.isInRangeToRender3d(camX, camY, camZ) && camera.isBoundingBoxInFrustum(box);
     }
 }
