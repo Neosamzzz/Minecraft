@@ -79,9 +79,11 @@ public final class CatalogueHooks {
     }
 
     public static int wheel(Object gui) {
-        int delta = Mouse.getDWheel(); State s = state(gui);
-        if (insideDetails(s, s.x, s.y)) { s.details.wheel(delta); return 0; }
-        if (inside(s, s.x, s.y)) { s.scroll.wheel(delta); return 0; }
+        int delta = Mouse.getDWheel();
+        if (delta == 0) return 0;
+        State s = state(gui);
+        if (insideDetails(s, s.x, s.y) && s.details.maximum() > 0) { s.details.wheel(delta); return 0; }
+        if (inside(s, s.x, s.y) && s.scroll.maximum() > 0) { s.scroll.wheel(delta); return 0; }
         return delta;
     }
 
