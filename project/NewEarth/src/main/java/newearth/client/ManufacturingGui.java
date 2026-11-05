@@ -13,7 +13,8 @@ import newearth.NewEarth;
 public final class ManufacturingGui extends GuiContainer {
     private static final ResourceLocation BG_ENGINE = new ResourceLocation(NewEarth.MOD_ID, "textures/gui/engine_station.png");
     private static final ResourceLocation ATLAS = new ResourceLocation(NewEarth.MOD_ID, "textures/gui/gs_machine.png");
-    private static final int ARROW_X = 86, ARROW_Y = 38, ARROW_W = 35;
+    /** The arrow drawn on this screen, not the GS assembler arrow. */
+    private static final int ARROW_X = 64, ARROW_Y = 66, ARROW_W = 34, ARROW_H = 5;
     private final ManufacturingTile tile;
 
     public ManufacturingGui(InventoryPlayer playerInventory, ManufacturingTile tile) {
@@ -30,11 +31,9 @@ public final class ManufacturingGui extends GuiContainer {
         mc.getTextureManager().bindTexture(ATLAS);
         int progress = tile.getField(1);
         if (progress > 0) {
-            int scale = progress * (ARROW_W + 8) / ManufacturingTile.PROCESS_TIME;
+            int scale = progress * ARROW_W / ManufacturingTile.PROCESS_TIME;
             if (scale > 0)
-                drawScaledCustomSizeModalRect(x + ARROW_X, y + ARROW_Y, 181, 125, 6, 15, scale, 15, 256, 256);
-            if (scale > ARROW_W - 8)
-                drawScaledCustomSizeModalRect(x + ARROW_X + ARROW_W, y + ARROW_Y, 209, 125, 8, 15, scale - ARROW_W, 15, 256, 256);
+                drawScaledCustomSizeModalRect(x + ARROW_X, y + ARROW_Y, 181, 125, 6, 15, scale, ARROW_H, 256, 256);
         }
     }
 
