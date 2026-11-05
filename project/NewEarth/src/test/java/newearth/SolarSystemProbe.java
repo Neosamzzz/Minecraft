@@ -33,6 +33,16 @@ public final class SolarSystemProbe {
         check(destination.getBodyIcon().equals(earthReference.getBodyIcon()) && destination.getTierRequirement() == 6, "Earth icon and test tier are applied");
         check(destination.atmosphere != earthReference.atmosphere && destination.atmosphere.composition.equals(earthReference.atmosphere.composition), "Earth atmosphere is copied without sharing mutable gas lists");
         check(destination.atmosphere.isBreathable() && destination.atmosphere.hasPrecipitation() && !destination.atmosphere.isCorrosive() && destination.atmosphere.thermalLevel() == 0 && destination.atmosphere.relativeDensity() == 1, "Earth environment properties are retained");
+        java.lang.reflect.Field providerField = newearth.dimension.EndDimension.class.getDeclaredField("destinationProvider");
+        providerField.setAccessible(true); Object previousProvider = providerField.get(null);
+        try {
+            providerField.set(null, net.minecraft.world.WorldProviderSurface.class);
+            net.minecraft.world.WorldProviderSurface unbound = new net.minecraft.world.WorldProviderSurface();
+            unbound.setDimension(1020);
+            check(newearth.dimension.EndDimension.mapDimensionName(unbound).equals("trars9"), "Map names an unbound destination provider without querying its World");
+            unbound.setDimension(0);
+            check(newearth.dimension.EndDimension.mapDimensionName(unbound).equals(micdoodle8.mods.galacticraft.core.util.WorldUtil.getDimensionName(unbound)), "Other dimensions retain GC dimension names");
+        } finally { providerField.set(null, previousProvider); }
         List<Planet> gs = new ArrayList<>(), ep = new ArrayList<>();
         for (String name : new String[] {"jupiter", "saturn", "uranus", "neptune", "pluto"}) {
             gs.add(new Planet(name));

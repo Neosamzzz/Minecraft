@@ -60,6 +60,17 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 hook.add(proceed); hook.add(new FrameNode(F_SAME, 0, null, 0, null));
                 m.instructions.insert(hook); changes++;
             }
+            if (gui && m.name.equals("teleportToSelectedBody")) {
+                int names = 0;
+                for (AbstractInsnNode i : m.instructions.toArray()) if (i instanceof MethodInsnNode) {
+                    MethodInsnNode call = (MethodInsnNode) i;
+                    if (call.owner.equals("micdoodle8/mods/galacticraft/core/util/WorldUtil") && call.name.equals("getDimensionName")) {
+                        call.owner = "newearth/dimension/EndDimension"; call.name = "mapDimensionName"; names++;
+                    }
+                }
+                if (names != 1) throw new IllegalStateException("Unsupported GC map destination name calls " + names);
+                changes++;
+            }
             if (gui) changes += patchCatalogue(m);
             if ((gui || epGui) && m.name.equals("drawButtons") && m.desc.equals("(II)V")) {
                 patchMapButtons(m); changes++;
@@ -137,7 +148,7 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 m.instructions.insert(hook); changes++;
             }
         }
-        int expected = gui ? 6 : epGui ? 2 : world ? 3 : 1;
+        int expected = gui ? 7 : epGui ? 2 : world ? 3 : 1;
         if (changes != expected) throw new IllegalStateException("Unsupported solar-system patch target " + n + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         c.accept(writer);

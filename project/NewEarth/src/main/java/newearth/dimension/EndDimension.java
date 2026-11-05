@@ -114,6 +114,13 @@ public final class EndDimension {
 
     public static int destinationId() { return destinationProvider == null || !enabled ? 0 : dimensionId; }
 
+    public static String mapDimensionName(WorldProvider provider) {
+        // The star map creates a provider without a World; OTG's dimension type lookup needs that World.
+        if (provider != null && provider.getClass() == destinationProvider && isDestinationId(provider.getDimension()))
+            return BODY_NAME;
+        return micdoodle8.mods.galacticraft.core.util.WorldUtil.getDimensionName(provider);
+    }
+
     public static boolean canTravel(Object player) {
         return player instanceof EntityPlayerMP
                 && GCPlayerStats.get((EntityPlayerMP) player).getSpaceshipTier() == REQUIRED_TIER
