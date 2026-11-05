@@ -10,6 +10,8 @@ import net.minecraftforge.fml.relauncher.*;
 public final class ManufacturingContainer extends Container {
     public static final int[][] ENGINE_INPUT_POS = {{40, 50}, {40, 72}};
     public static final int[] ENGINE_OUTPUT_POS = {112, 60};
+    // The hand-drawn inventory has narrower cells than the standard 18-pixel grid.
+    private static final int[] ENGINE_INVENTORY_X = {13, 30, 47, 64, 80, 97, 114, 131, 148};
     private final ManufacturingTile tile;
     private int lastEnergy = -1, lastProgress = -1, lastStatus = -1;
 
@@ -32,14 +34,15 @@ public final class ManufacturingContainer extends Container {
                 @Override public boolean isItemValid(ItemStack stack) { return ManufacturingTile.battery(stack); }
             });
         }
-        int invX = tile.engine() ? 14 : 8;
-        int invY = tile.engine() ? 120 : 129;
-        int hotY = tile.engine() ? 178 : 187;
+        int invY = tile.engine() ? 118 : 129;
+        int hotY = tile.engine() ? 175 : 187;
+        int rowSpacing = tile.engine() ? 17 : 18;
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
-                addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9, invX + col * 18, invY + row * 18));
+                addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9,
+                        tile.engine() ? ENGINE_INVENTORY_X[col] : 8 + col * 18, invY + row * rowSpacing));
         for (int col = 0; col < 9; col++)
-            addSlotToContainer(new Slot(playerInventory, col, invX + col * 18, hotY));
+            addSlotToContainer(new Slot(playerInventory, col, tile.engine() ? ENGINE_INVENTORY_X[col] : 8 + col * 18, hotY));
     }
 
     @Override public void detectAndSendChanges() {

@@ -56,7 +56,8 @@ public final class ManufacturingJei implements IModPlugin {
         Category(String id, IGuiHelper helper) {
             this.id = id;
             this.background = id.equals("engine_station")
-                    ? helper.createDrawable(new net.minecraft.util.ResourceLocation(newearth.NewEarth.MOD_ID, "textures/gui/engine_station.png"), 0, 0, 176, 100)
+                    ? helper.drawableBuilder(new net.minecraft.util.ResourceLocation(newearth.NewEarth.MOD_ID, "textures/gui/engine_station.png"), 0, 0, 176, 100)
+                            .setTextureSize(176, 212).build()
                     : helper.createBlankDrawable(160, 80);
             this.slot = helper.getSlotDrawable();
         }

@@ -27,7 +27,8 @@ public final class ManufacturingGui extends GuiContainer {
     @Override protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         int x = (width - xSize) / 2, y = (height - ySize) / 2;
         mc.getTextureManager().bindTexture(BG_ENGINE);
-        drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        net.minecraft.client.renderer.GlStateManager.color(1F, 1F, 1F, 1F);
+        drawModalRectWithCustomSizedTexture(x, y, 0, 0, xSize, ySize, 176, 212);
         mc.getTextureManager().bindTexture(ATLAS);
         int progress = tile.getField(1);
         if (progress > 0) {

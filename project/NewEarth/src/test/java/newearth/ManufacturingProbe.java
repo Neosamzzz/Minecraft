@@ -17,6 +17,15 @@ public final class ManufacturingProbe {
     private static int checks;
     private static void check(boolean value,String message) {if(!value)throw new AssertionError(message);checks++;}
     static void run() throws Exception {
+        try (Reader reader=new InputStreamReader(ManufacturingProbe.class.getResourceAsStream(
+                "/assets/newearth/models/item/engine_station.json"), java.nio.charset.StandardCharsets.UTF_8)) {
+            net.minecraft.client.renderer.block.model.ModelBlock model=
+                    net.minecraft.client.renderer.block.model.ModelBlock.deserialize(reader);
+            check(model.getAllTransforms().getTransform(net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType.GUI).scale.x>0,
+                    "Actual Minecraft parser accepts the engine station inventory model");
+            check(model.getAllTransforms().getTransform(net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType.GROUND).scale.x>0,
+                    "Engine station dropped-item transform remains visible");
+        }
         net.minecraft.item.Item six=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_tier_6");
         net.minecraft.item.Item seven=new net.minecraft.item.Item().setRegistryName("newearth:tier7_rocket");
         check(ManufacturingHooks.moduleType(six).equals("IonEngine"),"T6 modification table permits ion only");
