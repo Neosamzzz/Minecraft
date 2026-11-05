@@ -157,8 +157,12 @@ public final class ArrivalSession extends WorldSavedData {
             if (group.landing == null && group.cursor >= 121) group.landing = EndDimension.landing(world);
             if (group.ticks % 100 == 0) { saved.markDirty(); releaseChunks(world, group, false); }
             boolean ready = group.landing != null;
-            for (EntityPlayerMP player : online) ready &= group.ready.contains(player.getUniqueID())
-                    && group.received.contains(player.getUniqueID());
+            for (UUID member : group.members) {
+                EntityPlayerMP player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(member);
+                if (player == null) continue;
+                if (player.world != world) { ready = false; break; }
+                ready &= group.ready.contains(member) && group.received.contains(member);
+            }
             if (ready && group.descent == 0) {
                 // Recheck the natural site after population; the vertical path must see the sky.
                 group.landing = EndDimension.landing(world);
@@ -180,6 +184,9 @@ public final class ArrivalSession extends WorldSavedData {
                 saved.completed.addAll(group.members);
                 saved.markDirty();
                 for (EntityPlayerMP player : online) {
+                    Entity riding = player.getRidingEntity();
+                    if (riding instanceof newearth.EntityTier10Rocket) ((newearth.EntityTier10Rocket) riding).releaseHold();
+                    if (player.isRiding()) player.dismountRidingEntity();
                     restore(player); land(player, group.landing);
                     ArrivalNetwork.send(player, group.id, ArrivalNetwork.LANDED, group.landing);
                 }
@@ -241,6 +248,12 @@ public final class ArrivalSession extends WorldSavedData {
     }
 
     private static void hold(EntityPlayerMP player, BlockPos at, double y) {
+        if (player.getRidingEntity() instanceof newearth.EntityTier10Rocket) {
+            BlockPos target = at == null ? player.getServerWorld().getSpawnPoint() : at;
+            ((newearth.EntityTier10Rocket) player.getRidingEntity()).holdAbove(target, y);
+            player.fallDistance = 0;
+            return;
+        }
         if (player.isRiding()) player.dismountRidingEntity();
         if (!player.getEntityData().hasKey(HOLD)) {
             NBTTagCompound old = new NBTTagCompound();

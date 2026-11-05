@@ -81,6 +81,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
             regionSent = true;
         }
         if (stage >= ArrivalNetwork.POEM && stage < ArrivalNetwork.LANDED && mc.world != null) ArrivalDistantLoading.tick(serverLevel);
+        if (stage < ArrivalNetwork.POEM && mc.world != null && screen == null) screen = new Cover();
         if (screen != null && mc.world != null) {
             if (mc.currentScreen != screen) mc.displayGuiScreen(screen);
         }
@@ -91,13 +92,18 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
             ArrivalDistantLoading.frame();
     }
 
-    private static final class Waiting extends GuiScreen {
+    private static class Cover extends GuiScreen {
         @Override public boolean doesGuiPauseGame() { return false; }
         @Override protected void keyTyped(char c, int key) throws IOException { }
         @Override public void drawScreen(int x, int y, float partial) {
-            drawDefaultBackground();
-            drawCenteredString(fontRenderer, I18n.format("newearth.arrival.wait"), width / 2, height / 2 - 5, 0xFFFFFF);
+            drawRect(0, 0, width, height, 0xFF000000);
+        }
+    }
+
+    private static final class Waiting extends Cover {
+        @Override public void drawScreen(int x, int y, float partial) {
             super.drawScreen(x, y, partial);
+            drawCenteredString(fontRenderer, I18n.format("newearth.arrival.wait"), width / 2, height / 2 - 5, 0xFFFFFF);
         }
     }
 }
