@@ -2,6 +2,7 @@ package newearth.client;
 
 import newearth.EntityTier10Rocket;
 import newearth.EntityTier9Rocket;
+import newearth.EntityTier7Rocket;
 import micdoodle8.mods.galacticraft.api.prefab.entity.EntityAutoRocket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -28,7 +29,7 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
     public static void register() {
         RenderingRegistry.registerEntityRenderingHandler(EntityTier9Rocket.class, manager -> new RocketRenderer(manager, "rocket_t9_new", false));
         RenderingRegistry.registerEntityRenderingHandler(EntityTier10Rocket.class, manager -> new RocketRenderer(manager, "rocket_t10_new", true));
-        RenderingRegistry.registerEntityRenderingHandler(newearth.EntityTier7Rocket.class, Tier7Renderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTier7Rocket.class, manager -> new RocketRenderer(manager, "rocket_t7", false));
     }
 
     private RocketRenderer(RenderManager manager, String registryName, boolean tier10) {
@@ -59,7 +60,8 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
         GlStateManager.disableRescaleNormal();
         GlStateManager.pushMatrix();
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks + 180;
-        double hullY = y + ((EntityTier9Rocket) entity).getHullYOffset();
+        boolean tier7 = entity instanceof EntityTier7Rocket;
+        double hullY = y + (tier7 ? 0D : ((EntityTier9Rocket) entity).getHullYOffset());
         GlStateManager.translate((float) x, (float) hullY - (tier10 ? 0.2F : 0F), (float) z);
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-pitch, 0.0F, 0.0F, 1.0F);
@@ -75,8 +77,8 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
             bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.shadeModel(Minecraft.isAmbientOcclusionEnabled() ? GL11.GL_SMOOTH : GL11.GL_FLAT);
             GlStateManager.scale(-1.0F, -1.0F, 1.0F);
-            float scale = 0.7F;
-            GlStateManager.scale(scale, scale, scale);
+            if (tier7) GlStateManager.scale(EntityTier7Rocket.HULL_SCALE_XZ, EntityTier7Rocket.HULL_SCALE_Y, EntityTier7Rocket.HULL_SCALE_XZ);
+            else GlStateManager.scale(0.7F, 0.7F, 0.7F);
             drawModel();
         } catch (ReflectiveOperationException error) {
             throw new IllegalStateException("Missing ExtraPlanets rocket model " + registryName, error);

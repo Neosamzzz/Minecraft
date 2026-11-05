@@ -95,6 +95,7 @@ tasks.register('progressionCheck', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.runtimeClasspath
     main = 'newearth.ProgressionProbe'
+    systemProperty 'newearth.epResources', rootProject.file('../../dependencies/ExtraPlanets/src/main/resources').absolutePath
     workingDir = rootProject.file('../../build/checks/newearth/progression')
     doFirst { workingDir.mkdirs() }
     systemProperty 'java.awt.headless', 'true'

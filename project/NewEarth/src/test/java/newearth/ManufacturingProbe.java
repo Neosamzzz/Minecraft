@@ -230,6 +230,14 @@ public final class ManufacturingProbe {
         check(!ItemTier9Rocket.completePad("galacticraftcore:landing_pad",0),"Individual pad pieces rejected");
         check(!ItemTier9Rocket.completePad("galacticraftcore:landing_pad_full",1),"Buggy pad rejected");
         micdoodle8.mods.galacticraft.core.util.ConfigManagerCore.rocketFuelFactor=1;
+        EntityTier7Rocket sevenHull=new EntityTier7Rocket(null);
+        double sevenHeight=10.3157D*EntityTier7Rocket.HULL_SCALE_Y;
+        double sevenWidth=5.9794D*EntityTier7Rocket.HULL_SCALE_XZ;
+        check(sevenHeight>12.1862D && sevenHeight<17.6751D,"T7 visible height lies between GS T6 and EP new T9");
+        check(sevenWidth>3.9900D && sevenWidth<6.3192D,"T7 visible width lies between GS T6 and EP new T9");
+        check(sevenHull.height>=sevenHeight && sevenHull.getOnPadYOffset()==0D,"T7 physical height encloses the hull and preserves pad detection");
+        check(Math.abs(-0.0153D*EntityTier7Rocket.HULL_SCALE_Y-sevenHull.getRenderOffsetY())<0.001D,"EP T7 nozzle base aligns with the entity origin");
+
         EntityTier9Rocket ship=new EntityTier9Rocket(null);
         check(ship.getMaxSeats()==6 && ship.getRocketTier()==9 && ship.fuelTank.getCapacity()==1500,"T9 concrete entity has six seats and a usable fuel tank");
         check(ship.getRotateOffset()==4.0F && ship.getOnPadYOffset()==0D && ship.getRenderOffsetY()==1.1F,"T9 keeps the EP camera pivot and model offset with a dockable physical origin");
@@ -391,6 +399,8 @@ public final class ManufacturingProbe {
             @Override public Set<String> getResourceDomains(){return Collections.singleton("newearth");}
             @Override public net.minecraft.client.resources.IResource getResource(net.minecraft.util.ResourceLocation location) throws IOException {
                 InputStream stream=ManufacturingProbe.class.getResourceAsStream("/assets/"+location.getNamespace()+"/"+location.getPath());
+                if(stream==null && location.getNamespace().equals("extraplanets"))
+                    stream=new FileInputStream(new File(System.getProperty("newearth.epResources"),"assets/"+location.getNamespace()+"/"+location.getPath()));
                 if(stream==null)throw new FileNotFoundException(location.toString());
                 return new net.minecraft.client.resources.SimpleResource("probe",location,stream,null,new net.minecraft.client.resources.data.MetadataSerializer());
             }
@@ -399,7 +409,9 @@ public final class ManufacturingProbe {
             }
         };
         for(String name:new String[]{"tier7_rocket","tier9_rocket","tier10_rocket","tier7_workbench"}) {
-            net.minecraft.util.ResourceLocation location=new net.minecraft.util.ResourceLocation("newearth","models/"+name+".obj");
+            net.minecraft.util.ResourceLocation location=name.equals("tier7_rocket")
+                    ? new net.minecraft.util.ResourceLocation("extraplanets","models/rocket_t7.obj")
+                    : new net.minecraft.util.ResourceLocation("newearth","models/"+name+".obj");
             net.minecraft.client.resources.IResource resource=manager.getResource(location);
             net.minecraftforge.client.model.IModel model;
             try { model=new net.minecraftforge.client.model.obj.OBJModel.Parser(resource,manager).parse(); }

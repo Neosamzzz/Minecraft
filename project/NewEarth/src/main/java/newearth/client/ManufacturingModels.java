@@ -27,26 +27,25 @@ public final class ManufacturingModels {
                 continue;
             }
             String path = item.getRegistryName().getPath();
-            if (path.equals("tier9_rocket") || path.equals("tier10_rocket")) {
-                String model = path.equals("tier9_rocket") ? "extraplanets:rocket_t9_new" : "extraplanets:rocket_t10_new";
+            if (path.equals("tier7_rocket") || path.equals("tier9_rocket") || path.equals("tier10_rocket")) {
+                String model = path.equals("tier7_rocket") ? "extraplanets:rocket_t7" : path.equals("tier9_rocket") ? "extraplanets:rocket_t9_new" : "extraplanets:rocket_t10_new";
                 for (int meta = 0; meta < 5; meta++)
                     ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(model, "inventory"));
                 continue;
             }
-            int variants=path.equals("tier7_rocket")?5:1;
+            int variants=1;
             for(int meta=0;meta<variants;meta++) ModelLoader.setCustomModelResourceLocation(item,meta,new ModelResourceLocation(item.getRegistryName(),"inventory"));
         }
     }
     @SubscribeEvent public static void bake(net.minecraftforge.client.event.ModelBakeEvent event) {
-        for (String name : new String[]{"tier7_rocket", "disassembly_station"}) {
-            boolean rocket = name.startsWith("tier");
-            float scale = rocket ? .04F : .2F;
+        for (String name : new String[]{"disassembly_station"}) {
+            float scale = .2F;
             net.minecraftforge.common.model.TRSRTransformation transform = new net.minecraftforge.common.model.TRSRTransformation(
                     new javax.vecmath.Vector3f(.5F, 0F, .5F),
                     net.minecraftforge.common.model.TRSRTransformation.quatFromXYZDegrees(new javax.vecmath.Vector3f(30F, 225F, 0F)),
                     new javax.vecmath.Vector3f(scale, scale, scale), null);
             micdoodle8.mods.galacticraft.core.util.ClientUtil.replaceModel(NewEarth.MOD_ID, event, name,
-                    "models/" + (rocket ? name : "tier7_workbench") + ".obj",
+                    "models/tier7_workbench.obj",
                     com.google.common.collect.ImmutableList.of(net.minecraftforge.client.model.obj.OBJModel.Group.ALL),
                     null, transform);
         }
