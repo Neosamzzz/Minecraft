@@ -65,7 +65,6 @@ python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.j
 ### 地牢与回收
 
 - [ ] 合并统一各类地牢钥匙与宝箱，适配Boss掉落、开锁关系与各星球奖励。
-- [ ] 进游戏核对四五六阶：地牢掉落的 GS 许可能否直接用于对应总装。已有纸质图纸的转换仍保留。
 - [ ] 六阶火箭不在拆解台配方里。七、九、十阶已使用 GS 火箭装配机界面。
 
 ### 游戏内验收与交付
