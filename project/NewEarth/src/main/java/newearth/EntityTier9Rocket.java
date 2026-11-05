@@ -39,7 +39,12 @@ public class EntityTier9Rocket extends EntityMultiSeatRocket {
     @Override public int getRocketTier() { return 9; }
     @Override public double getYOffset() { return 1.5D; }
     @Override public float getRotateOffset() { return 4.0F; }
-    @Override public double getOnPadYOffset() { return 0.8D; }
+    // GC/GS rediscover parked rockets only within the first block above the pad.
+    @Override public double getOnPadYOffset() { return 0D; }
+    public double getHullYOffset() { return 0.8D; }
+    @Override public double getMountedYOffset(Entity passenger) {
+        return getHullYOffset() + super.getMountedYOffset(passenger);
+    }
     @Override public float getRenderOffsetY() { return 1.1F; }
     @Override public float getCameraZoom() { return 15F; }
     @Override public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
@@ -137,7 +142,7 @@ public class EntityTier9Rocket extends EntityMultiSeatRocket {
             y1 *= Math.min(modifier / 200.0D, 2.5D);
             z1 *= modifier / 200.0D;
         }
-        double y2 = this.prevPosY + (this.posY - this.prevPosY) + y1 - 0.75 * this.motionY - 0.3 + 1.2D;
+        double y2 = this.prevPosY + (this.posY - this.prevPosY) + getHullYOffset() + y1 - 0.75 * this.motionY - 0.3 + 1.2D;
         double x2 = this.posX + x1 + this.motionX;
         double z2 = this.posZ + z1 + this.motionZ;
         Vector3 motionVec = new Vector3(x1 + this.motionX, y1 + this.motionY, z1 + this.motionZ);

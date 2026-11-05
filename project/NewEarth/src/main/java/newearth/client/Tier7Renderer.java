@@ -58,8 +58,9 @@ final class Tier7Renderer extends Render<EntityAutoRocket> {
             }
             bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.shadeModel(Minecraft.isAmbientOcclusionEnabled() ? GL11.GL_SMOOTH : GL11.GL_FLAT);
-            // The stored hull is the enlarged EP tier-7 mesh; 0.04 matches its item display.
-            GlStateManager.scale(0.04F, 0.04F, 0.04F);
+            // Local mesh is 2.2142 times EP's mesh; match EP's 0.9 world scale.
+            float scale = 0.9F / 2.2142F;
+            GlStateManager.scale(scale, scale, scale);
             ClientUtil.drawBakedModel(baked);
         } catch (java.io.IOException error) {
             throw new IllegalStateException("Missing tier-7 hull", error);

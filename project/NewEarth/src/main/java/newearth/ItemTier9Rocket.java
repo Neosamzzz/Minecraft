@@ -30,7 +30,7 @@ public class ItemTier9Rocket extends Item implements IHoldableItem {
     protected EntityTier9Rocket createRocket(World world, double x, double y, double z) {
         return new EntityTier9Rocket(world, x, y, z);
     }
-    /** Same pad seat as EP and GC: the 0.4 block base, then the rocket's own pad offset. */
+    /** Physical origin stays inside the pad scan; the renderer handles hull elevation. */
     static double placedY(EntityTier9Rocket rocket, double padY) {
         return padY + 0.4D + rocket.getOnPadYOffset();
     }

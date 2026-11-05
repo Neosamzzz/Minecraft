@@ -28,7 +28,7 @@ public final class ManufacturingModels {
             }
             String path = item.getRegistryName().getPath();
             if (path.equals("tier9_rocket") || path.equals("tier10_rocket")) {
-                String model = path.equals("tier9_rocket") ? "extraplanets:rocket_t9" : "extraplanets:rocket_t10_new";
+                String model = path.equals("tier9_rocket") ? "extraplanets:rocket_t9_new" : "extraplanets:rocket_t10_new";
                 for (int meta = 0; meta < 5; meta++)
                     ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(model, "inventory"));
                 continue;

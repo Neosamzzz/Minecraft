@@ -223,8 +223,8 @@ public final class ManufacturingProbe {
         micdoodle8.mods.galacticraft.core.util.ConfigManagerCore.rocketFuelFactor=1;
         EntityTier9Rocket ship=new EntityTier9Rocket(null);
         check(ship.getMaxSeats()==6 && ship.getRocketTier()==9 && ship.fuelTank.getCapacity()==1500,"T9 concrete entity has six seats and a usable fuel tank");
-        check(ship.getRotateOffset()==4.0F && ship.getOnPadYOffset()==0.8D && ship.getRenderOffsetY()==1.1F,"T9 uses the EP tier-9 pad height, camera pivot and model offset");
-        check(ItemTier9Rocket.placedY(ship,64D)==64D+0.4D+0.8D,"T9 placement adds the EP pad offset above the 0.4 base");
+        check(ship.getRotateOffset()==4.0F && ship.getOnPadYOffset()==0D && ship.getRenderOffsetY()==1.1F,"T9 keeps the EP camera pivot and model offset with a dockable physical origin");
+        check(ItemTier9Rocket.placedY(ship,64D)==64D+0.4D,"T9 physical origin rests on the 0.4 pad base");
         check(EntityTier9Rocket.class.getDeclaredMethod("spawnParticles",boolean.class).getDeclaringClass()==EntityTier9Rocket.class,"T9 uses the EP four-nozzle flame");
         net.minecraft.util.NonNullList<ItemStack> creative=net.minecraft.util.NonNullList.create();
         ItemTier9Rocket tier9Item=new ItemTier9Rocket();
@@ -244,8 +244,19 @@ public final class ManufacturingProbe {
         check(ship.isDockValid(new galaxyspace.systems.SolarSystem.planets.overworld.tile.TileEntityAdvLandingPad()),"T9 docks on a real GS advanced pad");
         EntityTier10Rocket finalShip=new EntityTier10Rocket(null);
         check(finalShip.getRocketTier()==10 && finalShip.recoveredItem().getItem()==Manufacturing.ITEMS.get("tier10_rocket"),"T10 recovers its own item");
-        check(finalShip.getRotateOffset()==5.8F && finalShip.getOnPadYOffset()==1.0D && finalShip.getRenderOffsetY()==1.1F,"T10 uses the EP tier-10 pad height, camera pivot and model offset");
-        check(ItemTier9Rocket.placedY(finalShip,64D)==64D+0.4D+1.0D,"T10 placement adds the EP pad offset above the 0.4 base");
+        check(finalShip.getRotateOffset()==5.8F && finalShip.getOnPadYOffset()==0D && finalShip.getRenderOffsetY()==1.1F,"T10 keeps the EP camera pivot and model offset with a dockable physical origin");
+        check(ItemTier9Rocket.placedY(finalShip,64D)==64D+0.4D,"T10 physical origin rests on the 0.4 pad base");
+        net.minecraft.util.math.AxisAlignedBB padScan = new net.minecraft.util.math.AxisAlignedBB(-0.5D,64D,-0.5D,0.5D,65D,0.5D);
+        for (EntityTier9Rocket parked : new EntityTier9Rocket[]{ship,finalShip}) {
+            parked.setPosition(0.5D,ItemTier9Rocket.placedY(parked,64D),0.5D);
+            check(parked.getEntityBoundingBox().intersects(padScan),"T"+parked.getRocketTier()+" is rediscoverable by the real GC/GS pad scan");
+            parked.setLaunchPhase(micdoodle8.mods.galacticraft.api.prefab.entity.EntitySpaceshipBase.EnumLaunchPhase.UNIGNITED);
+            check(!parked.inFlight(),"Parked ship holds the pad");
+            parked.setLaunchPhase(micdoodle8.mods.galacticraft.api.prefab.entity.EntitySpaceshipBase.EnumLaunchPhase.LAUNCHED);
+            check(parked.inFlight(),"Launched ship releases the pad even while crossing its scan");
+            parked.setLaunchPhase(micdoodle8.mods.galacticraft.api.prefab.entity.EntitySpaceshipBase.EnumLaunchPhase.UNIGNITED);
+            check(parked.getMountedYOffset(parked)==parked.getHullYOffset(),"Pilot seat follows the visible hull elevation");
+        }
         boolean ownFlame=true;try{EntityTier10Rocket.class.getDeclaredMethod("spawnParticles",boolean.class);}catch(NoSuchMethodException ignored){ownFlame=false;}
         check(!ownFlame,"T10 keeps the shared EP flame");
         for(int meta=0;meta<4;meta++) {

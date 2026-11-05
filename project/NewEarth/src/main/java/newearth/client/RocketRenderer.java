@@ -26,7 +26,7 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
     private Object model;
 
     public static void register() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityTier9Rocket.class, manager -> new RocketRenderer(manager, "rocket_t9", false));
+        RenderingRegistry.registerEntityRenderingHandler(EntityTier9Rocket.class, manager -> new RocketRenderer(manager, "rocket_t9_new", false));
         RenderingRegistry.registerEntityRenderingHandler(EntityTier10Rocket.class, manager -> new RocketRenderer(manager, "rocket_t10_new", true));
         RenderingRegistry.registerEntityRenderingHandler(newearth.EntityTier7Rocket.class, Tier7Renderer::new);
     }
@@ -59,8 +59,8 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
         GlStateManager.disableRescaleNormal();
         GlStateManager.pushMatrix();
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks + 180;
-        if (tier10) GlStateManager.translate((float) x, (float) y - 0.2F, (float) z);
-        else GlStateManager.translate((float) x, (float) y, (float) z + 0.6F);
+        double hullY = y + ((EntityTier9Rocket) entity).getHullYOffset();
+        GlStateManager.translate((float) x, (float) hullY - (tier10 ? 0.2F : 0F), (float) z);
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-pitch, 0.0F, 0.0F, 1.0F);
         GlStateManager.translate(0.0F, entity.getRenderOffsetY(), 0.0F);
@@ -75,7 +75,7 @@ public final class RocketRenderer extends Render<EntityAutoRocket> {
             bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.shadeModel(Minecraft.isAmbientOcclusionEnabled() ? GL11.GL_SMOOTH : GL11.GL_FLAT);
             GlStateManager.scale(-1.0F, -1.0F, 1.0F);
-            float scale = tier10 ? 0.7F : 1.1F;
+            float scale = 0.7F;
             GlStateManager.scale(scale, scale, scale);
             drawModel();
         } catch (ReflectiveOperationException error) {
