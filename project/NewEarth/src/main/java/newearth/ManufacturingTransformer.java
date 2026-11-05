@@ -43,6 +43,8 @@ public final class ManufacturingTransformer implements IClassTransformer, Opcode
                 for(AbstractInsnNode i:m.instructions.toArray()) if(i instanceof MethodInsnNode && ((MethodInsnNode)i).name.equals("<init>") && ((MethodInsnNode)i).owner.equals("galaxyspace/core/prefab/entities/EntityTier6Rocket") && ((MethodInsnNode)i).desc.startsWith("(Lnet/minecraft/world/World;DDD")) {
                     InsnList hook=new InsnList();hook.add(new VarInsnNode(ALOAD,1));
                     hook.add(new MethodInsnNode(INVOKESTATIC,H,"swapIfTier7","(Lnet/minecraft/entity/Entity;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/entity/Entity;",false));
+                    // EntityTier7Rocket extends EntityTier6Rocket. The original frames still name that type.
+                    hook.add(new TypeInsnNode(CHECKCAST,"galaxyspace/core/prefab/entities/EntityTier6Rocket"));
                     m.instructions.insert(i,hook);changes++;
                 }
             }
