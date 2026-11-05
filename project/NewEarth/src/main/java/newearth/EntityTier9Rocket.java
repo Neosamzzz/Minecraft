@@ -5,9 +5,11 @@ import galaxyspace.core.prefab.entities.EntityMultiSeatRocket;
 import micdoodle8.mods.galacticraft.api.entity.IRocketType.EnumRocketType;
 import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -38,6 +40,19 @@ public class EntityTier9Rocket extends EntityMultiSeatRocket {
     @Override public double getOnPadYOffset() { return 0D; }
     @Override public float getRenderOffsetY() { return -1F; }
     @Override public float getCameraZoom() { return 15F; }
+    @Override public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+        if (hand != EnumHand.MAIN_HAND) return false;
+        if (launchPhase >= micdoodle8.mods.galacticraft.api.prefab.entity.EntitySpaceshipBase.EnumLaunchPhase.LAUNCHED.ordinal()) return false;
+        if (!world.isRemote && isPassenger(player)) {
+            // Same height trick as the GS tier-6 rocket, so the rider is not dropped from the nose.
+            float heightBefore = height;
+            height = height / 2.0F;
+            player.dismountRidingEntity();
+            height = heightBefore;
+            return true;
+        }
+        return super.processInitialInteract(player, hand);
+    }
     @Override public boolean defaultThirdPerson() { return true; }
     @Override public int getFuelTankCapacity() { return 1500; }
     @Override public int getPreLaunchWait() { return 400; }
