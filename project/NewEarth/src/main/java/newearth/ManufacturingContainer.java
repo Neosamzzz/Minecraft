@@ -32,11 +32,14 @@ public final class ManufacturingContainer extends Container {
                 @Override public boolean isItemValid(ItemStack stack) { return ManufacturingTile.battery(stack); }
             });
         }
+        int invX = tile.engine() ? 14 : 8;
+        int invY = tile.engine() ? 120 : 129;
+        int hotY = tile.engine() ? 178 : 187;
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
-                addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 129 + row * 18));
+                addSlotToContainer(new Slot(playerInventory, col + row * 9 + 9, invX + col * 18, invY + row * 18));
         for (int col = 0; col < 9; col++)
-            addSlotToContainer(new Slot(playerInventory, col, 8 + col * 18, 187));
+            addSlotToContainer(new Slot(playerInventory, col, invX + col * 18, hotY));
     }
 
     @Override public void detectAndSendChanges() {
