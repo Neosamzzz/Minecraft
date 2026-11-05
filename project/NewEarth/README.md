@@ -12,6 +12,8 @@ python3 tools/build.py --target newearth
 
 构建入口先从仓库内 GalaxySpace 源码生成开发依赖，再构建 NewEarth；两者共用已有 Gradle Wrapper。版本来自 `gradle.properties`，最终包位于根目录 `build/libs/`。客户端与服务端安装同版本 JAR，并同步根目录 `config/` 中的 EP 与 GS 配置。运行依赖 GC、GS 2.2.0、EP 0.8.0 及其依赖模组；新地形原型使用 Cleanroom + Java 25。
 
+存档兼容按[仓库工作约定](../../AGENTS.md)执行。
+
 配置属于整合包固定玩法，逐项维护；禁止用原版默认、旧备份或测试实例配置整份覆盖。实例调整需比较差异后合入正式配置。
 
 ## 开发内容
