@@ -22,15 +22,35 @@ public final class ArrivalNetwork {
     public static void init() {
         CHANNEL.registerMessage(StateHandler.class, State.class, 0, Side.CLIENT);
         CHANNEL.registerMessage(ReadyHandler.class, Ready.class, 1, Side.SERVER);
+        CHANNEL.registerMessage(SyncHandler.class, Sync.class, 2, Side.SERVER);
     }
 
     public static void send(EntityPlayerMP player, String session, int stage, BlockPos landing) {
         State state = new State(session, player.dimension, stage, landing);
+        send(player, state);
+    }
+
+    public static void send(EntityPlayerMP player, State state) {
         state.loadLevel = ArrivalSession.loadLevel(player.getServerWorld());
         CHANNEL.sendTo(state, player);
     }
 
     public static void ready(String session, boolean region) { CHANNEL.sendToServer(new Ready(session, region)); }
+
+    public static void requestSync() { CHANNEL.sendToServer(new Sync()); }
+
+    public static class Sync implements IMessage {
+        public void fromBytes(ByteBuf buf) { }
+        public void toBytes(ByteBuf buf) { }
+    }
+
+    public static class SyncHandler implements IMessageHandler<Sync, IMessage> {
+        public IMessage onMessage(Sync message, MessageContext ctx) {
+            EntityPlayerMP player = ctx.getServerHandler().player;
+            player.getServerWorld().addScheduledTask(() -> ArrivalSession.sync(player));
+            return null;
+        }
+    }
 
     public static class State implements IMessage {
         public String session;

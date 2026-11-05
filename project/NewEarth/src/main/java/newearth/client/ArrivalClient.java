@@ -22,7 +22,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
     private static GuiScreen screen;
     private static BlockPos landing;
     private static boolean regionSent;
-    private static int serverLevel;
+    private static int serverLevel, syncTicks;
 
     @SubscribeEvent public static void travelSound(PlaySoundEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
@@ -41,7 +41,7 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.getConnection() == null || (mc.world != null && !EndDimension.isDestination(mc.world))) {
             pending = null; session = null; stage = -1;
-            landing = null; regionSent = false; serverLevel = 0;
+            landing = null; regionSent = false; serverLevel = 0; syncTicks = 0;
             if (screen != null && mc.currentScreen == screen) mc.displayGuiScreen(null);
             screen = null;
             ArrivalDistantLoading.stop();
@@ -81,6 +81,10 @@ public final class ArrivalClient extends ArrivalNetwork.ClientBridge {
                 }
             }
         }
+        if (mc.world != null && mc.player != null && mc.player.dimension == mc.world.provider.getDimension()
+                && (stage < ArrivalNetwork.POEM || stage == ArrivalNetwork.RELEASE)) {
+            if (syncTicks++ % 40 == 0) ArrivalNetwork.requestSync();
+        } else syncTicks = 0;
         if (stage == ArrivalNetwork.WAIT && !regionSent && landing != null && mc.world != null
                 && mc.world.isBlockLoaded(landing) && !mc.world.isAirBlock(landing.down())) {
             ArrivalNetwork.ready(session, true);

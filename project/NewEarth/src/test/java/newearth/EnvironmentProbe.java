@@ -226,6 +226,26 @@ public final class EnvironmentProbe implements Opcodes {
         input.setTag("Sessions", groups);
         newearth.dimension.ArrivalSession saved = new newearth.dimension.ArrivalSession("probe");
         saved.readFromNBT(input);
+        newearth.dimension.ArrivalNetwork.State completedState = saved.snapshot(finished, 1020);
+        check(completedState.stage == newearth.dimension.ArrivalNetwork.LANDED && completedState.landing == null,
+                "Completed re-entry explicitly releases the cover without moving the player");
+        check(saved.snapshot(finished, 1020).session.equals(completedState.session),
+                "Repeated completion sync is idempotent and keeps its session identity");
+        check(saved.snapshot(waiting, 1020).stage == newearth.dimension.ArrivalNetwork.WAIT,
+                "Reconnect of a ready member retains waiting rather than replaying the poem");
+        check(saved.snapshot(UUID.randomUUID(), 1020) == null, "Unknown player is not treated as completed");
+        member.setBoolean("Ready", false); saved.readFromNBT(input);
+        check(saved.snapshot(waiting, 1020).stage == newearth.dimension.ArrivalNetwork.POEM,
+                "Unfinished member still receives the first-arrival poem");
+        member.setBoolean("Ready", true); saved.readFromNBT(input);
+        io.netty.buffer.ByteBuf completionBytes = io.netty.buffer.Unpooled.buffer();
+        try {
+            completedState.toBytes(completionBytes);
+            newearth.dimension.ArrivalNetwork.State receivedCompletion = new newearth.dimension.ArrivalNetwork.State();
+            receivedCompletion.fromBytes(completionBytes);
+            check(receivedCompletion.stage == newearth.dimension.ArrivalNetwork.LANDED && receivedCompletion.landing == null
+                    && receivedCompletion.session.equals(completedState.session), "Completion notification survives the network round trip");
+        } finally { completionBytes.release(); }
         net.minecraft.nbt.NBTTagCompound output = saved.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
         check(output.getTagList("Completed", 8).getStringTagAt(0).equals(finished.toString()), "Completed arrival survives save reload");
         net.minecraft.nbt.NBTTagCompound session = output.getTagList("Sessions", 10).getCompoundTagAt(0);

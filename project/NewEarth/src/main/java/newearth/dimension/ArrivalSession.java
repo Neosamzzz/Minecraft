@@ -68,6 +68,7 @@ public final class ArrivalSession extends WorldSavedData {
                 restore(player);
                 land(player, EndDimension.landing(world));
             }
+            ArrivalNetwork.send(player, saved.snapshot(player.getUniqueID(), player.dimension));
             return;
         }
         Group group = saved.pending(player.getUniqueID());
@@ -90,6 +91,23 @@ public final class ArrivalSession extends WorldSavedData {
         hold(player, world.getSpawnPoint(), world.getActualHeight() - 4);
         group.received.remove(player.getUniqueID());
         ArrivalNetwork.send(player, group.id, group.ready.contains(player.getUniqueID()) ? ArrivalNetwork.WAIT : ArrivalNetwork.POEM, group.landing);
+    }
+
+    public ArrivalNetwork.State snapshot(UUID player, int dimension) {
+        if (completed.contains(player))
+            return new ArrivalNetwork.State("completed:" + player, dimension, ArrivalNetwork.LANDED, null);
+        Group group = pending(player);
+        if (group == null) return null;
+        int stage = group.descent > 0 ? ArrivalNetwork.RELEASE
+                : group.ready.contains(player) ? ArrivalNetwork.WAIT : ArrivalNetwork.POEM;
+        return new ArrivalNetwork.State(group.id, dimension, stage, group.landing);
+    }
+
+    public static void sync(EntityPlayerMP player) {
+        if (!EndDimension.isDestination(player.world)) return;
+        ArrivalNetwork.State state = data(player.getServerWorld()).snapshot(player.getUniqueID(), player.dimension);
+        if (state == null) enter(player, false);
+        else ArrivalNetwork.send(player, state);
     }
 
     public static int loadLevel(WorldServer world) { return data(world).load.level(System.nanoTime()); }
