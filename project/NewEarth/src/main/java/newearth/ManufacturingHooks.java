@@ -53,24 +53,6 @@ public final class ManufacturingHooks {
                 && s.getMetadata()>=4 && s.getMetadata()<=7;
     }
     public static boolean tier7(Item item) { return "newearth:tier7_rocket".equals(String.valueOf(item.getRegistryName())); }
-    public static void powered(ItemStack stack) {
-        try {
-            Class<?> type=Class.forName("asmodeuscore.core.astronomy.SpaceData$Engine_Type");
-            Object engine=type.getField("SUBLIGHT_ENGINE").get(null);
-            if(!stack.hasTagCompound())stack.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
-            stack.getTagCompound().setBoolean((String)type.getMethod("getName").invoke(engine),true);
-            String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
-            stack.getTagCompound().setInteger(count,0);
-        } catch(ReflectiveOperationException e) {throw new IllegalStateException(e);}
-    }
-    public static boolean hasSublightModule(ItemStack stack) {
-        if(stack.isEmpty() || !tier7(stack.getItem()) || !stack.hasTagCompound()) return false;
-        try {
-            Class<?> type=Class.forName("asmodeuscore.core.astronomy.SpaceData$Engine_Type");
-            Object engine=type.getField("SUBLIGHT_ENGINE").get(null);
-            return stack.getTagCompound().getBoolean((String)type.getMethod("getName").invoke(engine));
-        } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
-    }
     public static Entity swapIfTier7(Entity created, ItemStack stack) {
         if (stack == null || stack.isEmpty() || !tier7(stack.getItem())) return created;
         if (!(created instanceof galaxyspace.core.prefab.entities.EntityTier6Rocket)) return created;
@@ -82,18 +64,6 @@ public final class ManufacturingHooks {
     public static Item rocketItem(Entity entity) {
         return SolarSystemBridge.requireItem(entity.getEntityData().getBoolean(T7)?"newearth:tier7_rocket":"galaxyspace:rocket_tier_6");
     }
-    public static Object modulesFor(Item item) {
-        try {
-            Class<?> base=Class.forName("galaxyspace.core.prefab.items.modules.ItemModule");
-            Object result=java.lang.reflect.Array.newInstance(base,1);
-            String name=tier7(item)
-                    ? "galaxyspace.systems.SolarSystem.planets.overworld.items.modules.SublightEngine"
-                    : "newearth.Tier6IonModule";
-            java.lang.reflect.Array.set(result,0,Class.forName(name).newInstance());
-            return result;
-        } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
-    }
-    static String moduleType(Item item) { return tier7(item)?"SublightEngine":"IonEngine"; }
     public static void recover(Entity entity, Object player) {
         if(!entity.getEntityData().getBoolean(T7) || !(player instanceof EntityPlayerMP)) return;
         GCPlayerStats stats=GCPlayerStats.get((EntityPlayerMP)player);
@@ -102,21 +72,26 @@ public final class ManufacturingHooks {
         if(stacks==null || stacks.isEmpty()) throw new IllegalStateException("Missing T7 recovery inventory");
         ItemStack stack=new ItemStack(rocketItem(entity),1,stats.getRocketType());
         stack.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
-        try {
-            Object value=entity.getClass().getMethod("getEngine").invoke(entity);
-            String key=(String)value.getClass().getMethod("getName").invoke(value);
-            if(!"FUEL_ENGINE".equals(value.toString())) stack.getTagCompound().setBoolean(key,true);
-            String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
-            stack.getTagCompound().setInteger(count,"FUEL_ENGINE".equals(value.toString())?1:0);
-        } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
         stacks.set(stacks.size()-1,stack);
     }
+    public static galaxyspace.core.prefab.items.modules.ItemModule[] modulesFor(Item item) {
+        if (tier7(item)) return new galaxyspace.core.prefab.items.modules.ItemModule[0];
+        return new galaxyspace.core.prefab.items.modules.ItemModule[] {new Tier6IonModule()};
+    }
+
+    public static void filterRocketVariants(Item item, List<ItemStack> stacks) {
+        String key = asmodeuscore.core.astronomy.SpaceData.Engine_Type.SUBLIGHT_ENGINE.getName();
+        stacks.removeIf(stack -> stack.getItem() == item && stack.hasTagCompound()
+                && stack.getTagCompound().getBoolean(key));
+    }
+
     public static List<ItemStack> dropped(List<ItemStack> stacks) {
-        for(ItemStack stack:stacks) if(!stack.isEmpty() && tier7(stack.getItem()) && stack.hasTagCompound()) {
-            try {
-                String count=(String)Class.forName("galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit").getField("mod_count").get(null);
-                stack.getTagCompound().setInteger(count,hasSublightModule(stack)?0:1);
-            } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        for (ItemStack stack : stacks) {
+            if (stack.isEmpty() || !tier7(stack.getItem()) || !stack.hasTagCompound()) continue;
+            for (asmodeuscore.core.astronomy.SpaceData.Engine_Type engine : asmodeuscore.core.astronomy.SpaceData.Engine_Type.values()) {
+                stack.getTagCompound().removeTag(engine.getName());
+            }
+            stack.getTagCompound().removeTag(galaxyspace.systems.SolarSystem.planets.overworld.items.armor.ItemSpaceSuit.mod_count);
         }
         return stacks;
     }

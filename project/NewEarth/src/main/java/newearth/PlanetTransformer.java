@@ -110,9 +110,21 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 if (m.localVariables != null) m.localVariables.clear();
                 m.instructions.add(new VarInsnNode(ALOAD, 0));
                 m.instructions.add(new MethodInsnNode(INVOKESTATIC, "newearth/ManufacturingHooks", "modulesFor",
-                        "(Lnet/minecraft/item/Item;)Ljava/lang/Object;", false));
-                m.instructions.add(new TypeInsnNode(CHECKCAST, "[Lgalaxyspace/core/prefab/items/modules/ItemModule;"));
+                        "(Lnet/minecraft/item/Item;)[Lgalaxyspace/core/prefab/items/modules/ItemModule;", false));
                 m.instructions.add(new InsnNode(ARETURN)); changes++;
+            }
+            if (item && (m.name.equals("getSubItems") || m.name.equals("func_150895_a"))
+                    && m.desc.equals("(Lnet/minecraft/creativetab/CreativeTabs;Lnet/minecraft/util/NonNullList;)V")) {
+                for (AbstractInsnNode instruction : m.instructions.toArray()) {
+                    if (instruction.getOpcode() != RETURN) continue;
+                    InsnList hook = new InsnList();
+                    hook.add(new VarInsnNode(ALOAD, 0));
+                    hook.add(new VarInsnNode(ALOAD, 2));
+                    hook.add(new MethodInsnNode(INVOKESTATIC, "newearth/ManufacturingHooks", "filterRocketVariants",
+                            "(Lnet/minecraft/item/Item;Ljava/util/List;)V", false));
+                    m.instructions.insertBefore(instruction, hook);
+                }
+                changes++;
             }
             if (rocket && m.name.equals("onTeleport")) {
                 for (AbstractInsnNode i : m.instructions.toArray()) if (i.getOpcode() == RETURN) {
@@ -148,7 +160,7 @@ public final class PlanetTransformer implements IClassTransformer, Opcodes {
                 m.instructions.insert(hook); changes++;
             }
         }
-        int expected = gui ? 7 : epGui ? 2 : world ? 3 : 1;
+        int expected = gui ? 7 : epGui ? 2 : world ? 3 : item ? 2 : 1;
         if (changes != expected) throw new IllegalStateException("Unsupported solar-system patch target " + n + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         c.accept(writer);

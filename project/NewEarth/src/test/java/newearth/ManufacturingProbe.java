@@ -27,8 +27,18 @@ public final class ManufacturingProbe {
         }
         net.minecraft.item.Item six=new net.minecraft.item.Item().setRegistryName("galaxyspace:rocket_tier_6");
         net.minecraft.item.Item seven=new net.minecraft.item.Item().setRegistryName("newearth:tier7_rocket");
-        check(ManufacturingHooks.moduleType(six).equals("IonEngine"),"T6 modification table permits ion only");
-        check(ManufacturingHooks.moduleType(seven).equals("SublightEngine"),"T7 modification table permits sublight only");
+        check(ManufacturingHooks.modulesFor(six)[0] instanceof Tier6IonModule,"T6 modification table permits ion only");
+        check(ManufacturingHooks.modulesFor(seven).length==0,"T7 has no engine modifications");
+        for (net.minecraft.item.Item rocketItem : Arrays.asList(six, seven)) {
+            ItemStack standard = new ItemStack(rocketItem);
+            ItemStack preinstalled = standard.copy();
+            net.minecraft.nbt.NBTTagCompound engine = new net.minecraft.nbt.NBTTagCompound();
+            engine.setBoolean(asmodeuscore.core.astronomy.SpaceData.Engine_Type.SUBLIGHT_ENGINE.getName(), true);
+            preinstalled.setTagCompound(engine);
+            List<ItemStack> variants = new ArrayList<>(Arrays.asList(standard, preinstalled));
+            ManufacturingHooks.filterRocketVariants(rocketItem, variants);
+            check(variants.size()==1 && variants.get(0)==standard,"Creative and JEI preserve the standard rocket and drop the preset");
+        }
         InventoryBasic inv=new InventoryBasic("test",false,27);
         inv.setInventorySlotContents(0,new ItemStack(Items.IRON_INGOT,2));
         inv.setInventorySlotContents(1,new ItemStack(Items.IRON_INGOT,3));
@@ -174,7 +184,7 @@ public final class ManufacturingProbe {
             check(!station.process(),"Completed assembly cannot duplicate its output");
             ItemStack rocket=station.getStackInSlot(AssemblyStationTile.OUTPUT_SLOT);
             check(rocket.getItem()==Manufacturing.ITEMS.get("tier"+tier+"_rocket"),"Assembly preserves exact tier item");
-            if(tier==7)check(ManufacturingHooks.hasSublightModule(rocket),"T7 assembly installs the supplied module");
+            if(tier==7)check(!rocket.hasTagCompound(),"T7 assembly yields a rocket without engine state");
             for(int slot=0;slot<inputs.size();slot++)station.setInventorySlotContents(slot,inputs.get(slot).copy());
             check(!station.process() && station.getField(0)==0,"Occupied output prevents a second processing cycle");
             for(int slot=0;slot<inputs.size();slot++)check(station.getStackInSlot(slot).getCount()==1,"Blocked output preserves every input");

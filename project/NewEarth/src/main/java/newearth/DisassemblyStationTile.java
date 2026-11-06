@@ -58,8 +58,6 @@ public class DisassemblyStationTile extends TileEntity implements ISidedInventor
         if (tier == 0) return java.util.Collections.emptyList();
         java.util.List<ItemStack> result = new java.util.ArrayList<>();
         for (ItemStack part : AssemblyStationTile.inputs(tier)) {
-            if (tier == 7 && part.getItem() == ManufacturingHooks.modules(6).getItem()
-                    && part.getMetadata() == 6 && !ManufacturingHooks.hasSublightModule(rocket)) continue;
             result.add(part.copy());
         }
         // Cargo variants retain their installed chests; merge duplicate body parts to make room.

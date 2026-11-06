@@ -147,9 +147,7 @@ public class AssemblyStationTile extends TileEntity implements ISidedInventory, 
                 Manufacturing.own(tier == 7 ? "blueprint_t7" : "control_panel"));
     }
     public static ItemStack output(int tier) {
-        ItemStack result = Manufacturing.own("tier" + tier + "_rocket");
-        if (tier == 7) ManufacturingHooks.powered(result);
-        return result;
+        return Manufacturing.own("tier" + tier + "_rocket");
     }
     private ItemStack findMatchingRecipe() {
         for (int tier : new int[] {7, 9, 10}) {
