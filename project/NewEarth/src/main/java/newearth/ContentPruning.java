@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import micdoodle8.mods.galacticraft.api.recipe.CompressorRecipes;
 import micdoodle8.mods.galacticraft.api.recipe.INasaWorkbenchRecipe;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -93,10 +95,22 @@ public final class ContentPruning {
     }
 
     private static boolean retiredMeta(String name, int meta) {
+        if (name.equals("advanced_launch_pad") || name.equals("advanced_launch_pad_full"))
+            return meta == 0 || meta == 1 || meta == 3;
         for (int tier = 4; tier <= 10; tier++)
             if (name.equals("tier" + tier + "_items"))
                 return (meta >= 0 && meta <= 3) || (tier == 7 && meta == 6);
         return false;
+    }
+
+    @SubscribeEvent
+    public static void preventRetiredPadPlacement(BlockEvent.PlaceEvent event) {
+        IBlockState state = event.getPlacedBlock();
+        ResourceLocation id = state.getBlock().getRegistryName();
+        if (id == null || !"extraplanets".equals(id.getNamespace())) return;
+        String name = id.getPath();
+        if ((name.equals("advanced_launch_pad") || name.equals("advanced_launch_pad_full"))
+                && retiredMeta(name, state.getBlock().getMetaFromState(state))) event.setCanceled(true);
     }
 
     public static void filterSubItems(List<ItemStack> stacks) {

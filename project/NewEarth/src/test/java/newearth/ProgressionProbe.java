@@ -297,6 +297,7 @@ public final class ProgressionProbe {
                     "com.mjr.extraplanets.items.ExtraPlanets_Items", "com.mjr.mjrlegendslib.item.ItemBasicMeta",
                     "com.mjr.extraplanets.recipes.ExtraPlanets_Recipes", "com.mjr.extraplanets.ExtraPlanets",
                     "com.mjr.extraplanets.blocks.ExtraPlanets_Blocks",
+                    "com.mjr.extraplanets.blocks.BlockCustomLandingPad",
                     "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicSaturn",
                     "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicJupiter",
                     "mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory",
@@ -313,6 +314,11 @@ public final class ProgressionProbe {
                                 try (java.io.InputStream input = jar.getInputStream(entry)) {
                                     com.google.gson.JsonElement json = new com.google.gson.JsonParser().parse(
                                             new String(read(input), java.nio.charset.StandardCharsets.UTF_8));
+                                    if (entry.getName().matches("assets/extraplanets/recipes/advanced_launch_pad_[0-3]\\.json")) {
+                                        boolean rover = entry.getName().endsWith("_2.json");
+                                        check(ContentPruning.skipRecipe(json.getAsJsonObject(), "extraplanets") != rover,
+                                                "Retire only EP rocket pad recipe " + entry.getName());
+                                    }
                                     String before = json.toString();
                                     MaterialUnification.rewrite(json, "extraplanets");
                                     if (!before.equals(json.toString())) {

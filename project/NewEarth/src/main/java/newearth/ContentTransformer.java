@@ -21,8 +21,9 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         boolean blocks = "com.mjr.extraplanets.blocks.ExtraPlanets_Blocks".equals(transformedName);
         boolean storage = "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicSaturn".equals(transformedName)
                 || "com.mjr.extraplanets.blocks.planetAndMoonBlocks.BlockBasicJupiter".equals(transformedName);
+        boolean pad = "com.mjr.extraplanets.blocks.BlockCustomLandingPad".equals(transformedName);
         boolean jei = "mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory".equals(transformedName);
-        if (!(items || recipes || meta || entities || schematics || gear || client || blocks || storage || jei)) return bytes;
+        if (!(items || recipes || meta || entities || schematics || gear || client || blocks || storage || pad || jei)) return bytes;
         ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node, 0);
         int changes = 0;
         for (MethodNode method : node.methods) {
@@ -105,7 +106,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 head.add(keep); head.add(new FrameNode(F_SAME, 0, null, 0, null)); method.instructions.insert(head); changes++;
             }
             if (((meta && (method.name.equals("getSubItems") || method.name.equals("func_150895_a")))
-                    || (storage && (method.name.equals("getSubBlocks") || method.name.equals("func_149666_a"))))
+                    || ((storage || pad) && (method.name.equals("getSubBlocks") || method.name.equals("func_149666_a"))))
                     && method.desc.equals("(Lnet/minecraft/creativetab/CreativeTabs;Lnet/minecraft/util/NonNullList;)V")) {
                 for (AbstractInsnNode instruction : method.instructions.toArray()) if (instruction.getOpcode() == RETURN) {
                     InsnList tail = new InsnList(); tail.add(new VarInsnNode(ALOAD, 2));
@@ -116,7 +117,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
             }
         }
         // Forge's side transformer removes creative-list methods before us on a dedicated server.
-        if ((storage || meta) && changes == 0
+        if ((storage || pad || meta) && changes == 0
                 && net.minecraftforge.fml.relauncher.FMLLaunchHandler.side() == net.minecraftforge.fml.relauncher.Side.SERVER) return bytes;
         if (blocks ? changes == 0 : changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();

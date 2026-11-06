@@ -124,6 +124,7 @@ GS高级电池容量60000。手持电池与漫游车配方中的电池部件分�
 | 鼻锥 | `TIER_4_NOSE_CONE`至`TIER_10_NOSE_CONE` | 移除注册与配方 |
 | 旧火箭图纸 | `TIER_4_SCHEMATIC`至`TIER_10_SCHEMATIC`、`TIER_10_ELECTRIC_ROCKET_SCHEMATIC` | 移除物品及NASA页面注册 |
 | 混装部件 | `tier4_items`至`tier10_items`的meta0～3、`tier7_items:6` | 移除制造与枚举，保留原料容器 |
+| 火箭发射平台 | `advanced_launch_pad` 的 meta 0、1、3 | 移除配方与物品枚举，禁止放置；火箭使用 GC 发射台。保留共用 ID 的漫游车充能平台（meta 2） |
 
 ### 漫游车
 
