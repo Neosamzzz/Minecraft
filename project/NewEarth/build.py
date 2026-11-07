@@ -56,9 +56,15 @@ def build(ROOT, run_gradle, env, offline):
     shutil.copy2(str(artifact), str(output))
     print('Built: {}'.format(output))
     preset = ROOT / 'project/NewEarth/dimension/biome-bundle'
+    world_config = preset / 'WorldConfig.ini'
+    world_config_text = world_config.read_text(encoding='utf-8')
+    for setting in ('LandRarity: 8', 'LandSize: 10', 'LandFuzzy: 3', 'RiverRarity: 1'):
+        if setting not in world_config_text:
+            raise ValueError('Island WorldConfig is missing setting: ' + setting)
     bundle = ROOT / 'build/libs' / ('NewEarth-BiomeBundle-' + version + '.zip')
     with zipfile.ZipFile(bundle, 'w', zipfile.ZIP_DEFLATED) as archive:
         archive.write(output, 'mods/' + output.name)
+        archive.write(world_config, 'mods/OpenTerrainGenerator/worlds/Biome Bundle/WorldConfig.ini')
         for options in sorted((ROOT / 'project/NewEarth/dimension/client-config').glob('*.txt')):
             archive.write(options, 'shaderpacks/' + options.name)
         for name in ('ExtraPlanets.cfg', 'GalaxySpace/dimensions.conf'):

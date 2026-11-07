@@ -16,7 +16,7 @@
 
 | 阶段 | 完成条件 | 当前状态 |
 | --- | --- | --- |
-| 一、世界与地形基础 | 固定生成方案，独立维度可进入，具备无敌对生物及正常地表环境设置 | 基础可用；地形及维度进入已由用户确认 |
+| 一、世界与地形基础 | 固定生成方案，独立维度可进入，具备无敌对生物及正常地表环境设置 | 基础可用；维度进入已确认，群岛海岸与出生点待实机验收 |
 | 二、抵达播放、加载与降落 | 十阶准入，首次抵达播放内容，期间集中加载，同船状态同步后安全降落 | 船体与乘员一起等待，终末之诗遮住地表；仍在途中的同行者到齐并就绪后，船体再下降。游戏内抵达待验收 |
 | 三、交付与正式准入对接 | 正式十阶往返、重连及保存可用，客户端与服务端交付配置齐全 | 飞船身份准入与返回入口已接入；正式交付和专用服务器多人验收待完成 |
 
@@ -38,9 +38,11 @@ $env:NEWEARTH_JAVA_HOME = 'C:\Users\qq106\AppData\Roaming\.minecraft\runtime\jav
 py -3 tools/build.py --target newearth --offline
 ```
 
-缓存不足时去掉 `--offline`。最终 JAR 与 `NewEarth-BiomeBundle-<版本>.zip` 位于根目录 `build/libs/`。组合包包含 NewEarth、六个群系覆盖配置及必需的 EP／GS 星球配置；须另行安装 OTG 与 Biome Bundle。先让 Biome Bundle 生成完整原始预设，再覆盖组合包，实例中只保留一个 NewEarth JAR。客户端与服务端使用相同的模组、预设和玩法配置。当前组合不包含 Depths Update，不要求扩高。
+缓存不足时去掉 `--offline`。最终 JAR 与 `NewEarth-BiomeBundle-<版本>.zip` 位于根目录 `build/libs/`。组合包包含 NewEarth、预设 `WorldConfig.ini`、六个群系覆盖配置及必需的 EP／GS 星球配置；须另行安装 OTG 与 Biome Bundle。先让 Biome Bundle 生成完整原始预设，再覆盖组合包，实例中只保留一个 NewEarth JAR。客户端与服务端使用相同的模组、预设和玩法配置。当前组合不包含 Depths Update，不要求扩高。
 
 `biome-bundle/WorldBiomes/` 保存持续维护的覆盖配置：Steppe、Sunflower Plains、TemperateLowlands 的区域尺寸均为 5，权重分别为 99、99、90；FloatingPlains、FloatingJungle 权重为 12，Caverns 权重为 25。其余群系沿用默认预设，不改山体高度与森林内部密度；权重不等于最终面积百分比。地形配置变更使用新存档或隔离区域，已有区块不会重新生成。
+
+`biome-bundle/WorldConfig.ini` 以 Biome Bundle 6.1 原文件为基线，把陆地改为群岛：`LandRarity` 8、`LandSize` 10、`LandFuzzy` 3、`RiverRarity` 1。主世界与终章共用该预设，地狱、末地与各行星维度不受影响。
 
 ### 独立维度与管理入口
 
