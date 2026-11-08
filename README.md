@@ -77,6 +77,8 @@ py -3 tools/build.py --target all --offline
 
 ## 安装
 
+**存档兼容：NewEarth 在 1.0 发布前不要求兼容旧存档。开发和验收可使用新存档，无需为旧数据保留兼容逻辑、实现迁移或编写迁移步骤。**
+
 最终包取自 `build/libs/`。退出游戏或停服后替换相应模组；FTB 和 NewEarth 的客户端、服务端使用同版本。NewEarth 同时分发根目录 `config/` 的固定配置。更新已有实例前保留原 JAR、配置与存档，避免覆盖游玩进度。
 
 正式游戏内测试使用本机 PCL 的 Cleanroom 实例，路径写在 `.local/test-instance.txt`，不进入仓库。客户端 JAR 替换该实例 `mods/` 中的同名文件。
