@@ -1,32 +1,38 @@
 package newearth.worldgen;
 
-import java.util.Arrays;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.init.Biomes;
-import net.minecraft.world.storage.WorldInfo;
 
 /** Runtime hooks for the transformed vanilla biome provider. */
 public final class IslandHooks {
-    private static final int CACHE_BITS = 9;
-    private static final int CACHE_MASK = (1 << CACHE_BITS) - 1;
-    private static final ThreadLocal<int[]> CACHE_KEYS = ThreadLocal.withInitial(() -> {
-        int[] keys = new int[1 << CACHE_BITS];
-        Arrays.fill(keys, Integer.MIN_VALUE);
-        return keys;
-    });
-    private static final ThreadLocal<Biome[]> CACHE_VALUES = ThreadLocal.withInitial(() -> new Biome[1 << CACHE_BITS]);
+    private static final java.util.Map<net.minecraft.world.biome.BiomeProvider, State> STATES =
+            java.util.Collections.synchronizedMap(new java.util.WeakHashMap<net.minecraft.world.biome.BiomeProvider, State>());
 
-    private static volatile IslandField field;
+    private static final class State {
+        final IslandField field;
+        final ThreadLocal<Cache> cache = ThreadLocal.withInitial(Cache::new);
+        State(IslandField field) { this.field = field; }
+    }
+
+    private static final class Cache {
+        final long[] keys = new long[512];
+        final Biome[] values = new Biome[512];
+    }
 
     private IslandHooks() { }
 
-    public static void register(Object provider, Object worldInfo) {
-        if (!WorldGenConfig.enabled || !(worldInfo instanceof WorldInfo)) {
-            field = null;
-            return;
-        }
-        IslandField next = new IslandField(((WorldInfo) worldInfo).getSeed());
+    /** Called after WorldProvider.setWorld has installed the world's biome provider, before spawn generation. */
+    public static void registerWorld(Object value) {
+        if (!(value instanceof net.minecraft.world.World)) return;
+        net.minecraft.world.World world = (net.minecraft.world.World) value;
+        net.minecraft.world.biome.BiomeProvider provider = world.getBiomeProvider();
+        if (provider == null) return;
+        STATES.remove(provider);
+        if (!WorldGenConfig.enabled || world.provider.getDimension() != 0
+                || world.provider.getClass() != net.minecraft.world.WorldProviderSurface.class
+                || provider.getClass() != net.minecraft.world.biome.BiomeProvider.class) return;
+        IslandField next = new IslandField(world.getSeed());
         next.mainIslandRadius = WorldGenConfig.mainIslandRadius;
         next.largeIslandCell = WorldGenConfig.largeIslandCell;
         next.largeIslandMinRadius = WorldGenConfig.largeIslandMinRadius;
@@ -37,16 +43,17 @@ public final class IslandHooks {
         next.beachWidth = WorldGenConfig.beachWidth;
         next.shelfWidth = WorldGenConfig.shelfWidth;
         next.deepLevel = WorldGenConfig.deepLevel;
-        field = next;
+        STATES.put(provider, new State(next));
     }
 
-    public static IslandField field() {
-        return field;
+    public static IslandField field(net.minecraft.world.World world) {
+        State state = world == null ? null : STATES.get(world.getBiomeProvider());
+        return state == null ? null : state.field;
     }
 
     /** True when a vanilla village may spawn at this chunk: solid land with no nearby water. */
-    public static boolean villageAllowed(int chunkX, int chunkZ) {
-        IslandField current = field;
+    public static boolean villageAllowed(Object world, int chunkX, int chunkZ) {
+        IslandField current = world instanceof net.minecraft.world.World ? field((net.minecraft.world.World) world) : null;
         if (current == null) return true;
         int x = chunkX * 16 + 8;
         int z = chunkZ * 16 + 8;
@@ -61,8 +68,9 @@ public final class IslandHooks {
         return true;
     }
     /** Rewrites a vanilla biome grid in place; the array is passed as Object so the call site stays name-neutral. */
-    public static void apply(Object biomes, int x, int z, int width, int height) {
-        IslandField current = field;
+    public static void apply(Object provider, Object biomes, int x, int z, int width, int height) {
+        State state = STATES.get(provider);
+        IslandField current = state == null ? null : state.field;
         if (current == null || !(biomes instanceof Biome[])) return;
         Biome[] cells = (Biome[]) biomes;
         // The generation grid is 10x10 cells of four blocks each, with cell coordinates.
@@ -80,33 +88,34 @@ public final class IslandHooks {
     }
 
     /** Biome at a block position, cached on a four-block grid like vanilla's biome layer. */
-    public static Object biomeAt(Object position) {
-        IslandField current = field;
+    public static Object biomeAt(Object provider, Object position) {
+        State state = STATES.get(provider);
+        IslandField current = state == null ? null : state.field;
         if (current == null || !(position instanceof BlockPos)) return null;
         BlockPos pos = (BlockPos) position;
         int qx = pos.getX() >> 2;
         int qz = pos.getZ() >> 2;
-        int key = qx * 31 + qz;
-        int slot = key & CACHE_MASK;
-        int[] keys = CACHE_KEYS.get();
-        if (keys[slot] == key) {
-            Biome cached = CACHE_VALUES.get()[slot];
+        long key = ((long) qx << 32) | (qz & 0xFFFFFFFFL);
+        int slot = (qx * 31 + qz) & 511;
+        Cache cache = state.cache.get();
+        if (cache.keys[slot] == key) {
+            Biome cached = cache.values[slot];
             if (cached != null) return cached;
         }
         int worldX = (qx << 2) + 2;
         int worldZ = (qz << 2) + 2;
         Biome biome = pick(current, current.value(worldX, worldZ), worldX, worldZ);
-        keys[slot] = key;
-        CACHE_VALUES.get()[slot] = biome;
+        cache.keys[slot] = key;
+        cache.values[slot] = biome;
         return biome;
     }
 
     /** Moves the world spawn onto the island when the vanilla spawn search lands in open water. */
     public static void ensureSpawn(net.minecraft.server.MinecraftServer server) {
-        IslandField current = field;
-        if (current == null || server == null) return;
+        if (server == null) return;
         net.minecraft.world.WorldServer world = server.getWorld(0);
-        if (world == null) return;
+        IslandField current = field(world);
+        if (current == null) return;
         BlockPos spawn = world.getSpawnPoint();
         double dx = spawn.getX();
         double dz = spawn.getZ();

@@ -20,7 +20,7 @@ public final class IslandVillage implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator generator, IChunkProvider provider) {
         if (world.provider.getDimension() != 0 || !WorldGenConfig.enabled || !WorldGenConfig.mainVillage) return;
-        IslandField field = IslandHooks.field();
+        IslandField field = IslandHooks.field(world);
         if (field == null) return;
 
         long key;

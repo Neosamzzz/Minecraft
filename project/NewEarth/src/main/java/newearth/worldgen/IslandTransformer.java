@@ -10,6 +10,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FrameNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -26,11 +27,12 @@ import org.objectweb.asm.tree.VarInsnNode;
  */
 public final class IslandTransformer implements IClassTransformer, Opcodes {
     private static final String TARGET = "net.minecraft.world.biome.BiomeProvider";
+    private static final String WORLD_PROVIDER = "net.minecraft.world.WorldProvider";
     private static final String VILLAGE = "net.minecraft.world.gen.structure.MapGenVillage";
     private static final String HOOKS = "newearth/worldgen/IslandHooks";
     private static final String OBJECT = "java/lang/Object";
 
-    private static final Pattern CONSTRUCTOR = Pattern.compile("^\\(L([^;]+);\\)V$");
+    private static final Pattern WORLD_BINDING = Pattern.compile("^\\(L([^;]+);\\)V$");
     private static final Pattern GRID = Pattern.compile("^\\(\\[L([^;]+);IIII\\)\\[L\\1;$");
     private static final Pattern GRID_CACHED = Pattern.compile("^\\(\\[L([^;]+);IIIIZ\\)\\[L\\1;$");
     private static final Pattern LOOKUP = Pattern.compile("^\\(L([^;]+);L([^;]+);\\)L\\2;$");
@@ -39,6 +41,7 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return bytes;
+        if (WORLD_PROVIDER.equals(transformedName)) return patchWorldProvider(bytes);
         if (VILLAGE.equals(transformedName)) return patchVillage(bytes);
         if (!TARGET.equals(transformedName)) return bytes;
         ClassNode node = new ClassNode();
@@ -54,13 +57,10 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
             return bytes;
         }
 
-        int constructors = 0, grids = 0, lookups = 0;
+        int grids = 0, lookups = 0;
         for (MethodNode method : node.methods) {
             if ((method.access & ACC_STATIC) != 0) continue;
-            if (method.name.equals("<init>") && CONSTRUCTOR.matcher(method.desc).matches()) {
-                patchConstructor(method);
-                constructors++;
-            } else if (GRID.matcher(method.desc).matches() || GRID_CACHED.matcher(method.desc).matches()) {
+            if (GRID.matcher(method.desc).matches() || GRID_CACHED.matcher(method.desc).matches()) {
                 patchGrid(method);
                 grids++;
             } else if (LOOKUP.matcher(method.desc).matches() || LOOKUP_SINGLE.matcher(method.desc).matches()) {
@@ -68,8 +68,8 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
                 lookups++;
             }
         }
-        if (constructors != 1 || grids != 3 || lookups != 2) {
-            log("unexpected layout (ctor=" + constructors + ", grid=" + grids + ", lookup=" + lookups + "); island worldgen disabled");
+        if (grids != 3 || lookups != 2) {
+            log("unexpected layout (grid=" + grids + ", lookup=" + lookups + "); island worldgen disabled");
             return bytes;
         }
         log("biome provider patched");
@@ -85,11 +85,22 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
         int patched = 0;
         for (MethodNode method : node.methods) {
             if ((method.access & ACC_STATIC) != 0 || !method.desc.equals("(II)Z")) continue;
+            FieldInsnNode world = null;
+            for (AbstractInsnNode insn : method.instructions.toArray()) {
+                if (insn instanceof FieldInsnNode && insn.getOpcode() == GETFIELD
+                        && ((FieldInsnNode) insn).desc.startsWith("L")) {
+                    world = (FieldInsnNode) insn;
+                    break;
+                }
+            }
+            if (world == null) continue;
             LabelNode proceed = new LabelNode();
             InsnList hook = new InsnList();
+            hook.add(new VarInsnNode(ALOAD, 0));
+            hook.add(new FieldInsnNode(GETFIELD, world.owner, world.name, world.desc));
             hook.add(new VarInsnNode(ILOAD, 1));
             hook.add(new VarInsnNode(ILOAD, 2));
-            hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "villageAllowed", "(II)Z", false));
+            hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "villageAllowed", "(Ljava/lang/Object;II)Z", false));
             hook.add(new JumpInsnNode(IFNE, proceed));
             hook.add(new InsnNode(ICONST_0));
             hook.add(new InsnNode(IRETURN));
@@ -107,15 +118,29 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
         node.accept(writer);
         return writer.toByteArray();
     }
-    private static void patchConstructor(MethodNode method) {
-        for (AbstractInsnNode insn : method.instructions.toArray()) {
-            if (insn.getOpcode() != RETURN) continue;
-            InsnList hook = new InsnList();
-            hook.add(new VarInsnNode(ALOAD, 0));
-            hook.add(new VarInsnNode(ALOAD, 1));
-            hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "register", "(Ljava/lang/Object;Ljava/lang/Object;)V", false));
-            method.instructions.insertBefore(insn, hook);
+    private static byte[] patchWorldProvider(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        int patched = 0;
+        for (MethodNode method : node.methods) {
+            if ((method.access & (ACC_PUBLIC | ACC_FINAL | ACC_STATIC)) != (ACC_PUBLIC | ACC_FINAL)
+                    || !WORLD_BINDING.matcher(method.desc).matches()) continue;
+            for (AbstractInsnNode insn : method.instructions.toArray()) {
+                if (insn.getOpcode() != RETURN) continue;
+                InsnList hook = new InsnList();
+                hook.add(new VarInsnNode(ALOAD, 1));
+                hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "registerWorld", "(Ljava/lang/Object;)V", false));
+                method.instructions.insertBefore(insn, hook);
+            }
+            patched++;
         }
+        if (patched != 1) {
+            log("unexpected world provider layout (" + patched + "); island registration disabled");
+            return bytes;
+        }
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        node.accept(writer);
+        return writer.toByteArray();
     }
 
     private static void patchGrid(MethodNode method) {
@@ -123,11 +148,13 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
             if (insn.getOpcode() != ARETURN) continue;
             InsnList hook = new InsnList();
             hook.add(new InsnNode(DUP));
+            hook.add(new VarInsnNode(ALOAD, 0));
+            hook.add(new InsnNode(SWAP));
             hook.add(new VarInsnNode(ILOAD, 2));
             hook.add(new VarInsnNode(ILOAD, 3));
             hook.add(new VarInsnNode(ILOAD, 4));
             hook.add(new VarInsnNode(ILOAD, 5));
-            hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "apply", "(Ljava/lang/Object;IIII)V", false));
+            hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "apply", "(Ljava/lang/Object;Ljava/lang/Object;IIII)V", false));
             method.instructions.insertBefore(insn, hook);
         }
     }
@@ -135,8 +162,9 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
     private static void patchLookup(MethodNode method, String biomeType) {
         LabelNode fallback = new LabelNode();
         InsnList hook = new InsnList();
+        hook.add(new VarInsnNode(ALOAD, 0));
         hook.add(new VarInsnNode(ALOAD, 1));
-        hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "biomeAt", "(Ljava/lang/Object;)Ljava/lang/Object;", false));
+        hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "biomeAt", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false));
         hook.add(new InsnNode(DUP));
         hook.add(new JumpInsnNode(IFNULL, fallback));
         hook.add(new TypeInsnNode(CHECKCAST, biomeType));

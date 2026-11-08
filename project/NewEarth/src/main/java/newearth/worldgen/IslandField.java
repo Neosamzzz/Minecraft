@@ -140,7 +140,7 @@ public final class IslandField {
     /** Centre block of a grid island from its packed key. */
     public int[] largeIslandCenter(long key) {
         long cx = key >> 32;
-        long cz = key & 0xFFFFFFFFL;
+        long cz = (int) key;
         double[] island = largeIsland(cx, cz);
         if (island == null) return null;
         return new int[]{(int) Math.floor(island[0]), (int) Math.floor(island[1]), (int) island[2]};

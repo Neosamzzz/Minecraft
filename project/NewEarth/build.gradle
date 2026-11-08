@@ -136,3 +136,14 @@ tasks.register('landscapeCheck', JavaExec) {
     }
 }
 check.dependsOn landscapeCheck
+
+
+tasks.register('worldgenCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.WorldgenProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/worldgen')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn worldgenCheck
