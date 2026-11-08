@@ -2,8 +2,8 @@
   "title": "开普勒轨道",
   "description": "到达开普勒 22b",
   "icon": "extraplanets:tier11_items 1 0",
-  "x": -6.0,
-  "y": 3.0,
+  "x": -8.0,
+  "y": 0.6,
   "text": [
     "蓝色的树林还算好理解。那边的矿石树，又是怎么回事？"
   ],

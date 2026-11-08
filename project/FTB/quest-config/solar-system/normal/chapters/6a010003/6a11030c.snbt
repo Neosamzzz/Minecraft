@@ -2,8 +2,8 @@
   "title": "重型运载",
   "description": "获得 GS 四级火箭",
   "icon": "galaxyspace:rocket_tier_4 1 0",
-  "x": 10.2,
-  "y": 0.1,
+  "x": 18.04,
+  "y": 0.6,
   "text": [
     "四级起改用 GS 装配体系。带回 EP 水星地牢的四阶火箭认证，与对应部件一起完成总装。"
   ],

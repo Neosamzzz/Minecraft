@@ -2,8 +2,8 @@
   "title": "五色样本",
   "description": "获得 EP 彩色钻石任一种",
   "icon": "extraplanets:tier11_items 1 1",
-  "x": -4.0,
-  "y": -1.5,
+  "x": -3.8,
+  "y": 2.0,
   "text": [
     "蓝、红、紫、黄、绿，先带回第一种。"
   ],

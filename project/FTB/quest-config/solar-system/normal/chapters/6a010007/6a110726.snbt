@@ -2,8 +2,8 @@
   "title": "晶圆流片",
   "description": "获得紫晶晶圆",
   "icon": "extraplanets:wafer 1 0",
-  "x": 1.0,
-  "y": -6.0,
+  "x": 8.8,
+  "y": 0.4,
   "text": [
     "树脂和紫晶锭进了电路制造机。"
   ],

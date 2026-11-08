@@ -2,8 +2,8 @@
   "title": "就地取材",
   "description": "获得戴斯锭",
   "icon": "galacticraftplanets:item_basic_mars 1 2",
-  "x": -1.5,
-  "y": -3.4,
+  "x": -3.8,
+  "y": -2.2,
   "text": [
     "后续火箭和设备要用到的材料。"
   ],

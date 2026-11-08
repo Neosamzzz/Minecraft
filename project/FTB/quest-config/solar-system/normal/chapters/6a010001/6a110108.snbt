@@ -2,8 +2,8 @@
   "title": "月面采样",
   "description": "获得原始陨铁",
   "icon": "galacticraftcore:meteoric_iron_raw 1 0",
-  "x": 7.6,
-  "y": -3.8,
+  "x": 9.64,
+  "y": -2.0,
   "text": [
     "月面陨石里的材料。"
   ],

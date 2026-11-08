@@ -2,8 +2,8 @@
   "title": "级间分离",
   "description": "获得二级火箭",
   "icon": "galacticraftplanets:rocket_t2 1 0",
-  "x": 12.7,
-  "y": 1,
+  "x": 18.04,
+  "y": -0.9,
   "text": [
     "下一站：火星。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 2.05,
+  "size": 2.0,
   "shape": "hexagon"
 }

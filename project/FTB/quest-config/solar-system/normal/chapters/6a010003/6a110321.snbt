@@ -2,8 +2,8 @@
   "title": "四阶认证",
   "description": "获得 GS 四阶火箭认证",
   "icon": "galaxyspace:rocket_modules 1 8",
-  "x": -2.5,
-  "y": 9.5,
+  "x": 6.28,
+  "y": -0.8,
   "text": [
     "认证带回来了，接下来换一套装配办法。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
-  "shape": "circle"
+  "size": 1.4,
+  "shape": "square"
 }

@@ -2,8 +2,8 @@
   "title": "金星七号",
   "description": "抵达金星",
   "icon": "galacticraftplanets:venus 1 1",
-  "x": -6,
-  "y": 1,
+  "x": -8.0,
+  "y": 0.8,
   "text": [],
   "optional": false,
   "tasks": [

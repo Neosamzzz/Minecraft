@@ -2,8 +2,8 @@
   "title": "系绳作业",
   "description": "获得抓钩",
   "icon": "galacticraftplanets:grapple 1 0",
-  "x": -1.8,
-  "y": 0.3,
+  "x": 5.44,
+  "y": 6.0,
   "text": [],
   "optional": true,
   "tasks": [

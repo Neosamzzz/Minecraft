@@ -8,5 +8,171 @@
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",
-  "images": []
+  "images": [
+    {
+      "x": -5.48,
+      "y": 0.6,
+      "width": 3.747,
+      "height": 0.12,
+      "rotation": -9.019,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -0.44,
+      "y": 0.5,
+      "width": 3.72,
+      "height": 0.12,
+      "rotation": 6.789,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 4.6,
+      "y": 0.4,
+      "width": 3.747,
+      "height": 0.12,
+      "rotation": -9.019,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -7.16,
+      "y": -1.2,
+      "width": 3.354,
+      "height": 0.12,
+      "rotation": -69.102,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -3.8,
+      "y": -3.6,
+      "width": 3.7,
+      "height": 0.12,
+      "rotation": -4.538,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 1.24,
+      "y": -3.6,
+      "width": 3.514,
+      "height": 0.12,
+      "rotation": 4.538,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 6.28,
+      "y": -3.6,
+      "width": 3.514,
+      "height": 0.12,
+      "rotation": -4.538,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 13.84,
+      "y": -1.5,
+      "width": 8.918,
+      "height": 0.12,
+      "rotation": 24.53,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -2.12,
+      "y": 1.9,
+      "width": 2.436,
+      "height": 0.12,
+      "rotation": 63.705,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 1.24,
+      "y": 3.4,
+      "width": 3.7,
+      "height": 0.12,
+      "rotation": -4.538,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 11.32,
+      "y": 2.0,
+      "width": 13.147,
+      "height": 0.12,
+      "rotation": -9.019,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 6.7,
+      "y": 2.7,
+      "width": 4.109,
+      "height": 0.12,
+      "rotation": 98.842,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 8.38,
+      "y": 5.2,
+      "width": 2.863,
+      "height": 0.12,
+      "rotation": -5.44,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 12.58,
+      "y": 4.8,
+      "width": 2.863,
+      "height": 0.12,
+      "rotation": -5.44,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": 16.78,
+      "y": 2.7,
+      "width": 3.502,
+      "height": 0.12,
+      "rotation": -42.138,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    }
+  ]
 }

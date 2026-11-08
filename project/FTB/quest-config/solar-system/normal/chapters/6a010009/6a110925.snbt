@@ -2,8 +2,8 @@
   "title": "十阶总装",
   "description": "获得十阶飞船",
   "icon": "newearth:tier10_rocket 1 0",
-  "x": 6.0,
-  "y": 3.0,
+  "x": 11.32,
+  "y": -0.4,
   "text": [
     "换上升级好的引擎，再装成一艘船。"
   ],

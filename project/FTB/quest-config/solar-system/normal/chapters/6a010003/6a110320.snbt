@@ -2,8 +2,8 @@
   "title": "信使号",
   "description": "抵达 EP 水星",
   "icon": "minecraft:stone",
-  "x": -6.0,
-  "y": 9.5,
+  "x": 2.08,
+  "y": -1.6,
   "text": [
     "同叫水星，这一颗的地下藏着四阶火箭认证。"
   ],

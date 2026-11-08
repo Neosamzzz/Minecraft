@@ -2,8 +2,8 @@
   "title": "引擎试车台",
   "description": "获得引擎升级台",
   "icon": "newearth:engine_station 1 0",
-  "x": 4.5,
-  "y": 9.5,
+  "x": 6.28,
+  "y": -3.0,
   "text": [
     "飞船可以换，引擎也能接着升级。"
   ],

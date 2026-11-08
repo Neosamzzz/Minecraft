@@ -2,8 +2,8 @@
   "title": "生命维持在线",
   "description": "获得任一种普通氧气罐",
   "icon": "galacticraftcore:oxygen_tank_light_full 1 0",
-  "x": -3.8,
-  "y": 2.5,
+  "x": 0.4,
+  "y": 1.9,
   "text": [],
   "optional": false,
   "tasks": [

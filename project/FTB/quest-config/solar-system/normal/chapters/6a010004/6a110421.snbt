@@ -2,8 +2,8 @@
   "title": "五阶认证",
   "description": "获得 GS 五阶火箭认证",
   "icon": "galaxyspace:rocket_modules 1 9",
-  "x": -2.5,
-  "y": 9.5,
+  "x": 9.64,
+  "y": -1.0,
   "text": [
     "木星留下了五阶认证，土星还在前面。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
-  "shape": "circle"
+  "size": 1.4,
+  "shape": "square"
 }

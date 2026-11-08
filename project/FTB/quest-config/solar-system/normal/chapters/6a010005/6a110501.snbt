@@ -2,8 +2,8 @@
   "title": "卡西尼号",
   "description": "抵达土卫二",
   "icon": "minecraft:packed_ice",
-  "x": -5,
-  "y": -3.5,
+  "x": -8.0,
+  "y": 2.2,
   "text": [],
   "optional": false,
   "tasks": [

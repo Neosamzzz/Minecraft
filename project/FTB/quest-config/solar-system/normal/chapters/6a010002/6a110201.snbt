@@ -2,8 +2,8 @@
   "title": "海盗号着陆",
   "description": "抵达火星",
   "icon": "galacticraftplanets:mars 1 4",
-  "x": -5.5,
-  "y": -1.6,
+  "x": -8.0,
+  "y": 0.0,
   "text": [],
   "optional": false,
   "tasks": [

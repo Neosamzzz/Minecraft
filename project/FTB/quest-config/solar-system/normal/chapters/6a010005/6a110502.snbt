@@ -2,8 +2,8 @@
   "title": "惠更斯着陆",
   "description": "抵达土卫六",
   "icon": "galacticraftcore:item_basic_moon 1 2",
-  "x": -5,
-  "y": 1,
+  "x": 0.4,
+  "y": 2.2,
   "text": [
     "土卫六，可留意宝石资源。"
   ],

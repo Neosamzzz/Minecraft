@@ -2,8 +2,8 @@
   "title": "旅行者一号",
   "description": "抵达木卫一",
   "icon": "galaxyspace:gs_basic 1 12",
-  "x": -5.5,
-  "y": -3.6,
+  "x": -8.0,
+  "y": 0.6,
   "text": [
     "木卫一的火山石用于后续高级板材。"
   ],

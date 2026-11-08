@@ -2,8 +2,8 @@
   "title": "六阶认证",
   "description": "获得 GS 六阶火箭认证",
   "icon": "galaxyspace:rocket_modules 1 10",
-  "x": -2.5,
-  "y": 9.5,
+  "x": 9.64,
+  "y": 1.2,
   "text": [
     "光环下面的收获，要用在下一艘火箭上。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
-  "shape": "circle"
+  "size": 1.4,
+  "shape": "square"
 }

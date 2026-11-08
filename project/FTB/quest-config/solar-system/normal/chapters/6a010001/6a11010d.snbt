@@ -2,8 +2,8 @@
   "title": "月面插旗",
   "description": "获得旗帜",
   "icon": "galacticraftcore:flag 1 0",
-  "x": 0.7,
-  "y": 4.7,
+  "x": 7.12,
+  "y": 3.1,
   "text": [
     "给着陆点留个标记。"
   ],

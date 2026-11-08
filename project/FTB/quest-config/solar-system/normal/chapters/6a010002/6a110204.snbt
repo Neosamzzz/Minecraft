@@ -2,8 +2,8 @@
   "title": "图纸迭代",
   "description": "获得三级火箭图纸",
   "icon": "galacticraftplanets:schematic 1 0",
-  "x": 1.6,
-  "y": 1,
+  "x": 0.4,
+  "y": 1.8,
   "text": [],
   "optional": false,
   "tasks": [

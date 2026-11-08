@@ -2,8 +2,8 @@
   "title": "镁中不足？",
   "description": "获得镁板",
   "icon": "galaxyspace:compressed_plates 1 2",
-  "x": -3.2,
-  "y": -1.7,
+  "x": -4.5,
+  "y": -1.5,
   "text": [
     "用途：准备 GS HDP:0 的结构材料。",
     "操作：将镁原料冶炼为锭，再通过对应压缩配方加工成板。",

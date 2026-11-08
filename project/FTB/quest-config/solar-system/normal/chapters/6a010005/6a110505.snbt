@@ -2,8 +2,8 @@
   "title": "逃逸轨道",
   "description": "获得 GS 六级火箭",
   "icon": "galaxyspace:rocket_tier_6 1 0",
-  "x": 5.2,
-  "y": -0.4,
+  "x": 15.52,
+  "y": -0.2,
   "text": [
     "这一阶使用 HDP:2，火山石也派上用场。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 2.05,
+  "size": 2.0,
   "shape": "hexagon"
 }

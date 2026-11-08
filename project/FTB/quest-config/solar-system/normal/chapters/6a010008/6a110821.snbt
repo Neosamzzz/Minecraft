@@ -2,8 +2,8 @@
   "title": "任务控制台",
   "description": "获得九阶控制面板",
   "icon": "newearth:control_panel 1 0",
-  "x": 0.0,
-  "y": -2.0,
+  "x": -3.8,
+  "y": -0.6,
   "text": [
     "熟悉的面板，也接上了新的晶圆。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.2,
+  "size": 1.4,
   "shape": "square"
 }

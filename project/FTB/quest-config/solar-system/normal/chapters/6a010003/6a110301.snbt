@@ -2,8 +2,8 @@
   "title": "主带穿越",
   "description": "抵达小行星带",
   "icon": "galacticraftplanets:asteroids_block 1 0",
-  "x": -7,
-  "y": -3.4,
+  "x": -8.0,
+  "y": -2.2,
   "text": [
     "小行星带，钛材料的来源之一。"
   ],

@@ -2,8 +2,8 @@
   "title": "伽利略号",
   "description": "抵达木卫三",
   "icon": "galacticraftplanets:asteroids_block 1 4",
-  "x": -1.8,
-  "y": -5.5,
+  "x": 1.24,
+  "y": 0.2,
   "text": [
     "镁和钛材料的另一处来源。"
   ],

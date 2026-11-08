@@ -2,8 +2,8 @@
   "title": "核心点亮",
   "description": "获得最终能源核心",
   "icon": "newearth:final_energy_core 1 0",
-  "x": 1.0,
-  "y": -1.5,
+  "x": 2.92,
+  "y": 0.2,
   "text": [
     "五种颜色汇成了一颗核心。"
   ],

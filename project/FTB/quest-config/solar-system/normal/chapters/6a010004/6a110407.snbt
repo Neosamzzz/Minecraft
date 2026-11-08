@@ -2,8 +2,8 @@
   "title": "引力弹弓",
   "description": "获得 GS 五级火箭",
   "icon": "galaxyspace:rocket_tier_5 1 0",
-  "x": 5.2,
-  "y": 0.2,
+  "x": 15.52,
+  "y": 0.6,
   "text": [
     "下一段航线：土星、天王星的卫星。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 2.05,
+  "size": 2.0,
   "shape": "hexagon"
 }

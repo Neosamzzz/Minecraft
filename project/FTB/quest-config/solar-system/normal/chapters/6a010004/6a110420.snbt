@@ -2,8 +2,8 @@
   "title": "朱诺号",
   "description": "抵达 EP 木星",
   "icon": "minecraft:stone",
-  "x": -6.0,
-  "y": 9.5,
+  "x": -4.64,
+  "y": -3.2,
   "text": [
     "木星的地表，值得亲自看一眼。"
   ],

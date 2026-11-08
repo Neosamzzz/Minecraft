@@ -2,8 +2,8 @@
   "title": "引擎换装",
   "description": "获得亚光速引擎",
   "icon": "galaxyspace:rocket_modules 1 6",
-  "x": 0.0,
-  "y": 12.5,
+  "x": 14.68,
+  "y": 4.6,
   "text": [
     "离子引擎没有退休，只是换了个身份继续上船。"
   ],

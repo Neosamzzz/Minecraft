@@ -2,8 +2,8 @@
   "title": "多带一点电",
   "description": "获得 EP 高级电池",
   "icon": "extraplanets:advanced_battery 1 0",
-  "x": 3.2,
-  "y": -5.1,
+  "x": 4.5,
+  "y": -1.5,
   "text": [
     "用途：准备可携带的备用电力。",
     "操作：按配方制造并充电，使用时确认设备支持该电池。",

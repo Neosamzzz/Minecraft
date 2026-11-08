@@ -2,8 +2,8 @@
   "title": "崔顿飞掠",
   "description": "抵达海卫一",
   "icon": "minecraft:packed_ice",
-  "x": -5,
-  "y": -2.8,
+  "x": -8.0,
+  "y": 1.0,
   "text": [],
   "optional": false,
   "tasks": [

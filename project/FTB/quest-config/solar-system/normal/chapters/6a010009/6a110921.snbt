@@ -2,8 +2,8 @@
   "title": "铂族金属",
   "description": "获得 EP 铂锭或压缩铂",
   "icon": "extraplanets:tier11_items 1 5",
-  "x": -9.0,
-  "y": -1.5,
+  "x": -3.8,
+  "y": -2.4,
   "text": [
     "把铂也装进货舱，核心还等着它。"
   ],

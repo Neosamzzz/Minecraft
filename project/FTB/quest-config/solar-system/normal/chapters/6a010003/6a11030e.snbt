@@ -2,8 +2,8 @@
   "title": "无人矿场",
   "description": "获得自动采矿机",
   "icon": "galacticraftplanets:astro_miner 1 0",
-  "x": 5.7,
-  "y": -5.2,
+  "x": 9.64,
+  "y": 6.4,
   "text": [
     "自动采矿支线；使用还需要配套基地。"
   ],

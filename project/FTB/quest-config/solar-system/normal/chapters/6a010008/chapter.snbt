@@ -6,5 +6,40 @@
     "这次，把它们装成一艘能一起出发的船。"
   ],
   "group": 0,
-  "default_quest_shape": "circle"
+  "default_quest_shape": "circle",
+  "images": [
+    {
+      "x": -5.9,
+      "y": 0.3,
+      "width": 2.903,
+      "height": 0.12,
+      "rotation": -23.199,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -1.28,
+      "y": 0.1,
+      "width": 2.759,
+      "height": 0.12,
+      "rotation": 15.524,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    },
+    {
+      "x": -3.38,
+      "y": 1.0,
+      "width": 7.087,
+      "height": 0.12,
+      "rotation": -2.479,
+      "image": "#FF70869C",
+      "hover": [],
+      "click": "",
+      "dev": false
+    }
+  ]
 }
