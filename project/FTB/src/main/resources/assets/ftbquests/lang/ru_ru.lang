@@ -116,6 +116,7 @@ commands.ftbquests.usage=/ftbquests [команда]
 commands.ftbquests.editing_mode.usage=/ftbquests editing_mode [true|false|toggle] [игрок]
 commands.ftbquests.editing_mode.enabled=Режим редактора включен для %s 
 commands.ftbquests.editing_mode.disabled=Режим редактора выключен для %s
+commands.ftbquests.editing_mode.other_player=Только операторы могут менять режим редактирования другого игрока
 commands.ftbquests.reset_progress.usage=/ftbquests reset_progress <команда> [ID объекта]
 commands.ftbquests.reset_progress.invalid_id=Неверный ID объекта!
 commands.ftbquests.reset_progress.reset=Прогресс сброщен!

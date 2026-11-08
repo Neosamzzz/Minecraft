@@ -212,6 +212,7 @@ commands.ftbquests.usage=/ftbquests [子命令]
 commands.ftbquests.editing_mode.usage=/ftbquests editing_mode [true|false|toggle] [玩家]
 commands.ftbquests.editing_mode.enabled=已为 %s 开启任务编辑模式
 commands.ftbquests.editing_mode.disabled=已为 %s 关闭任务编辑模式
+commands.ftbquests.editing_mode.other_player=只有管理员可以修改其他玩家的编辑模式
 commands.ftbquests.reset_progress.usage=/ftbquests reset_progress <团队> [章节 ID]
 commands.ftbquests.reset_progress.invalid_id=对象ID无效！
 commands.ftbquests.reset_progress.reset=进度已经重置！

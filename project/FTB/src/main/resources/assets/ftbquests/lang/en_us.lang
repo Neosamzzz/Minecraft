@@ -413,6 +413,7 @@ commands.ftbquests.usage=/ftbquests [subcommand]
 commands.ftbquests.editing_mode.usage=/ftbquests editing_mode [true|false|toggle] [player]
 commands.ftbquests.editing_mode.enabled=Editing Mode for %s Enabled
 commands.ftbquests.editing_mode.disabled=Editing Mode for %s Disabled
+commands.ftbquests.editing_mode.other_player=Only operators can change another player's editing mode
 commands.ftbquests.change_progress.usage=/ftbquests change_progress <type> <team|*> [object ID]
 commands.ftbquests.change_progress.invalid_id=Invalid Object ID!
 commands.ftbquests.change_progress.text=Progress has been changed!

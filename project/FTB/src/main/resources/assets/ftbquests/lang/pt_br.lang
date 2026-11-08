@@ -160,6 +160,7 @@ commands.ftbquests.usage=/ftbquests [subcomando]
 commands.ftbquests.editing_mode.usage=/ftbquests editing_mode [true|false|toggle] [player]
 commands.ftbquests.editing_mode.enabled=Modo de Edição ativado para %s
 commands.ftbquests.editing_mode.disabled=Modo de Edição desativado para %s
+commands.ftbquests.editing_mode.other_player=Apenas operadores podem alterar o modo de edição de outro jogador
 commands.ftbquests.reset_progress.usage=/ftbquests reset_progress <time> [ID do objeto]
 commands.ftbquests.reset_progress.invalid_id=ID do objeto inválido!
 commands.ftbquests.reset_progress.reset=Progresso redefinido com sucesso!

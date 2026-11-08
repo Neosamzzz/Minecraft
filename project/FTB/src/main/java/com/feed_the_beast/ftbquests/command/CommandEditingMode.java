@@ -45,7 +45,23 @@ public class CommandEditingMode extends CommandFTBQuestsBase
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
 	{
-		EntityPlayerMP player = args.length >= 2 ? getPlayer(server, sender, args[1]) : getCommandSenderAsPlayer(sender);
+		EntityPlayerMP player;
+
+		if (args.length >= 2)
+		{
+			// Shared-team mode opens this command to everyone; only operators may target someone else.
+			if (!sender.canUseCommand(2, getName()))
+			{
+				throw new CommandException("commands.ftbquests.editing_mode.other_player");
+			}
+
+			player = getPlayer(server, sender, args[1]);
+		}
+		else
+		{
+			player = getCommandSenderAsPlayer(sender);
+		}
+
 		boolean mode;
 
 		if (args.length == 0 || args[0].equals("toggle"))
