@@ -42,6 +42,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new ManufacturingGuiHandler());
+        net.minecraftforge.fml.common.registry.GameRegistry.registerWorldGenerator(new newearth.worldgen.IslandVillage(), 10);
     }
 
     @Mod.EventHandler
@@ -52,6 +53,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void serverStarted(FMLServerStartedEvent event) {
         EndDimension.start(FMLCommonHandler.instance().getMinecraftServerInstance());
+        newearth.worldgen.IslandHooks.ensureSpawn(FMLCommonHandler.instance().getMinecraftServerInstance());
     }
 
     @Mod.EventHandler

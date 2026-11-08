@@ -1,9 +1,9 @@
 package newearth.worldgen;
 
 import java.util.Arrays;
-import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.storage.WorldInfo;
 
 /** Runtime hooks for the transformed vanilla biome provider. */
@@ -21,62 +21,85 @@ public final class IslandHooks {
 
     private IslandHooks() { }
 
-    public static void register(Object provider, WorldInfo info) {
-        if (!WorldGenConfig.enabled || info == null) {
+    public static void register(Object provider, Object worldInfo) {
+        if (!WorldGenConfig.enabled || !(worldInfo instanceof WorldInfo)) {
             field = null;
             return;
         }
-        IslandField next = new IslandField(info.getSeed());
+        IslandField next = new IslandField(((WorldInfo) worldInfo).getSeed());
         next.mainIslandRadius = WorldGenConfig.mainIslandRadius;
         next.isletScale = 1.0 / Math.max(1.0, WorldGenConfig.isletScaleBlocks);
         next.isletLevel = WorldGenConfig.isletLevel;
         next.landLevel = WorldGenConfig.landLevel;
         next.beachWidth = WorldGenConfig.beachWidth;
+        next.shelfWidth = WorldGenConfig.shelfWidth;
         next.deepLevel = WorldGenConfig.deepLevel;
-        next.isletFadeStart = WorldGenConfig.isletFadeStart;
-        next.isletFadeEnd = WorldGenConfig.isletFadeEnd;
         field = next;
     }
 
-    /** Rewrites a vanilla biome grid in place. */
-    public static void apply(Biome[] biomes, int x, int z, int width, int height) {
+    /** Rewrites a vanilla biome grid in place; the array is passed as Object so the call site stays name-neutral. */
+    public static void apply(Object biomes, int x, int z, int width, int height) {
         IslandField current = field;
-        if (current == null || biomes == null) return;
+        if (current == null || !(biomes instanceof Biome[])) return;
+        Biome[] cells = (Biome[]) biomes;
+        // The generation grid is 10x10 cells of four blocks each, with cell coordinates.
+        int cellSize = (width == 10 && height == 10) ? 4 : 1;
+        int baseX = x * cellSize;
+        int baseZ = z * cellSize;
         for (int i = 0; i < width; i++) {
-            int worldX = x + i;
+            int worldX = baseX + i * cellSize;
             for (int j = 0; j < height; j++) {
-                int worldZ = z + j;
+                int worldZ = baseZ + j * cellSize;
                 double value = current.value(worldX, worldZ);
-                biomes[j * width + i] = pick(current, value, worldX, worldZ);
+                cells[j * width + i] = pick(current, value, worldX, worldZ);
             }
         }
     }
 
     /** Biome at a block position, cached on a four-block grid like vanilla's biome layer. */
-    public static Biome biomeAt(BlockPos pos) {
+    public static Object biomeAt(Object position) {
         IslandField current = field;
-        if (current == null) return null;
+        if (current == null || !(position instanceof BlockPos)) return null;
+        BlockPos pos = (BlockPos) position;
         int qx = pos.getX() >> 2;
         int qz = pos.getZ() >> 2;
-        int slot = (qx * 31 + qz) & CACHE_MASK;
+        int key = qx * 31 + qz;
+        int slot = key & CACHE_MASK;
         int[] keys = CACHE_KEYS.get();
-        if (keys[slot] == qx * 31 + qz) {
+        if (keys[slot] == key) {
             Biome cached = CACHE_VALUES.get()[slot];
             if (cached != null) return cached;
         }
         int worldX = (qx << 2) + 2;
         int worldZ = (qz << 2) + 2;
         Biome biome = pick(current, current.value(worldX, worldZ), worldX, worldZ);
-        keys[slot] = qx * 31 + qz;
+        keys[slot] = key;
         CACHE_VALUES.get()[slot] = biome;
         return biome;
     }
 
+    /** Moves the world spawn onto the island when the vanilla spawn search lands in open water. */
+    public static void ensureSpawn(net.minecraft.server.MinecraftServer server) {
+        IslandField current = field;
+        if (current == null || server == null) return;
+        net.minecraft.world.WorldServer world = server.getWorld(0);
+        if (world == null) return;
+        BlockPos spawn = world.getSpawnPoint();
+        double dx = spawn.getX();
+        double dz = spawn.getZ();
+        boolean onMainIsland = dx * dx + dz * dz <= current.mainIslandRadius * current.mainIslandRadius;
+        if (onMainIsland && current.surface(current.value(spawn.getX(), spawn.getZ())) == IslandField.Surface.LAND) return;
+        BlockPos surface = world.getTopSolidOrLiquidBlock(new BlockPos(0, 64, 0));
+        if (surface.getY() <= 63) return;
+        if (current.surface(current.value(surface.getX(), surface.getZ())) != IslandField.Surface.LAND) return;
+        world.setSpawnPoint(surface);
+    }
     private static Biome pick(IslandField current, double value, int x, int z) {
         switch (current.surface(value)) {
             case DEEP_OCEAN: return Biomes.DEEP_OCEAN;
             case OCEAN: return Biomes.OCEAN;
             case BEACH: return Biomes.BEACH;
+            case SHELF: return Biomes.RIVER;
             default: break;
         }
         switch (current.landBiomeAt(value, x, z)) {
