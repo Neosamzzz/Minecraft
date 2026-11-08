@@ -27,6 +27,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         EndDimension.configure(event.getModConfigurationDirectory());
+        newearth.worldgen.WorldGenConfig.load(event.getModConfigurationDirectory());
         newearth.dimension.ArrivalNetwork.init();
         if (event.getSide().isClient()) newearth.client.RocketRenderer.register();
         // Register T9/T10 multi-seat rocket entities
