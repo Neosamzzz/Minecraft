@@ -1,0 +1,32 @@
+{
+  "title": "锌基连接组件",
+  "description": "获得锌基连接组件",
+  "icon": "newearth:connector 1 0",
+  "x": 4.92,
+  "y": -1.0,
+  "text": [
+    "箭身和助推器靠它连起来，海王星的锌是主料。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210632",
+      "title": "获得锌基连接组件",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:connector",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

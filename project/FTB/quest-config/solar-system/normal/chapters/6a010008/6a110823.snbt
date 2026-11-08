@@ -1,0 +1,101 @@
+{
+  "title": "九阶配件",
+  "description": "集齐九阶五类配件",
+  "icon": "newearth:tier9_body 1 0",
+  "x": 2.64,
+  "y": 1.8,
+  "text": [
+    "五个配件都在 GS 装配机上做，做完就能总装。"
+  ],
+  "optional": false,
+  "or_tasks": false,
+  "tasks": [
+    {
+      "uid": "6a210830",
+      "title": "获得九阶鼻锥",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:tier9_nose_cone",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210831",
+      "title": "获得九阶箭身",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:tier9_body",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210832",
+      "title": "获得九阶推进器",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:tier9_engine",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210833",
+      "title": "获得九阶助推器",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:tier9_booster",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210834",
+      "title": "获得九阶尾翼",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:tier9_fin",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.6,
+  "shape": "hexagon"
+}

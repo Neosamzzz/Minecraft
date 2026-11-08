@@ -1,0 +1,32 @@
+{
+  "title": "深空航电",
+  "description": "获得深空航电组件",
+  "icon": "newearth:avionics 1 0",
+  "x": 4.92,
+  "y": 0.4,
+  "text": [
+    "晶圆、蓝宝石和锌都在里面，控制组件离不开它。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210631",
+      "title": "获得深空航电组件",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:avionics",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

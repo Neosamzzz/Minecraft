@@ -1,0 +1,101 @@
+{
+  "title": "七阶配件",
+  "description": "集齐七阶五类配件",
+  "icon": "newearth:rocket_body 1 0",
+  "x": 11.76,
+  "y": 1.0,
+  "text": [
+    "鼻锥、箭身、助推器、尾翼、推进器，一样不能少。"
+  ],
+  "optional": false,
+  "or_tasks": false,
+  "tasks": [
+    {
+      "uid": "6a210633",
+      "title": "获得鼻锥",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:nose_cone",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210634",
+      "title": "获得箭身",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:rocket_body",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210635",
+      "title": "获得助推器",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:booster",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210636",
+      "title": "获得尾翼",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:fin",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210637",
+      "title": "获得推进器",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:rocket_engine",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.6,
+  "shape": "hexagon"
+}

@@ -2,8 +2,8 @@
   "title": "图纸归档",
   "description": "获得材料制造台图纸",
   "icon": "newearth:blueprint_material_station 1 0",
-  "x": -1.28,
-  "y": -3.8,
+  "x": -4.2,
+  "y": 1.6,
   "text": [
     "接下来要加工的材料，有了自己的工作台。"
   ],

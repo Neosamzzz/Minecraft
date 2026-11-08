@@ -582,8 +582,8 @@
       "target": "抵达海卫一",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -5,
-      "y": -2.8,
+      "x": -8.0,
+      "y": 4.6,
       "source_spec": "dim:-1021",
       "shape": "circle",
       "size": 0.9
@@ -596,8 +596,8 @@
       "target": "抵达 GS 冥王星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 0.2,
-      "y": -4,
+      "x": -4.2,
+      "y": 4.2,
       "source_spec": "dim:-1008",
       "shape": "circle",
       "size": 0.9
@@ -610,8 +610,8 @@
       "target": "抵达柯伊伯带",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -2.2,
-      "y": 2.5,
+      "x": -0.4,
+      "y": 4.6,
       "source_spec": "dim:-1009",
       "shape": "circle",
       "size": 0.9
@@ -624,8 +624,8 @@
       "target": "抵达 GS 妊神星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 4.5,
-      "y": 0.4,
+      "x": 3.4,
+      "y": 4.2,
       "source_spec": "dim:-1023",
       "shape": "circle",
       "size": 0.9
@@ -769,7 +769,7 @@
       "type": "ftbquests:dimension",
       "optional": false,
       "x": -8.0,
-      "y": 8.5,
+      "y": 1.0,
       "shape": "circle",
       "size": 0.9
     },
@@ -781,8 +781,8 @@
       "target": "获得材料制造台图纸",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -4.0,
-      "y": 8.5,
+      "x": -4.2,
+      "y": 1.2,
       "shape": "circle",
       "size": 0.9
     },
@@ -794,8 +794,8 @@
       "target": "抵达 EP 冥王星",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 0.0,
-      "y": 8.5,
+      "x": 0.36,
+      "y": 3.4,
       "shape": "circle",
       "size": 0.9
     },
@@ -807,8 +807,8 @@
       "target": "获得七阶火箭图纸",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 4.0,
-      "y": 8.5,
+      "x": 6.44,
+      "y": 3.2,
       "shape": "circle",
       "size": 0.9
     },
@@ -820,8 +820,8 @@
       "target": "抵达 EP Eris",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 8.0,
-      "y": 8.5,
+      "x": 9.48,
+      "y": 6.2,
       "shape": "circle",
       "size": 0.9
     },
@@ -833,8 +833,8 @@
       "target": "获得亚光速引擎图纸",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -8.0,
-      "y": 12.5,
+      "x": 13.28,
+      "y": 5.8,
       "shape": "circle",
       "size": 0.9
     },
@@ -846,8 +846,8 @@
       "target": "获得材料制造台",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -4.0,
-      "y": 12.5,
+      "x": -0.4,
+      "y": 1.4,
       "shape": "square",
       "size": 1.2
     },
@@ -859,8 +859,8 @@
       "target": "获得亚光速引擎",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.0,
-      "y": 12.5,
+      "x": 17.08,
+      "y": 5.2,
       "shape": "circle",
       "size": 0.9
     },
@@ -872,8 +872,8 @@
       "target": "获得钨基复合板",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 4.0,
-      "y": 12.5,
+      "x": -0.4,
+      "y": -1.4,
       "shape": "circle",
       "size": 0.9
     },
@@ -885,8 +885,8 @@
       "target": "获得七阶火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 8.0,
-      "y": 12.5,
+      "x": 20.12,
+      "y": 1.4,
       "shape": "hexagon",
       "size": 2.2
     },
@@ -898,8 +898,8 @@
       "target": "首次到达常规系外目的地",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -6.0,
-      "y": 3.0,
+      "x": -8.0,
+      "y": 1.4,
       "shape": "hexagon",
       "size": 2.2
     },
@@ -911,8 +911,8 @@
       "target": "到达比邻星 b",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -9.0,
-      "y": -1.5,
+      "x": -4.2,
+      "y": -1.4,
       "shape": "circle",
       "size": 0.9
     },
@@ -924,8 +924,8 @@
       "target": "到达巴纳德 C",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": -4.0,
-      "y": -1.5,
+      "x": -4.2,
+      "y": 3.8,
       "shape": "circle",
       "size": 0.9
     },
@@ -937,8 +937,8 @@
       "target": "到达巴纳德 C1",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 1.0,
-      "y": -1.5,
+      "x": -0.4,
+      "y": 3.4,
       "shape": "circle",
       "size": 0.9
     },
@@ -950,8 +950,8 @@
       "target": "获得紫晶碎片",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -9.0,
-      "y": -6.0,
+      "x": -0.4,
+      "y": 0.8,
       "shape": "circle",
       "size": 0.9
     },
@@ -963,8 +963,8 @@
       "target": "获得特殊紫晶锭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -4.0,
-      "y": -6.0,
+      "x": 3.4,
+      "y": 0.6,
       "shape": "circle",
       "size": 0.9
     },
@@ -976,8 +976,8 @@
       "target": "获得紫晶晶圆",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 1.0,
-      "y": -6.0,
+      "x": 7.96,
+      "y": 1.4,
       "shape": "circle",
       "size": 0.9
     },
@@ -989,8 +989,8 @@
       "target": "获得等离子引擎图纸",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 6.0,
-      "y": -1.5,
+      "x": 3.4,
+      "y": 3.0,
       "shape": "circle",
       "size": 0.9
     },
@@ -1002,8 +1002,8 @@
       "target": "获得等离子引擎",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -4.0,
-      "y": 2.5,
+      "x": -8.0,
+      "y": 1.2,
       "shape": "circle",
       "size": 0.9
     },
@@ -1015,10 +1015,10 @@
       "target": "获得九阶控制面板",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.0,
-      "y": -2.0,
+      "x": -1.92,
+      "y": 0.0,
       "shape": "square",
-      "size": 1.2
+      "size": 1.4
     },
     {
       "code": "I02",
@@ -1028,8 +1028,8 @@
       "target": "获得九阶宇宙飞船",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 5.0,
-      "y": -2.0,
+      "x": 7.96,
+      "y": 0.6,
       "shape": "hexagon",
       "size": 2.2
     },
@@ -1123,6 +1123,97 @@
       "y": 0.0,
       "shape": "hexagon",
       "size": 2.5
+    },
+    {
+      "code": "N20",
+      "chapter": "6a010006",
+      "quest": "6a11062a",
+      "task": "6a210630",
+      "target": "获得隔热衬层",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 3.02,
+      "y": -1.4,
+      "shape": "circle",
+      "size": 0.9
+    },
+    {
+      "code": "N21",
+      "chapter": "6a010006",
+      "quest": "6a11062b",
+      "task": "6a210631",
+      "target": "获得深空航电组件",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 6.44,
+      "y": -1.4,
+      "shape": "circle",
+      "size": 0.9
+    },
+    {
+      "code": "N22",
+      "chapter": "6a010006",
+      "quest": "6a11062c",
+      "task": "6a210632",
+      "target": "获得锌基连接组件",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 9.86,
+      "y": -1.4,
+      "shape": "circle",
+      "size": 0.9
+    },
+    {
+      "code": "N23",
+      "chapter": "6a010006",
+      "quest": "6a11062d",
+      "task": "6a210633",
+      "target": "集齐七阶五类配件",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 12.52,
+      "y": 1.0,
+      "shape": "hexagon",
+      "size": 1.6
+    },
+    {
+      "code": "N24",
+      "chapter": "6a010007",
+      "quest": "6a110728",
+      "task": "6a210730",
+      "target": "获得紫晶锭板",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 7.96,
+      "y": -0.2,
+      "shape": "circle",
+      "size": 0.9
+    },
+    {
+      "code": "N25",
+      "chapter": "6a010007",
+      "quest": "6a110729",
+      "task": "6a210731",
+      "target": "获得紫晶复合组件",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 11.76,
+      "y": 0.6,
+      "shape": "circle",
+      "size": 0.9
+    },
+    {
+      "code": "N26",
+      "chapter": "6a010008",
+      "quest": "6a110823",
+      "task": "6a210830",
+      "target": "集齐九阶五类配件",
+      "type": "ftbquests:item",
+      "optional": false,
+      "x": 2.64,
+      "y": 1.8,
+      "shape": "hexagon",
+      "size": 1.6
     }
   ],
   "reused_preview_ids": {
@@ -1142,7 +1233,7 @@
   "no_rewards": true,
   "no_consumption": true,
   "no_dependencies": true,
-  "visible_quests": 82,
+  "visible_quests": 89,
   "archived_nodes": [
     {
       "code": "A02",
@@ -1386,5 +1477,5 @@
     }
   ],
   "archive_chapter": "6a01ff00",
-  "total_registered_quests": 98
+  "total_registered_quests": 105
 }

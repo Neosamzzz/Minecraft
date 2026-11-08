@@ -2,8 +2,8 @@
   "title": "紫晶冶炼",
   "description": "获得特殊紫晶锭",
   "icon": "newearth:amethyst_ingot 1 0",
-  "x": 4.6,
-  "y": 1.2,
+  "x": 3.4,
+  "y": 0.6,
   "text": [
     "碎片配上树脂，再进材料制造台。"
   ],

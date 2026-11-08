@@ -2,8 +2,8 @@
   "title": "巴纳德 C1",
   "description": "到达巴纳德 C1",
   "icon": "minecraft:packed_ice",
-  "x": 0.4,
-  "y": -3.2,
+  "x": -0.4,
+  "y": 3.4,
   "text": [
     "母星的树林刚逛完，卫星就换成了冰雪。"
   ],

@@ -2,8 +2,8 @@
   "title": "材料试验",
   "description": "获得紫晶碎片",
   "icon": "newearth:amethyst_fragment 1 0",
-  "x": 0.4,
-  "y": 1.6,
+  "x": -0.4,
+  "y": 0.8,
   "text": [
     "紫木进了熔炉，出来的却是紫晶碎片。"
   ],

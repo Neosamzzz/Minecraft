@@ -2,8 +2,8 @@
   "title": "天涯海角",
   "description": "抵达柯伊伯带",
   "icon": "galacticraftplanets:asteroids_block 1 0",
-  "x": 2.08,
-  "y": 0.8,
+  "x": 1.12,
+  "y": 5.0,
   "text": [],
   "optional": false,
   "tasks": [

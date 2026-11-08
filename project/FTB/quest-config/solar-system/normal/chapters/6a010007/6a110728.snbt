@@ -1,0 +1,32 @@
+{
+  "title": "紫晶锭板",
+  "description": "获得紫晶锭板",
+  "icon": "newearth:amethyst_plate 1 0",
+  "x": 7.96,
+  "y": -0.2,
+  "text": [
+    "紫晶锭压成板，船体和舱段都从它下料。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210730",
+      "title": "获得紫晶锭板",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:amethyst_plate",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

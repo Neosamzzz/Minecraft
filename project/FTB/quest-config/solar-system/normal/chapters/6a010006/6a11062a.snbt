@@ -1,0 +1,32 @@
+{
+  "title": "隔热衬层",
+  "description": "获得隔热衬层",
+  "icon": "newearth:thermal_liner 1 0",
+  "x": 4.92,
+  "y": 1.8,
+  "text": [
+    "碳、未知晶体和冻结氮压成的一层外壳，箭身和尾翼都要用。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210630",
+      "title": "获得隔热衬层",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:thermal_liner",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

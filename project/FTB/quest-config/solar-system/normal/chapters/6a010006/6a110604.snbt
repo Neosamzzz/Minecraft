@@ -2,8 +2,8 @@
   "title": "冰矮行星",
   "description": "抵达 GS 妊神星",
   "icon": "galaxyspace:gs_basic 1 23",
-  "x": 7.12,
-  "y": 0.0,
+  "x": 5.68,
+  "y": 5.0,
   "text": [
     "妊神星的几种冰，可以作为这一站的采集内容。"
   ],

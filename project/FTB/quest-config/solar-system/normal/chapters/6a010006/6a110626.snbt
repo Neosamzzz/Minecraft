@@ -2,8 +2,8 @@
   "title": "新材料线",
   "description": "获得材料制造台",
   "icon": "newearth:material_station 1 0",
-  "x": 3.76,
-  "y": -3.4,
+  "x": 0.36,
+  "y": 2.2,
   "text": [
     "七阶要用的新材料，在这里加工。"
   ],

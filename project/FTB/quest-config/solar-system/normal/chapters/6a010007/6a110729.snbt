@@ -1,0 +1,32 @@
+{
+  "title": "紫晶复合组件",
+  "description": "获得紫晶复合组件",
+  "icon": "newearth:amethyst_component 1 0",
+  "x": 11.76,
+  "y": 0.6,
+  "text": [
+    "板、晶圆和连接件拼成一体，九阶箭身和推进器要用。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210731",
+      "title": "获得紫晶复合组件",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:amethyst_component",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}
