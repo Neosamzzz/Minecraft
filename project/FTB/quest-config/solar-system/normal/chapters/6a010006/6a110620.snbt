@@ -1,0 +1,21 @@
+{
+  "title": "海王星之眼",
+  "description": "抵达 EP 海王星",
+  "icon": "minecraft:packed_ice",
+  "x": -8.0,
+  "y": 8.5,
+  "text": [
+    "锌、宝石和冰之外，地牢里还有制造台的图纸。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210620",
+      "title": "抵达 EP 海王星",
+      "type": "ftbquests:dimension",
+      "dim": -18
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

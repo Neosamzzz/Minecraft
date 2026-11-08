@@ -1,0 +1,21 @@
+{
+  "title": "阋神星",
+  "description": "抵达 EP Eris",
+  "icon": "minecraft:packed_ice",
+  "x": 8.0,
+  "y": 8.5,
+  "text": [
+    "离子引擎改装好，再把航线指向这里。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210624",
+      "title": "抵达 EP Eris",
+      "type": "ftbquests:dimension",
+      "dim": -21
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

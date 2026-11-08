@@ -1,0 +1,32 @@
+{
+  "title": "新材料线",
+  "description": "获得材料制造台",
+  "icon": "newearth:material_station 1 0",
+  "x": -4.0,
+  "y": 12.5,
+  "text": [
+    "七阶要用的新材料，在这里加工。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210626",
+      "title": "获得材料制造台",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:material_station",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.2,
+  "shape": "square"
+}

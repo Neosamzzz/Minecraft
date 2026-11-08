@@ -1,0 +1,32 @@
+{
+  "title": "晶圆流片",
+  "description": "获得紫晶晶圆",
+  "icon": "extraplanets:wafer 1 0",
+  "x": 1.0,
+  "y": -6.0,
+  "text": [
+    "树脂和紫晶锭进了电路制造机。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210728",
+      "title": "获得紫晶晶圆",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:wafer",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

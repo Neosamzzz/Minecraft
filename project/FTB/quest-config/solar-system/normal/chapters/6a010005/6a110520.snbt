@@ -1,0 +1,21 @@
+{
+  "title": "土星环穿越",
+  "description": "抵达 EP 土星",
+  "icon": "minecraft:stone",
+  "x": -6.0,
+  "y": 9.5,
+  "text": [
+    "地牢里藏着六阶火箭认证。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210520",
+      "title": "抵达 EP 土星",
+      "type": "ftbquests:dimension",
+      "dim": -16
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

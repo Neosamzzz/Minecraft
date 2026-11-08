@@ -1,0 +1,32 @@
+{
+  "title": "黑洞引擎",
+  "description": "获得黑洞引擎",
+  "icon": "galaxyspace:rocket_modules 1 7",
+  "x": 6.0,
+  "y": -1.5,
+  "text": [
+    "空位填上了，制作台却炸开了。烟尘散去，引擎还在。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210925",
+      "title": "获得黑洞引擎",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 7
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 2.2,
+  "shape": "hexagon"
+}

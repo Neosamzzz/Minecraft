@@ -1,0 +1,32 @@
+{
+  "title": "引擎换装",
+  "description": "获得亚光速引擎",
+  "icon": "galaxyspace:rocket_modules 1 6",
+  "x": 0.0,
+  "y": 12.5,
+  "text": [
+    "离子引擎没有退休，只是换了个身份继续上船。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210627",
+      "title": "获得亚光速引擎",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 6
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

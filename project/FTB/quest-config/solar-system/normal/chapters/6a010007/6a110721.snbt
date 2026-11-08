@@ -1,0 +1,21 @@
+{
+  "title": "半人马座α",
+  "description": "到达比邻星 b",
+  "icon": "minecraft:grass",
+  "x": -9.0,
+  "y": -1.5,
+  "text": [
+    "山地、海岸和海洋，都在另一颗太阳下。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210723",
+      "title": "到达比邻星 b",
+      "type": "ftbquests:dimension",
+      "dim": -1025
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

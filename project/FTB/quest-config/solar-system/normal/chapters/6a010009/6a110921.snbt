@@ -1,0 +1,50 @@
+{
+  "title": "铂族金属",
+  "description": "获得 EP 铂锭或压缩铂",
+  "icon": "extraplanets:tier11_items 1 5",
+  "x": -9.0,
+  "y": -1.5,
+  "text": [
+    "把铂也装进货舱，核心还等着它。"
+  ],
+  "optional": false,
+  "or_tasks": true,
+  "tasks": [
+    {
+      "uid": "6a210921",
+      "title": "获得 EP 铂锭",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 5
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    },
+    {
+      "uid": "6a210922",
+      "title": "获得压缩铂",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 6
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

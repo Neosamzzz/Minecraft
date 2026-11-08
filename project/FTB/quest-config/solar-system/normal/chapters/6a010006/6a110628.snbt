@@ -1,0 +1,32 @@
+{
+  "title": "复合板下线",
+  "description": "获得钨基复合板",
+  "icon": "newearth:composite_plate 1 0",
+  "x": 4.0,
+  "y": 12.5,
+  "text": [
+    "钨、钯和火山锭，最后成了同一块船身材料。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210628",
+      "title": "获得钨基复合板",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:composite_plate",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

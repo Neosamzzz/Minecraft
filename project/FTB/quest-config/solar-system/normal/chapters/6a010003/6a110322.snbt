@@ -1,0 +1,21 @@
+{
+  "title": "主带深处",
+  "description": "抵达 EP 谷神星",
+  "icon": "minecraft:stone",
+  "x": 1.0,
+  "y": 9.5,
+  "text": [
+    "铀矿之外，再找找那些不像自然形成的结构。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210322",
+      "title": "抵达 EP 谷神星",
+      "type": "ftbquests:dimension",
+      "dim": -20
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

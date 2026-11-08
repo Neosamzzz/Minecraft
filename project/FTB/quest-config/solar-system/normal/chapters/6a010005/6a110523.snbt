@@ -1,0 +1,32 @@
+{
+  "title": "引擎试车台",
+  "description": "获得引擎升级台",
+  "icon": "newearth:engine_station 1 0",
+  "x": 4.5,
+  "y": 9.5,
+  "text": [
+    "飞船可以换，引擎也能接着升级。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210523",
+      "title": "获得引擎升级台",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:engine_station",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.2,
+  "shape": "square"
+}

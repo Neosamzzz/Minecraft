@@ -1,0 +1,10 @@
+{
+  "title": "星际空间",
+  "icon": "minecraft:ender_eye",
+  "description": [
+    "太阳系外也有海洋、冰雪和森林。熟悉的模样出现在陌生的星空下，",
+    "那里究竟是什么样子，还得亲自去看。"
+  ],
+  "group": 0,
+  "default_quest_shape": "circle"
+}

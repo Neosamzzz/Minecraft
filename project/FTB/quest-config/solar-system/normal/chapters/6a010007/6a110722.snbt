@@ -1,0 +1,21 @@
+{
+  "title": "巴纳德星",
+  "description": "到达巴纳德 C",
+  "icon": "minecraft:log",
+  "x": -4.0,
+  "y": -1.5,
+  "text": [
+    "森林、河流，还有紫色的木头。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210724",
+      "title": "到达巴纳德 C",
+      "type": "ftbquests:dimension",
+      "dim": -1030
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

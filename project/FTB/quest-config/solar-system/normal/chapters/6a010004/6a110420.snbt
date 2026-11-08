@@ -1,0 +1,21 @@
+{
+  "title": "朱诺号",
+  "description": "抵达 EP 木星",
+  "icon": "minecraft:stone",
+  "x": -6.0,
+  "y": 9.5,
+  "text": [
+    "木星的地表，值得亲自看一眼。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210420",
+      "title": "抵达 EP 木星",
+      "type": "ftbquests:dimension",
+      "dim": -15
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

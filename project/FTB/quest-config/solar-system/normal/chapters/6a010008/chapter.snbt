@@ -1,0 +1,10 @@
+{
+  "title": "下一次起飞",
+  "icon": "newearth:tier9_rocket 1 0",
+  "description": [
+    "从一段紫木到一片晶圆，货舱里的东西已经变了样。",
+    "这次，把它们装成一艘能一起出发的船。"
+  ],
+  "group": 0,
+  "default_quest_shape": "circle"
+}

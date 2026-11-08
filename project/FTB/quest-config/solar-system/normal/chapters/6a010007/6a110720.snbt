@@ -1,0 +1,34 @@
+{
+  "title": "星际空间",
+  "description": "首次到达常规系外目的地",
+  "icon": "minecraft:ender_eye",
+  "x": -6.0,
+  "y": 3.0,
+  "text": [
+    "这一次，目的地围绕着另一颗恒星。我们离开了太阳系。"
+  ],
+  "optional": false,
+  "or_tasks": true,
+  "tasks": [
+    {
+      "uid": "6a210720",
+      "title": "到达比邻星 b",
+      "type": "ftbquests:dimension",
+      "dim": -1025
+    },
+    {
+      "uid": "6a210721",
+      "title": "到达巴纳德 C",
+      "type": "ftbquests:dimension",
+      "dim": -1030
+    },
+    {
+      "uid": "6a210722",
+      "title": "到达巴纳德 C1",
+      "type": "ftbquests:dimension",
+      "dim": -1031
+    }
+  ],
+  "size": 2.2,
+  "shape": "hexagon"
+}

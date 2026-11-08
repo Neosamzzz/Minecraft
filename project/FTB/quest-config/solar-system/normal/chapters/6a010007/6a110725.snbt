@@ -1,0 +1,32 @@
+{
+  "title": "紫晶冶炼",
+  "description": "获得特殊紫晶锭",
+  "icon": "newearth:amethyst_ingot 1 0",
+  "x": -4.0,
+  "y": -6.0,
+  "text": [
+    "碎片配上树脂，再进材料制造台。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210727",
+      "title": "获得特殊紫晶锭",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:amethyst_ingot",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

@@ -1,0 +1,10 @@
+{
+  "title": "着陆确认",
+  "icon": "minecraft:grass 1 0",
+  "description": [
+    "河岸开着花，森林延伸到雪山脚下。走过这么多地方，眼前的一切忽然熟悉起来。"
+  ],
+  "always_invisible": true,
+  "group": 0,
+  "default_quest_shape": "circle"
+}

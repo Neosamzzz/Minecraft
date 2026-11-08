@@ -1,0 +1,32 @@
+{
+  "title": "七阶设计",
+  "description": "获得七阶火箭图纸",
+  "icon": "newearth:blueprint_t7 1 0",
+  "x": 4.0,
+  "y": 8.5,
+  "text": [
+    "这张图纸画的，是离开太阳系之前要造好的那艘船。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210623",
+      "title": "获得七阶火箭图纸",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:blueprint_t7",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

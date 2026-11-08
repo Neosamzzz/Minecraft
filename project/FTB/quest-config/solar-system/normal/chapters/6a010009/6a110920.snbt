@@ -1,0 +1,21 @@
+{
+  "title": "开普勒轨道",
+  "description": "到达开普勒 22b",
+  "icon": "extraplanets:tier11_items 1 0",
+  "x": -6.0,
+  "y": 3.0,
+  "text": [
+    "蓝色的树林还算好理解。那边的矿石树，又是怎么回事？"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210920",
+      "title": "到达 EP Kepler-22b",
+      "type": "ftbquests:dimension",
+      "dim": -22
+    }
+  ],
+  "size": 2.2,
+  "shape": "hexagon"
+}

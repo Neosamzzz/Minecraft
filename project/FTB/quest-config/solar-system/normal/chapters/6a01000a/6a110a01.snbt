@@ -1,0 +1,22 @@
+{
+  "title": "着陆确认",
+  "description": "正式降落后抵达特拉尔斯-9",
+  "icon": "newearth:final_energy_core 1 0",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "我们在海岸边造起第一艘火箭的时候，没想过会来到这样的地方。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210a01",
+      "title": "正式降落于特拉尔斯-9",
+      "type": "ftbquests:advancement",
+      "advancement": "newearth:final_landing",
+      "criterion": "landed"
+    }
+  ],
+  "size": 2.5,
+  "shape": "hexagon"
+}

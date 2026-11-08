@@ -1,0 +1,32 @@
+{
+  "title": "预留接口",
+  "description": "获得等离子引擎",
+  "icon": "galaxyspace:rocket_modules 1 5",
+  "x": -4.0,
+  "y": 2.5,
+  "text": [
+    "引擎已经能用了，偏偏还留着一个空位。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210820",
+      "title": "获得等离子引擎",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 5
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

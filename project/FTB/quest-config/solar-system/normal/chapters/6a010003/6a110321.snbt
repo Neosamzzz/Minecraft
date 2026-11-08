@@ -1,0 +1,32 @@
+{
+  "title": "四阶认证",
+  "description": "获得 GS 四阶火箭认证",
+  "icon": "galaxyspace:rocket_modules 1 8",
+  "x": -2.5,
+  "y": 9.5,
+  "text": [
+    "认证带回来了，接下来换一套装配办法。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210321",
+      "title": "获得四阶火箭认证",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 8
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

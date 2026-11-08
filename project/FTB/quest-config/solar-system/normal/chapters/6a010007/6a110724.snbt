@@ -1,0 +1,32 @@
+{
+  "title": "材料试验",
+  "description": "获得紫晶碎片",
+  "icon": "newearth:amethyst_fragment 1 0",
+  "x": -9.0,
+  "y": -6.0,
+  "text": [
+    "紫木进了熔炉，出来的却是紫晶碎片。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210726",
+      "title": "获得紫晶碎片",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:amethyst_fragment",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": true,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

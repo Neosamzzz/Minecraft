@@ -1,0 +1,32 @@
+{
+  "title": "六阶认证",
+  "description": "获得 GS 六阶火箭认证",
+  "icon": "galaxyspace:rocket_modules 1 10",
+  "x": -2.5,
+  "y": 9.5,
+  "text": [
+    "光环下面的收获，要用在下一艘火箭上。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210521",
+      "title": "获得六阶火箭认证",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 10
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}

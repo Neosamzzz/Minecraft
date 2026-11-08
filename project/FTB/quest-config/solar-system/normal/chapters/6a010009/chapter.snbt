@@ -1,0 +1,10 @@
+{
+  "title": "这合理吗",
+  "icon": "extraplanets:tier11_items 1 0",
+  "description": [
+    "树上长着矿，地上铺着蛋糕，钻石也换了好几种颜色。",
+    "先别急着回去，这颗星球还有得逛。"
+  ],
+  "group": 0,
+  "default_quest_shape": "circle"
+}

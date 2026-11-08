@@ -1,0 +1,21 @@
+{
+  "title": "巴纳德 C1",
+  "description": "到达巴纳德 C1",
+  "icon": "minecraft:packed_ice",
+  "x": 1.0,
+  "y": -1.5,
+  "text": [
+    "母星的树林刚逛完，卫星就换成了冰雪。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a210725",
+      "title": "到达巴纳德 C1",
+      "type": "ftbquests:dimension",
+      "dim": -1031
+    }
+  ],
+  "size": 0.9,
+  "shape": "circle"
+}
