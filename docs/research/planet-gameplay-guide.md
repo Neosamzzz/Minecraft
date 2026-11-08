@@ -1,6 +1,6 @@
 # 星球资源与玩法指南
 
-本文列出 GC／GS／EP 原有资源、加工与环境机制；整合包采用的组合和阶段规则由玩法定稿定义。
+本文列出 GC／GS／EP 原有资源、加工与环境机制，并注明 NewEarth 的整合差异。原模组门槛、奖励池与当前整合规则分别说明；现行玩法见[玩法 Wiki](../modpack-gameplay.md)。源码依据不代替游戏内验收。
 
 ## 一、探索前应讲清的通用玩法
 
@@ -74,7 +74,7 @@
 
 NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行为仍需生存验收。装备规则见[装备](../modpack-gameplay.md#装备)。
 
-依据：[GS 环境事件处理](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。实际 JAR 的 `javap` 输出已保留在本机调查临时目录。
+依据：[GS 环境事件处理](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)、[GS 温度检查混入](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/mixins/MixinGCPlayerHandler.java)。
 
 ## 二、GC 基础探索：T1～T3
 
@@ -181,7 +181,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 6. 水星 Mercury（GS）：T4 板材的早期镁来源
 
-**身份与前置：** GS；维度 `-1005`；T3。首轮调查时 EP 水星及其 T4 火箭组关闭；临时测试开启不改变本条讨论 GS 水星的身份。
+**身份与前置：** GS；维度 `-1005`；T3。固定配置保留 GS 与 EP 两颗水星，本条仅说明 GS 资源。
 
 **资源与结构：** 铁、镍、镁；Provider 未定义常规地牢。注册温度参数为正值、不可呼吸，具体装备效果仍要看当前事件与温控实现。
 
@@ -199,7 +199,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 7. 谷神星 Ceres（GS）：白云石与独立地牢
 
-**身份与前置：** GS；维度 `-1007`；T3。首轮调查时 EP 同名目的地关闭；本条指 GS 实现，EP 的后续测试开关不改变资源归属。
+**身份与前置：** GS；维度 `-1007`；T3。固定配置保留 GS 与 EP 两颗谷神星，本条仅说明 GS 资源。
 
 **资源与地形：** 白云石、陨铁、冰类生成。白云石矿产出晶体；晶体在回收机中加工成白云石粉，配方产量为一份晶体转六份粉。
 
@@ -219,7 +219,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ## 四、GS T4：木星的四颗卫星
 
-木星本体在本机当前配置中是星图母星，不是先登陆木星再解锁卫星。四颗卫星各有目的，不应仅因同属 T4 就安排四次相同的采矿任务。
+GS 木星原为展示母星；当前固定配置改用可登陆的 EP 木星，并将下列 GS 卫星归属到 EP 木星。四颗卫星各有目的，不应仅因同属 T4 就安排四次相同的采矿任务。
 
 ### 8. 木卫一 Io：火山石与引擎模块挑战
 
@@ -229,7 +229,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 **进度价值：** 火山石参与 HDP:2，进而关联 GS T6 部件，也参与 T3 温控布。因此有必要在 T4 阶段认识它，而不是等到制造 T6 时才给出没有前置解释的材料要求。
 
-**地牢内容：** 专用地牢与宝箱；间距参数为 900；Boss 刷怪器对应 `EntityBossGhast`。Boss 特殊奖励从等级 5 池选择，GS 向该池加入 `rocket_modules:4`、`:6`，其中 `:6` 对应亚光速引擎模块。宝箱普通池也包含火山石、陨铁碎片与补给。
+**地牢内容：** 专用地牢与宝箱；间距参数为 900；Boss 刷怪器对应 `EntityBossGhast`。原 GS 等级5池包含多种引擎；NewEarth 将 Io 引擎奖励限定为离子引擎，概率5%，不再掉落亚光速引擎。宝箱普通池也包含火山石、陨铁碎片与补给。
 
 **第一次前往的价值：** 调查火山地形并获取正确的 GS 火山石。地牢提供额外设备/模块探索，不能把它直接写成 T6 火箭许可的领取地点。
 
@@ -297,7 +297,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ## 五、GS T5：土星与天王星卫星
 
-取得 T5 火箭是 T6 许可的制作前置，但这不等于必须逐一完成所有 T5 天体。当前已确认的核心材料链可以在更早目的地取得白云石和火山石。
+当前 T6 认证直接从 EP 土星地牢取得，不再用完整 T5 火箭制作许可，也不要求逐一完成所有 T5 天体。当前已确认的核心材料链可以在更早目的地取得白云石和火山石。
 
 ### 12. 土卫二 Enceladus：冰原、山脉和裂谷
 
@@ -357,7 +357,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 15. 海卫一 Triton：极寒地貌探索
 
-**身份与前置：** GS；维度 `-1021`；T6；当前采用 WE Provider。
+**原 GS 实现：** 维度 `-1021`、T6、WE Provider；固定配置已关闭 GS 海卫一，采用 EP 海卫一。本节保留原实现的资源依据，不作为当前登陆指南。
 
 **已确认内容：** 平原、山地与洞穴生成。当前 WE Provider 没有配置通用矿脉列表；没有标准地牢宝箱。
 
@@ -375,7 +375,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 16. 冥王星 Pluto（GS）：极寒地层，避免混用 EP 攻略
 
-**身份与前置：** GS；维度 `-1008`；T6。首轮调查时 EP 冥王星与 T9 火箭组关闭；本条仍专指 GS 地表。
+**原 GS 实现：** 维度 `-1008`、T6；固定配置已关闭 GS 冥王星，采用 EP 冥王星。本条仅记录 GS 地表，不能用来描述当前 EP 钨矿与七阶图纸路线。
 
 **已确认内容：** 独立的冥王星地表、地层和地形生成；当前矿物装饰器没有启用专属矿脉，Provider 未定义常规地牢。
 
@@ -393,13 +393,13 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 17. 柯伊伯带 Kuiper Belt：小天体与废弃基地
 
-**身份与前置：** GS；维度 `-1009`；T6。首轮调查时 EP 同名开关关闭；后续临时测试不改变本条的 GS 来源。
+**身份与前置：** GS；维度 `-1009`；T6。本条说明 GS 实现。
 
 **已确认内容：** 小行星式世界、特殊矿核、密实冰和废弃基地生成实现。与 GC 小行星带有相似的空间探索形式，但应按各自类和当前配置分别描述。
 
 **探索价值：** 远方小天体调查、矿核采集与遗迹探索；可与连续地表的外太阳系目的地形成不同体验。
 
-**进度关系：** 没有证据表明进入柯伊伯带就能绕过 Kepler-22b 的 T10 要求；它仍属于 GS T6 内容。
+**进度关系：** 柯伊伯带仍属 GS T6 内容；当前开普勒最低T9，不能用一次T6抵达替代九阶制造与航行。
 
 **准备与重复探索：** 稳定移动、定位、氧气、温控、材料运输与返回。当前需要专门检查零重力/漂浮体验，不能用一条普通地表的行走说明覆盖。
 
@@ -431,15 +431,15 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 依据：[Haumea WE Provider](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/SolarSystem/planets/haumea/dimension/WorldProviderHaumea_WE.java)。
 
-## 七、GS T6：系外探索
+## 七、系外探索：GS 原 T6，NewEarth 当前 T7
 
-**整合后的阶段：** 下列T6为原GS门槛。NewEarth将比邻星b、巴纳德C／C1与鲸鱼座τ f调整为T7；七阶采用自定义材料、GS装配机与火箭装配机制造，并安装亚光速引擎。各目的地的资源依据沿用下文，当前制造与准入规则见[物品线](../../project/NewEarth/items/README.md#当前功能)。
+**整合后的阶段：** 各条分别注明原GS门槛与当前整合门槛。NewEarth将比邻星b、巴纳德C／C1与鲸鱼座τ f调整为T7；七阶配件由GS装配机制造，在星际组装台以亚光速引擎作为材料总装；成品没有引擎安装状态。各目的地的资源依据沿用下文，当前制造与准入规则见[物品线](../../project/NewEarth/items/README.md#当前功能)。
 
-本机开启半人马座、巴纳德和鲸鱼座 τ 三组星系。以下四个世界有地表实现，注册等级均为 T6。这个等级匹配还不能证明普通引擎和当前 EP 星图能够完成跨星系往返。
+本机开启半人马座、巴纳德和鲸鱼座 τ 三组星系。以下四个世界有地表实现，原 GS 注册等级均为 T6，NewEarth 运行时调整为 T7；实际跨星系往返仍需游戏内验收。
 
 ### 19. 比邻星 b Proxima b：生态外观与呼吸规则的区别
 
-**身份与前置：** GS；维度 `-1025`；T6。
+**身份与前置：** GS；维度 `-1025`；原T6，NewEarth当前T7。
 
 **资源与地形：** 山地、冰原、海岸、海洋及植被相关生成；金、锡、铜、煤、硅、钻石等矿物。当前可呼吸标记是 false，含氧成分和有植被都不能替代这个规则。
 
@@ -461,11 +461,11 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 20. 巴纳德 C Barnarda C：生态丰富的长期探索候选
 
-**身份与前置：** GS；维度 `-1030`；当前 T6。`survivalModeOnBarnarda=false`，因此不能引用源码另一分支的 T1 门槛。
+**身份与前置：** GS；维度 `-1030`；原T6，NewEarth当前T7。`survivalModeOnBarnarda=false`，因此不能引用源码另一分支的 T1 门槛。
 
 **资源与生态：** 深海、海洋、海滩、平原、森林、河流、沼泽、丛林、山地、雪原和沙丘等。矿物表包含多种基础资源及硅、铝、钴、镍等，适合进一步整理采集与建造内容。
 
-**补漏：树汁是已有的当地特色物品。** `BRItems.BASIC` 元数据 2 对应 `tree_juice`。`Barnarda_C_Logs.onBlockActivated` 在服务端检查特定发光紫木树干状态与手持斧，满足后将其换成普通紫木并生成树汁；当前 WE 丛林实现有放置这种发光树干的代码。判断使用具体方块状态，不能扩大成所有树木、所有朝向都能采汁，也不能承诺树汁会自动再生。`BRItems.oreDictRegistration` 还把它登记为 `slimeball`，不是已实现的飞船密封材料；任何新专用用途仍待开发。
+**补漏：树汁是已有的当地特色物品。** `BRItems.BASIC` 元数据 2 对应 `tree_juice`。`Barnarda_C_Logs.onBlockActivated` 在服务端检查特定发光紫木树干状态与手持斧，满足后将其换成普通紫木并生成树汁；当前 WE 丛林实现有放置这种发光树干的代码。判断使用具体方块状态，不能扩大成所有树木、所有朝向都能采汁，也不能承诺树汁会自动再生。`BRItems.oreDictRegistration` 还把它登记为 `slimeball`，NewEarth 已把树汁（制造文档称树脂）接入紫晶锭与紫晶晶圆加工；原 GS 的黏液球矿词用途保留。
 
 依据：[树汁子项](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/core/prefab/items/ItemBasicBR.java)、[树干交互](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/blocks/Barnarda_C_Logs.java)、[WE 丛林生成](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/planets/barnarda_c/world/gen/we/Barnarda_C_Jungle.java)、[矿物词典登记](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/core/BRItems.java)。
 
@@ -483,13 +483,13 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 21. 巴纳德 C1 Barnarda C1：冰雪、缟玛瑙与待验地牢
 
-**身份与前置：** GS；维度 `-1031`；当前 T6。
+**身份与前置：** GS；维度 `-1031`；原T6，NewEarth当前T7。
 
 **资源与地形：** 冰雪、山地、洞穴、冰类，铁、铜、锡和缟玛瑙矿。实际安装 JAR 的 Provider 含缟玛瑙矿引用，不只是仓库中未打包的设计。
 
-**结构区别：** Provider 给出地牢间距 704、月球宝箱类型，并将 GC 月球式地牢生成器接入 onChunkProvider、onPopulate 和 recreateStructures。复用月球 Boss 房、Boss 刷怪器和一级宝箱，没有 C1 专属奖励池。这是实际生成接入的源码证据，结构、战斗、开箱仍需游戏验证；不能写成独有的 T7 图纸地牢。
+**结构区别：** Provider 给出地牢间距 704、月球宝箱类型，并将 GC 月球式地牢生成器接入 onChunkProvider、onPopulate 和 recreateStructures。原实现复用月球 Boss 房、Boss 刷怪器和一级宝箱；NewEarth 按 C1 Provider 将实际地牢Boss奖励替换为等离子引擎图纸。这是实际生成接入的源码证据，结构、战斗、开箱仍需游戏验证；不能写成独有的 T7 图纸地牢。
 
-**探索价值：** 冰雪系外卫星、缟玛瑙与结构调查。已补查 `CraftingRecipesBarnarda_C1.addCircuitFabricator`：以钻石、两份 `BRItems.BASIC:3`（缟玛瑙）、红石和 GC 部件制作 GS 现代晶圆。因此缟玛瑙已有电路制造用途，不是只有名字的收藏物；这是原有晶圆路线，不表示已实现新飞船导航部件。
+**探索价值：** 冰雪系外卫星、缟玛瑙与结构调查。已补查 `CraftingRecipesBarnarda_C1.addCircuitFabricator`：以钻石、两份 `BRItems.BASIC:3`（缟玛瑙）、红石和 GC 部件制作 GS 现代晶圆。因此缟玛瑙已有电路制造用途，不是只有名字的收藏物。这是原有现代晶圆路线；NewEarth九阶制造另使用紫晶晶圆与控制面板。
 
 依据：[缟玛瑙掉落](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/blocks/Barnarda_C1_Blocks.java)、[C1 晶圆配方](../../dependencies/GalaxySpace/src/main/java/galaxyspace/systems/BarnardsSystem/moons/barnarda_c1/recipes/CraftingRecipesBarnarda_C1.java)。
 
@@ -503,7 +503,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 ### 22. 鲸鱼座 τ f Tau Ceti f：水下探索主题
 
-**身份与前置：** GS；维度 `-1338`；T6。
+**身份与前置：** GS；维度 `-1338`；原T6，NewEarth当前T7。
 
 **地形与生态：** 海洋、水下地形、珊瑚和水草相关生成。含氧大气的可呼吸标记为 false；Provider 没有常规地牢。
 
@@ -539,15 +539,15 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 **待验证：** 若后续仍需保留或复现 EP 火卫一，先核对生成器依赖，再检查星图入口、名称、落地维度、返航与实际资源。原异常日志后续继续运行，不能将其直接描述为整个游戏崩溃，也不能以维度加载记录证明生成器正常。
 
-依据：[卫星注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/ExtraPlanets_Moons.java)、[Phobos 矿物生成器](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/Phobos/worldgen/BiomeDecoratorPhobos.java)、[方块初始化](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/ExtraPlanets_Blocks.java)，并保留本机实际 JAR 的字节码核对依据。共存事项见[调查总览](planet-gameplay-guide.md)。
+依据：[卫星注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/ExtraPlanets_Moons.java)、[Phobos 矿物生成器](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/moons/Phobos/worldgen/BiomeDecoratorPhobos.java)、[方块初始化](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/blocks/ExtraPlanets_Blocks.java)，并保留本机实际 JAR 的字节码核对依据。
 
-### 24. Kepler-22b（EP）：内容存在，正常生存路线尚未落实
+### 24. Kepler-22b（EP）：九阶准入与最终核心材料
 
-**身份与前置：** EP；维度 `-22`；T10。
+**身份与前置：** EP；维度 `-22`；原 EP 门槛T10，NewEarth 当前最低T9。
 
 **已确认内容：** 有实际世界 Provider，包含资源型生物群系、材料树、材料球、建筑和糖果主题内容；相关生成开关大多开启。具体物品、生成密度、采集和加工仍需进一步调查。
 
-**原有实现与历史缺口：** Kepler Provider 要求 T10；普通 T10 受 `ERIS` 控制，电动 T10 还要求 `ERIS && KEPLER22B && ELECTRIC_ROCKET`。首轮关闭 Eris 时据此判断路线有缺口；后续临时访问测试虽开启这些组，也不证明整条生存链已验收，更不代表要恢复 EP 整套发展。正式方向是将开普勒接到自制基础九阶之后，目标最低 T9，具体代码尚未适配。
+**原有实现与历史缺口：** Kepler Provider 要求 T10；普通 T10 受 `ERIS` 控制，电动 T10 还要求 `ERIS && KEPLER22B && ELECTRIC_ROCKET`。首轮关闭 Eris 时据此判断路线有缺口；后续临时访问测试虽开启这些组，也不证明整条生存链已验收，更不代表要恢复 EP 整套发展。NewEarth 已接入自制九阶飞船与最低T9准入，旧EP火箭链已裁剪；实际生存往返尚待验收。
 
 **补漏：主要特色材料与现有加工。** `extraplanets:tier11_items` 元数据 0～4 依次为蓝、红、紫、黄、绿钻石，5 为铂锭，6 为压缩铂。已有冶炼配方把对应矿石变成这些物品；压缩配方使用六份铂锭得到一份压缩铂。材料树、材料球是生成实现，不能据此当作已验证的可再生种植系统。具体矿物密度、采集与加工仍需运行验证。
 
@@ -555,11 +555,11 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 
 **内容价值：** 已确定作为基础九阶之后的最终核心材料目的地；不能接成现有 GS T6 的直接下一站。作者原有地牢路线将 Kepler 列为可选、T10 图纸位于 Eris，是理解旧实现的背景，不是本项目必须恢复的路线。[EP 作者地牢与图纸说明](https://docs.mjrlegends.com/ExtraPlanets/dungeons/)
 
-**接入边界：** 正式路线先制造基础九阶，再访问开普勒取得五色钻石与铂制品，制作最终核心；新核心不属于 EP 已有配方。新准入与正常往返未验证前，不把该阶段发布为已保证可完成的当前任务。
+**接入边界：** 正式路线先制造基础九阶，再访问开普勒取得五色钻石与铂制品，制作最终核心；NewEarth 核心配方使用五色钻石各1与压缩铂4，在GS装配机制造。新准入与正常往返未验证前，不把该阶段发布为已保证可完成的当前任务。
 
 **待验证：** 按最终裁剪方案核对 Kepler 及其材料注册、基础九阶准入和返航、矿物与五色物品的对应、铂的冶炼压缩，以及原 EP 开关依赖。管理员访问不能代替正式生存路线验收。
 
-依据：[Kepler Provider](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/WorldProviderKepler22b.java)、[行星等级注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/ExtraPlanets_Planets.java)、[T10 物品注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)，并与本机实际 JAR 对照。详细条件见[调查总览](planet-gameplay-guide.md)，版本对应边界见 [EP 源码说明](../../dependencies/ExtraPlanets/LOCAL-NOTES.md)。
+依据：[Kepler Provider](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/Kepler22b/WorldProviderKepler22b.java)、[行星等级注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/planets/ExtraPlanets_Planets.java)、[T10 物品注册](../../dependencies/ExtraPlanets/src/main/java/com/mjr/extraplanets/items/ExtraPlanets_Items.java)，并与本机实际 JAR 对照。版本对应边界见 [EP 源码说明](../../dependencies/ExtraPlanets/LOCAL-NOTES.md)。
 
 ### EP 太阳系资源
 
@@ -571,10 +571,10 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 | EP 谷神星 | T4 | 铀矿、化石、特殊流体与卫星塔；无专属 Boss 地牢。与 GS 谷神星并存 |
 | EP 木星 | T4 | 钯、镍、红色宝石矿；火山岩可冶炼火山锭，另有灰烬与结构；火蝙蝠 Boss 地牢提供 GS 五阶火箭认证 |
 | EP 土星 | T5 | 镁矿、史莱姆相关地层与特殊流体；恶魂 Boss 地牢提供 GS 六阶火箭认证，作为唯一来源 |
-| EP 天王星 | T6 | 水晶、白色宝石矿，冰地形；冰史莱姆 Boss 地牢拟给特殊道具图纸，道具待定 |
-| EP 海王星 | T7 | 锌、蓝色宝石矿、冻结氮；雪人 Boss 地牢拟给特殊制造台图纸，目标调整到六阶阶段 |
-| EP 冥王星 | T8 | 钨矿、化石；太空人 Boss 地牢拟给七阶图纸，目标调整到六阶阶段 |
-| EP Eris | T9 | 暗铁矿、化石；巨型僵尸 Boss 地牢拟给亚光速引擎图纸，目标要求 GS 六阶＋已安装离子引擎 |
+| EP 天王星 | T6 | 水晶、白色宝石矿，冰地形；冰史莱姆 Boss 地牢提供引擎升级台图纸；当前门槛T5 |
+| EP 海王星 | T7 | 锌、蓝色宝石矿、冻结氮；雪人 Boss 地牢提供材料制造台图纸；当前门槛T6 |
+| EP 冥王星 | T8 | 钨矿、化石；太空人 Boss 地牢提供七阶图纸；当前门槛T6 |
+| EP Eris | T9 | 暗铁矿、化石；巨型僵尸 Boss 地牢提供亚光速引擎图纸；六阶要求已安装离子引擎，七阶及以上有效飞船放行 |
 
 上述 Boss 是 EP 特色 Boss 分支，配置可切换默认 Boss。宝箱特殊池、普通池、钥匙和图纸解锁须分开处理；不能把换一项奖励当成其他旧图纸已全部移除。
 
@@ -583,7 +583,7 @@ NewEarth 对 EP 独立系统接入 GS 宇航服防护；GS／AC 原有事件行�
 - NewEarth将EP镁、镍统一为GS锭、板与材料块，铅统一为GC金星铅锭，保留原矿源并适配冶炼、压缩及配方；对应关系见[物品取舍清单](../../project/NewEarth/items/ep-content-inventory.md#重复材料统一)。
 - EP铀矿冶炼铀锭，GS主世界铀矿掉落铀碎片；两者加工关系与统一方案待定。
 - EP火山岩／火山锭与GS Io火山石分别保留；EP水晶与GS土卫二未知晶体分别用于各自加工链，压缩碳沿用EP材料身份。
-- 水晶锭用于压缩水晶及水晶块，压缩水晶用于最终混合型高级太阳能板；白色宝石用于方块及白色宝石晶圆，晶圆用于天王星空间站。七阶草案将水晶与白色宝石晶圆接入航电组件，具体制造见[路线手稿](../../project/NewEarth/items/route-manuscript.md#六阶探索与七阶制造)。
+- 水晶锭用于压缩水晶及水晶块，压缩水晶用于最终混合型高级太阳能板；白色宝石用于方块及白色宝石晶圆，晶圆用于天王星空间站。现行七阶配方将水晶与白色宝石晶圆接入航电组件，具体制造见[路线手稿](../../project/NewEarth/items/route-manuscript.md#六阶探索与七阶制造)。
 - GS 妊神星冰晶体已有回收配方；柯伊伯带矿核是生成形态，使用既有矿石方块，不是可直接写进配方的一个新“矿核”物品。具体原料须追到实际掉落。
 - EP 木卫四有干性油、页岩油地层；不采用该地表时是否迁移或替换用途待定。EP 其他未选卫星不默认启用。
 
@@ -614,7 +614,7 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 | 终极燃料装载机 | 高级装载机1、钨锭5、锌锭2、蓝色宝石1；另有直接使用 GC 装载机的条件配方 |
 | 漫游车充能器 | 戴斯锭6、GC 电池3 |
 
-这些机器不等于现成的通用合金制造台。是否复用它们加工新七阶材料，要核对实际输入槽、流体和配方机制；特殊制造台的形态和加工配方未定。
+这些 EP 机器保留各自加工用途。NewEarth 使用独立星际装配机加工七阶中间件与紫晶材料，不使用这些机器替代其配方。
 
 ### GS 防护与改装依赖
 
@@ -622,7 +622,7 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 - GS 土卫二裂谷实际放置晶体，普通掉落为未知晶体；木卫二两处同类生成段落被注释，不能作为备用矿源。保留并迁移土卫二可以保住原温控材料链。冰桶由空桶对普通冰使用取得，见[事件实现](../../dependencies/GalaxySpace/src/main/java/galaxyspace/core/events/GSEventHandler.java)。
 - GS 三级／四级温控强度为3／4。NewEarth 将 EP 绝对值超过16的温度修正缩小至原值十分之一、上限16，保留正负与昼夜变化；GC量级参数保持原值。适用装备见[温控装备](../modpack-gameplay.md#温控装备)。参数为内部温度修正。
 - EP 气压、辐射处理独立于 GS 事件。NewEarth 在 EP 防护入口识别 GS 普通／轻型宇航服完整四件套，阻止气压伤害与新增辐射暴露，保留已有辐射累积和处理用品。
-- 改装台可给原 GS 四／五阶装离子引擎、六阶装亚光速引擎；拆卸会返还模块。离子与亚光速原来都进入 Io 的五级特殊奖励池；新方案仅留离子，引擎逐代制造升级。六阶离子改装与新准入尚未实现。
+- NewEarth 六阶改装台只列出离子引擎，拆卸返还模块并恢复槽位；Eris 六阶准入检查实际已装离子引擎。七阶没有引擎改装项，亚光速引擎用于总装和等离子升级。实际拆装与航行仍待验收。
 - 重型宇航服每件2个改装位，轻型每件1个。重型胸甲可装喷气背包；轻型列表没有该模块。头盔有夜视、探测、水下呼吸、自动进食等，部位和冲突受模块限制。氧气罐有 EPP 模块，气体提取器有升级电池；等离子工具可装列表为空。EP宇航服专属模块及素材移除，改装采用GS接口。
 
 ## 九、空间站与展示天体
@@ -646,14 +646,14 @@ EP 火箭沿用 GC NASA 工作台与图纸页面，没有逐阶独立火箭工�
 
 以下是原 GS／历史配置的展示边界；2026-11-03 方案选择启用多颗 EP 同名地表，见物品线路线手稿，不据此改变原 GS 母星只有展示实现的事实。
 
-- GS 木星、土星、天王星、海王星本体没有地表 Provider；首轮 EP 对应实现关闭。后续访问测试开启这些 EP 天体，不会使它们变成 GS 地表，也不代表正式保留。
+- GS 木星、土星、天王星、海王星本体没有地表 Provider；固定配置采用 EP 同名地表，GS 卫星已改挂 EP 母星。
 - GS 火卫二、部分外行星卫星，以及部分系外天体仅展示；开启对应名称的开关不会自动增加地表。
 - Barnarda C2 与测试星的地表受调试分支限制，本机 debug=false。
 - EP Makemake、部分 Kepler 系统天体属于展示内容；EP Haumea 也不是第二套地表实现。
 
 它们可以出现在星图介绍或已有目标的说明中。当前内容方向不增加只为阅读而勾选的任务，也不把展示天体描述为已经实现的远征目的地。
 
-完整名单见[星图展示与未开放内容](planet-gameplay-guide.md)。
+可登陆与展示节点须按当前固定配置和 Provider 注册区分。
 
 ## 十、把资源和制造串成实际进度
 
@@ -677,9 +677,13 @@ GC T1～T3 的图纸、NASA 工作台、矿物与火箭材料组成基础发展�
       └─ Miranda：多矿种与地层
   → GS T6 制造：HDP:2、部件、T6 许可、火箭装配
       ├─ 外太阳系探索
-      └─ 系外目的地：另验引擎、星图和跨系往返
+      └─ Eris：六阶实际安装离子引擎，取得亚光速图纸
+  → NewEarth T7：星际组装台总装，亚光速引擎作为材料
+      └─ 常规系外：紫木、树脂与 C1 等离子图纸
+  → NewEarth T9：六座飞船，开普勒五色钻石与铂
+  → 最终核心、黑洞引擎、T10：星图选择终章
 
-Kepler-22b：原 EP T10 与后期基础九阶接入规划分开，不能当成现有 GS T6 直接后继
+Kepler-22b：当前最低T9；T6不能直接前往
 ```
 
 这张图表示已查关系，不是强制完成顺序，也不是完整生存流程验收。
@@ -722,6 +726,6 @@ NewEarth 移除 GS 原有的空白图纸加前一级完整火箭的认证合成�
 | 火星 | T2 | GC 二级特殊池 | T3 等图纸来源 |
 | GS 谷神星 | T3 | GS 等级 4 池、`dungeon_tier_4` 普通表 | 工具与独立挑战，不是必须 T4 才能进入 |
 | GS Io | T4 | GS 等级 5 池、`dungeon_tier_5` 普通表 | 引擎模块等，不是 T5 火箭许可领取 |
-| GS Barnarda C1 | T6 | 月球式生成器与月球宝箱类型 | 待验复用内容，不代表独有 T7 奖励 |
+| GS Barnarda C1 | T7 | 月球式生成器；NewEarth 按 Provider 替换 Boss 奖励 | 提供等离子引擎图纸，实际获取待验 |
 
 Boss 的特殊奖励池与宝箱 JSON 普通池分别记录，不能将其中任意一项写成每箱保底。源码注释中的旧奖励注册也不能当作当前有效奖励。

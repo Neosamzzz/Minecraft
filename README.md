@@ -14,6 +14,8 @@
 
 需要 **64 位 JDK 8**（含 `java` 和 `javac`）、**Python 3.8+** 和 **Git**。FTB 使用项目内的 Gradle Wrapper，GSLC 与 NewEarth 使用共用 GalaxySpace Wrapper，无需安装全局 Gradle 或 Maven。访问本私有仓库需要相应的 GitHub 权限和本机 Git 凭据。
 
+构建 NewEarth（包括 `--target all`）还需 **JDK 25** 编译包内地形核心，通过 `NEWEARTH_JAVA_HOME` 指定；Windows 会自动查找 Minecraft 的 `java-runtime-epsilon`。游戏运行与 OTG 组合包安装要求见 [NewEarth 终章维度](project/NewEarth/dimension/README.md#安装与使用)。
+
 ```sh
 git clone https://github.com/Neosamzzz/Minecraft.git
 cd Minecraft
