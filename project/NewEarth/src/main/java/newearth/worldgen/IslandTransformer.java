@@ -26,6 +26,7 @@ import org.objectweb.asm.tree.VarInsnNode;
  */
 public final class IslandTransformer implements IClassTransformer, Opcodes {
     private static final String TARGET = "net.minecraft.world.biome.BiomeProvider";
+    private static final String VILLAGE = "net.minecraft.world.gen.structure.MapGenVillage";
     private static final String HOOKS = "newearth/worldgen/IslandHooks";
     private static final String OBJECT = "java/lang/Object";
 
@@ -37,7 +38,9 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
-        if (bytes == null || !TARGET.equals(transformedName)) return bytes;
+        if (bytes == null) return bytes;
+        if (VILLAGE.equals(transformedName)) return patchVillage(bytes);
+        if (!TARGET.equals(transformedName)) return bytes;
         ClassNode node = new ClassNode();
         new ClassReader(bytes).accept(node, 0);
 
@@ -75,6 +78,35 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
         return writer.toByteArray();
     }
 
+    /** Blocks vanilla villages whose centre is not on solid island ground. */
+    private static byte[] patchVillage(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        int patched = 0;
+        for (MethodNode method : node.methods) {
+            if ((method.access & ACC_STATIC) != 0 || !method.desc.equals("(II)Z")) continue;
+            LabelNode proceed = new LabelNode();
+            InsnList hook = new InsnList();
+            hook.add(new VarInsnNode(ILOAD, 1));
+            hook.add(new VarInsnNode(ILOAD, 2));
+            hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "villageAllowed", "(II)Z", false));
+            hook.add(new JumpInsnNode(IFNE, proceed));
+            hook.add(new InsnNode(ICONST_0));
+            hook.add(new InsnNode(IRETURN));
+            hook.add(proceed);
+            hook.add(new FrameNode(F_SAME, 0, null, 0, null));
+            method.instructions.insert(hook);
+            patched++;
+        }
+        if (patched != 1) {
+            log("unexpected village layout (" + patched + "); water filter disabled");
+            return bytes;
+        }
+        log("village water filter installed");
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        node.accept(writer);
+        return writer.toByteArray();
+    }
     private static void patchConstructor(MethodNode method) {
         for (AbstractInsnNode insn : method.instructions.toArray()) {
             if (insn.getOpcode() != RETURN) continue;

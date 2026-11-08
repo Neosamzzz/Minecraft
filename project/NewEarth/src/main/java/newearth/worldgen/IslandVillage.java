@@ -10,31 +10,43 @@ import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 /**
- * Places one village on the main island. Vanilla's village grid almost never lands on a small island,
- * so the structure is generated once from the island centre instead.
+ * Places one village on the main island and one on every grid island. Vanilla's village grid almost
+ * never lands on a small island, so structures are generated directly from island centres instead.
  */
 public final class IslandVillage implements IWorldGenerator {
-    private static final int ANCHOR_CHUNK_X = 0;
-    private static final int ANCHOR_CHUNK_Z = 0;
     private static final int ATTEMPTS = 3;
+    private static final int[][] OFFSETS = {{0, 0}, {1, 0}, {0, 1}};
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator generator, IChunkProvider provider) {
         if (world.provider.getDimension() != 0 || !WorldGenConfig.enabled || !WorldGenConfig.mainVillage) return;
-        if (chunkX != ANCHOR_CHUNK_X || chunkZ != ANCHOR_CHUNK_Z) return;
+        IslandField field = IslandHooks.field();
+        if (field == null) return;
+
+        long key;
+        int[] center;
+        if (chunkX == 0 && chunkZ == 0) {
+            key = 0L;
+            center = new int[]{0, 0};
+        } else {
+            key = field.largeIslandAnchorAtChunk(chunkX, chunkZ);
+            if (key == 0L) return;
+            center = field.largeIslandCenter(key);
+            if (center == null) return;
+        }
+
         IslandVillageData data = IslandVillageData.get(world);
-        if (data.isPlaced()) return;
-        if (place(world, random)) {
-            data.setPlaced();
-            System.out.println("[NewEarth] island village placed near " + new BlockPos(ANCHOR_CHUNK_X * 16, 64, ANCHOR_CHUNK_Z * 16));
+        if (data.isPlaced(key)) return;
+        if (place(world, random, center[0] >> 4, center[1] >> 4)) {
+            data.markPlaced(key);
+            System.out.println("[NewEarth] island village placed near " + new BlockPos(center[0], 64, center[1]));
         }
     }
 
-    private static boolean place(World world, Random random) {
-        int[][] offsets = {{0, 0}, {1, 0}, {0, 1}};
+    private static boolean place(World world, Random random, int centerChunkX, int centerChunkZ) {
         for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
-            int chunkX = ANCHOR_CHUNK_X + offsets[attempt][0];
-            int chunkZ = ANCHOR_CHUNK_Z + offsets[attempt][1];
+            int chunkX = centerChunkX + OFFSETS[attempt][0];
+            int chunkZ = centerChunkZ + OFFSETS[attempt][1];
             StructureStart start = new VillageGenerator().start(world, random, chunkX, chunkZ);
             if (start != null && start.isSizeableStructure()) {
                 start.generateStructure(world, random, start.getBoundingBox());

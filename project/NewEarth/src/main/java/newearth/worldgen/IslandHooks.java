@@ -28,6 +28,9 @@ public final class IslandHooks {
         }
         IslandField next = new IslandField(((WorldInfo) worldInfo).getSeed());
         next.mainIslandRadius = WorldGenConfig.mainIslandRadius;
+        next.largeIslandCell = WorldGenConfig.largeIslandCell;
+        next.largeIslandMinRadius = WorldGenConfig.largeIslandMinRadius;
+        next.largeIslandMaxRadius = WorldGenConfig.largeIslandMaxRadius;
         next.isletScale = 1.0 / Math.max(1.0, WorldGenConfig.isletScaleBlocks);
         next.isletLevel = WorldGenConfig.isletLevel;
         next.landLevel = WorldGenConfig.landLevel;
@@ -37,6 +40,26 @@ public final class IslandHooks {
         field = next;
     }
 
+    public static IslandField field() {
+        return field;
+    }
+
+    /** True when a vanilla village may spawn at this chunk: solid land with no nearby water. */
+    public static boolean villageAllowed(int chunkX, int chunkZ) {
+        IslandField current = field;
+        if (current == null) return true;
+        int x = chunkX * 16 + 8;
+        int z = chunkZ * 16 + 8;
+        if (current.surface(current.value(x, z)) != IslandField.Surface.LAND) return false;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                if (dx == 0 && dz == 0) continue;
+                IslandField.Surface surface = current.surface(current.value(x + dx * 24, z + dz * 24));
+                if (surface != IslandField.Surface.LAND && surface != IslandField.Surface.BEACH) return false;
+            }
+        }
+        return true;
+    }
     /** Rewrites a vanilla biome grid in place; the array is passed as Object so the call site stays name-neutral. */
     public static void apply(Object biomes, int x, int z, int width, int height) {
         IslandField current = field;

@@ -1,13 +1,17 @@
 package newearth.worldgen;
 
+import java.util.HashSet;
+import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 
-/** Remembers that the main island already received its village. */
+/** Remembers which islands already received their village. */
 public final class IslandVillageData extends WorldSavedData {
     private static final String NAME = "newearth_islands";
-    private boolean placed;
+    private final Set<Long> placed = new HashSet<Long>();
 
     public IslandVillageData() {
         super(NAME);
@@ -26,23 +30,29 @@ public final class IslandVillageData extends WorldSavedData {
         return (IslandVillageData) data;
     }
 
-    public boolean isPlaced() {
-        return placed;
+    public boolean isPlaced(long key) {
+        return placed.contains(key);
     }
 
-    public void setPlaced() {
-        placed = true;
+    public void markPlaced(long key) {
+        placed.add(key);
         markDirty();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        placed = nbt.getBoolean("villagePlaced");
+        placed.clear();
+        NBTTagList list = nbt.getTagList("placed", 4);
+        for (int i = 0; i < list.tagCount(); i++) {
+            placed.add(((NBTTagLong) list.get(i)).getLong());
+        }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        nbt.setBoolean("villagePlaced", placed);
+        NBTTagList list = new NBTTagList();
+        for (Long key : placed) list.appendTag(new NBTTagLong(key));
+        nbt.setTag("placed", list);
         return nbt;
     }
 }
