@@ -28,7 +28,7 @@
 
 ## 安装与使用
 
-运行基线为 Cleanroom 0.6.13-alpha、Java 25.0.1、OTG 9.9、Biome Bundle 6.1、DH 3.3.3、Actinium alpha-0.0.13-3346c82c 与 Complementary Reimagined r5.9.3。Actinium 使用包含 [上游 #238](https://github.com/Q-Engineering-Source/Actinium/pull/238) 的[构建包](https://github.com/Q-Engineering-Source/Actinium/actions/runs/40058585079)，修复 Xaero 世界地图缩小至约 0.5x 时的原生崩溃；实例只保留一个 Actinium JAR，本机地图缩放与光影共存仍待游戏内验收。GC／GS／EP 及其依赖沿用共存实例。光影采用基于 HIGH 的均衡参数：阴影距离 128、方块反射与体积光各降一级，保留水面、云层与实体阴影；夜间极光不受群系和月相限制。
+运行基线为 Cleanroom 0.6.13-alpha、Java 25.0.1、OTG 9.9、Biome Bundle 6.1、DH 3.3.3、Actinium alpha-0.0.13-3346c82c 与 Complementary Reimagined r5.9.3。Actinium 使用包含 [上游 #238](https://github.com/Q-Engineering-Source/Actinium/pull/238) 的[构建包](https://github.com/Q-Engineering-Source/Actinium/actions/runs/40058585079)，修复 Xaero 世界地图缩小至约 0.5x 时的原生崩溃；实例只保留一个 Actinium JAR。GC／GS／EP 及其依赖沿用共存实例。光影采用基于 HIGH 的均衡参数：阴影距离 128、方块反射与体积光各降一级，保留水面、云层与实体阴影；夜间极光不受群系和月相限制。
 
 ### 构建与配置
 
