@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:end/root",
+  "display": {
+    "icon": {
+      "item": "newearth:final_energy_core"
+    },
+    "title": {
+      "translate": "advancements.newearth.final_landing.title"
+    },
+    "description": {
+      "translate": "advancements.newearth.final_landing.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "landed": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

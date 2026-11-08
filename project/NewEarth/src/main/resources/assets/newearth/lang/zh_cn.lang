@@ -110,3 +110,5 @@ gui.module.ion_engine=离子引擎
 gui.module.ion_engine.desc=六阶火箭的离子推进。
 gui.module.passive=被动模块
 gui.module.count=剩余改装槽位: 
+advancements.newearth.final_landing.title=着陆确认
+advancements.newearth.final_landing.description=抵达播放结束并正式降落。

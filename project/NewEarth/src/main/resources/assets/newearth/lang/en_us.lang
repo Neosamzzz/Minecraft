@@ -110,3 +110,5 @@ gui.module.ion_engine=Ion Engine
 gui.module.ion_engine.desc=Ion propulsion for the tier 6 rocket.
 gui.module.passive=Passive module
 gui.module.count=Slots left: 
+advancements.newearth.final_landing.title=Touchdown Confirmed
+advancements.newearth.final_landing.description=Land on New Earth after the arrival sequence finishes.

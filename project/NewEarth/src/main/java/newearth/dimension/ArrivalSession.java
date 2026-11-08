@@ -1,9 +1,12 @@
 package newearth.dimension;
 
 import java.util.*;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.*;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
@@ -20,6 +23,8 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 @Mod.EventBusSubscriber(modid = "newearth")
 public final class ArrivalSession extends WorldSavedData {
     private static final String KEY = "newearth_arrival", HOLD = "NewEarthArrivalHold";
+    /** Granted on the finished descent so quests can detect the real landing, not the dimension entry. */
+    private static final ResourceLocation FINAL_LANDING = new ResourceLocation("newearth", "final_landing");
     private ArrivalLoadBudget load = new ArrivalLoadBudget(40, 60);
     private final Set<UUID> completed = new HashSet<>();
     private final Map<String, Group> groups = new LinkedHashMap<>();
@@ -206,6 +211,7 @@ public final class ArrivalSession extends WorldSavedData {
                     if (riding instanceof newearth.EntityTier10Rocket) ((newearth.EntityTier10Rocket) riding).releaseHold();
                     if (player.isRiding()) player.dismountRidingEntity();
                     restore(player); land(player, group.landing);
+                    grantFinalLanding(player);
                     ArrivalNetwork.send(player, group.id, ArrivalNetwork.LANDED, group.landing);
                 }
                 releaseChunks(world, group, true);
@@ -214,6 +220,13 @@ public final class ArrivalSession extends WorldSavedData {
                 iterator.remove();
             }
         }
+    }
+
+    private static void grantFinalLanding(EntityPlayerMP player) {
+        MinecraftServer server = player.getServer();
+        if (server == null) return;
+        Advancement advancement = server.getAdvancementManager().getAdvancement(FINAL_LANDING);
+        if (advancement != null) player.getAdvancements().grantCriterion(advancement, "landed");
     }
 
     /** Square spiral, starting at the center; each complete ring covers every nearby chunk. */
