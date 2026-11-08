@@ -36,5 +36,6 @@
 | `ftbquests-shared-team.cfg` | 公共团队启用开关和指定既有团队 ID，修改后重启 |
 | `ftbquests/normal/` | 默认任务定义；游戏规则或 PackMode 可改变模式目录，进度另存在 Library 团队数据中 |
 | `newearth-dimension.cfg` | 终章维度配置，默认维度 ID 为 1020 |
+| `newearth-worldgen.cfg` | 主世界孤岛布局开关与尺寸 |
 
 固定太阳系组合由 `ExtraPlanets.cfg` 与 `GalaxySpace/dimensions.conf` 共同定义；NewEarth 启动时校验，不自动重写。OTG 预设覆盖和客户端光影参数随 `NewEarth-BiomeBundle-<版本>.zip` 分发。

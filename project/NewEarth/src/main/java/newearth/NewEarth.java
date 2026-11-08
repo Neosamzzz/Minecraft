@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
         acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
-    public static final String VERSION = "0.3.56";
+    public static final String VERSION = "0.3.59";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.Instance(MOD_ID)
@@ -27,6 +27,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         EndDimension.configure(event.getModConfigurationDirectory());
+        newearth.worldgen.WorldGenConfig.load(event.getModConfigurationDirectory());
         newearth.dimension.ArrivalNetwork.init();
         if (event.getSide().isClient()) newearth.client.RocketRenderer.register();
         // Register T9/T10 multi-seat rocket entities
