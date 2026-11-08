@@ -94,8 +94,12 @@ public final class IslandField {
         double offsetZ = 0.25 + 0.50 * ((hash >>> 32) & 0xFFFFL) / 65535.0;
         double radius = largeIslandMinRadius
                 + (largeIslandMaxRadius - largeIslandMinRadius) * ((hash >>> 48) & 0xFFFFL) / 65535.0;
+        radius = Math.round(radius / 4.0) * 4.0;
         double centerX = cellX * largeIslandCell + offsetX * largeIslandCell;
         double centerZ = cellZ * largeIslandCell + offsetZ * largeIslandCell;
+        // Snap to chunk centres so the island lines up with the four-block generation grid.
+        centerX = Math.floor(centerX / 16.0) * 16.0 + 8.0;
+        centerZ = Math.floor(centerZ / 16.0) * 16.0 + 8.0;
         // Keep the spawn island clear of grid islands.
         if (Math.sqrt(centerX * centerX + centerZ * centerZ) < mainIslandRadius + radius + 120.0) return null;
         return new double[]{centerX, centerZ, radius};
