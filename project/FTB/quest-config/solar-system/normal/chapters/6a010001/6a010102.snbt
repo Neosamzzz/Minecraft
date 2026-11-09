@@ -2,8 +2,8 @@
   "title": "准备升空",
   "description": "获得一级火箭",
   "icon": "galacticraftcore:rocket_t1 1 0",
-  "x": 0.2,
-  "y": -2,
+  "x": -6.34375,
+  "y": -1.28125,
   "text": [
     "第一艘火箭，先去月球。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 2.05,
+  "size": 1.9,
   "shape": "hexagon"
 }

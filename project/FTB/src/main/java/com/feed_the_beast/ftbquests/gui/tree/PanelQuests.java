@@ -193,7 +193,7 @@ public class PanelQuests extends Panel
 
 			double x = (qx - questMinX - qw / 2D) * (bs + bp) + bp / 2D + bp * (qw - 1D) / 2D;
 			double y = (qy - questMinY - qh / 2D) * (bs + bp) + bp / 2D + bp * (qh - 1D) / 2D;
-			w.setPosAndSize((int) x, (int) y, (int) (bs * qw), (int) (bs * qh));
+			w.setPosAndSize((int) x, (int) y, Math.max(1, (int) (bs * qw)), Math.max(1, (int) (bs * qh)));
 		}
 
 		setPosAndSize(20, 1, treeGui.width - 40, treeGui.height - 2);

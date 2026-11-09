@@ -2,8 +2,8 @@
   "title": "我的一小步，人类一大步",
   "description": "抵达月球",
   "icon": "galacticraftcore:basic_block_moon 1 4",
-  "x": 4.6,
-  "y": -0.7,
+  "x": 0.84375,
+  "y": -2.96875,
   "text": [],
   "optional": false,
   "tasks": [
@@ -14,6 +14,6 @@
       "dim": -28
     }
   ],
-  "size": 2.2,
+  "size": 2.05,
   "shape": "diamond"
 }

@@ -2,8 +2,8 @@
   "title": "月球留不住我",
   "description": "获得二级火箭",
   "icon": "galacticraftplanets:rocket_t2 1 0",
-  "x": 12.7,
-  "y": 1,
+  "x": 11.90625,
+  "y": -5.8125,
   "text": [
     "下一站：火星。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 2.05,
+  "size": 1.9,
   "shape": "hexagon"
 }

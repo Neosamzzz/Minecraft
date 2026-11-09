@@ -2,8 +2,8 @@
   "title": "我们来过",
   "description": "获得旗帜",
   "icon": "galacticraftcore:flag 1 0",
-  "x": 0.7,
-  "y": 4.7,
+  "x": 5.34375,
+  "y": -2.6875,
   "text": [
     "给着陆点留个标记。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }

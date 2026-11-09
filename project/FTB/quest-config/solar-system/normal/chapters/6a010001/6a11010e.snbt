@@ -2,8 +2,8 @@
   "title": "月球驾照",
   "description": "获得月球车",
   "icon": "galacticraftcore:buggy 1 0",
-  "x": 11.8,
-  "y": -2.9,
+  "x": 8.875,
+  "y": -1.40625,
   "text": [
     "换一种地表探索方式。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }

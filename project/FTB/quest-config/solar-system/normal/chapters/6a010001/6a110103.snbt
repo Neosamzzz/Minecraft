@@ -2,8 +2,8 @@
   "title": "在这里组装",
   "description": "获得 NASA 工作台",
   "icon": "galacticraftcore:rocket_workbench 1 0",
-  "x": -3.5,
-  "y": -1.1,
+  "x": -8.71875,
+  "y": 3.4375,
   "text": [],
   "optional": false,
   "tasks": [
@@ -25,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 1.35,
+  "size": 1.25,
   "shape": "square"
 }

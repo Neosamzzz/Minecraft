@@ -23,6 +23,7 @@ import com.feed_the_beast.ftbquests.net.edit.MessageChangeProgress;
 import com.feed_the_beast.ftbquests.net.edit.MessageEditObject;
 import com.feed_the_beast.ftbquests.quest.ChangeProgress;
 import com.feed_the_beast.ftbquests.quest.Chapter;
+import com.feed_the_beast.ftbquests.quest.ChapterImage;
 import com.feed_the_beast.ftbquests.quest.Movable;
 import com.feed_the_beast.ftbquests.quest.Quest;
 import com.feed_the_beast.ftbquests.quest.QuestObject;
@@ -470,10 +471,24 @@ public class GuiQuestTree extends GuiBase
 				minY = Math.min(minY, quest.y - quest.size / 2D);
 				maxY = Math.max(maxY, quest.y + quest.size / 2D + 1D);
 			}
+			for (ChapterImage image : selectedChapter.images)
+			{
+				if (image.dev && !file.canEdit())
+				{
+					continue;
+				}
+				double angle = Math.toRadians(image.rotation);
+				double halfWidth = (Math.abs(image.width * Math.cos(angle)) + Math.abs(image.height * Math.sin(angle))) / 2D;
+				double halfHeight = (Math.abs(image.width * Math.sin(angle)) + Math.abs(image.height * Math.cos(angle))) / 2D;
+				minX = Math.min(minX, image.x - halfWidth);
+				maxX = Math.max(maxX, image.x + halfWidth);
+				minY = Math.min(minY, image.y - halfHeight);
+				maxY = Math.max(maxY, image.y + halfHeight);
+			}
 			if (minX != Double.POSITIVE_INFINITY)
 			{
 				double step = 1.5D + ThemeProperties.QUEST_SPACING.get(selectedChapter) / 4D;
-				zoom = MathHelper.clamp((int) Math.floor(Math.min((width - 64D) / ((maxX - minX) * step), (height - 52D) / ((maxY - minY) * step))), 8, 16);
+				zoom = MathHelper.clamp((int) Math.floor(Math.min((width - 64D) / ((maxX - minX) * step), (height - 52D) / ((maxY - minY) * step))), 4, 16);
 				questPanel.resetScroll();
 			}
 			fitChapterPending = false;

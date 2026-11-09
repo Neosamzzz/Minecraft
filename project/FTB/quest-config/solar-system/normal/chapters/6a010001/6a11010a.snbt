@@ -2,8 +2,8 @@
   "title": "下一张蓝图",
   "description": "获得二级火箭图纸",
   "icon": "galacticraftcore:schematic 1 1",
-  "x": 8.3,
-  "y": 2.1,
+  "x": 10.4375,
+  "y": 4.28125,
   "text": [],
   "optional": false,
   "tasks": [
@@ -25,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }

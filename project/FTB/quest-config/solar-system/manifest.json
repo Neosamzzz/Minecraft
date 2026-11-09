@@ -18,11 +18,11 @@
       "target": "获得燃煤发电机",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -7,
-      "y": -2.3,
+      "x": -12.40625,
+      "y": 1.875,
       "source_spec": "galacticraftcore:machine@0",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "A03",
@@ -32,11 +32,11 @@
       "target": "获得 NASA 工作台",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -3.5,
-      "y": -1.1,
+      "x": -8.71875,
+      "y": 3.4375,
       "source_spec": "galacticraftcore:rocket_workbench@0",
       "shape": "square",
-      "size": 1.35
+      "size": 1.25
     },
     {
       "code": "A04",
@@ -46,11 +46,11 @@
       "target": "获得任一种普通氧气罐",
       "type": "ftbquests:item",
       "optional": false,
-      "x": -3.8,
-      "y": 2.5,
+      "x": -10.78125,
+      "y": -2.15625,
       "source_spec": "galacticraftcore:oxygen_tank_light_full@*,galacticraftcore:oxygen_tank_med_full@*,galacticraftcore:oxygen_tank_heavy_full@*",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "A06",
@@ -60,11 +60,11 @@
       "target": "获得一级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 0.2,
-      "y": -2,
+      "x": -6.34375,
+      "y": -1.28125,
       "source_spec": "galacticraftcore:rocket_t1@*",
       "shape": "hexagon",
-      "size": 2.05
+      "size": 1.9
     },
     {
       "code": "A07",
@@ -74,11 +74,11 @@
       "target": "抵达月球",
       "type": "ftbquests:dimension",
       "optional": false,
-      "x": 4.6,
-      "y": -0.7,
+      "x": 0.84375,
+      "y": -2.96875,
       "source_spec": "dim:-28",
       "shape": "diamond",
-      "size": 2.2
+      "size": 2.05
     },
     {
       "code": "A08",
@@ -88,11 +88,11 @@
       "target": "获得原始陨铁",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 7.6,
-      "y": -3.8,
+      "x": 2.78125,
+      "y": 0.84375,
       "source_spec": "galacticraftcore:meteoric_iron_raw@0",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "A09",
@@ -102,11 +102,11 @@
       "target": "击败月球进化骷髅 Boss",
       "type": "ftbquests:kill",
       "optional": false,
-      "x": 4.5,
-      "y": 3.2,
+      "x": 6.625,
+      "y": 3.21875,
       "source_spec": "kill:galacticraftcore:evolved_skeleton_boss",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "A10",
@@ -116,11 +116,11 @@
       "target": "获得二级火箭图纸",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 8.3,
-      "y": 2.1,
+      "x": 10.4375,
+      "y": 4.28125,
       "source_spec": "galacticraftcore:schematic@1",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "A11",
@@ -130,11 +130,11 @@
       "target": "获得二级火箭",
       "type": "ftbquests:item",
       "optional": false,
-      "x": 12.7,
-      "y": 1,
+      "x": 11.90625,
+      "y": -5.8125,
       "source_spec": "galacticraftplanets:rocket_t2@*",
       "shape": "hexagon",
-      "size": 2.05
+      "size": 1.9
     },
     {
       "code": "A13",
@@ -144,11 +144,11 @@
       "target": "获得旗帜",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 0.7,
-      "y": 4.7,
+      "x": 5.34375,
+      "y": -2.6875,
       "source_spec": "galacticraftcore:flag@0",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "A14",
@@ -158,11 +158,11 @@
       "target": "获得月球车",
       "type": "ftbquests:item",
       "optional": true,
-      "x": 11.8,
-      "y": -2.9,
+      "x": 8.875,
+      "y": -1.40625,
       "source_spec": "galacticraftcore:buggy@*",
       "shape": "circle",
-      "size": 0.9
+      "size": 1.05
     },
     {
       "code": "B01",

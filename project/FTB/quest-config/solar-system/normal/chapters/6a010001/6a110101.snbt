@@ -2,8 +2,8 @@
   "title": "有电才好办",
   "description": "获得燃煤发电机",
   "icon": "galacticraftcore:machine 1 0",
-  "x": -7,
-  "y": -2.3,
+  "x": -12.40625,
+  "y": 1.875,
   "text": [],
   "optional": false,
   "tasks": [
@@ -25,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }
