@@ -2,8 +2,8 @@
   "title": "戴斯登场",
   "description": "获得戴斯锭",
   "icon": "galacticraftplanets:item_basic_mars 1 2",
-  "x": -1.5,
-  "y": -3.4,
+  "x": -8.4375,
+  "y": 1.15625,
   "text": [
     "后续火箭和设备要用到的材料。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }

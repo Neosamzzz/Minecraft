@@ -1,0 +1,18 @@
+{
+  "title": "这是...",
+  "description": "完成抵达播放并正式降落",
+  "icon": "minecraft:grass",
+  "x": 0.0,
+  "y": 0.0,
+  "text": [
+    "我们在海岸边造起第一艘火箭的时候，没想过会来到这样的地方。"
+  ],
+  "optional": false,
+  "tasks": [],
+  "size": 2,
+  "shape": "hexagon",
+  "hide": true,
+  "dependencies": [
+    "6a11f001"
+  ]
+}

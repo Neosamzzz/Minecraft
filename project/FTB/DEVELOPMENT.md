@@ -74,7 +74,7 @@ py -3 tools/build.py --target ftbquests
 3. 重启后检查日志中实际加载目录、章节和任务数量，再打开任务书核对布局与条件。以[现行太阳系配置](quest-config/solar-system/README.md)核对，不再部署旧小样。
 4. 验证物品检测、到达检测、共享进度及退出重进；正式修改时保持节点 ID 稳定。修改完成目标可能影响既有进度，任务定义备份与团队进度备份都应保留。
 
-当前任务按[定稿表](ftb-quest-content.md)维护，后期内容从[预备稿](ftb-quest-manuscript.md)确认后再转配置；不新增任务奖励，不用普通物品或维度检测冒充设备运行、当地采集或完整返航。
+当前任务按[定稿表](ftb-quest-content.md)维护，尚未采用的目标见[暂缓内容](ftb-quest-manuscript.md)；不新增任务奖励，不用普通物品或维度检测冒充设备运行、当地采集或完整返航。
 源码入口：
 
 - [Quest](src/main/java/com/feed_the_beast/ftbquests/quest/Quest.java)：布局、前置和完成关系。

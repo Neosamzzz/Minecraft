@@ -1,0 +1,52 @@
+{
+  "title": "钻石也有调色盘",
+  "description": "获得 EP 彩色钻石任一种，`tier11_items:0～4`",
+  "icon": "extraplanets:tier11_items 1 0",
+  "x": 1.25,
+  "y": -2.5,
+  "text": [
+    "蓝、红、紫、黄、绿。带回第一种，再慢慢凑齐剩下的颜色。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220022",
+      "title": "钻石也有调色盘",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 0
+        },
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 1
+        },
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 2
+        },
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 3
+        },
+        {
+          "id": "extraplanets:tier11_items",
+          "Count": 1,
+          "Damage": 4
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

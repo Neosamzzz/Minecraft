@@ -2,8 +2,8 @@
   "title": "再画大一点",
   "description": "获得三级火箭图纸",
   "icon": "galacticraftplanets:schematic 1 0",
-  "x": 1.6,
-  "y": 1,
+  "x": 1.15625,
+  "y": 4.15625,
   "text": [],
   "optional": false,
   "tasks": [
@@ -25,6 +25,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.15,
   "shape": "circle"
 }

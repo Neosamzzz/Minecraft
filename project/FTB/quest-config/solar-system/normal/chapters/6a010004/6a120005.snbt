@@ -1,0 +1,32 @@
+{
+  "title": "下一站，光环",
+  "description": "获得 GS 五阶火箭认证",
+  "icon": "galaxyspace:rocket_modules 1 9",
+  "x": 6.25,
+  "y": -0.625,
+  "text": [
+    "木星留下了五阶认证，土星还在前面。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220005",
+      "title": "下一站，光环",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 9
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

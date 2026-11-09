@@ -11,6 +11,7 @@ public class FTBQuestsTasks
 	public static TaskType CUSTOM;
 	public static TaskType XP;
 	public static TaskType DIMENSION;
+	public static TaskType NEWEARTH_ARRIVAL;
 	public static TaskType STAT;
 	public static TaskType KILL;
 	public static TaskType LOCATION;

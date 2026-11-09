@@ -1,0 +1,32 @@
+{
+  "title": "离光还差一点",
+  "description": "获得亚光速引擎图纸",
+  "icon": "newearth:blueprint_sublight 1 0",
+  "x": 2.5,
+  "y": 0.9375,
+  "text": [
+    "离子引擎先别收起来，这张图纸还用得上它。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22000f",
+      "title": "离光还差一点",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:blueprint_sublight",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

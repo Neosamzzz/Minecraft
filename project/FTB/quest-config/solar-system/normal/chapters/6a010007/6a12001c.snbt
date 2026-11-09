@@ -1,0 +1,32 @@
+{
+  "title": "下一种火光",
+  "description": "获得等离子引擎图纸",
+  "icon": "newearth:blueprint_plasma 1 0",
+  "x": 12.5,
+  "y": 5.3125,
+  "text": [
+    "亚光速引擎还有下一份工作。把图纸带回升级台。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22001c",
+      "title": "下一种火光",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:blueprint_plasma",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

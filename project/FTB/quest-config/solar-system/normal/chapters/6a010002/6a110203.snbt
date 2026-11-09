@@ -2,8 +2,8 @@
   "title": "这声嘶嘶不太妙",
   "description": "击败火星进化苦力怕 Boss",
   "icon": "minecraft:iron_sword",
-  "x": -2.5,
-  "y": 2.4,
+  "x": -3.03125,
+  "y": 3.5,
   "text": [
     "火星地牢。"
   ],
@@ -17,6 +17,6 @@
       "value": 1
     }
   ],
-  "size": 0.9,
+  "size": 1.2,
   "shape": "circle"
 }

@@ -2,8 +2,8 @@
   "title": "满地旧伤",
   "description": "抵达木卫四",
   "icon": "minecraft:cobblestone",
-  "x": -2.5,
-  "y": 4.5,
+  "x": 9.59375,
+  "y": 1.75,
   "text": [
     "陨石坑与洞穴，留作可选勘察。"
   ],
@@ -16,6 +16,6 @@
       "dim": -1022
     }
   ],
-  "size": 0.9,
+  "size": 1.25,
   "shape": "circle"
 }

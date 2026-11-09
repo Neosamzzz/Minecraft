@@ -2,8 +2,8 @@
   "title": "冰的另一种模样",
   "description": "抵达 GS 妊神星",
   "icon": "galaxyspace:gs_basic 1 23",
-  "x": 4.5,
-  "y": 0.4,
+  "x": 9.59375,
+  "y": 3.1875,
   "text": [
     "妊神星的几种冰，可以作为这一站的采集内容。"
   ],
@@ -16,6 +16,6 @@
       "dim": -1023
     }
   ],
-  "size": 0.9,
+  "size": 1.4,
   "shape": "circle"
 }

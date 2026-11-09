@@ -2,8 +2,8 @@
   "title": "大气，不等于空气",
   "description": "抵达土卫六",
   "icon": "galacticraftcore:item_basic_moon 1 2",
-  "x": -5,
-  "y": 1,
+  "x": 6.90625,
+  "y": -4.1875,
   "text": [
     "土卫六，可留意宝石资源。"
   ],
@@ -16,6 +16,6 @@
       "dim": -1018
     }
   ],
-  "size": 0.9,
+  "size": 1.3,
   "shape": "circle"
 }

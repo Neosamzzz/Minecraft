@@ -46,6 +46,7 @@ import com.feed_the_beast.ftbquests.quest.task.BiomeTask;
 import com.feed_the_beast.ftbquests.quest.task.CheckmarkTask;
 import com.feed_the_beast.ftbquests.quest.task.CustomTask;
 import com.feed_the_beast.ftbquests.quest.task.DimensionTask;
+import com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask;
 import com.feed_the_beast.ftbquests.quest.task.FTBQuestsTasks;
 import com.feed_the_beast.ftbquests.quest.task.FluidTask;
 import com.feed_the_beast.ftbquests.quest.task.ForgeEnergyTask;
@@ -189,6 +190,7 @@ public class FTBQuestsEventHandler
 				FTBQuestsTasks.CUSTOM = new TaskType(CustomTask::new).setRegistryName("custom").setIcon(GuiIcons.COLOR_HSB),
 				FTBQuestsTasks.XP = new TaskType(XPTask::new).setRegistryName("xp").setIcon(Icon.getIcon("minecraft:items/experience_bottle")),
 				FTBQuestsTasks.DIMENSION = new TaskType(DimensionTask::new).setRegistryName("dimension").setIcon(Icon.getIcon("minecraft:blocks/portal")),
+				FTBQuestsTasks.NEWEARTH_ARRIVAL = new TaskType(NewEarthArrivalTask::new).setRegistryName("newearth_arrival").setIcon(Icon.getIcon("minecraft:blocks/grass_side")),
 				FTBQuestsTasks.STAT = new TaskType(StatTask::new).setRegistryName("stat").setIcon(Icon.getIcon("minecraft:items/iron_sword")),
 				FTBQuestsTasks.KILL = new TaskType(KillTask::new).setRegistryName("kill").setIcon(Icon.getIcon("minecraft:items/diamond_sword")),
 				FTBQuestsTasks.LOCATION = new TaskType(LocationTask::new).setRegistryName("location").setIcon(Icon.getIcon("minecraft:items/compass_00")),

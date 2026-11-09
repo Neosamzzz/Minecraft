@@ -2,8 +2,8 @@
   "title": "换个地方开矿",
   "description": "抵达木卫三",
   "icon": "galacticraftplanets:asteroids_block 1 4",
-  "x": -1.8,
-  "y": -5.5,
+  "x": -10.34375,
+  "y": 2.1875,
   "text": [
     "镁和钛材料的另一处来源。"
   ],
@@ -16,6 +16,6 @@
       "dim": -1016
     }
   ],
-  "size": 0.9,
+  "size": 1.25,
   "shape": "circle"
 }

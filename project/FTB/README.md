@@ -15,10 +15,10 @@
 - `enabled=false` 并重启可恢复原有入口和权限规则，但不会自动把已归队的玩家迁回原队。上线前应备份服务器存档。
 ## 任务内容
 
-任务配置位于 `quest-config/solar-system/normal/`：六章、44 个可见目标，另 16 项保留原 ID 放在兼容章，无奖励。
+任务配置位于 `quest-config/solar-system/normal/`：十章、83 个公开目标，终章在正式降落后揭示；另有 16 项旧定义与 1 项隐藏落地条件，无奖励。
 
 - [任务定稿](ftb-quest-content.md)：采用的文字、目标和编排。
-- [后期任务预备稿](ftb-quest-manuscript.md)：尚未接入的七阶及后期节点。
+- [暂缓内容](ftb-quest-manuscript.md)：尚未采用的空间站、返航等目标。
 - [关键行星节点](../NewEarth/items/route-manuscript.md#关键行星节点ftb-任务编写参考)：各阶段的探索目标、资源用途与图纸解锁，供任务编写参考。
 - [物品核对](quest-item-notes.md)：任务选材与获取条件。
 - [配置安装](quest-config/solar-system/README.md)。
@@ -27,7 +27,7 @@
 
 仓库根目录设置 JDK 8，执行 `python3 tools/build.py --target ftbquests`。最终包位于根目录 `build/libs/`。
 
-独立运行公共团队检查：
+独立运行公共团队、正式降落记录及终章揭示检查：
 
 ```sh
 bash project/FTB/gradlew -p project/FTB --offline --no-daemon --console=plain -I tests/shared_team/probe.gradle runSharedTeamProbe

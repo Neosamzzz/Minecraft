@@ -1,0 +1,21 @@
+{
+  "title": "更深的蓝",
+  "description": "抵达 EP 海王星",
+  "icon": "galaxyspace:textures/gui/celestialbodies/sol/neptune.png",
+  "x": -7.03125,
+  "y": -7.1875,
+  "text": [
+    "锌、宝石和冰之外，地牢里还有制造台的图纸。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22000b",
+      "title": "更深的蓝",
+      "type": "ftbquests:dimension",
+      "dim": -18
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

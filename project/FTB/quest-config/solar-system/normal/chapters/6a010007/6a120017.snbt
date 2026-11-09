@@ -1,0 +1,21 @@
+{
+  "title": "邻居有点冷",
+  "description": "抵达 巴纳德 C1",
+  "icon": "minecraft:compass",
+  "x": 10.0,
+  "y": 0.0,
+  "text": [
+    "母星的树林刚逛完，卫星就换成了冰雪。地下还有另一番收获。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220017",
+      "title": "邻居有点冷",
+      "type": "ftbquests:dimension",
+      "dim": -1031
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

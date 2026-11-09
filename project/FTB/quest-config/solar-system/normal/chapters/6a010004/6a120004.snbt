@@ -1,0 +1,21 @@
+{
+  "title": "不只是背景",
+  "description": "抵达 EP 木星",
+  "icon": "galaxyspace:textures/gui/celestialbodies/sol/jupiter.png",
+  "x": 0.0,
+  "y": -2.40625,
+  "text": [
+    "木星的地表，值得亲自看一眼。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220004",
+      "title": "不只是背景",
+      "type": "ftbquests:dimension",
+      "dim": -15
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

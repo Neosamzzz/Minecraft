@@ -1,0 +1,32 @@
+{
+  "title": "石头也有新面孔",
+  "description": "获得 GS 缟玛瑙",
+  "icon": "galaxyspace:br_basic 1 3",
+  "x": 8.75,
+  "y": 3.125,
+  "text": [
+    "巴纳德 C1 的洞穴里还有缟玛瑙。这次带回的样本，和之前不太一样。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a220018",
+      "title": "石头也有新面孔",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:br_basic",
+          "Count": 1,
+          "Damage": 3
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

@@ -1,0 +1,32 @@
+{
+  "title": "先有这张图",
+  "description": "获得材料制造台图纸",
+  "icon": "newearth:blueprint_material_station 1 0",
+  "x": -3.28125,
+  "y": -4.6875,
+  "text": [
+    "接下来要加工的材料，有了自己的工作台。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22000c",
+      "title": "先有这张图",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:blueprint_material_station",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

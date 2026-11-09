@@ -80,6 +80,15 @@ public class SharedTeamProbe
 
 	public static void main(String[] args) throws Exception
 	{
+		UUID arrivalPlayer = UUID.randomUUID();
+		NBTTagCompound arrivalRecord = new NBTTagCompound();
+		check(!com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask.hasCompletedArrival(arrivalRecord, arrivalPlayer, false), "entering a dimension alone does not complete arrival");
+		net.minecraft.nbt.NBTTagList completedArrivals = new net.minecraft.nbt.NBTTagList();
+		completedArrivals.appendTag(new net.minecraft.nbt.NBTTagString(arrivalPlayer.toString()));
+		arrivalRecord.setTag("Completed", completedArrivals);
+		check(com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask.hasCompletedArrival(arrivalRecord, arrivalPlayer, false), "landed player completes the arrival task");
+		check(!com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask.hasCompletedArrival(arrivalRecord, UUID.randomUUID(), false), "another player's landing does not submit the task");
+		check(!com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask.hasCompletedArrival(arrivalRecord, arrivalPlayer, true), "arrival hold suppresses completion until formal landing");
 		TestUniverse universe = world();
 		ForgeTeam original = team(universe, "friends");
 		ServerQuestData progress = ServerQuestData.get(original);
@@ -89,6 +98,24 @@ public class SharedTeamProbe
 		check(new CommandEditingMode().checkPermission(null, null), "trusted shared-team players can toggle editing without OP");
 		ClientQuestFile clientFile = new ClientQuestFile();
 		clientFile.sharedTeam = true;
+		com.feed_the_beast.ftbquests.client.ClientQuestData discovery = new com.feed_the_beast.ftbquests.client.ClientQuestData((short) 1, "discovery", new net.minecraft.util.text.TextComponentString("discovery"));
+		com.feed_the_beast.ftbquests.quest.Chapter ending = new com.feed_the_beast.ftbquests.quest.Chapter(clientFile);
+		com.feed_the_beast.ftbquests.quest.Quest gate = new com.feed_the_beast.ftbquests.quest.Quest(ending);
+		gate.id = 101;
+		com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask landed = new com.feed_the_beast.ftbquests.quest.task.NewEarthArrivalTask(gate);
+		landed.id = 102;
+		gate.tasks.add(landed);
+		discovery.createTaskData(landed);
+		com.feed_the_beast.ftbquests.quest.Quest reveal = new com.feed_the_beast.ftbquests.quest.Quest(ending);
+		reveal.id = 103;
+		reveal.hide = true;
+		reveal.dependencies.add(gate);
+		ending.quests.add(reveal);
+		check(!ending.isVisible(discovery) && !reveal.isComplete(discovery), "entire ending chapter stays hidden before formal landing");
+		discovery.getTaskData(landed).readProgress(1);
+		discovery.progressCache = null;
+		discovery.areDependenciesCompleteCache = null;
+		check(ending.isVisible(discovery) && reveal.isComplete(discovery), "formal landing reveals the chapter and completes its record without a manual checkbox");
 		check(!clientFile.canEdit(), "shared-team quest book stays in play mode until editing is enabled");
 		clientFile.editingMode = true;
 		check(clientFile.canEdit(), "shared-team client accepts enabled editing mode");

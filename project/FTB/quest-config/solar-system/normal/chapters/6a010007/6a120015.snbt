@@ -1,0 +1,21 @@
+{
+  "title": "邻星作客",
+  "description": "抵达 比邻星 b",
+  "icon": "minecraft:compass",
+  "x": -9.375,
+  "y": -3.4375,
+  "text": [
+    "山地、海岸和海洋，都在另一颗太阳下。景色熟悉，也别急着摘下氧气装备。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a220015",
+      "title": "邻星作客",
+      "type": "ftbquests:dimension",
+      "dim": -1025
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

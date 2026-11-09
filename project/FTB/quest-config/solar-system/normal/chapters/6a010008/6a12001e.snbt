@@ -1,0 +1,32 @@
+{
+  "title": "把航线接起来",
+  "description": "获得九阶控制面板",
+  "icon": "newearth:control_panel 1 0",
+  "x": -7.8125,
+  "y": -0.625,
+  "text": [
+    "熟悉的面板，也接上了新的晶圆。下一段航线，交给它来照看。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22001e",
+      "title": "把航线接起来",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:control_panel",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

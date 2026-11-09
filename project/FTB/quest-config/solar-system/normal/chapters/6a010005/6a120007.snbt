@@ -1,0 +1,21 @@
+{
+  "title": "光环之下",
+  "description": "抵达 EP 土星",
+  "icon": "galaxyspace:textures/gui/celestialbodies/sol/saturn.png",
+  "x": -1.21875,
+  "y": -6.25,
+  "text": [
+    "地牢里藏着六阶火箭认证。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220007",
+      "title": "光环之下",
+      "type": "ftbquests:dimension",
+      "dim": -16
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

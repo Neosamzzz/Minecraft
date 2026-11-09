@@ -2,9 +2,11 @@
   "title": "脚下有数",
   "description": "获得地质扫描仪",
   "icon": "galaxyspace:geo_scanner 1 0",
-  "x": 2,
-  "y": -3.3,
-  "text": [],
+  "x": -3.5625,
+  "y": 7.09375,
+  "text": [
+    "带上电，看看脚下的地层。"
+  ],
   "optional": true,
   "tasks": [
     {
@@ -25,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.1,
   "shape": "circle"
 }

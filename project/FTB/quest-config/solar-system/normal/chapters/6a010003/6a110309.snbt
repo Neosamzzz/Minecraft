@@ -2,8 +2,8 @@
   "title": "另起炉灶",
   "description": "获得 GS 装配机",
   "icon": "galaxyspace:assembly_machine 1 0",
-  "x": 1.3,
-  "y": -2.4,
+  "x": -1.75,
+  "y": 1.78125,
   "text": [
     "GS 材料与火箭部件的装配设备。"
   ],

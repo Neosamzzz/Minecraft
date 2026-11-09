@@ -2,8 +2,8 @@
   "title": "矿工不用下班",
   "description": "获得自动采矿机",
   "icon": "galacticraftplanets:astro_miner 1 0",
-  "x": 5.7,
-  "y": -5.2,
+  "x": -8.5625,
+  "y": 7.375,
   "text": [
     "自动采矿支线；使用还需要配套基地。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }

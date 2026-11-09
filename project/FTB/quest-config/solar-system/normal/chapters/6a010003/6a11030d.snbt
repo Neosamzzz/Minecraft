@@ -2,9 +2,11 @@
   "title": "借个着力点",
   "description": "获得抓钩",
   "icon": "galacticraftplanets:grapple 1 0",
-  "x": -1.8,
-  "y": 0.3,
-  "text": [],
+  "x": -12.15625,
+  "y": 7.34375,
+  "text": [
+    "在失去地面的地方，借个着力点。"
+  ],
   "optional": true,
   "tasks": [
     {
@@ -25,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.05,
   "shape": "circle"
 }

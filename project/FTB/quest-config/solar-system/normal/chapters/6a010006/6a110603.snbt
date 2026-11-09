@@ -2,9 +2,11 @@
   "title": "又见漂浮的石头",
   "description": "抵达柯伊伯带",
   "icon": "galacticraftplanets:asteroids_block 1 0",
-  "x": -2.2,
-  "y": 2.5,
-  "text": [],
+  "x": 7.59375,
+  "y": -3.5625,
+  "text": [
+    "熟悉的漂浮石头，这次离家更远。"
+  ],
   "optional": false,
   "tasks": [
     {
@@ -14,6 +16,6 @@
       "dim": -1009
     }
   ],
-  "size": 0.9,
+  "size": 1.4,
   "shape": "circle"
 }

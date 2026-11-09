@@ -1,0 +1,32 @@
+{
+  "title": "这里怎么空着",
+  "description": "获得等离子引擎",
+  "icon": "galaxyspace:rocket_modules 1 5",
+  "x": 7.8125,
+  "y": -0.625,
+  "text": [
+    "引擎已经能用了，偏偏还留着一个空位。先记着它。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22001d",
+      "title": "这里怎么空着",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 5
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

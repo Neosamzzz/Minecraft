@@ -2,8 +2,8 @@
   "title": "地面去哪了",
   "description": "抵达小行星带",
   "icon": "galacticraftplanets:asteroids_block 1 0",
-  "x": -7,
-  "y": -3.4,
+  "x": -10.90625,
+  "y": -5.625,
   "text": [
     "小行星带，钛材料的来源之一。"
   ],
@@ -16,6 +16,6 @@
       "dim": -30
     }
   ],
-  "size": 0.9,
+  "size": 1.35,
   "shape": "circle"
 }

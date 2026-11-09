@@ -2,10 +2,10 @@
   "title": "一层又一层",
   "description": "抵达天卫五",
   "icon": "minecraft:hardened_clay",
-  "x": -0.7,
-  "y": -4.8,
+  "x": 9.03125,
+  "y": 2.9375,
   "text": [
-    "天卫五，不同地层提供不同材料。"
+    "同一颗卫星，也有不同的岩层。"
   ],
   "optional": false,
   "tasks": [
@@ -16,6 +16,6 @@
       "dim": -1024
     }
   ],
-  "size": 0.9,
+  "size": 1.3,
   "shape": "circle"
 }

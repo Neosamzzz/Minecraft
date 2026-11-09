@@ -1,0 +1,21 @@
+{
+  "title": "宇宙开始自由发挥",
+  "description": "抵达 EP Kepler-22b",
+  "icon": "extraplanets:textures/gui/celestialbodies/kepler22b.png",
+  "x": -9.375,
+  "y": -4.375,
+  "text": [
+    "蓝色的树林还算好理解。那边的矿石树，又是怎么回事？"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220020",
+      "title": "宇宙开始自由发挥",
+      "type": "ftbquests:dimension",
+      "dim": -22
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

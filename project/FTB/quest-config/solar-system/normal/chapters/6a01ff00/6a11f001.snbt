@@ -1,0 +1,13 @@
+{
+  "title": "正式降落记录",
+  "x": 0,
+  "y": 10,
+  "optional": true,
+  "disable_toast": true,
+  "tasks": [
+    {
+      "uid": "6a21f001",
+      "type": "ftbquests:newearth_arrival"
+    }
+  ]
+}

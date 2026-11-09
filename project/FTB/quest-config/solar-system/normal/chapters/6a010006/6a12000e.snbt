@@ -1,0 +1,21 @@
+{
+  "title": "换个引擎再来",
+  "description": "抵达 EP 阋神星",
+  "icon": "extraplanets:textures/gui/celestialbodies/eris.png",
+  "x": 2.8125,
+  "y": -2.1875,
+  "text": [
+    "离子引擎改装好，再把航线指向这里。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22000e",
+      "title": "换个引擎再来",
+      "type": "ftbquests:dimension",
+      "dim": -21
+    }
+  ],
+  "size": 1.3,
+  "shape": "diamond"
+}

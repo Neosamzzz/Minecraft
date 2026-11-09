@@ -1,0 +1,32 @@
+{
+  "title": "老引擎，新差事",
+  "description": "获得GS亚光速引擎成品",
+  "icon": "galaxyspace:rocket_modules 1 6",
+  "x": -1.875,
+  "y": 6.25,
+  "text": [
+    "离子引擎没有退休，只是换了个身份继续上船。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220011",
+      "title": "老引擎，新差事",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 6
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

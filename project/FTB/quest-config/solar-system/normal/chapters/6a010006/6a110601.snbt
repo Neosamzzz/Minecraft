@@ -1,19 +1,21 @@
 {
   "title": "远方的冰原",
-  "description": "抵达海卫一",
+  "description": "抵达 EP 海卫一",
   "icon": "minecraft:packed_ice",
-  "x": -5,
-  "y": -2.8,
-  "text": [],
+  "x": -9.4375,
+  "y": -3.3125,
+  "text": [
+    "EP 海卫一，外太阳系的一片冰原。"
+  ],
   "optional": false,
   "tasks": [
     {
       "uid": "6a210601",
-      "title": "抵达海卫一",
+      "title": "抵达 EP 海卫一",
       "type": "ftbquests:dimension",
-      "dim": -1021
+      "dim": -1504
     }
   ],
-  "size": 0.9,
-  "shape": "circle"
+  "size": 1.45,
+  "shape": "diamond"
 }

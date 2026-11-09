@@ -1,0 +1,32 @@
+{
+  "title": "这次没烧成炭",
+  "description": "获得紫晶碎片",
+  "icon": "newearth:amethyst_fragment 1 0",
+  "x": -1.5625,
+  "y": 3.125,
+  "text": [
+    "紫木进了熔炉，出来的却是紫晶碎片。先别拿去当燃料。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220019",
+      "title": "这次没烧成炭",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:amethyst_fragment",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

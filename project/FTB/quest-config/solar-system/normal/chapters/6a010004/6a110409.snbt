@@ -2,9 +2,11 @@
   "title": "双脚暂时离线",
   "description": "获得电动喷气背包",
   "icon": "galaxyspace:jetpack 1 0",
-  "x": 2.1,
-  "y": 4.5,
-  "text": [],
+  "x": 4.0,
+  "y": 7.03125,
+  "text": [
+    "电量够用时，双脚可以先歇一会儿。"
+  ],
   "optional": true,
   "tasks": [
     {
@@ -25,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 0.9,
+  "size": 1.1,
   "shape": "circle"
 }

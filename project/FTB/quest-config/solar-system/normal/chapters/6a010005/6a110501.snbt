@@ -2,9 +2,11 @@
   "title": "裂谷之间",
   "description": "抵达土卫二",
   "icon": "minecraft:packed_ice",
-  "x": -5,
-  "y": -3.5,
-  "text": [],
+  "x": -10.375,
+  "y": 0.03125,
+  "text": [
+    "裂谷深处的晶体，留意脚下。"
+  ],
   "optional": false,
   "tasks": [
     {
@@ -14,6 +16,6 @@
       "dim": -1017
     }
   ],
-  "size": 0.9,
+  "size": 1.3,
   "shape": "circle"
 }

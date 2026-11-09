@@ -1,0 +1,32 @@
+{
+  "title": "把五种颜色点亮",
+  "description": "获得最终能源核心",
+  "icon": "newearth:final_energy_core 1 0",
+  "x": 3.4375,
+  "y": 2.8125,
+  "text": [
+    "五种颜色汇成了一颗核心。还记得等离子引擎上空着的那个位置吗？"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220023",
+      "title": "把五种颜色点亮",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "newearth:final_energy_core",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

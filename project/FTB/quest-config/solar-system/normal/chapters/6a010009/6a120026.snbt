@@ -1,0 +1,32 @@
+{
+  "title": "蛋糕不是谎言",
+  "description": "获得开普勒糖果地貌中的 EP 蛋糕方块",
+  "icon": "extraplanets:cake_blocks 1 0",
+  "x": -10.15625,
+  "y": 5.625,
+  "text": [
+    "地上是糖衣，湖里是巧克力。给货舱留一点装甜点的位置。"
+  ],
+  "optional": true,
+  "tasks": [
+    {
+      "uid": "6a220026",
+      "title": "蛋糕不是谎言",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:cake_blocks",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

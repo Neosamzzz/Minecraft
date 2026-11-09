@@ -1,0 +1,32 @@
+{
+  "title": "换种推法",
+  "description": "获得 GS 离子引擎",
+  "icon": "galaxyspace:rocket_modules 1 4",
+  "x": -3.75,
+  "y": 0.0,
+  "text": [
+    "这件地牢里的收获，能让后来的六阶火箭多一条航线。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a220006",
+      "title": "换种推法",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "galaxyspace:rocket_modules",
+          "Count": 1,
+          "Damage": 4
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}

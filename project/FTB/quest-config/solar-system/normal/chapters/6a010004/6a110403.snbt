@@ -2,8 +2,8 @@
   "title": "冰原来客",
   "description": "抵达木卫二",
   "icon": "minecraft:packed_ice",
-  "x": -6.5,
-  "y": 1.4,
+  "x": 9.59375,
+  "y": -6.15625,
   "text": [
     "冰原与裂谷。"
   ],
@@ -16,6 +16,6 @@
       "dim": -1015
     }
   ],
-  "size": 0.9,
+  "size": 1.25,
   "shape": "circle"
 }

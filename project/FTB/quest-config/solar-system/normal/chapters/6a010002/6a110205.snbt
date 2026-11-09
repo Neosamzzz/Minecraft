@@ -2,8 +2,8 @@
   "title": "航线加长",
   "description": "获得三级火箭",
   "icon": "galacticraftplanets:rocket_t3 1 0",
-  "x": 6,
-  "y": -0.4,
+  "x": 9.40625,
+  "y": 4.25,
   "text": [
     "小行星带和更多太阳系目的地。"
   ],
@@ -27,6 +27,6 @@
       "only_from_crafting": false
     }
   ],
-  "size": 2.05,
+  "size": 2,
   "shape": "hexagon"
 }

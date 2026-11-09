@@ -1,0 +1,32 @@
+{
+  "title": "树脂也能上电路",
+  "description": "获得紫晶晶圆",
+  "icon": "extraplanets:wafer 1 0",
+  "x": 5.625,
+  "y": 6.5625,
+  "text": [
+    "树脂和紫晶锭进了电路制造机，出来的是一片新晶圆。"
+  ],
+  "optional": false,
+  "tasks": [
+    {
+      "uid": "6a22001b",
+      "title": "树脂也能上电路",
+      "type": "ftbquests:item",
+      "items": [
+        {
+          "id": "extraplanets:wafer",
+          "Count": 1,
+          "Damage": 0
+        }
+      ],
+      "count": 1,
+      "consume_items": false,
+      "ignore_damage": false,
+      "ignore_nbt": 1,
+      "only_from_crafting": false
+    }
+  ],
+  "size": 1.05,
+  "shape": "circle"
+}
