@@ -27,6 +27,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         EndDimension.configure(event.getModConfigurationDirectory());
+        newearth.worldgen.WorldGenConfig.load(event.getModConfigurationDirectory());
         newearth.dimension.ArrivalNetwork.init();
         if (event.getSide().isClient()) newearth.client.RocketRenderer.register();
         // Register T9/T10 multi-seat rocket entities
@@ -41,6 +42,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new ManufacturingGuiHandler());
+        net.minecraftforge.fml.common.registry.GameRegistry.registerWorldGenerator(new newearth.worldgen.IslandVillage(), 10);
     }
 
     @Mod.EventHandler
@@ -51,6 +53,7 @@ public final class NewEarth {
     @Mod.EventHandler
     public void serverStarted(FMLServerStartedEvent event) {
         EndDimension.start(FMLCommonHandler.instance().getMinecraftServerInstance());
+        newearth.worldgen.IslandHooks.ensureSpawn(FMLCommonHandler.instance().getMinecraftServerInstance());
     }
 
     @Mod.EventHandler
