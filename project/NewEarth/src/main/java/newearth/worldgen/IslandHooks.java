@@ -51,6 +51,13 @@ public final class IslandHooks {
         return state == null ? null : state.field;
     }
 
+    /** True when this chunk is a village anchor: the main island centre or a grid island centre. */
+    public static boolean isVillageAnchor(net.minecraft.world.World world, int chunkX, int chunkZ) {
+        IslandField current = field(world);
+        if (current == null) return false;
+        if (chunkX == 0 && chunkZ == 0) return true;
+        return current.largeIslandAnchorAtChunk(chunkX, chunkZ) != 0L;
+    }
     /** True when a vanilla village may spawn at this chunk: solid land with no nearby water. */
     public static boolean villageAllowed(Object world, int chunkX, int chunkZ) {
         IslandField current = world instanceof net.minecraft.world.World ? field((net.minecraft.world.World) world) : null;
