@@ -147,7 +147,7 @@ py -3 tools/build.py --target newearth --offline
 
 群岛大海方案尚未合入 `main`。当前交付仅覆盖六个群系配置，未覆盖 `WorldConfig.ini`；普通主世界不会因安装终章 OTG 维度而自动改为 OTG 世界。主世界群岛方案及终章地形调整范围按 [Issue #37](https://github.com/Neosamzzz/Minecraft/issues/37) 另行确定，未合并的 PR #38 不计入当前功能。
 
-- [ ] 增加终章光影设置，可选择独立于全局光影或跟随全局光影。
+- [ ] 增加终章光影设置：是否独立于全局光影，以及是否允许全局光影覆盖终章光影。
 
 其他星球天空与 DH 缓存隔离在正式交付时按实际影响处理。
 
