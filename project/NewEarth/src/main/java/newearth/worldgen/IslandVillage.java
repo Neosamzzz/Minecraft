@@ -34,6 +34,8 @@ public final class IslandVillage implements IWorldGenerator {
         }
         villages.generate(world, chunkX, chunkZ, PRIMER.get());
         villages.generateStructure(world, random, new ChunkPos(chunkX, chunkZ));
+        // Drop the strong reference to the world so an unloaded world can be collected.
+        villages.detach();
     }
 
     /** Vanilla village generator restricted to the island anchor chunks. */
@@ -46,6 +48,10 @@ public final class IslandVillage implements IWorldGenerator {
         @Override
         protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
             return IslandHooks.isVillageAnchor(world, chunkX, chunkZ);
+        }
+
+        void detach() {
+            this.world = null;
         }
     }
 }

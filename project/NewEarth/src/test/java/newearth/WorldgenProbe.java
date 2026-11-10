@@ -56,6 +56,17 @@ public final class WorldgenProbe {
         IslandHooks.registerWorld(main);
         check(IslandHooks.biomeAt(provider, a) != first, "Re-registering resets cached state");
         WorldGenConfig.mainIslandRadius = 100;
+        java.util.List<Biome> allowed = java.util.Arrays.asList(Biomes.PLAINS, Biomes.FOREST, Biomes.TAIGA, Biomes.DESERT);
+        Object viability = IslandHooks.areBiomesViable(provider, 0, 0, 8, allowed);
+        check(viability != null, "Island viability uses island data");
+        boolean viable = true;
+        for (int x = -8; x <= 8; x += 2) for (int z = -8; z <= 8; z += 2) {
+            if (!allowed.contains(expected(provider, new BlockPos(x, 64, z)))) viable = false;
+        }
+        check(Boolean.valueOf(viable).equals(viability), "Viability matches island grid");
+        Object position = IslandHooks.findBiomePosition(provider, 0, 0, 64, allowed);
+        check(position instanceof BlockPos, "Spawn search finds island land");
+        check(allowed.contains(expected(provider, (BlockPos) position)), "Spawn search returns allowed island biome");
         for (World excluded : new World[] {world(123, 7, false), world(123, 0, true)}) {
             IslandHooks.registerWorld(excluded);
             check(IslandHooks.field(excluded) == null, "Planet/custom providers are excluded");
@@ -64,6 +75,10 @@ public final class WorldgenProbe {
             IslandHooks.apply(excluded.getBiomeProvider(), cells, 0, 0, 1, 1);
             check(cells[0] == Biomes.DESERT, "Excluded grid remains unchanged");
             check(IslandHooks.villageAllowed(excluded, 100, 100), "Excluded villages keep their own rules");
+            check(IslandHooks.areBiomesViable(excluded.getBiomeProvider(), 0, 0, 8, allowed) == null,
+                    "Excluded viability falls through");
+            check(IslandHooks.findBiomePosition(excluded.getBiomeProvider(), 0, 0, 64, allowed) == null,
+                    "Excluded position search falls through");
         }
         WorldGenConfig.enabled = false;
         IslandHooks.registerWorld(main);
@@ -145,7 +160,7 @@ public final class WorldgenProbe {
                 for (AbstractInsnNode insn : method.instructions.toArray())
                     if (insn instanceof MethodInsnNode && ((MethodInsnNode) insn).owner.equals("newearth/worldgen/IslandHooks")) hooks++;
             }
-            check(hooks == (name.endsWith("BiomeProvider") ? 6 : 1), "Expected hook count: " + name + " renamed=" + renamed);
+            check(hooks == (name.endsWith("BiomeProvider") ? 8 : 1), "Expected hook count: " + name + " renamed=" + renamed);
         }
     }
 }

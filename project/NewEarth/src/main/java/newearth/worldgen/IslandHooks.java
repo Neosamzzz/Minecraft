@@ -13,12 +13,30 @@ public final class IslandHooks {
         final IslandField field;
         final ThreadLocal<Cache> cache = ThreadLocal.withInitial(Cache::new);
         State(IslandField field) { this.field = field; }
+
+        Biome biome(int x, int z) {
+            int qx = x >> 2;
+            int qz = z >> 2;
+            long key = ((long) qx << 32) | (qz & 0xFFFFFFFFL);
+            int slot = (qx * 31 + qz) & 511;
+            Cache c = cache.get();
+            if (c.keys[slot] == key && c.values[slot] != null) return c.values[slot];
+            int worldX = (qx << 2) + 2;
+            int worldZ = (qz << 2) + 2;
+            Biome biome = pick(field, field.value(worldX, worldZ), worldX, worldZ);
+            c.keys[slot] = key;
+            c.values[slot] = biome;
+            return biome;
+        }
     }
 
     private static final class Cache {
         final long[] keys = new long[512];
         final Biome[] values = new Biome[512];
     }
+
+    /** Sentinel returned by {@link #findBiomePosition} when the island field has no matching biome. */
+    public static final Object NO_POSITION = new Object();
 
     private IslandHooks() { }
 
@@ -97,24 +115,34 @@ public final class IslandHooks {
     /** Biome at a block position, cached on a four-block grid like vanilla's biome layer. */
     public static Object biomeAt(Object provider, Object position) {
         State state = STATES.get(provider);
-        IslandField current = state == null ? null : state.field;
-        if (current == null || !(position instanceof BlockPos)) return null;
+        if (state == null) return null;
+        if (!(position instanceof BlockPos)) return null;
         BlockPos pos = (BlockPos) position;
-        int qx = pos.getX() >> 2;
-        int qz = pos.getZ() >> 2;
-        long key = ((long) qx << 32) | (qz & 0xFFFFFFFFL);
-        int slot = (qx * 31 + qz) & 511;
-        Cache cache = state.cache.get();
-        if (cache.keys[slot] == key) {
-            Biome cached = cache.values[slot];
-            if (cached != null) return cached;
+        return state.biome(pos.getX(), pos.getZ());
+    }
+
+    /** Mirrors areBiomesViable against the island field; null lets the vanilla method run. */
+    public static Object areBiomesViable(Object provider, int x, int z, int radius, java.util.List<Biome> allowed) {
+        State state = STATES.get(provider);
+        if (state == null || allowed == null) return null;
+        for (int i = x - radius; i <= x + radius; i += 2) {
+            for (int j = z - radius; j <= z + radius; j += 2) {
+                if (!allowed.contains(state.biome(i, j))) return Boolean.FALSE;
+            }
         }
-        int worldX = (qx << 2) + 2;
-        int worldZ = (qz << 2) + 2;
-        Biome biome = pick(current, current.value(worldX, worldZ), worldX, worldZ);
-        cache.keys[slot] = key;
-        cache.values[slot] = biome;
-        return biome;
+        return Boolean.TRUE;
+    }
+
+    /** Mirrors findBiomePosition against the island field; null lets the vanilla method run. */
+    public static Object findBiomePosition(Object provider, int x, int z, int range, java.util.List<Biome> allowed) {
+        State state = STATES.get(provider);
+        if (state == null || allowed == null) return null;
+        for (int i = x - range; i <= x + range; i += 4) {
+            for (int j = z - range; j <= z + range; j += 4) {
+                if (allowed.contains(state.biome(i, j))) return new BlockPos(i, 0, j);
+            }
+        }
+        return NO_POSITION;
     }
 
     /** Moves the world spawn onto the island when the vanilla spawn search lands in open water. */

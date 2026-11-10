@@ -37,6 +37,8 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
     private static final Pattern GRID_CACHED = Pattern.compile("^\\(\\[L([^;]+);IIIIZ\\)\\[L\\1;$");
     private static final Pattern LOOKUP = Pattern.compile("^\\(L([^;]+);L([^;]+);\\)L\\2;$");
     private static final Pattern LOOKUP_SINGLE = Pattern.compile("^\\(L([^;]+);\\)L([^;]+);$");
+    private static final String VIABLE_DESC = "(IIILjava/util/List;)Z";
+    private static final Pattern POSITION = Pattern.compile("^\\(IIILjava/util/List;Ljava/util/Random;\\)L([^;]+);$");
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
@@ -57,7 +59,7 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
             return bytes;
         }
 
-        int grids = 0, lookups = 0;
+        int grids = 0, lookups = 0, viables = 0, positions = 0;
         for (MethodNode method : node.methods) {
             if ((method.access & ACC_STATIC) != 0) continue;
             if (GRID.matcher(method.desc).matches() || GRID_CACHED.matcher(method.desc).matches()) {
@@ -66,10 +68,20 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
             } else if (LOOKUP.matcher(method.desc).matches() || LOOKUP_SINGLE.matcher(method.desc).matches()) {
                 patchLookup(method, biomeType);
                 lookups++;
+            } else if (method.desc.equals(VIABLE_DESC)) {
+                patchViable(method);
+                viables++;
+            } else {
+                Matcher position = POSITION.matcher(method.desc);
+                if (position.matches()) {
+                    patchPosition(method, position.group(1));
+                    positions++;
+                }
             }
         }
-        if (grids != 3 || lookups != 2) {
-            log("unexpected layout (grid=" + grids + ", lookup=" + lookups + "); island worldgen disabled");
+        if (grids != 3 || lookups != 2 || viables != 1 || positions != 1) {
+            log("unexpected layout (grid=" + grids + ", lookup=" + lookups + ", viable=" + viables
+                    + ", position=" + positions + "); island worldgen disabled");
             return bytes;
         }
         log("biome provider patched");
@@ -175,6 +187,55 @@ public final class IslandTransformer implements IClassTransformer, Opcodes {
         method.instructions.insert(hook);
     }
 
+    private static void patchViable(MethodNode method) {
+        LabelNode fallback = new LabelNode();
+        InsnList hook = new InsnList();
+        hook.add(new VarInsnNode(ALOAD, 0));
+        hook.add(new VarInsnNode(ILOAD, 1));
+        hook.add(new VarInsnNode(ILOAD, 2));
+        hook.add(new VarInsnNode(ILOAD, 3));
+        hook.add(new VarInsnNode(ALOAD, 4));
+        hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "areBiomesViable",
+                "(Ljava/lang/Object;IIILjava/util/List;)Ljava/lang/Object;", false));
+        hook.add(new InsnNode(DUP));
+        hook.add(new JumpInsnNode(IFNULL, fallback));
+        hook.add(new TypeInsnNode(CHECKCAST, "java/lang/Boolean"));
+        hook.add(new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z", false));
+        hook.add(new InsnNode(IRETURN));
+        hook.add(fallback);
+        hook.add(new FrameNode(F_SAME1, 0, null, 1, new Object[]{OBJECT}));
+        hook.add(new InsnNode(POP));
+        method.instructions.insert(hook);
+    }
+
+    private static void patchPosition(MethodNode method, String returnType) {
+        LabelNode fallback = new LabelNode();
+        LabelNode position = new LabelNode();
+        InsnList hook = new InsnList();
+        hook.add(new VarInsnNode(ALOAD, 0));
+        hook.add(new VarInsnNode(ILOAD, 1));
+        hook.add(new VarInsnNode(ILOAD, 2));
+        hook.add(new VarInsnNode(ILOAD, 3));
+        hook.add(new VarInsnNode(ALOAD, 4));
+        hook.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "findBiomePosition",
+                "(Ljava/lang/Object;IIILjava/util/List;)Ljava/lang/Object;", false));
+        hook.add(new InsnNode(DUP));
+        hook.add(new JumpInsnNode(IFNULL, fallback));
+        hook.add(new InsnNode(DUP));
+        hook.add(new FieldInsnNode(GETSTATIC, HOOKS, "NO_POSITION", "Ljava/lang/Object;"));
+        hook.add(new JumpInsnNode(IF_ACMPNE, position));
+        hook.add(new InsnNode(POP));
+        hook.add(new InsnNode(ACONST_NULL));
+        hook.add(new InsnNode(ARETURN));
+        hook.add(position);
+        hook.add(new FrameNode(F_SAME1, 0, null, 1, new Object[]{OBJECT}));
+        hook.add(new TypeInsnNode(CHECKCAST, returnType));
+        hook.add(new InsnNode(ARETURN));
+        hook.add(fallback);
+        hook.add(new FrameNode(F_SAME1, 0, null, 1, new Object[]{OBJECT}));
+        hook.add(new InsnNode(POP));
+        method.instructions.insert(hook);
+    }
     private static void log(String message) {
         System.out.println("[NewEarth] island worldgen: " + message);
     }
