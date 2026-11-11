@@ -1,10 +1,7 @@
 {
-  "title": "木星的邻居们",
+  "title": "木星和它的朋友们",
   "icon": "galaxyspace:gs_basic 1 12",
-  "description": [
-    "四颗卫星，四种不同的落脚处。",
-    "任务自由完成；连线仅提示关系。"
-  ],
+  "description": ["四颗卫星，四种落脚处。", "任务自由完成；连线仅提示关系。"],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",

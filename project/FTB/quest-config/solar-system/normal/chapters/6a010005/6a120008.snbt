@@ -1,11 +1,11 @@
 {
-  "title": "航线继续加长",
+  "title": "俺寻思之力",
   "description": "获得 GS 六阶火箭认证",
   "icon": "galaxyspace:rocket_modules 1 10",
   "x": -4.21875,
   "y": -1.40625,
   "text": [
-    "光环下面的收获，要用在下一艘火箭上。"
+    "下一艘火箭。"
   ],
   "optional": false,
   "tasks": [

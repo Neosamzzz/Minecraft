@@ -1,11 +1,11 @@
 {
-  "title": "这声嘶嘶不太妙",
+  "title": "再靠近一点就会爆炸",
   "description": "击败火星进化苦力怕 Boss",
   "icon": "minecraft:iron_sword",
   "x": -3.03125,
   "y": 3.5,
   "text": [
-    "火星地牢。"
+    "md 跟你爆了。"
   ],
   "optional": false,
   "tasks": [

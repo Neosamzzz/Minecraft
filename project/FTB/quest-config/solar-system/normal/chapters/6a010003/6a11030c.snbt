@@ -1,11 +1,11 @@
 {
-  "title": "从头造一艘",
+  "title": "变大变高",
   "description": "获得 GS 四级火箭",
   "icon": "galaxyspace:rocket_tier_4 1 0",
   "x": 11.28125,
   "y": 4.1875,
   "text": [
-    "四级起改用 GS 装配体系。带回 EP 水星地牢的四阶火箭认证，与对应部件一起完成总装。"
+    " 通过EP 水星地牢的四阶火箭认证，使用对应部件完成总装。"
   ],
   "optional": false,
   "tasks": [

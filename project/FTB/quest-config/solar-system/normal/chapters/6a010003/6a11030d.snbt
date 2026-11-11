@@ -1,11 +1,11 @@
 {
-  "title": "借个着力点",
+  "title": "失败的Man",
   "description": "获得抓钩",
   "icon": "galacticraftplanets:grapple 1 0",
   "x": -12.15625,
   "y": 7.34375,
   "text": [
-    "在失去地面的地方，借个着力点。"
+    "谁小时候不想成为超级英雄。"
   ],
   "optional": true,
   "tasks": [

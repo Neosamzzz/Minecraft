@@ -1,11 +1,11 @@
 {
-  "title": "矿工不用下班",
+  "title": "全自动黑奴",
   "description": "获得自动采矿机",
   "icon": "galacticraftplanets:astro_miner 1 0",
   "x": -8.5625,
   "y": 7.375,
   "text": [
-    "自动采矿支线；使用还需要配套基地。"
+    "不动了就抽两下。"
   ],
   "optional": true,
   "tasks": [

@@ -1,10 +1,7 @@
 {
-  "title": "太阳还在身后",
+  "title": "离开故乡",
   "icon": "galaxyspace:gs_basic 1 23",
-  "description": [
-    "太阳还在身后，航线已经很长。",
-    "任务自由完成；连线仅提示关系。"
-  ],
+  "description": ["太阳掠身后，航线已漫长。", "任务自由完成；连线仅提示关系。"],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",

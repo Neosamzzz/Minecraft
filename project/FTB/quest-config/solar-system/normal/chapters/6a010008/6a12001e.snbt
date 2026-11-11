@@ -1,11 +1,11 @@
 {
-  "title": "把航线接起来",
+  "title": "新航线新开始",
   "description": "获得九阶控制面板",
   "icon": "newearth:control_panel 1 0",
   "x": -7.8125,
   "y": -0.625,
   "text": [
-    "熟悉的面板，也接上了新的晶圆。下一段航线，交给它来照看。"
+    "熟悉的面板接上了新的晶圆。"
   ],
   "optional": false,
   "tasks": [

@@ -1,11 +1,11 @@
 {
-  "title": "不只是背景",
+  "title": "太阳系大胖子",
   "description": "抵达 EP 木星",
   "icon": "galaxyspace:textures/gui/celestialbodies/sol/jupiter.png",
   "x": 0.0,
   "y": -2.40625,
   "text": [
-    "木星的地表，值得亲自看一眼。"
+    "木星是太阳系中体积最大、自转最快的行星。"
   ],
   "optional": false,
   "tasks": [

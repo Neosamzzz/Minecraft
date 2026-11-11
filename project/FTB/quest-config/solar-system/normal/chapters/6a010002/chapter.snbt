@@ -1,10 +1,7 @@
 {
-  "title": "红色远方",
+  "title": "红色星球",
   "icon": "galacticraftplanets:item_basic_mars 1 2",
-  "description": [
-    "火星的红土之下，是下一张图纸。",
-    "任务自由完成；连线仅提示关系。"
-  ],
+  "description": ["人类的下一步——赤色星球。", "任务自由完成；连线仅提示关系。"],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",

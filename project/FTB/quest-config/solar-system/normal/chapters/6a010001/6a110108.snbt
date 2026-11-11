@@ -1,11 +1,11 @@
 {
-  "title": "天外来客",
+  "title": "天上掉馅饼",
   "description": "获得原始陨铁",
   "icon": "galacticraftcore:meteoric_iron_raw 1 0",
   "x": 2.78125,
   "y": 0.84375,
   "text": [
-    "月面陨石里的材料。"
+    "咻...砰一下 真大声。（闽南语）"
   ],
   "optional": false,
   "tasks": [

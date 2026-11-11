@@ -1,10 +1,7 @@
 {
   "title": "仰望星空",
   "icon": "galacticraftcore:rocket_t1 1 0",
-  "description": [
-    "一级火箭、月球探索，以及下一张图纸。",
-    "任务自由完成；连线仅提示关系。"
-  ],
+  "description": ["人类所及之地。", "任务自由完成；连线仅提示关系。"],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",

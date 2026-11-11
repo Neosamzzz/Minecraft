@@ -1,11 +1,11 @@
 {
-  "title": "把航线拉长",
+  "title": "毒发载人",
   "description": "获得 GS 五级火箭",
   "icon": "galaxyspace:rocket_tier_5 1 0",
   "x": 0.0,
   "y": 2.5,
   "text": [
-    "下一段航线：土星、天王星的卫星。"
+    "现实原型:质子号，其推进器使用剧毒物质作为燃料，可以抵达土星、天王星的卫星。"
   ],
   "optional": false,
   "tasks": [

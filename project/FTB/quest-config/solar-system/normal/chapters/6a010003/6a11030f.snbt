@@ -1,11 +1,11 @@
 {
-  "title": "关门，留点空气",
+  "title": "诶盆友空气给一下",
   "description": "获得氧气密封器",
   "icon": "galacticraftcore:sealer 1 0",
   "x": -5.53125,
   "y": 7.34375,
   "text": [
-    "长期据点的可选设备。"
+    "自由呼吸。"
   ],
   "optional": true,
   "tasks": [

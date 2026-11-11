@@ -1,11 +1,11 @@
 {
-  "title": "地面去哪了",
+  "title": "星球丝带",
   "description": "抵达小行星带",
   "icon": "galacticraftplanets:asteroids_block 1 0",
   "x": -10.90625,
   "y": -5.625,
   "text": [
-    "小行星带，钛材料的来源之一。"
+    "小行星带，宛如一条悬浮丝带。"
   ],
   "optional": false,
   "tasks": [

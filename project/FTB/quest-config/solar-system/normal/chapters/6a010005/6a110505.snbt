@@ -1,11 +1,11 @@
 {
-  "title": "向太阳系的远端",
+  "title": "出现了，能源号！",
   "description": "获得 GS 六级火箭",
   "icon": "galaxyspace:rocket_tier_6 1 0",
   "x": -0.625,
   "y": 4.46875,
   "text": [
-    "这一阶使用 HDP:2，火山石也派上用场。"
+    "毛子出品，不需要token，只需要列巴。"
   ],
   "optional": false,
   "tasks": [

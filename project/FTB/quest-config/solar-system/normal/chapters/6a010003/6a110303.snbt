@@ -1,11 +1,11 @@
 {
-  "title": "金星，不太温柔",
+  "title": "是你吗 金星 完美！",
   "description": "抵达金星",
   "icon": "galacticraftplanets:venus 1 1",
   "x": -10.9375,
   "y": 1.65625,
   "text": [
-    "高温和浓厚大气，先准备好再落地。"
+    "生命禁区。"
   ],
   "optional": false,
   "tasks": [

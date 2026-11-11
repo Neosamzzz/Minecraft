@@ -1,11 +1,11 @@
 {
-  "title": "小世界，大用处",
+  "title": "女神 我的玉米在哪里",
   "description": "抵达 GS 谷神星",
   "icon": "minecraft:quartz_block",
   "x": 6.59375,
   "y": -5.625,
   "text": [
-    "谷神星的白云石，后续板材还会用到。"
+    "谷神星的名字来自罗马神话中掌管玉米和收成的女神。"
   ],
   "optional": false,
   "tasks": [

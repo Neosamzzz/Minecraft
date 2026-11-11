@@ -1,11 +1,11 @@
 {
-  "title": "换种推法",
+  "title": "新能源引擎",
   "description": "获得 GS 离子引擎",
   "icon": "galaxyspace:rocket_modules 1 4",
   "x": -3.75,
   "y": 0.0,
   "text": [
-    "这件地牢里的收获，能让后来的六阶火箭多一条航线。"
+    "使用电推，绿色环保。"
   ],
   "optional": false,
   "tasks": [

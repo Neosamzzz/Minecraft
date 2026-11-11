@@ -1,11 +1,11 @@
 {
-  "title": "拼成一艘船",
+  "title": "拼好船",
   "description": "获得火箭装配机",
   "icon": "galaxyspace:rocket_assembler 1 0",
   "x": 3.78125,
   "y": 3.15625,
   "text": [
-    "准备好部件，在这里完成整箭装配。"
+    "完成整箭装配。"
   ],
   "optional": false,
   "tasks": [

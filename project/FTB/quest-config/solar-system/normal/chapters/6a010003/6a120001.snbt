@@ -1,11 +1,11 @@
 {
-  "title": "另一面水星",
+  "title": "怎么又是水星",
   "description": "抵达 EP 水星",
   "icon": "galaxyspace:textures/gui/celestialbodies/sol/mercury.png",
   "x": 0.9375,
   "y": -4.84375,
   "text": [
-    "同叫水星，这一颗的地下藏着四阶火箭认证。"
+    "四阶火箭认证。"
   ],
   "optional": false,
   "tasks": [

@@ -1,11 +1,11 @@
 {
-  "title": "脚下有数",
+  "title": "石油大亨",
   "description": "获得地质扫描仪",
   "icon": "galaxyspace:geo_scanner 1 0",
   "x": -3.5625,
   "y": 7.09375,
   "text": [
-    "带上电，看看脚下的地层。"
+    "看看脚下的地层。"
   ],
   "optional": true,
   "tasks": [

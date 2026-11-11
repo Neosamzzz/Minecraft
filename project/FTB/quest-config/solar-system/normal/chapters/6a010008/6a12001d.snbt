@@ -1,11 +1,11 @@
 {
-  "title": "这里怎么空着",
+  "title": "等离子引擎",
   "description": "获得等离子引擎",
   "icon": "galaxyspace:rocket_modules 1 5",
   "x": 7.8125,
   "y": -0.625,
   "text": [
-    "引擎已经能用了，偏偏还留着一个空位。先记着它。"
+    "这玩意力气大"
   ],
   "optional": false,
   "tasks": [

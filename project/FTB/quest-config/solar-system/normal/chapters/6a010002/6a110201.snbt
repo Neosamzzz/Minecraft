@@ -1,11 +1,11 @@
 {
-  "title": "红色远方",
+  "title": "赤色星球",
   "description": "抵达火星",
   "icon": "galacticraftplanets:mars 1 4",
   "x": -10.125,
   "y": -2.0,
   "text": [
-    "红土、洞穴，还有下一张火箭图纸。"
+    "火星没有火。"
   ],
   "optional": false,
   "tasks": [

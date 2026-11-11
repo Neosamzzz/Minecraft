@@ -1,11 +1,11 @@
 {
-  "title": "原来留给它的",
+  "title": "黑洞引擎",
   "description": "获得黑洞引擎",
   "icon": "galaxyspace:rocket_modules 1 7",
   "x": 9.0625,
   "y": 2.8125,
   "text": [
-    "空位填上了，制作台却炸开了。烟尘散去，引擎还在。"
+    "烟尘散去，引擎还在。"
   ],
   "optional": false,
   "tasks": [

@@ -1,11 +1,11 @@
 {
-  "title": "双脚暂时离线",
-  "description": "获得电动喷气背包",
+  "title": "中国人能飞",
+  "description": "中国人能飞。——揽佬",
   "icon": "galaxyspace:jetpack 1 0",
   "x": 4.0,
   "y": 7.03125,
   "text": [
-    "电量够用时，双脚可以先歇一会儿。"
+    "中国人能飞，中国人能飞，中国人能飞。"
   ],
   "optional": true,
   "tasks": [

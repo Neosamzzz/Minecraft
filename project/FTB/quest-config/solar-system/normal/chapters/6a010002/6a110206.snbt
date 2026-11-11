@@ -1,11 +1,11 @@
 {
-  "title": "邻居家的矿",
+  "title": "火星藏宝库",
   "description": "抵达 GS 火卫一",
   "icon": "minecraft:iron_ore",
   "x": 7.90625,
   "y": -4.875,
   "text": [
-    "GS 火卫一也能找到戴斯，矿源不止一处。"
+    "这下发了。"
   ],
   "optional": true,
   "tasks": [

@@ -1,9 +1,7 @@
 {
   "title": "下一次起飞",
   "icon": "newearth:tier9_rocket",
-  "description": [
-    "把货舱里的新材料，装成一艘能一起出发的船。"
-  ],
+  "description": ["一起出发。"],
   "always_invisible": false,
   "group": 0,
   "default_quest_shape": "circle",
