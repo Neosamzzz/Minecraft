@@ -147,3 +147,34 @@ tasks.register('worldgenCheck', JavaExec) {
     systemProperty 'java.awt.headless', 'true'
 }
 check.dependsOn worldgenCheck
+
+// A separate server-only artifact; the ordinary NewEarth client/server JAR is unchanged.
+sourceSets {
+    server {
+        java.srcDir 'server/src'
+        compileClasspath += sourceSets.main.compileClasspath
+    }
+    serverTest {
+        java.srcDir 'server/test'
+        compileClasspath += sourceSets.server.output + sourceSets.server.compileClasspath
+        runtimeClasspath += sourceSets.server.output + sourceSets.server.compileClasspath
+    }
+}
+tasks.register('serverJar', Jar) {
+    dependsOn serverClasses
+    archiveBaseName = 'NewEarth-Server-Pause'
+    archiveVersion = '1.0.0'
+    from sourceSets.server.output
+    manifest { attributes 'FMLCorePlugin': 'newearth.server.PauseLoadingPlugin',
+            'FMLCorePluginContainsFMLMod': 'true' }
+    finalizedBy 'reobfServerJar'
+}
+reobf { serverJar { } }
+tasks.register('serverPauseCheck', JavaExec) {
+    dependsOn serverTestClasses
+    classpath = sourceSets.serverTest.runtimeClasspath
+    main = 'newearth.server.PauseProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/server-pause')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}

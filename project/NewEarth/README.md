@@ -22,6 +22,7 @@ python3 tools/build.py --target newearth
 
 ## 开发内容
 
+- [服务端无人暂停](server/README.md)：独立服务端包，空服等待、进服恢复，客户端不安装。
 - [物品与制造](items/README.md)：当前功能与未完成事项。
 - [制造路线](items/route-manuscript.md)：后续图纸、制造与引擎设计。
 - [EP 内容清单](items/ep-content-inventory.md)：物品与设备取舍。

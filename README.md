@@ -67,6 +67,7 @@ build/libs/
 | `py -3 tools/build.py --target gslc` | 只构建 GSLC |
 | `py -3 tools/build.py --target ftbquests` | 只构建 FTB Quests |
 | `py -3 tools/build.py --target newearth` | 只构建 NewEarth，自动运行七阶与太阳系隔离检查 |
+| `py -3 tools/build.py --target newearth-server` | 构建独立的服务端无人暂停补丁并运行专项检查，客户端不安装 |
 | `py -3 tools/build.py --target all` | 依次构建 GSLC、FTB Quests、NewEarth，任一目标失败就停止 |
 | `py -3 tools/build.py --help` | 查看完整参数 |
 

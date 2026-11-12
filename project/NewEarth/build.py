@@ -9,6 +9,20 @@ import subprocess
 import zipfile
 
 
+def build_server(ROOT, run_gradle, env, offline):
+    run_gradle('project/NewEarth', 'serverPauseCheck', env, offline, wrapper='dependencies/GalaxySpace')
+    run_gradle('project/NewEarth', 'serverJar', env, offline, wrapper='dependencies/GalaxySpace')
+    artifact = ROOT / 'project/NewEarth/build/libs/NewEarth-Server-Pause-1.0.0.jar'
+    with zipfile.ZipFile(artifact) as jar:
+        jar.read('newearth/server/ServerPause.class')
+        if any(name.startswith('newearth/dimension/') for name in jar.namelist()):
+            raise ValueError('Server-only package unexpectedly contains client/world content.')
+    output = ROOT / 'build/libs' / artifact.name
+    output.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(str(artifact), str(output))
+    print('Built: {}'.format(output))
+
+
 def build(ROOT, run_gradle, env, offline):
     env = dict(env)
     properties = (ROOT / 'project/NewEarth/gradle.properties').read_text(encoding='utf-8')
