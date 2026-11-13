@@ -7,6 +7,7 @@
 | [GSLC](project/GSLC/README.md) | 发射控制兼容、遥感、地图与时钟 |
 | [FTB](project/FTB/README.md) | 公共团队与任务书 |
 | [NewEarth](project/NewEarth/README.md) | 太阳系整合、系外制造与终章开发 |
+| [Saplanting](project/Saplanting/README.md) | 落苗生根 1.12.2 服务端兼容修复 |
 
 玩法条目见[整合包玩法 Wiki](docs/modpack-gameplay.md)。
 

@@ -20,6 +20,7 @@
 | FTB Library | `[FTB Library（旧版）] FTBLib-5.4.7.0.jar` | 文件名标 5.4.7.0，内部元数据与启动日志为 5.4.7.2 |
 | Item Filters | `[物品过滤器] ItemFilters-1.0.4.2.jar` | |
 | NewEarth | `NewEarth-0.3.56.jar` | 当前仓库构建版本；太阳系整合、七／九／十阶制造与终章 |
+| Saplanting | `saplanting-forge-1.12.2-0.2-serverfix.jar` | [落苗生根服务端修复](../project/Saplanting/README.md)，关闭多线程 |
 
 
 ## 配置入口
