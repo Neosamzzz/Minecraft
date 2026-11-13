@@ -21,6 +21,8 @@
 | Item Filters | `[物品过滤器] ItemFilters-1.0.4.2.jar` | |
 | NewEarth | `NewEarth-0.3.56.jar` | 当前仓库构建版本；太阳系整合、七／九／十阶制造与终章 |
 | Saplanting | `saplanting-forge-1.12.2-0.2-serverfix.jar` | [落苗生根服务端修复](../project/Saplanting/README.md)，关闭多线程 |
+| FTB Ultimine | `ftb-ultimine-1202.3.5.jar` | 连锁挖掘，客户端与服务端安装 |
+| Advanced XRay | `xray-1.12.2-1.6.0.jar` | 矿物透视，仅客户端；Actinium 光影下的显示效果待验证 |
 
 
 ## 配置入口
