@@ -1,4 +1,4 @@
-# Minecraft 1.12.2
+# Minecraft 1.12.2 · 整合包 1.0
 
 航天玩法整合包，开发项目集中在 `project/`。
 
@@ -10,6 +10,18 @@
 | [Saplanting](project/Saplanting/README.md) | 落苗生根 1.12.2 服务端兼容修复 |
 
 玩法条目见[整合包玩法 Wiki](docs/modpack-gameplay.md)。
+
+## TODO
+
+### 紧急
+
+- [ ] [设置服务器白名单（#49）](https://github.com/Neosamzzz/Minecraft/issues/49)。
+- [ ] [抽屉与合成台联动（#50）](https://github.com/Neosamzzz/Minecraft/issues/50)。
+- [ ] [修复手上物品自动替换与抽屉右键冲突（#51）](https://github.com/Neosamzzz/Minecraft/issues/51)。
+
+### 服务端
+
+- [ ] [简单自动存档副本（#52）](https://github.com/Neosamzzz/Minecraft/issues/52)：定时保存到服务器实例内的 `saves/`，按时间命名。
 
 ## 快速开始
 
@@ -81,7 +93,7 @@ py -3 tools/build.py --target all --offline
 
 ## 安装
 
-**存档兼容：NewEarth 在 1.0 发布前不要求兼容旧存档。开发和验收可使用新存档，无需为旧数据保留兼容逻辑、实现迁移或编写迁移步骤。**
+**当前为 1.0 正式游玩阶段。后续更新先评估当前存档、玩家物品、设备库存、任务进度和已生成区块的影响，再决定兼容处理与升级方式，不默认重建存档。**
 
 最终包取自 `build/libs/`。退出游戏或停服后替换相应模组；FTB 和 NewEarth 的客户端、服务端使用同版本。NewEarth 同时分发根目录 `config/` 的固定配置。更新已有实例前保留原 JAR、配置与存档，避免覆盖游玩进度。
 

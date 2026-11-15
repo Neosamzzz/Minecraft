@@ -34,9 +34,3 @@ bash project/FTB/gradlew -p project/FTB --offline --no-daemon --console=plain -I
 ```
 
 Gradle 4.9、ForgeGradle 2.3；详细依赖与任务数据结构保留在 `DEVELOPMENT.md`。
-
-## TODO
-
-- [ ] 验证双人自动同队、共享完成和新玩家接续。
-- [ ] 验证物品、Boss 与到达条件。
-- [ ] 验证退出重进、服务器重启及旧团队数据保留。
