@@ -148,6 +148,16 @@ tasks.register('worldgenCheck', JavaExec) {
 }
 check.dependsOn worldgenCheck
 
+tasks.register('drawerAutoRefillCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.client.DrawerAutoRefillProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/drawer-auto-refill')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn drawerAutoRefillCheck
+
 // A separate server-only artifact; the ordinary NewEarth client/server JAR is unchanged.
 sourceSets {
     server {

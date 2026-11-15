@@ -16,6 +16,13 @@ python3 tools/build.py --target newearth
 
 配置属于整合包固定玩法，逐项维护；禁止用原版默认、旧备份或测试实例配置整份覆盖。实例调整需比较差异后合入正式配置。
 
+Inventory Tweaks 与抽屉兼容专项检查使用本地实例的实际模组包，不修改实例或存档：
+
+```powershell
+$env:NEWEARTH_RUNTIME_MODS = '<游戏实例>/mods'
+.\dependencies\GalaxySpace\gradlew.bat -p project/NewEarth --offline drawerAutoRefillCheck
+```
+
 ## 主世界生成
 
 主世界由模组接管原版生物群系生成：原点是一座主岛，海面随机散布小岛，并按 800 格网格生成少量大岛；主岛和每座大岛各放置一座村庄，原版村庄只允许落在四周无水的陆地上。参数见 `config/newearth-worldgen.cfg`，关闭后恢复原版生成；已生成区块不重新计算。
