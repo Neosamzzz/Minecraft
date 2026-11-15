@@ -3,6 +3,7 @@ package newearth.storage;
 import java.util.*;
 import java.lang.reflect.Method;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -87,7 +88,9 @@ public final class DrawerNetwork {
                             Object drawer=groupType.getMethod("getDrawer",int.class).invoke(group,order[i]);
                             if(fractional.isInstance(drawer))rates[i]=((Number)fractional.getMethod("getConversionRate").invoke(drawer)).intValue();
                         }
-                        result.addAll(DrawerTransfer.reservedSources(handler,1,rates));
+                        List<DrawerTransfer.Source> cells=DrawerTransfer.reservedSources(handler,1,rates);
+                        for(int i=0;i<cells.size()&&i<order.length;i++){cells.get(i).origin=tile;cells.get(i).drawerIndex=order[i];}
+                        result.addAll(cells);
                     }
                 }
                 for (EnumFacing side : EnumFacing.values()) {
@@ -98,6 +101,35 @@ public final class DrawerNetwork {
             throw new IllegalStateException("抽屉接口不兼容", error);
         }
         return result;
+    }
+    /** Re-resolve the original physical drawer; a stale capability must never write into a removed tile. */
+    static ItemStack returnItems(DrawerTransfer.Source source,net.minecraft.entity.player.EntityPlayer player,ItemStack stack) {
+        if(source.origin==null)return source.handler.insertItem(source.slot,stack,false);
+        TileEntity tile=source.origin;World world=tile.getWorld();
+        if(world==null || world!=player.world || tile.isInvalid() || !world.isBlockLoaded(tile.getPos())
+                || world.getTileEntity(tile.getPos())!=tile)return stack;
+        try {
+            Class<?> protectable=Class.forName(PREFIX+"api.storage.attribute.IProtectable");
+            if(!(Boolean)Class.forName(PREFIX+"security.SecurityManager").getMethod("hasAccess",com.mojang.authlib.GameProfile.class,protectable)
+                    .invoke(null,player.getGameProfile(),tile) || (Boolean)tile.getClass().getMethod("isSealed").invoke(tile))return stack;
+            Class<?> groupType=Class.forName(PREFIX+"api.storage.IDrawerGroup"),drawerType=Class.forName(PREFIX+"api.storage.IDrawer");
+            Object group=tile.getClass().getMethod("getGroup").invoke(tile);
+            Object drawer=groupType.getMethod("getDrawer",int.class).invoke(group,source.drawerIndex);
+            // getRemainingCapacity excludes void-upgrade overflow; refunds must not be discarded by a void drawer.
+            int capacity=((Number)drawerType.getMethod("getRemainingCapacity").invoke(drawer)).intValue();
+            int[] order=(int[])groupType.getMethod("getAccessibleDrawerSlots").invoke(group);
+            IItemHandler handler=tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,null);
+            if(handler==null || capacity<=0)return stack;
+            for(int i=0;i<order.length;i++)if(order[i]==source.drawerIndex) {
+                ItemStack offered=stack.copy();offered.setCount(Math.min(stack.getCount(),capacity));
+                int offeredCount=offered.getCount();
+                ItemStack rejected=handler.insertItem(i+1,offered,false);
+                ItemStack remaining=stack.copy();remaining.shrink(offeredCount-rejected.getCount());return remaining;
+            }
+        } catch(ReflectiveOperationException error) {
+            org.apache.logging.log4j.LogManager.getLogger("NewEarth").warn("Cannot resolve original drawer for leftover return",error);
+        }
+        return stack;
     }
     private static boolean is(Object object, String suffix) {
         for (Class<?> type = object.getClass(); type != null; type = type.getSuperclass())

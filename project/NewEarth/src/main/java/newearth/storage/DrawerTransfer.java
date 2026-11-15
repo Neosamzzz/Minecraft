@@ -17,6 +17,8 @@ public final class DrawerTransfer {
     }
     public static final class Source {
         final IItemHandler handler; final int slot, reserve, unit;
+        net.minecraft.tileentity.TileEntity origin;
+        int drawerIndex=-1;
         public Source(IItemHandler handler, int slot) { this(handler,slot,1,0); }
         private Source(IItemHandler handler,int slot,int reserve,int unit) { this.handler=handler;this.slot=slot;this.reserve=reserve;this.unit=unit; }
         private ItemStack peek(int amount) {
@@ -39,9 +41,9 @@ public final class DrawerTransfer {
         }
         return sources;
     }
-    private static final class Withdrawal {
-        final Source source; final ItemStack stack;
-        Withdrawal(Source source, ItemStack stack) { this.source = source; this.stack = stack; }
+    static final class Withdrawal {
+        final Source source; final ItemStack stack;final int target;
+        Withdrawal(Source source, ItemStack stack,int target) { this.source = source; this.stack = stack;this.target=target; }
     }
     private static boolean exact(ItemStack a, ItemStack b) {
         return !a.isEmpty() && !b.isEmpty() && ItemStack.areItemsEqual(a,b) && ItemStack.areItemStackTagsEqual(a,b);
@@ -146,6 +148,7 @@ public final class DrawerTransfer {
         ItemStack[] originalPlayer=copy(inventory), working=copy(inventory);
         Map<Integer,ItemStack> original=new LinkedHashMap<>(), targets=new LinkedHashMap<>();
         List<Withdrawal> withdrawals=new ArrayList<>();
+        boolean committing=false;
         try {
             for (Request request:requests) {
                 if (request.slot<0 || request.slot>=container.inventorySlots.size() || original.containsKey(request.slot))
@@ -169,8 +172,10 @@ public final class DrawerTransfer {
                 rollback(withdrawals,0,recovery); return "普通材料不足（抽屉保留最后一个），或输入槽不接受该材料";
             }
             if(apply) {
+                DrawerReturns.begin(container);committing=true;
                 for (int i=0;i<inventory.length;i++) inventory[i]=working[i].copy();
                 for (Map.Entry<Integer,ItemStack> entry:targets.entrySet()) container.getSlot(entry.getKey()).putStack(entry.getValue());
+                DrawerReturns.committed(container,withdrawals);
             }
             return null;
         } catch (RuntimeException error) {
@@ -178,6 +183,8 @@ public final class DrawerTransfer {
             if(apply)for (Map.Entry<Integer,ItemStack> entry:original.entrySet()) container.getSlot(entry.getKey()).putStack(entry.getValue());
             rollback(withdrawals,0,recovery);
             throw error;
+        } finally {
+            if(committing)DrawerReturns.end(container);
         }
     }
     private static boolean allocate(Container container,List<Request> order,int index,ItemStack[] inventory,
@@ -215,7 +222,7 @@ public final class DrawerTransfer {
                 if (!exact(peek,candidate)) continue;
                 ItemStack taken=source.handler.extractItem(source.slot,Math.min(remaining,peek.getCount()),false);
                 if (taken.isEmpty()) continue;
-                withdrawals.add(new Withdrawal(source,taken.copy()));
+                withdrawals.add(new Withdrawal(source,taken.copy(),request.slot));
                 if (!exact(taken,candidate) || taken.getCount()>remaining) { remaining=-1;break; }
                 remaining-=taken.getCount();
             }

@@ -6,9 +6,9 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 /** Early hooks are needed before EP registers its config-dependent items and worlds. */
 @IFMLLoadingPlugin.Name("NewEarthSolarSystem")
 @IFMLLoadingPlugin.MCVersion("1.12.2")
-@IFMLLoadingPlugin.TransformerExclusions({"newearth.PlanetTransformer", "newearth.ContentTransformer", "newearth.EnvironmentTransformer", "newearth.ManufacturingTransformer", "newearth.worldgen.IslandTransformer", "newearth.DrawerJeiTransformer", "newearth.InventoryTweaksTransformer", "newearth.PlanetLoadingPlugin"})
+@IFMLLoadingPlugin.TransformerExclusions({"newearth.PlanetTransformer", "newearth.ContentTransformer", "newearth.EnvironmentTransformer", "newearth.ManufacturingTransformer", "newearth.worldgen.IslandTransformer", "newearth.DrawerJeiTransformer", "newearth.DrawerReturnTransformer", "newearth.InventoryTweaksTransformer", "newearth.PlanetLoadingPlugin"})
 public final class PlanetLoadingPlugin implements IFMLLoadingPlugin {
-    public String[] getASMTransformerClass() { return new String[] {"newearth.DrawerJeiTransformer", "newearth.InventoryTweaksTransformer", "newearth.dimension.HeightTransformer", "newearth.worldgen.IslandTransformer", "newearth.PlanetTransformer", "newearth.ContentTransformer", "newearth.EnvironmentTransformer", "newearth.ManufacturingTransformer"}; }
+    public String[] getASMTransformerClass() { return new String[] {"newearth.DrawerJeiTransformer", "newearth.DrawerReturnTransformer", "newearth.InventoryTweaksTransformer", "newearth.dimension.HeightTransformer", "newearth.worldgen.IslandTransformer", "newearth.PlanetTransformer", "newearth.ContentTransformer", "newearth.EnvironmentTransformer", "newearth.ManufacturingTransformer"}; }
     public String getModContainerClass() { return null; }
     public String getSetupClass() { return null; }
     public void injectData(Map<String, Object> data) { }

@@ -221,6 +221,7 @@ public final class DrawerTransferProbe {
         player.world=world;player.inventory=new net.minecraft.entity.player.InventoryPlayer(player);
         net.minecraft.util.math.BlockPos origin=new net.minecraft.util.math.BlockPos(2,64,3);
         Container workbench=new ContainerWorkbench(player.inventory,world,origin);
+        returns(player,world,origin);
         check(origin.equals(TransferProfiles.anchor(workbench)),"Vanilla anchor resolves without a client-provided position");
         net.minecraft.client.gui.inventory.GuiCrafting gui=new net.minecraft.client.gui.inventory.GuiCrafting(player.inventory,world);
         check(net.minecraft.util.math.BlockPos.ORIGIN.equals(TransferProfiles.anchor(gui.inventorySlots)),
@@ -253,6 +254,76 @@ public final class DrawerTransferProbe {
             for(int target:slots.values())check(container.getSlot(target).getSlotIndex()==profile.targets[index++],"Actual NASA inventory index "+profile.container);
             check(origin.equals(TransferProfiles.anchor(container)),"NASA anchor comes from the actual workbench slot");
         }
+    }
+    private static void returns(EntityPlayer player,net.minecraft.world.World world,net.minecraft.util.math.BlockPos origin)throws Exception {
+        ContainerWorkbench bench=new ContainerWorkbench(player.inventory,world,origin);
+        ItemStackHandler drawer=new ItemStackHandler(1);drawer.setStackInSlot(0,stone(11));
+        List<DrawerTransfer.Source> sources=Arrays.asList(new DrawerTransfer.Source(drawer,0));
+        List<DrawerTransfer.Request> recipe=Arrays.asList(request(1,stone(5)));
+        check(DrawerTransfer.transfer(bench,recipe,player(),sources,s->{throw new AssertionError();})==null,"Return test fills a real vanilla workbench");
+        DrawerReturns.returnRemaining(bench,null,s->{throw new AssertionError("Unexpected fallback");});
+        check(drawer.getStackInSlot(0).getCount()==11&&bench.craftMatrix.getStackInSlot(0).isEmpty(),"Closing without taking output returns all borrowed input");
+        DrawerReturns.returnRemaining(bench,null,s->{throw new AssertionError();});
+        check(drawer.getStackInSlot(0).getCount()==11,"A repeated close cannot duplicate a refund");
+
+        bench=new ContainerWorkbench(player.inventory,world,origin);
+        check(DrawerTransfer.transfer(bench,recipe,player(),sources,s->{throw new AssertionError();})==null,"Refill for consumed remainder test");
+        bench.craftMatrix.decrStackSize(0,2);DrawerReturns.observe(bench);
+        DrawerReturns.returnRemaining(bench,null,s->{throw new AssertionError();});
+        check(drawer.getStackInSlot(0).getCount()==9&&bench.craftMatrix.isEmpty(),"Closing after crafting returns only the three unconsumed items");
+
+        drawer.setStackInSlot(0,stone(11));bench=new ContainerWorkbench(player.inventory,world,origin);ItemStack[] backpack=player();backpack[0]=stone(2);
+        check(DrawerTransfer.transfer(bench,recipe,backpack,sources,s->{throw new AssertionError();})==null,"Mixed backpack and drawer fill");
+        DrawerReturns.returnRemaining(bench,null,s->{throw new AssertionError();});
+        check(drawer.getStackInSlot(0).getCount()==11&&bench.craftMatrix.getStackInSlot(0).getCount()==2,"Closing leaves the backpack-owned part in the grid for vanilla handling");
+
+        bench=new ContainerWorkbench(player.inventory,world,origin);backpack=player();
+        check(DrawerTransfer.transfer(bench,recipe,backpack,sources,s->{throw new AssertionError();})==null,"Refill before manual movement");
+        bench.craftMatrix.decrStackSize(0,5);DrawerReturns.observe(bench);
+        bench.craftMatrix.setInventorySlotContents(0,stone(5));DrawerReturns.observe(bench);
+        DrawerReturns.returnRemaining(bench,null,s->{throw new AssertionError();});
+        check(drawer.getStackInSlot(0).getCount()==6&&bench.craftMatrix.getStackInSlot(0).getCount()==5,"Taken materials are no longer borrowed and manual replacement is not refunded");
+
+        drawer.setStackInSlot(0,stone(11));bench=new ContainerWorkbench(player.inventory,world,origin);
+        check(DrawerTransfer.transfer(bench,Arrays.asList(request(1,stone(3))),player(),sources,s->{throw new AssertionError();})==null,"First fill for repeated transfer");
+        check(DrawerTransfer.transfer(bench,recipe,player(),sources,s->{throw new AssertionError();})==null,"Second fill retains earlier provenance");
+        DrawerReturns.returnRemaining(bench,null,s->{throw new AssertionError();});
+        check(drawer.getStackInSlot(0).getCount()==11&&bench.craftMatrix.isEmpty(),"Repeated plus returns both loans once");
+
+        bench=new ContainerWorkbench(player.inventory,world,origin);drawer.setStackInSlot(0,stone(63));
+        check(DrawerTransfer.transfer(bench,recipe,player(),sources,s->{throw new AssertionError();})==null,"Fill before source capacity changes");
+        drawer.setStackInSlot(0,stone(62));List<ItemStack> fallback=new ArrayList<>();
+        DrawerReturns.returnRemaining(bench,null,s->fallback.add(s.copy()));
+        check(drawer.getStackInSlot(0).getCount()==64&&fallback.size()==1&&fallback.get(0).getCount()==3&&bench.craftMatrix.isEmpty(),
+                "Partial refunds return rejected surplus to backpack without losing or duplicating it");
+        drawer.setStackInSlot(0,stone(11));bench=new ContainerWorkbench(player.inventory,world,origin);
+        check(DrawerTransfer.transfer(bench,recipe,player(),sources,s->{throw new AssertionError();})==null,"Fill before original drawer removal");
+        sources.get(0).origin=new net.minecraft.tileentity.TileEntity(){};sources.get(0).origin.setWorld(world);sources.get(0).origin.invalidate();
+        fallback.clear();DrawerReturns.returnRemaining(bench,player,s->fallback.add(s.copy()));
+        check(drawer.getStackInSlot(0).getCount()==6&&fallback.size()==1&&fallback.get(0).getCount()==5,
+                "A removed original tile never receives items through its stale handler; all leftovers fall back");
+        sources.get(0).origin=null;
+        Bench machine=new Bench(1);drawer.setStackInSlot(0,stone(11));
+        check(DrawerTransfer.transfer(machine,Arrays.asList(request(0,stone(5))),player(),sources,s->{throw new AssertionError();})==null,"Fill an ordinary persistent device");
+        DrawerReturns.returnRemaining(machine,null,s->{throw new AssertionError();});
+        check(machine.input.getStackInSlot(0).getCount()==5&&drawer.getStackInSlot(0).getCount()==6,"Closing other devices does not remove their processing inputs");
+
+        java.io.InputStream input=Container.class.getResourceAsStream("/net/minecraft/inventory/Container.class");
+        java.io.ByteArrayOutputStream out=new java.io.ByteArrayOutputStream();byte[] buffer=new byte[8192];int count;
+        while((count=input.read(buffer))!=-1)out.write(buffer,0,count);input.close();byte[] bytes=out.toByteArray();
+        newearth.DrawerReturnTransformer transformer=new newearth.DrawerReturnTransformer();
+        byte[] transformed=transformer.transform("net.minecraft.inventory.Container","net.minecraft.inventory.Container",bytes);
+        check(transformed!=bytes,"Actual Forge Container lifecycle receives the return hooks");
+        check(transformer.transform("net.minecraft.inventory.Container","net.minecraft.inventory.Container",transformed)==transformed,"Container hooks are idempotent");
+        ClassNode node=new ClassNode();new ClassReader(transformed).accept(node,0);int closeHooks=0,observeHooks=0;
+        for(MethodNode method:node.methods) {
+            if((method.access&(Opcodes.ACC_ABSTRACT|Opcodes.ACC_NATIVE))==0)new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name,method);
+            for(AbstractInsnNode instruction:method.instructions.toArray())if(instruction instanceof MethodInsnNode) {
+                MethodInsnNode call=(MethodInsnNode)instruction;
+                if(call.owner.equals("newearth/storage/DrawerReturns")){if(call.name.equals("close"))closeHooks++;else observeHooks++;}
+            }
+        }
+        check(closeHooks==1&&observeHooks>=3,"Close hook runs once and interactions observe before and after changes");
     }
     private static final class AliasDrawer implements IItemHandler {
         int units;AliasDrawer(int units){this.units=units;}
