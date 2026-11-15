@@ -97,6 +97,8 @@ public final class DrawerTransferProbe {
             if(profile.container.equals("newearth.AssemblyStationContainer"))check(!unique.contains(7)&&!unique.contains(8)&&!unique.contains(9)&&!unique.contains(10),"NewEarth engines, panel and output excluded");
         }
         nasaContainers();
+        check(Class.forName("newearth.client.DrawerTransferJei$Bridge").newInstance() instanceof TransferNetwork.ClientBridge,
+                "Client network proxy loads without optional JEI classes on the test runtime");
         installedJei();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
     }
@@ -110,6 +112,19 @@ public final class DrawerTransferProbe {
         net.minecraft.util.math.BlockPos origin=new net.minecraft.util.math.BlockPos(2,64,3);
         Container workbench=new ContainerWorkbench(player.inventory,world,origin);
         check(origin.equals(TransferProfiles.anchor(workbench)),"Vanilla anchor resolves without a client-provided position");
+        net.minecraft.client.gui.inventory.GuiCrafting gui=new net.minecraft.client.gui.inventory.GuiCrafting(player.inventory,world);
+        check(net.minecraft.util.math.BlockPos.ORIGIN.equals(TransferProfiles.anchor(gui.inventorySlots)),
+                "Actual vanilla client GUI loses the real workbench position");
+        check(!origin.equals(TransferProfiles.anchor(gui.inventorySlots)),"Client anchor must not decide drawer connectivity");
+        TransferNetwork.EndpointState state=new TransferNetwork.EndpointState(1,20);
+        check(state.connected==null,"Connection is unknown until the authoritative reply arrives");
+        TransferNetwork.Endpoint response=new TransferNetwork.Endpoint(1,20,true);
+        io.netty.buffer.ByteBuf endpointBuffer=Unpooled.buffer();response.toBytes(endpointBuffer);
+        TransferNetwork.Endpoint decoded=new TransferNetwork.Endpoint();decoded.fromBytes(endpointBuffer);endpointBuffer.release();
+        check(state.accept(decoded)&&state.connected,"Server endpoint reply enables drawer transfer despite client origin");
+        check(!state.accept(new TransferNetwork.Endpoint(2,20,false))&&state.connected,"Other window reply cannot change connection");
+        check(!state.accept(new TransferNetwork.Endpoint(1,19,false))&&state.connected,"Reused window ignores a prior opening reply");
+        check(state.accept(new TransferNetwork.Endpoint(1,20,false))&&!state.connected,"No server endpoint restores the original handler");
         TransferNetwork.Fill valid=new TransferNetwork.Fill(1,"minecraft.crafting",Arrays.asList(request(1,stone(1))));
         check(TransferNetwork.allowed(workbench,valid),"Actual vanilla input is allowed");
         check(!TransferNetwork.allowed(workbench,new TransferNetwork.Fill(1,"minecraft.crafting",Arrays.asList(request(0,stone(1))))),"Forged output target rejected");

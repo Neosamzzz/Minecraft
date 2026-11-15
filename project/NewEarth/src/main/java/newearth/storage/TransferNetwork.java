@@ -13,9 +13,62 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public final class TransferNetwork {
     private static SimpleNetworkWrapper CHANNEL;
+    @net.minecraftforge.fml.common.SidedProxy(modId="newearth",clientSide="newearth.client.DrawerTransferJei$Bridge",
+            serverSide="newearth.storage.TransferNetwork$ClientBridge")
+    public static ClientBridge client;
+    public static class ClientBridge { public void receive(Endpoint message) { } }
     public static void init() {
         CHANNEL=NetworkRegistry.INSTANCE.newSimpleChannel("newearth_drawers");
         CHANNEL.registerMessage(Handler.class,Fill.class,0,Side.SERVER);
+        CHANNEL.registerMessage(QueryHandler.class,Query.class,1,Side.SERVER);
+        CHANNEL.registerMessage(EndpointHandler.class,Endpoint.class,2,Side.CLIENT);
+    }
+    public static void query(int window,int token) { CHANNEL.sendToServer(new Query(window,token)); }
+    public static class Query implements IMessage {
+        public int window,token;
+        public Query() { }
+        public Query(int window,int token) { this.window=window;this.token=token; }
+        public void toBytes(ByteBuf buf) { buf.writeInt(window);buf.writeInt(token); }
+        public void fromBytes(ByteBuf buf) { window=buf.readInt();token=buf.readInt(); }
+    }
+    public static final class Endpoint extends Query {
+        public boolean connected;
+        public Endpoint() { }
+        public Endpoint(int window,int token,boolean connected) { super(window,token);this.connected=connected; }
+        public void toBytes(ByteBuf buf) { super.toBytes(buf);buf.writeBoolean(connected); }
+        public void fromBytes(ByteBuf buf) { super.fromBytes(buf);connected=buf.readBoolean(); }
+    }
+    /** A reply belongs to one opening, even when Minecraft reuses a window ID. */
+    public static final class EndpointState {
+        public final int window,token;
+        public Boolean connected;
+        public long lastQuery;
+        public EndpointState(int window,int token) { this.window=window;this.token=token; }
+        public boolean accept(Endpoint message) {
+            if(message.window!=window || message.token!=token)return false;
+            connected=message.connected;return true;
+        }
+    }
+    public static final class QueryHandler implements IMessageHandler<Query,IMessage> {
+        public IMessage onMessage(Query message,MessageContext ctx) {
+            EntityPlayerMP player=ctx.getServerHandler().player;
+            player.getServerWorld().addScheduledTask(() -> {
+                Container container=player.openContainer;
+                if(container==null || container.windowId!=message.window || player.isDead || player.isSpectator()
+                        || !container.canInteractWith(player))return;
+                boolean supported=false;
+                for(TransferProfiles.Profile profile:TransferProfiles.all())
+                    if(TransferProfiles.get(container,profile.category)!=null){supported=true;break;}
+                if(!supported)return;
+                net.minecraft.util.math.BlockPos anchor=TransferProfiles.anchor(container);
+                if(anchor==null || player.getDistanceSq(anchor)>64 || !player.world.isBlockLoaded(anchor))return;
+                CHANNEL.sendTo(new Endpoint(message.window,message.token,DrawerNetwork.hasEndpoint(player.world,anchor)),player);
+            });
+            return null;
+        }
+    }
+    public static final class EndpointHandler implements IMessageHandler<Endpoint,IMessage> {
+        public IMessage onMessage(Endpoint message,MessageContext ctx) { client.receive(message);return null; }
     }
     public static void fill(int window,String category,List<DrawerTransfer.Request> requests) {
         CHANNEL.sendToServer(new Fill(window,category,requests));
