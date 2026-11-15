@@ -71,6 +71,36 @@ public final class DrawerTransfer {
             List<Source> sources, Consumer<ItemStack> recovery) {
         return transfer(container,requests,inventory,sources,recovery,true);
     }
+    /** Shift transfers the largest complete batch that fits, then commits one ordinary transaction. */
+    public static String transferMaximum(Container container,List<Request> requests,ItemStack[] inventory,
+            List<Source> sources,Consumer<ItemStack> recovery) {
+        int batches=maximumBatches(container,requests,inventory,sources);
+        if(batches==0)return "普通材料不足（抽屉保留最后一个），或输入槽不接受该材料";
+        return transfer(container,scaled(requests,batches),inventory,sources,recovery);
+    }
+    static int maximumBatches(Container container,List<Request> requests,ItemStack[] inventory,List<Source> sources) {
+        // Filtering oversized alternatives can change which existing input is returned to the backpack.
+        // Feasibility is therefore not necessarily monotonic, so a binary search can miss a valid maximum.
+        for(int batches=64;batches>=1;batches--) {
+            List<Request> batch=scaled(requests,batches);
+            if(batch!=null && preview(container,batch,inventory,sources)==null)return batches;
+        }
+        return 0;
+    }
+    private static List<Request> scaled(List<Request> requests,int batches) {
+        List<Request> result=new ArrayList<>();
+        for(Request request:requests) {
+            List<ItemStack> choices=new ArrayList<>();
+            for(ItemStack alternative:request.alternatives) {
+                long count=(long)alternative.getCount()*batches;
+                if(count<1 || count>64)continue;
+                ItemStack stack=alternative.copy();stack.setCount((int)count);choices.add(stack);
+            }
+            if(!request.alternatives.isEmpty()&&choices.isEmpty())return null;
+            result.add(new Request(request.slot,choices));
+        }
+        return result;
+    }
     /** All allocation and rollback run on snapshots; previews never extract from real drawers or write slots. */
     public static String preview(Container container,List<Request> requests,ItemStack[] inventory,List<Source> sources) {
         Map<IItemHandler,SnapshotHandler> snapshots=new IdentityHashMap<>();List<Source> copied=new ArrayList<>();

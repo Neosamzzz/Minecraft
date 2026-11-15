@@ -122,7 +122,7 @@ public final class DrawerTransferJei {
             if(!state.ready)return error("正在检查背包和抽屉中的可用材料，请稍候");
             if(state.error!=null)return error(state.error);
             if (perform) {
-                TransferNetwork.fill(container.windowId,profile.category,requests);
+                TransferNetwork.fill(container.windowId,profile.category,requests,max);
                 PREVIEWS.remove(container);
             }
             return null;

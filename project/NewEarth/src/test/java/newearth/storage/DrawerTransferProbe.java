@@ -104,6 +104,7 @@ public final class DrawerTransferProbe {
         check(run(new Bench(1),player(),Arrays.asList(request(0,new ItemStack(Items.IRON_INGOT,7))),compact)==null&&compact.units==1,
                 "A compacting drawer below one block keeps one ingot instead of reserving a nonexistent block");
         previews();
+        maximumTransfers();
 
         TransferNetwork.Fill message=new TransferNetwork.Fill(7,"minecraft.crafting",Arrays.asList(request(1,stone(3))));
         io.netty.buffer.ByteBuf buffer=Unpooled.buffer();message.toBytes(buffer);TransferNetwork.Fill decoded=new TransferNetwork.Fill();decoded.fromBytes(buffer);
@@ -124,6 +125,59 @@ public final class DrawerTransferProbe {
                 "Client network proxy loads without optional JEI classes on the test runtime");
         installedJei();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
+    }
+    private static void maximumTransfers() {
+        Bench bench=new Bench(5);ItemStack[] inventory=player();
+        inventory[0]=new ItemStack(Items.IRON_INGOT,20);inventory[1]=new ItemStack(Items.STICK,8);
+        List<DrawerTransfer.Request> pickaxe=Arrays.asList(request(0,new ItemStack(Items.IRON_INGOT)),
+                request(1,new ItemStack(Items.IRON_INGOT)),request(2,new ItemStack(Items.IRON_INGOT)),
+                request(3,new ItemStack(Items.STICK)),request(4,new ItemStack(Items.STICK)));
+        check(DrawerTransfer.maximumBatches(bench,pickaxe,inventory,Collections.emptyList())==4,"Shift is limited by the scarcest complete recipe ingredient");
+        check(inventory[0].getCount()==20&&inventory[1].getCount()==8&&bench.input.isEmpty(),"Searching the maximum never changes real inventories");
+        check(DrawerTransfer.transferMaximum(bench,pickaxe,inventory,Collections.emptyList(),s->{throw new AssertionError();})==null,
+                "Shift commits the selected batch");
+        for(int i=0;i<5;i++)check(bench.input.getStackInSlot(i).getCount()==4,"Every mapped input receives four complete sets");
+        check(inventory[0].getCount()==8&&inventory[1].isEmpty(),"Shift consumes 12 iron and 8 sticks, keeping surplus iron");
+
+        ItemStackHandler drawers=new ItemStackHandler(2);drawers.setStackInSlot(0,new ItemStack(Items.IRON_INGOT,20));
+        drawers.setStackInSlot(1,new ItemStack(Items.STICK,9));
+        List<DrawerTransfer.Source> sources=Arrays.asList(new DrawerTransfer.Source(drawers,0),new DrawerTransfer.Source(drawers,1));
+        bench=new Bench(5);inventory=player();
+        check(DrawerTransfer.transferMaximum(bench,pickaxe,inventory,sources,s->{throw new AssertionError();})==null
+                &&drawers.getStackInSlot(0).getCount()==8&&drawers.getStackInSlot(1).getCount()==1,
+                "Shift combines repeated drawer ingredients while keeping each cell's final item");
+
+        bench=new Bench(1);inventory=player();inventory[0]=stone(64);inventory[1]=stone(64);
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,stone(1))),inventory,Collections.emptyList(),s->{throw new AssertionError();})==null
+                &&bench.input.getStackInSlot(0).getCount()==64&&inventory[1].getCount()==64,"Shift respects the normal stack limit");
+        bench=new Bench(1);inventory=player();inventory[0]=stone(64);
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,stone(1),new ItemStack(Blocks.DIRT,2))),inventory,Collections.emptyList(),s->{throw new AssertionError();})==null
+                &&bench.input.getStackInSlot(0).getCount()==64,"An oversized unused alternative does not block a valid maximum batch");
+        bench=new Bench(1);bench.input.setInventorySlotContents(0,new ItemStack(Blocks.DIRT));inventory=player();inventory[0]=stone(64);
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,new ItemStack(Blocks.DIRT,2),stone(1))),inventory,Collections.emptyList(),s->{throw new AssertionError();})==null
+                &&bench.input.getStackInSlot(0).getCount()==64,"A feasible large batch is found even when smaller batches keep an insufficient old alternative");
+
+        bench=new Bench(1);inventory=player();inventory[0]=new ItemStack(Items.WATER_BUCKET);
+        check(DrawerTransfer.maximumBatches(bench,Arrays.asList(request(0,new ItemStack(Items.WATER_BUCKET))),inventory,Collections.emptyList())==1,
+                "Nonstackable ingredients limit Shift to one batch");
+        bench=new Bench(1);bench.input.setInventorySlotContents(0,stone(2));inventory=player();inventory[0]=stone(3);
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,stone(1))),inventory,Collections.emptyList(),s->{throw new AssertionError();})==null
+                &&bench.input.getStackInSlot(0).getCount()==5&&inventory[0].isEmpty(),"Shift includes material already in the crafting input");
+
+        bench=new Bench(1);bench.inventorySlots.set(0,new Slot(bench.input,0,0,0){@Override public int getSlotStackLimit(){return 16;}});
+        inventory=player();inventory[0]=stone(40);
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,stone(2))),inventory,Collections.emptyList(),s->{throw new AssertionError();})==null
+                &&bench.input.getStackInSlot(0).getCount()==16&&inventory[0].getCount()==24,"Machine slot limits and per-batch counts constrain Shift");
+        AliasDrawer compact=new AliasDrawer(19);bench=new Bench(2);
+        sources=DrawerTransfer.reservedSources(compact,0,new int[]{1,9});
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK)),request(1,new ItemStack(Items.IRON_INGOT))),
+                player(),sources,s->{throw new AssertionError();})==null&&compact.units==9,"Shift respects the shared compacting reserve");
+        drawers=new ItemStackHandler(1);drawers.setStackInSlot(0,stone(1));bench=new Bench(1);sources=Arrays.asList(new DrawerTransfer.Source(drawers,0));
+        check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,stone(1))),player(),sources,s->{throw new AssertionError();})!=null
+                &&drawers.getStackInSlot(0).getCount()==1&&bench.input.isEmpty(),"Shift cannot consume the final reserved item when no batch is possible");
+        TransferNetwork.Fill packet=new TransferNetwork.Fill(4,"minecraft.crafting",Arrays.asList(request(1,stone(1))));packet.maximum=true;
+        io.netty.buffer.ByteBuf buffer=Unpooled.buffer();packet.toBytes(buffer);TransferNetwork.Fill decoded=new TransferNetwork.Fill();decoded.fromBytes(buffer);buffer.release();
+        check(decoded.valid&&decoded.maximum&&!decoded.preview,"The Shift flag survives the client/server transfer packet");
     }
     private static void previews() {
         IItemHandler readOnly=new ItemStackHandler(1) {

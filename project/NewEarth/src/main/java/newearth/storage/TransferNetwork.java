@@ -99,20 +99,20 @@ public final class TransferNetwork {
     public static void preview(int window,int token,String category,List<DrawerTransfer.Request> requests) {
         Fill message=new Fill(window,category,requests);message.preview=true;message.token=token;CHANNEL.sendToServer(message);
     }
-    public static void fill(int window,String category,List<DrawerTransfer.Request> requests) {
-        CHANNEL.sendToServer(new Fill(window,category,requests));
+    public static void fill(int window,String category,List<DrawerTransfer.Request> requests,boolean maximum) {
+        Fill message=new Fill(window,category,requests);message.maximum=maximum;CHANNEL.sendToServer(message);
     }
     public static final class Fill implements IMessage {
         public int window,token;
         public String category;
         public List<DrawerTransfer.Request> requests=new ArrayList<>();
-        public boolean valid,preview;
+        public boolean valid,preview,maximum;
         public Fill() { }
         Fill(int window,String category,List<DrawerTransfer.Request> requests) {
             this.window=window;this.category=category;this.requests=requests;
         }
         public void toBytes(ByteBuf buf) {
-            buf.writeInt(window);buf.writeBoolean(preview);buf.writeInt(token);ByteBufUtils.writeUTF8String(buf,category);buf.writeByte(requests.size());
+            buf.writeInt(window);buf.writeBoolean(preview);buf.writeBoolean(maximum);buf.writeInt(token);ByteBufUtils.writeUTF8String(buf,category);buf.writeByte(requests.size());
             for (DrawerTransfer.Request request:requests) {
                 buf.writeByte(request.slot);buf.writeByte(request.alternatives.size());
                 for (ItemStack stack:request.alternatives) ByteBufUtils.writeItemStack(buf,stack);
@@ -121,7 +121,7 @@ public final class TransferNetwork {
         public void fromBytes(ByteBuf buf) {
             if (buf.readableBytes()>65536) return;
             try {
-                window=buf.readInt();preview=buf.readBoolean();token=buf.readInt();category=ByteBufUtils.readUTF8String(buf);
+                window=buf.readInt();preview=buf.readBoolean();maximum=buf.readBoolean();token=buf.readInt();category=ByteBufUtils.readUTF8String(buf);
                 if (category.length()>128) return;
                 int count=buf.readUnsignedByte();if (count<1 || count>32) return;
                 for (int i=0;i<count;i++) {
@@ -171,9 +171,11 @@ public final class TransferNetwork {
                 CHANNEL.sendTo(new PreviewResult(message.window,message.token,
                         DrawerTransfer.preview(container,message.requests,inventory,sources)),player);return;
             }
-            String error=DrawerTransfer.transfer(container,message.requests,inventory,sources,stack -> {
+            java.util.function.Consumer<ItemStack> recovery=stack -> {
                 if (!player.inventory.addItemStackToInventory(stack) && !stack.isEmpty()) player.dropItem(stack,false);
-            });
+            };
+            String error=message.maximum?DrawerTransfer.transferMaximum(container,message.requests,inventory,sources,recovery)
+                    :DrawerTransfer.transfer(container,message.requests,inventory,sources,recovery);
             if (error!=null) player.sendStatusMessage(new TextComponentString(error),true);
             else for (int i=0;i<36;i++) player.inventory.setInventorySlotContents(i,inventory[i]);
             player.inventory.markDirty();container.detectAndSendChanges();player.updateHeldItem();
