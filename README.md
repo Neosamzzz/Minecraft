@@ -15,7 +15,6 @@
 
 ### 紧急
 
-- [ ] [设置服务器白名单（#49）](https://github.com/Neosamzzz/Minecraft/issues/49)。
 - [ ] [抽屉与合成台联动（#50）](https://github.com/Neosamzzz/Minecraft/issues/50)。
 - [ ] [修复手上物品自动替换与抽屉右键冲突（#51）](https://github.com/Neosamzzz/Minecraft/issues/51)。
 
