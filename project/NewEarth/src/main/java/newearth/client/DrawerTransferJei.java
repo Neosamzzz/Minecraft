@@ -13,12 +13,35 @@ import newearth.storage.*;
 /** Wrap the selected JEI handler after plugin registration, retaining vanilla fallback away from drawers. */
 public final class DrawerTransferJei {
     private static final Map<Container,TransferNetwork.EndpointState> ENDPOINTS=new WeakHashMap<>();
+    private static final Map<Container,Map<String,TransferNetwork.PreviewState>> PREVIEWS=new WeakHashMap<>();
     private static int nextToken;
+    private static int ticks;
+    public static void register(){net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(DrawerTransferJei.class);}
+    @net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+    public static void tick(net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent event) {
+        EntityPlayer player=Minecraft.getMinecraft().player;
+        if(event.phase==net.minecraftforge.fml.common.gameevent.TickEvent.Phase.END && ++ticks%10==0
+                && player!=null && ENDPOINTS.containsKey(player.openContainer))refresh();
+    }
+    private static void refresh() {
+        if(Minecraft.getMinecraft().currentScreen instanceof mezz.jei.gui.recipes.RecipesGui)
+            ((mezz.jei.gui.recipes.RecipesGui)Minecraft.getMinecraft().currentScreen).onStateChange();
+    }
     /** Kept separate so proxy construction does not load optional JEI types when JEI is absent. */
     public static final class Bridge extends TransferNetwork.ClientBridge {
         @Override public void receive(TransferNetwork.Endpoint message) {
             if(net.minecraftforge.fml.common.Loader.isModLoaded("jei"))DrawerTransferJei.receive(message);
         }
+        @Override public void receive(TransferNetwork.PreviewResult message) {
+            if(net.minecraftforge.fml.common.Loader.isModLoaded("jei"))DrawerTransferJei.receive(message);
+        }
+    }
+    private static void receive(TransferNetwork.PreviewResult message) {
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            EntityPlayer player=Minecraft.getMinecraft().player;if(player==null)return;
+            Map<String,TransferNetwork.PreviewState> previews=PREVIEWS.get(player.openContainer);if(previews==null)return;
+            for(TransferNetwork.PreviewState state:previews.values())if(state.accept(message)){refresh();break;}
+        });
     }
     private static void receive(TransferNetwork.Endpoint message) {
         Minecraft.getMinecraft().addScheduledTask(() -> {
@@ -42,6 +65,24 @@ public final class DrawerTransferJei {
             state.lastQuery=now;TransferNetwork.query(state.window,state.token);
         }
         return state.connected;
+    }
+    private static TransferNetwork.PreviewState preview(Container container,String category,List<DrawerTransfer.Request> requests) {
+        StringBuilder key=new StringBuilder(category);
+        for(DrawerTransfer.Request request:requests) {
+            key.append('|').append(request.slot).append(':');
+            for(ItemStack stack:request.alternatives)key.append(stack.serializeNBT()).append(';');
+        }
+        Map<String,TransferNetwork.PreviewState> previews=PREVIEWS.computeIfAbsent(container,c->new LinkedHashMap<>());
+        String recipe=key.toString();TransferNetwork.PreviewState state=previews.get(recipe);long now=System.nanoTime();
+        if(state==null || now-state.requestedAt>(state.ready?500000000L:2000000000L)) {
+            TransferNetwork.PreviewState next=new TransferNetwork.PreviewState(container.windowId,++nextToken,now);
+            if(state!=null && state.ready && now-state.receivedAt<1500000000L) {
+                next.ready=true;next.error=state.error;next.receivedAt=state.receivedAt;
+            }
+            if(previews.size()>=64)previews.clear();previews.put(recipe,next);state=next;
+            TransferNetwork.preview(container.windowId,state.token,category,requests);
+        }
+        return state;
     }
     public static Object wrap(Object original,Object rawContainer,Object rawCategory) {
         Container container=(Container)rawContainer;IRecipeCategory<?> category=(IRecipeCategory<?>)rawCategory;
@@ -77,7 +118,13 @@ public final class DrawerTransferJei {
                 requests.add(new DrawerTransfer.Request(pair.getValue(),choices));
             }
             if (requests.isEmpty()) return error("该配方只有特殊输入，请手动放置");
-            if (perform) TransferNetwork.fill(container.windowId,profile.category,requests);
+            TransferNetwork.PreviewState state=preview(container,profile.category,requests);
+            if(!state.ready)return error("正在检查背包和抽屉中的可用材料，请稍候");
+            if(state.error!=null)return error(state.error);
+            if (perform) {
+                TransferNetwork.fill(container.windowId,profile.category,requests);
+                PREVIEWS.remove(container);
+            }
             return null;
         }
     }

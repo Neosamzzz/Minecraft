@@ -28,7 +28,10 @@ public final class DrawerTransferProbe {
     private static DrawerTransfer.Request request(int slot,ItemStack... values) { return new DrawerTransfer.Request(slot,Arrays.asList(values)); }
     private static String run(Bench bench,ItemStack[] player,List<DrawerTransfer.Request> requests,IItemHandler... handlers) {
         List<DrawerTransfer.Source> sources=new ArrayList<>();
-        for(IItemHandler handler:handlers)for(int i=0;i<handler.getSlots();i++)sources.add(new DrawerTransfer.Source(handler,i));
+        for(IItemHandler handler:handlers) {
+            if(handler instanceof AliasDrawer)sources.addAll(DrawerTransfer.reservedSources(handler,0,new int[]{1,9}));
+            else for(int i=0;i<handler.getSlots();i++)sources.add(new DrawerTransfer.Source(handler,i));
+        }
         return DrawerTransfer.transfer(bench,requests,player,sources,stack->{throw new AssertionError("Unexpected recovery "+stack);});
     }
     public static void main(String[] args)throws Exception {
@@ -75,12 +78,32 @@ public final class DrawerTransferProbe {
         check(run(new Bench(1),player(),Arrays.asList(request(0,stone(1)),request(0,stone(1))))!=null,"Duplicate destination rejected");
         check(run(new Bench(1),player(),Arrays.asList(request(9,stone(1))))!=null,"Out-of-bounds destination rejected");
 
-        AliasDrawer compact=new AliasDrawer(10);bench=new Bench(2);inventory=player();
+        AliasDrawer compact=new AliasDrawer(19);bench=new Bench(2);inventory=player();
         check(run(bench,inventory,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK,1)),request(1,new ItemStack(Items.IRON_INGOT,2))),compact)!=null,
                 "Compacting views cannot spend the same underlying stock twice");
-        check(compact.units==10&&bench.input.isEmpty(),"Compacting rollback restores the original units");
+        check(compact.units==19&&bench.input.isEmpty(),"Compacting rollback restores the original units and reserve");
         check(run(bench,inventory,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK,1)),request(1,new ItemStack(Items.IRON_INGOT,1))),compact)==null
-                &&compact.units==0,"Compacting mixed denominations work when enough stock exists");
+                &&compact.units==9,"Compacting mixed denominations preserve one of the largest stocked form");
+
+        bench=new Bench(1);inventory=player();drawers.setStackInSlot(0,stone(64));
+        check(run(bench,inventory,Arrays.asList(request(0,stone(63))),drawers)==null&&drawers.getStackInSlot(0).getCount()==1,
+                "A drawer with 64 can supply 63 and retains its final item");
+        check(run(new Bench(1),player(),Arrays.asList(request(0,stone(1))),drawers)!=null&&drawers.getStackInSlot(0).getCount()==1,
+                "The final drawer item is unavailable to a later transfer");
+        inventory=player();inventory[0]=stone(1);bench=new Bench(1);
+        check(run(bench,inventory,Arrays.asList(request(0,stone(1))),drawers)==null&&inventory[0].isEmpty()
+                &&drawers.getStackInSlot(0).getCount()==1,"Backpack can empty while the drawer reserve remains");
+        ItemStackHandler separate=new ItemStackHandler(2);separate.setStackInSlot(0,stone(2));separate.setStackInSlot(1,stone(2));
+        check(run(new Bench(1),player(),Arrays.asList(request(0,stone(3))),separate)!=null
+                &&separate.getStackInSlot(0).getCount()==2&&separate.getStackInSlot(1).getCount()==2,
+                "Each independent drawer cell keeps its own final item and failed attempts roll back");
+        check(run(new Bench(1),player(),Arrays.asList(request(0,stone(2))),separate)==null
+                &&separate.getStackInSlot(0).getCount()==1&&separate.getStackInSlot(1).getCount()==1,
+                "Surplus from multiple cells is combined without consuming either reserve");
+        compact=new AliasDrawer(8);
+        check(run(new Bench(1),player(),Arrays.asList(request(0,new ItemStack(Items.IRON_INGOT,7))),compact)==null&&compact.units==1,
+                "A compacting drawer below one block keeps one ingot instead of reserving a nonexistent block");
+        previews();
 
         TransferNetwork.Fill message=new TransferNetwork.Fill(7,"minecraft.crafting",Arrays.asList(request(1,stone(3))));
         io.netty.buffer.ByteBuf buffer=Unpooled.buffer();message.toBytes(buffer);TransferNetwork.Fill decoded=new TransferNetwork.Fill();decoded.fromBytes(buffer);
@@ -101,6 +124,39 @@ public final class DrawerTransferProbe {
                 "Client network proxy loads without optional JEI classes on the test runtime");
         installedJei();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
+    }
+    private static void previews() {
+        IItemHandler readOnly=new ItemStackHandler(1) {
+            {setStackInSlot(0,stone(64));}
+            @Override public ItemStack extractItem(int slot,int amount,boolean simulate) {
+                if(!simulate)throw new AssertionError("Preview extracted from real storage");
+                return super.extractItem(slot,amount,true);
+            }
+            @Override public ItemStack insertItem(int slot,ItemStack stack,boolean simulate) {
+                throw new AssertionError("Preview inserted into real storage");
+            }
+        };
+        Bench bench=new Bench(1);ItemStack[] inventory=player();
+        List<DrawerTransfer.Source> sources=Arrays.asList(new DrawerTransfer.Source(readOnly,0));
+        check(DrawerTransfer.preview(bench,Arrays.asList(request(0,stone(63))),inventory,sources)==null,"Preview enables plus for available surplus");
+        check(DrawerTransfer.preview(bench,Arrays.asList(request(0,stone(64))),inventory,sources)!=null,"Preview disables plus when the final item is needed");
+        check(bench.input.isEmpty()&&readOnly.getStackInSlot(0).getCount()==64,"Preview leaves real drawer and crafting inputs untouched");
+        inventory[0]=stone(1);
+        check(DrawerTransfer.preview(bench,Arrays.asList(request(0,stone(64))),inventory,sources)==null&&inventory[0].getCount()==1,
+                "Preview combines backpack and surplus without consuming the backpack");
+        AliasDrawer compact=new AliasDrawer(19);bench=new Bench(2);
+        sources=DrawerTransfer.reservedSources(compact,0,new int[]{1,9});
+        check(DrawerTransfer.preview(bench,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK)),request(1,new ItemStack(Items.IRON_INGOT,2))),player(),sources)!=null,
+                "Preview accounts for shared compacting stock and its reserved block");
+        check(DrawerTransfer.preview(bench,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK)),request(1,new ItemStack(Items.IRON_INGOT))),player(),sources)==null,
+                "Preview accepts viable mixed denominations");
+        check(compact.units==19&&bench.input.isEmpty(),"Compacting preview never modifies the real shared pool");
+        TransferNetwork.PreviewState state=new TransferNetwork.PreviewState(2,30,0);
+        check(!state.ready,"Plus stays disabled before the initial server preview");
+        check(!state.accept(new TransferNetwork.PreviewResult(2,29,null))&&!state.ready,"Stale recipe reply cannot enable plus");
+        check(!state.accept(new TransferNetwork.PreviewResult(3,30,null))&&!state.ready,"Other window reply cannot enable plus");
+        check(state.accept(new TransferNetwork.PreviewResult(2,30,"missing"))&&state.ready&&state.error!=null,"Server shortage keeps plus disabled");
+        check(state.accept(new TransferNetwork.PreviewResult(2,30,null))&&state.ready&&state.error==null,"A successful server preview enables plus");
     }
     private static void nasaContainers()throws Exception {
         java.lang.reflect.Field unsafeField=sun.misc.Unsafe.class.getDeclaredField("theUnsafe");unsafeField.setAccessible(true);

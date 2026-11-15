@@ -76,8 +76,19 @@ public final class DrawerNetwork {
                         && (Boolean) access.invoke(null, player.getGameProfile(), tile)
                         && !(Boolean) tile.getClass().getMethod("isSealed").invoke(tile)) {
                     IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-                    if (handler != null) for (int slot = 1; slot < handler.getSlots(); slot++)
-                        result.add(new DrawerTransfer.Source(handler, slot)); // Slot zero is the virtual insertion slot.
+                    if (handler != null) {
+                        // Slot zero is virtual insertion; fractional cells share one underlying stock.
+                        Class<?> groupType=Class.forName(PREFIX+"api.storage.IDrawerGroup");
+                        Class<?> fractional=Class.forName(PREFIX+"api.storage.IFractionalDrawer");
+                        Object group=tile.getClass().getMethod("getGroup").invoke(tile);
+                        int[] order=(int[])groupType.getMethod("getAccessibleDrawerSlots").invoke(group);
+                        int[] rates=new int[handler.getSlots()-1];Arrays.fill(rates,1);
+                        for(int i=0;i<rates.length&&i<order.length;i++) {
+                            Object drawer=groupType.getMethod("getDrawer",int.class).invoke(group,order[i]);
+                            if(fractional.isInstance(drawer))rates[i]=((Number)fractional.getMethod("getConversionRate").invoke(drawer)).intValue();
+                        }
+                        result.addAll(DrawerTransfer.reservedSources(handler,1,rates));
+                    }
                 }
                 for (EnumFacing side : EnumFacing.values()) {
                     BlockPos next = pos.offset(side); if (seen.add(next)) queue.add(next);

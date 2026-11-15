@@ -16,8 +16,28 @@ public final class DrawerTransfer {
         public Request(int slot, List<ItemStack> alternatives) { this.slot = slot; this.alternatives = alternatives; }
     }
     public static final class Source {
-        final IItemHandler handler; final int slot;
-        public Source(IItemHandler handler, int slot) { this.handler = handler; this.slot = slot; }
+        final IItemHandler handler; final int slot, reserve, unit;
+        public Source(IItemHandler handler, int slot) { this(handler,slot,1,0); }
+        private Source(IItemHandler handler,int slot,int reserve,int unit) { this.handler=handler;this.slot=slot;this.reserve=reserve;this.unit=unit; }
+        private ItemStack peek(int amount) {
+            int stored=handler.extractItem(slot,Integer.MAX_VALUE,true).getCount();
+            int available=Math.max(0,stored-reserve);
+            return available==0?ItemStack.EMPTY:handler.extractItem(slot,Math.min(amount,available),true);
+        }
+    }
+    /** Rates use Storage Drawers' items-per-most-compressed-item convention; ordinary cells use 1. */
+    static List<Source> reservedSources(IItemHandler handler,int first,int[] rates) {
+        int smallestRate=Integer.MAX_VALUE,maxRate=0;boolean fractional=false;
+        for(int rate:rates){maxRate=Math.max(maxRate,rate);fractional|=rate>1;}
+        for(int i=0;i<rates.length;i++)if(rates[i]>0&&!handler.extractItem(first+i,1,true).isEmpty())
+            smallestRate=Math.min(smallestRate,rates[i]);
+        List<Source> sources=new ArrayList<>();
+        for(int i=0;i<rates.length;i++) {
+            // Preserve one of the largest currently stocked compacting forms across all aliases.
+            int reserve=smallestRate==Integer.MAX_VALUE?1:(int)Math.max(1,((long)rates[i]+smallestRate-1)/smallestRate);
+            sources.add(new Source(handler,first+i,reserve,fractional&&rates[i]>0?maxRate/rates[i]:0));
+        }
+        return sources;
     }
     private static final class Withdrawal {
         final Source source; final ItemStack stack;
@@ -49,6 +69,50 @@ public final class DrawerTransfer {
     }
     public static String transfer(Container container, List<Request> requests, ItemStack[] inventory,
             List<Source> sources, Consumer<ItemStack> recovery) {
+        return transfer(container,requests,inventory,sources,recovery,true);
+    }
+    /** All allocation and rollback run on snapshots; previews never extract from real drawers or write slots. */
+    public static String preview(Container container,List<Request> requests,ItemStack[] inventory,List<Source> sources) {
+        Map<IItemHandler,SnapshotHandler> snapshots=new IdentityHashMap<>();List<Source> copied=new ArrayList<>();
+        for(Source source:sources) {
+            SnapshotHandler handler=snapshots.get(source.handler);
+            if(handler==null){handler=new SnapshotHandler(source.handler,sources);snapshots.put(source.handler,handler);}
+            copied.add(new Source(handler,source.slot,source.reserve,source.unit));
+        }
+        return transfer(container,requests,inventory,copied,stack->{throw new IllegalStateException("Snapshot rollback failed");},false);
+    }
+    private static final class SnapshotHandler implements IItemHandler {
+        final ItemStack[] prototypes;final long[] counts;final int[] units;long shared;boolean fractional;
+        SnapshotHandler(IItemHandler original,List<Source> sources) {
+            prototypes=new ItemStack[original.getSlots()];Arrays.fill(prototypes,ItemStack.EMPTY);
+            counts=new long[prototypes.length];units=new int[prototypes.length];
+            for(Source source:sources)if(source.handler==original) {
+                ItemStack stack=original.extractItem(source.slot,Integer.MAX_VALUE,true).copy();
+                prototypes[source.slot]=stack;counts[source.slot]=stack.getCount();units[source.slot]=source.unit;
+                if(source.unit>0){fractional=true;shared=Math.max(shared,counts[source.slot]*source.unit);}
+            }
+        }
+        public int getSlots(){return prototypes.length;}
+        public int getSlotLimit(int slot){return Integer.MAX_VALUE;}
+        public ItemStack getStackInSlot(int slot) {
+            long count=fractional&&units[slot]>0?shared/units[slot]:counts[slot];
+            if(count<=0)return ItemStack.EMPTY;
+            ItemStack stack=prototypes[slot].copy();stack.setCount((int)Math.min(Integer.MAX_VALUE,count));return stack;
+        }
+        public ItemStack extractItem(int slot,int amount,boolean simulate) {
+            ItemStack stack=getStackInSlot(slot);if(stack.isEmpty()||amount<=0)return ItemStack.EMPTY;
+            stack.setCount(Math.min(stack.getCount(),amount));
+            if(!simulate){if(fractional&&units[slot]>0)shared-=(long)stack.getCount()*units[slot];else counts[slot]-=stack.getCount();}
+            return stack;
+        }
+        public ItemStack insertItem(int slot,ItemStack stack,boolean simulate) {
+            if(!exact(prototypes[slot],stack))return stack;
+            if(!simulate){if(fractional&&units[slot]>0)shared+=(long)stack.getCount()*units[slot];else counts[slot]+=stack.getCount();}
+            return ItemStack.EMPTY;
+        }
+    }
+    private static String transfer(Container container,List<Request> requests,ItemStack[] inventory,
+            List<Source> sources,Consumer<ItemStack> recovery,boolean apply) {
         ItemStack[] originalPlayer=copy(inventory), working=copy(inventory);
         Map<Integer,ItemStack> original=new LinkedHashMap<>(), targets=new LinkedHashMap<>();
         List<Withdrawal> withdrawals=new ArrayList<>();
@@ -72,14 +136,16 @@ public final class DrawerTransfer {
             order.sort(Comparator.comparingInt(r -> r.alternatives.size()));
             int[] budget={512};
             if (!allocate(container,order,0,working,targets,sources,withdrawals,recovery,budget)) {
-                rollback(withdrawals,0,recovery); return "普通材料不足，或输入槽不接受该材料";
+                rollback(withdrawals,0,recovery); return "普通材料不足（抽屉保留最后一个），或输入槽不接受该材料";
             }
-            for (int i=0;i<inventory.length;i++) inventory[i]=working[i].copy();
-            for (Map.Entry<Integer,ItemStack> entry:targets.entrySet()) container.getSlot(entry.getKey()).putStack(entry.getValue());
+            if(apply) {
+                for (int i=0;i<inventory.length;i++) inventory[i]=working[i].copy();
+                for (Map.Entry<Integer,ItemStack> entry:targets.entrySet()) container.getSlot(entry.getKey()).putStack(entry.getValue());
+            }
             return null;
         } catch (RuntimeException error) {
             for (int i=0;i<inventory.length;i++) inventory[i]=originalPlayer[i].copy();
-            for (Map.Entry<Integer,ItemStack> entry:original.entrySet()) container.getSlot(entry.getKey()).putStack(entry.getValue());
+            if(apply)for (Map.Entry<Integer,ItemStack> entry:original.entrySet()) container.getSlot(entry.getKey()).putStack(entry.getValue());
             rollback(withdrawals,0,recovery);
             throw error;
         }
@@ -115,7 +181,7 @@ public final class DrawerTransfer {
                 int count=Math.min(remaining,stack.getCount()); stack.shrink(count); remaining-=count;
             }
             for (Source source:sources) if (remaining>0) {
-                ItemStack peek=source.handler.extractItem(source.slot,remaining,true);
+                ItemStack peek=source.peek(remaining);
                 if (!exact(peek,candidate)) continue;
                 ItemStack taken=source.handler.extractItem(source.slot,Math.min(remaining,peek.getCount()),false);
                 if (taken.isEmpty()) continue;
