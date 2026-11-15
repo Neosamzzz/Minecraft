@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
         acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
-    public static final String VERSION = "1.0.1";
+    public static final String VERSION = "1.0.2";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.Instance(MOD_ID)
@@ -29,6 +29,7 @@ public final class NewEarth {
         EndDimension.configure(event.getModConfigurationDirectory());
         newearth.worldgen.WorldGenConfig.load(event.getModConfigurationDirectory());
         newearth.dimension.ArrivalNetwork.init();
+        newearth.storage.TransferNetwork.init();
         if (event.getSide().isClient()) {
             newearth.client.RocketRenderer.register();
             newearth.client.DrawerAutoRefill.register();

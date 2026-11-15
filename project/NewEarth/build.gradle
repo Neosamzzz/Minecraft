@@ -158,6 +158,16 @@ tasks.register('drawerAutoRefillCheck', JavaExec) {
 }
 check.dependsOn drawerAutoRefillCheck
 
+tasks.register('drawerTransferCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.storage.DrawerTransferProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/drawer-transfer')
+    doFirst { workingDir.mkdirs() }
+    systemProperty 'java.awt.headless', 'true'
+}
+check.dependsOn drawerTransferCheck
+
 // A separate server-only artifact; the ordinary NewEarth client/server JAR is unchanged.
 sourceSets {
     server {

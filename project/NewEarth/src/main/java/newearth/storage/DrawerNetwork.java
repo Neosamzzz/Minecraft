@@ -1,0 +1,96 @@
+package newearth.storage;
+
+import java.util.*;
+import java.lang.reflect.Method;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+
+/** Optional Storage Drawers bridge. Traversal follows its six-neighbour network and controller bounds. */
+public final class DrawerNetwork {
+    private static final String PREFIX = "com.jaquadro.minecraft.storagedrawers.";
+    /** Client preview cannot rely on the controller's server-only network cache or remote chunks. */
+    public static boolean hasEndpoint(World world,BlockPos anchor) {
+        if(anchor==null)return false;
+        for(EnumFacing side:EnumFacing.values()) {
+            BlockPos pos=anchor.offset(side);if(!world.isBlockLoaded(pos))continue;
+            TileEntity tile=world.getTileEntity(pos);
+            if(tile!=null&&(is(tile,"block.tile.TileEntityController")||is(tile,"block.tile.TileEntitySlave")))return true;
+        }
+        return false;
+    }
+    public static TileEntity controller(World world, BlockPos anchor) {
+        if (anchor == null) return null;
+        TileEntity found = null;
+        for (EnumFacing side : EnumFacing.values()) {
+            BlockPos pos = anchor.offset(side);
+            if (!world.isBlockLoaded(pos)) continue;
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile == null) continue;
+            try {
+                if (is(tile, "block.tile.TileEntitySlave")) {
+                    Object linkedPos=tile.getClass().getMethod("getControllerPos").invoke(tile);
+                    if (!(linkedPos instanceof BlockPos) || !world.isBlockLoaded((BlockPos)linkedPos)) continue;
+                    Object linked = tile.getClass().getMethod("getController").invoke(tile);
+                    if (!(linked instanceof TileEntity) || !(Boolean) linked.getClass()
+                            .getMethod("isValidSlave", BlockPos.class).invoke(linked, pos)) continue;
+                    tile = (TileEntity) linked;
+                }
+                if (!is(tile, "block.tile.TileEntityController")) continue;
+                if (found != null && found != tile) throw new IllegalArgumentException("工作台旁连接了多个抽屉网络，请只保留一个入口");
+                found = tile;
+            } catch (ReflectiveOperationException error) {
+                throw new IllegalStateException("无法读取抽屉控制器", error);
+            }
+        }
+        return found;
+    }
+    public static List<DrawerTransfer.Source> sources(EntityPlayer player, TileEntity controller) {
+        List<DrawerTransfer.Source> result = new ArrayList<>();
+        if (controller == null) return result;
+        try {
+            Class<?> storage = Class.forName(PREFIX + "StorageDrawers");
+            Object config = storage.getField("config").get(null);
+            if (!(Boolean) config.getClass().getMethod("allowControllerIO").invoke(config))
+                throw new IllegalArgumentException("抽屉控制器的物品输入输出已关闭");
+            int range = ((Number) config.getClass().getMethod("getControllerRange").invoke(config)).intValue();
+            Class<?> networked = Class.forName(PREFIX + "api.storage.INetworked");
+            Class<?> protectable = Class.forName(PREFIX + "api.storage.attribute.IProtectable");
+            Method access = Class.forName(PREFIX + "security.SecurityManager").getMethod("hasAccess",
+                    com.mojang.authlib.GameProfile.class, protectable);
+            World world = controller.getWorld(); BlockPos root = controller.getPos();
+            Set<BlockPos> seen = new HashSet<>(); Queue<BlockPos> queue = new ArrayDeque<>();
+            queue.add(root); seen.add(root);
+            while (!queue.isEmpty()) {
+                if (seen.size() > 65536) throw new IllegalArgumentException("抽屉网络过大");
+                BlockPos pos = queue.remove();
+                if (Math.abs(pos.getX()-root.getX()) > range || Math.abs(pos.getY()-root.getY()) > range
+                        || Math.abs(pos.getZ()-root.getZ()) > range || !world.isBlockLoaded(pos)) continue;
+                if (!networked.isInstance(world.getBlockState(pos).getBlock())) continue;
+                TileEntity tile = world.getTileEntity(pos);
+                if (tile != null && is(tile, "block.tile.TileEntityDrawers")
+                        && (Boolean) access.invoke(null, player.getGameProfile(), tile)
+                        && !(Boolean) tile.getClass().getMethod("isSealed").invoke(tile)) {
+                    IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                    if (handler != null) for (int slot = 1; slot < handler.getSlots(); slot++)
+                        result.add(new DrawerTransfer.Source(handler, slot)); // Slot zero is the virtual insertion slot.
+                }
+                for (EnumFacing side : EnumFacing.values()) {
+                    BlockPos next = pos.offset(side); if (seen.add(next)) queue.add(next);
+                }
+            }
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("抽屉接口不兼容", error);
+        }
+        return result;
+    }
+    private static boolean is(Object object, String suffix) {
+        for (Class<?> type = object.getClass(); type != null; type = type.getSuperclass())
+            if (type.getName().equals(PREFIX + suffix)) return true;
+        return false;
+    }
+}

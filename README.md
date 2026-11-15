@@ -13,12 +13,6 @@
 
 ## TODO
 
-### 紧急
-
-- [ ] [抽屉与合成台联动（#50）](https://github.com/Neosamzzz/Minecraft/issues/50)。
-
-### 服务端
-
 - [ ] [简单自动存档副本（#52）](https://github.com/Neosamzzz/Minecraft/issues/52)：定时保存到服务器实例内的 `saves/`，按时间命名。
 
 ## 快速开始
