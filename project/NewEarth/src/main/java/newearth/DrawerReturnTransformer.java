@@ -11,9 +11,14 @@ public final class DrawerReturnTransformer implements IClassTransformer,Opcodes 
         if(bytes==null||!"net.minecraft.inventory.Container".equals(transformedName))return bytes;
         ClassNode node=new ClassNode();new ClassReader(bytes).accept(node,0);int patched=0;
         for(MethodNode method:node.methods) {
-            boolean close=(method.name.equals("onContainerClosed")||method.name.equals("func_75134_a"))&&Type.getArgumentTypes(method.desc).length==1;
-            boolean click=(method.name.equals("slotClick")||method.name.equals("func_184996_a"))&&Type.getArgumentTypes(method.desc).length==4;
-            boolean detect=(method.name.equals("detectAndSendChanges")||method.name.equals("func_75142_b"))&&method.desc.equals("()V");
+            Type[] args=Type.getArgumentTypes(method.desc);
+            boolean player=args.length==1&&(args[0].getDescriptor().equals("Laed;")
+                    ||args[0].getDescriptor().equals("Lnet/minecraft/entity/player/EntityPlayer;"));
+            boolean close=(method.name.equals("onContainerClosed")||method.name.equals("func_75134_a")||method.name.equals("b"))
+                    &&player&&Type.getReturnType(method.desc).equals(Type.VOID_TYPE);
+            boolean click=(method.name.equals("slotClick")||method.name.equals("func_184996_a")||method.name.equals("a"))
+                    &&args.length==4&&args[0].equals(Type.INT_TYPE)&&args[1].equals(Type.INT_TYPE)&&Type.getReturnType(method.desc).getSort()==Type.OBJECT;
+            boolean detect=(method.name.equals("detectAndSendChanges")||method.name.equals("func_75142_b")||method.name.equals("b"))&&method.desc.equals("()V");
             if(!close&&!click&&!detect)continue;
             for(AbstractInsnNode instruction:method.instructions.toArray())if(instruction instanceof MethodInsnNode&&((MethodInsnNode)instruction).owner.equals(HOOK))return bytes;
             InsnList start=new InsnList();start.add(new VarInsnNode(ALOAD,0));

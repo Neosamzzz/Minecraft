@@ -335,6 +335,23 @@ public final class DrawerTransferProbe {
     }
     private static void installedJei()throws Exception {
         String directory=System.getenv("NEWEARTH_RUNTIME_MODS");if(directory==null){System.out.println("Set NEWEARTH_RUNTIME_MODS for installed JEI checks");return;}
+        Path instance=Paths.get(directory).getParent();Path vanilla=instance.resolve(instance.getFileName()+".jar");
+        try(ZipFile jar=new ZipFile(vanilla.toFile());java.io.InputStream input=jar.getInputStream(jar.getEntry("afr.class"))) {
+            byte[] raw=com.google.common.io.ByteStreams.toByteArray(input);
+            newearth.DrawerReturnTransformer transformer=new newearth.DrawerReturnTransformer();
+            byte[] patched=transformer.transform("afr","net.minecraft.inventory.Container",raw);
+            check(patched!=raw,"Actual installed obfuscated Container receives lifecycle hooks before remapping");
+            check(transformer.transform("afr","net.minecraft.inventory.Container",patched)==patched,"Obfuscated lifecycle hooks are idempotent");
+            ClassNode node=new ClassNode();new ClassReader(patched).accept(node,0);int closes=0,observers=0;
+            for(MethodNode method:node.methods) {
+                if((method.access&(Opcodes.ACC_ABSTRACT|Opcodes.ACC_NATIVE))==0)new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name,method);
+                for(AbstractInsnNode instruction:method.instructions.toArray())if(instruction instanceof MethodInsnNode) {
+                    MethodInsnNode call=(MethodInsnNode)instruction;
+                    if(call.owner.equals("newearth/storage/DrawerReturns")){if(call.name.equals("close"))closes++;else observers++;}
+                }
+            }
+            check(closes==1&&observers>=3,"Production obfuscated hooks target exactly the player close and interaction methods");
+        }
         boolean found=false;
         try(java.util.stream.Stream<Path> files=Files.list(Paths.get(directory))) {
             for(Path file:(Iterable<Path>)files.filter(p->p.toString().endsWith(".jar"))::iterator)try(ZipFile jar=new ZipFile(file.toFile())){
