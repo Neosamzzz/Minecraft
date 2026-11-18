@@ -22,7 +22,6 @@
 
 ### 运行维护
 
-- [ ] [Disenchanter Table 服务端崩溃处理（#57）](https://github.com/Neosamzzz/Minecraft/issues/57)。
 - [ ] [整合包全部模组的性能排查与优化（#58）](https://github.com/Neosamzzz/Minecraft/issues/58)。
 - [ ] [简单自动存档副本（#52）](https://github.com/Neosamzzz/Minecraft/issues/52)：定时保存到服务器实例内的 `saves/`，按时间命名。
 

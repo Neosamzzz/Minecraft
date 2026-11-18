@@ -20,6 +20,8 @@ python ../recipe-studio/server.py --state project/NewEarth/items/recipe-studio.j
 
 ## 当前功能
 
+- 兼容 Disenchanter 1.8：祛魔台被移除或替换后取消无效的祛魔计算，关闭界面时继续按原模组规则退还输入物品；正常祛魔规则与物品数据不变。
+
 - 兼容 Storage Drawers 5.5.2 与 Inventory Tweaks 1.64 dev.151：右键抽屉或控制器存入物品后，跳过该次清空手持槽位引起的自动补手；正常使用物品后的补手保留。兼容逻辑仅在客户端运行，不修改抽屉库存与存档格式。
 
 - 整合太阳系主星和卫星归属，按阶段检查航行准入。

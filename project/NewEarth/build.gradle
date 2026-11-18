@@ -168,6 +168,16 @@ tasks.register('drawerTransferCheck', JavaExec) {
 }
 check.dependsOn drawerTransferCheck
 
+tasks.register('disenchanterCheck', JavaExec) {
+    dependsOn testClasses, 'createMcpToSrg'
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.compat.DisenchanterProbe'
+    workingDir = rootProject.file('../../build/checks/newearth/disenchanter')
+    systemProperty 'newearth.srgMap', file("$buildDir/createMcpToSrg/output.tsrg").absolutePath
+    doFirst { workingDir.mkdirs() }
+}
+check.dependsOn disenchanterCheck
+
 // A separate server-only artifact; the ordinary NewEarth client/server JAR is unchanged.
 sourceSets {
     server {
