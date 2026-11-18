@@ -71,7 +71,7 @@ public final class DrawerTransfer {
     }
     public static String transfer(Container container, List<Request> requests, ItemStack[] inventory,
             List<Source> sources, Consumer<ItemStack> recovery) {
-        return transfer(container,requests,inventory,sources,recovery,true);
+        return transfer(container,requests,inventory,sources,recovery,true,null);
     }
     /** Shift transfers the largest complete batch that fits, then commits one ordinary transaction. */
     public static String transferMaximum(Container container,List<Request> requests,ItemStack[] inventory,
@@ -105,13 +105,16 @@ public final class DrawerTransfer {
     }
     /** All allocation and rollback run on snapshots; previews never extract from real drawers or write slots. */
     public static String preview(Container container,List<Request> requests,ItemStack[] inventory,List<Source> sources) {
+        return preview(container,requests,inventory,sources,null);
+    }
+    static String preview(Container container,List<Request> requests,ItemStack[] inventory,List<Source> sources,Collection<Integer> missing) {
         Map<IItemHandler,SnapshotHandler> snapshots=new IdentityHashMap<>();List<Source> copied=new ArrayList<>();
         for(Source source:sources) {
             SnapshotHandler handler=snapshots.get(source.handler);
             if(handler==null){handler=new SnapshotHandler(source.handler,sources);snapshots.put(source.handler,handler);}
             copied.add(new Source(handler,source.slot,source.reserve,source.unit));
         }
-        return transfer(container,requests,inventory,copied,stack->{throw new IllegalStateException("Snapshot rollback failed");},false);
+        return transfer(container,requests,inventory,copied,stack->{throw new IllegalStateException("Snapshot rollback failed");},false,missing);
     }
     private static final class SnapshotHandler implements IItemHandler {
         final ItemStack[] prototypes;final long[] counts;final int[] units;long shared;boolean fractional;
@@ -144,7 +147,7 @@ public final class DrawerTransfer {
         }
     }
     private static String transfer(Container container,List<Request> requests,ItemStack[] inventory,
-            List<Source> sources,Consumer<ItemStack> recovery,boolean apply) {
+            List<Source> sources,Consumer<ItemStack> recovery,boolean apply,Collection<Integer> missing) {
         ItemStack[] originalPlayer=copy(inventory), working=copy(inventory);
         Map<Integer,ItemStack> original=new LinkedHashMap<>(), targets=new LinkedHashMap<>();
         List<Withdrawal> withdrawals=new ArrayList<>();
@@ -169,7 +172,18 @@ public final class DrawerTransfer {
             order.sort(Comparator.comparingInt(r -> r.alternatives.size()));
             int[] budget={512};
             if (!allocate(container,order,0,working,targets,sources,withdrawals,recovery,budget)) {
-                rollback(withdrawals,0,recovery); return "普通材料不足（抽屉保留最后一个），或输入槽不接受该材料";
+                rollback(withdrawals,0,recovery);
+                // Allocate each satisfiable input on the same snapshot so repeated ingredients and
+                // compacting aliases cannot count the same stock twice. Keep checking after a gap.
+                if(missing!=null && budget[0]>=0) {
+                    for(Request request:order) {
+                        if(!request.alternatives.isEmpty() && !allocate(container,Collections.singletonList(request),
+                                0,working,targets,sources,withdrawals,recovery,new int[]{1})) {
+                            missing.add(request.slot);
+                        }
+                    }
+                }
+                return "普通材料不足（抽屉保留最后一个），或输入槽不接受该材料";
             }
             if(apply) {
                 DrawerReturns.begin(container);committing=true;

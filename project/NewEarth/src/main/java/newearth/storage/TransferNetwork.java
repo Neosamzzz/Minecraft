@@ -76,10 +76,27 @@ public final class TransferNetwork {
     }
     public static final class PreviewResult extends Query {
         public String error;
+        public List<Integer> missingSlots=Collections.emptyList();
         public PreviewResult() { }
-        public PreviewResult(int window,int token,String error){super(window,token);this.error=error;}
-        public void toBytes(ByteBuf buf){super.toBytes(buf);buf.writeBoolean(error!=null);if(error!=null)ByteBufUtils.writeUTF8String(buf,error);}
-        public void fromBytes(ByteBuf buf){super.fromBytes(buf);error=buf.readBoolean()?ByteBufUtils.readUTF8String(buf):null;}
+        public PreviewResult(int window,int token,String error){this(window,token,error,Collections.emptyList());}
+        public PreviewResult(int window,int token,String error,List<Integer> missingSlots) {
+            super(window,token);this.error=error;this.missingSlots=missingSlots;
+        }
+        public void toBytes(ByteBuf buf) {
+            super.toBytes(buf);
+            buf.writeBoolean(error!=null);
+            if(error!=null)ByteBufUtils.writeUTF8String(buf,error);
+            buf.writeByte(missingSlots.size());
+            for(int slot:missingSlots)buf.writeByte(slot);
+        }
+        public void fromBytes(ByteBuf buf) {
+            super.fromBytes(buf);
+            error=buf.readBoolean()?ByteBufUtils.readUTF8String(buf):null;
+            int count=buf.readUnsignedByte();
+            if(count>32 || count!=buf.readableBytes())throw new IllegalArgumentException("Invalid preview input slots");
+            missingSlots=new ArrayList<>(count);
+            for(int i=0;i<count;i++)missingSlots.add((int)buf.readUnsignedByte());
+        }
     }
     public static final class PreviewHandler implements IMessageHandler<PreviewResult,IMessage> {
         public IMessage onMessage(PreviewResult message,MessageContext ctx){client.receive(message);return null;}
@@ -90,10 +107,11 @@ public final class TransferNetwork {
         public long receivedAt;
         public boolean ready;
         public String error;
+        public List<Integer> missingSlots=Collections.emptyList();
         public PreviewState(int window,int token,long requestedAt){this.window=window;this.token=token;this.requestedAt=requestedAt;}
         public boolean accept(PreviewResult result) {
             if(result.window!=window||result.token!=token)return false;
-            ready=true;error=result.error;receivedAt=System.nanoTime();return true;
+            ready=true;error=result.error;missingSlots=result.missingSlots;receivedAt=System.nanoTime();return true;
         }
     }
     public static void preview(int window,int token,String category,List<DrawerTransfer.Request> requests) {
@@ -168,8 +186,10 @@ public final class TransferNetwork {
             ItemStack[] inventory=new ItemStack[36];
             for (int i=0;i<36;i++) inventory[i]=player.inventory.getStackInSlot(i).copy();
             if(message.preview) {
-                CHANNEL.sendTo(new PreviewResult(message.window,message.token,
-                        DrawerTransfer.preview(container,message.requests,inventory,sources)),player);return;
+                List<Integer> missingSlots=new ArrayList<>();
+                String error=DrawerTransfer.preview(container,message.requests,inventory,sources,missingSlots);
+                CHANNEL.sendTo(new PreviewResult(message.window,message.token,error,missingSlots),player);
+                return;
             }
             java.util.function.Consumer<ItemStack> recovery=stack -> {
                 if (!player.inventory.addItemStackToInventory(stack) && !stack.isEmpty()) player.dropItem(stack,false);

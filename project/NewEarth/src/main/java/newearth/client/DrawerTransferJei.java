@@ -78,6 +78,7 @@ public final class DrawerTransferJei {
             TransferNetwork.PreviewState next=new TransferNetwork.PreviewState(container.windowId,++nextToken,now);
             if(state!=null && state.ready && now-state.receivedAt<1500000000L) {
                 next.ready=true;next.error=state.error;next.receivedAt=state.receivedAt;
+                next.missingSlots=state.missingSlots;
             }
             if(previews.size()>=64)previews.clear();previews.put(recipe,next);state=next;
             TransferNetwork.preview(container.windowId,state.token,category,requests);
@@ -104,7 +105,8 @@ public final class DrawerTransferJei {
             if (!player.inventory.getItemStack().isEmpty()) return error("请先放下鼠标上的物品");
             Map<Integer,? extends IGuiIngredient<ItemStack>> ingredients=layout.getItemStacks().getGuiIngredients();
             List<DrawerTransfer.Request> requests=new ArrayList<>();
-            for (Map.Entry<Integer,Integer> pair:profile.slots(container).entrySet()) {
+            Map<Integer,Integer> slots=profile.slots(container);
+            for (Map.Entry<Integer,Integer> pair:slots.entrySet()) {
                 IGuiIngredient<ItemStack> ingredient=ingredients.get(pair.getKey());
                 List<ItemStack> choices=new ArrayList<>();boolean special=false;
                 if (ingredient!=null && ingredient.isInput()) for (ItemStack stack:ingredient.getAllIngredients()) {
@@ -120,7 +122,13 @@ public final class DrawerTransferJei {
             if (requests.isEmpty()) return error("该配方只有特殊输入，请手动放置");
             TransferNetwork.PreviewState state=preview(container,profile.category,requests);
             if(!state.ready)return error("正在检查背包和抽屉中的可用材料，请稍候");
-            if(state.error!=null)return error(state.error);
+            if(state.error!=null) {
+                List<Integer> missingIngredients=new ArrayList<>();
+                for(Map.Entry<Integer,Integer> pair:slots.entrySet()) {
+                    if(state.missingSlots.contains(pair.getValue()))missingIngredients.add(pair.getKey());
+                }
+                return error(state.error,missingIngredients);
+            }
             if (perform) {
                 TransferNetwork.fill(container.windowId,profile.category,requests,max);
                 PREVIEWS.remove(container);
@@ -129,9 +137,21 @@ public final class DrawerTransferJei {
         }
     }
     private static IRecipeTransferError error(String message) {
+        return error(message,Collections.emptyList());
+    }
+    private static IRecipeTransferError error(String message,List<Integer> missingIngredients) {
         return new IRecipeTransferError() {
             public Type getType() { return Type.USER_FACING; }
             public void showError(Minecraft mc,int mouseX,int mouseY,IRecipeLayout layout,int recipeX,int recipeY) {
+                if(!missingIngredients.isEmpty()) {
+                    float opacity=(float)(0.3+0.15*Math.cos(System.nanoTime()/160_000_000.0));
+                    java.awt.Color highlight=new java.awt.Color(1F,0F,0F,opacity);
+                    Map<Integer,? extends IGuiIngredient<ItemStack>> ingredients=layout.getItemStacks().getGuiIngredients();
+                    for(int index:missingIngredients) {
+                        IGuiIngredient<ItemStack> ingredient=ingredients.get(index);
+                        if(ingredient!=null && ingredient.isInput())ingredient.drawHighlight(mc,highlight,recipeX,recipeY);
+                    }
+                }
                 net.minecraft.client.gui.GuiScreen screen=mc.currentScreen;
                 if (screen!=null) screen.drawHoveringText(Collections.singletonList(message),mouseX,mouseY);
             }

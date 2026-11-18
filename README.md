@@ -15,7 +15,6 @@
 
 ### 抽屉与物流
 
-- [ ] [缺料时闪烁提示对应材料（#53）](https://github.com/Neosamzzz/Minecraft/issues/53)。
 - [ ] [适配所有机器的输出（#54）](https://github.com/Neosamzzz/Minecraft/issues/54)。
 - [ ] [手动整组取料首次保留一个，再取清空（#55）](https://github.com/Neosamzzz/Minecraft/issues/55)。
 - [ ] [通用管道方块：接收输出、向输入供料（#56）](https://github.com/Neosamzzz/Minecraft/issues/56)。

@@ -209,8 +209,23 @@ public final class DrawerTransferProbe {
         check(!state.ready,"Plus stays disabled before the initial server preview");
         check(!state.accept(new TransferNetwork.PreviewResult(2,29,null))&&!state.ready,"Stale recipe reply cannot enable plus");
         check(!state.accept(new TransferNetwork.PreviewResult(3,30,null))&&!state.ready,"Other window reply cannot enable plus");
-        check(state.accept(new TransferNetwork.PreviewResult(2,30,"missing"))&&state.ready&&state.error!=null,"Server shortage keeps plus disabled");
-        check(state.accept(new TransferNetwork.PreviewResult(2,30,null))&&state.ready&&state.error==null,"A successful server preview enables plus");
+        List<Integer> missing=new ArrayList<>();
+        List<DrawerTransfer.Request> recipe=Arrays.asList(request(0,stone(63)),request(1,stone(1)),request(2,new ItemStack(Items.STICK)));
+        check(DrawerTransfer.preview(new Bench(3),recipe,player(),Arrays.asList(new DrawerTransfer.Source(readOnly,0)),missing)!=null
+                &&missing.equals(Arrays.asList(1,2)),"Missing slots share available stock, exclude the reserved item, and include independent shortages");
+        check(readOnly.getStackInSlot(0).getCount()==64,"Highlight diagnostics do not change the drawer's inventory");
+        TransferNetwork.PreviewResult result=new TransferNetwork.PreviewResult(2,30,"missing",missing);
+        io.netty.buffer.ByteBuf buffer=Unpooled.buffer();
+        result.toBytes(buffer);
+        TransferNetwork.PreviewResult decoded=new TransferNetwork.PreviewResult();
+        decoded.fromBytes(buffer);
+        buffer.release();
+        check(!state.accept(new TransferNetwork.PreviewResult(2,29,"missing",missing))&&state.missingSlots.isEmpty(),
+                "An outdated result cannot highlight another preview");
+        check(state.accept(decoded)&&state.ready&&state.error!=null&&state.missingSlots.equals(missing),
+                "Reported slots survive the packet and keep plus disabled");
+        check(state.accept(new TransferNetwork.PreviewResult(2,30,null))&&state.ready&&state.error==null&&state.missingSlots.isEmpty(),
+                "A successful preview enables plus and clears all highlights");
     }
     private static void nasaContainers()throws Exception {
         java.lang.reflect.Field unsafeField=sun.misc.Unsafe.class.getDeclaredField("theUnsafe");unsafeField.setAccessible(true);
