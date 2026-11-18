@@ -25,6 +25,17 @@
 | Advanced XRay | `xray-1.12.2-1.6.0.jar` | 矿物透视，仅客户端 |
 | Infinity with Mending | `infwithmend-1.12.2-1.0.0.jar` | 允许弓的无限与经验修补共存，客户端与服务端安装 |
 
+### 高版本内容候选
+
+本地 PCL 测试实例为 `1.12.2-NewEarth-Backports`。以下三个文件须在客户端和服务端一起安装。服务端更新前留存完整世界副本。
+
+| 模组 | 固定版本与用途 |
+| --- | --- |
+| Aqua Acrobatics Unofficial | [1.17.1](https://www.curseforge.com/minecraft/mc-mods/aqua-acrobatics-unofficial-forge/files/9329485)，游泳和爬行，含 Galacticraft 玩家身高兼容 |
+| Future MC | [0.2.21](https://www.curseforge.com/minecraft/mc-mods/future-mc/files/6162819)，三叉戟及其附魔、营火、灯笼、桶等内容 |
+| Forgelin-Continuous | [2.4.20.0](https://modrinth.com/mod/forgelin-continuous/version/2.4.20.0)，Future MC 的 Kotlin 运行库 |
+
+两端同步 `aquaacrobaticsunofficial.cfg` 和 `futuremc/futuremc.cfg`。保留原版活板门配方、水体渲染和水下回气，关闭下界合金与远古残骸生成。Future MC 关闭下界合金后仍会尝试读取两条下界合金块配方，启动日志会记录相应的配方错误。
 
 ## 配置入口
 

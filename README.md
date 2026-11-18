@@ -21,10 +21,6 @@
 
 - [ ] [整合包全部模组的性能排查与优化（#58）](https://github.com/Neosamzzz/Minecraft/issues/58)。
 
-### 内容扩展
-
-- [ ] [高版本内容移植模组与 GC／GS 兼容评估（#59）](https://github.com/Neosamzzz/Minecraft/issues/59)。
-
 ## 快速开始
 
 需要 **64 位 JDK 8**（含 `java` 和 `javac`）、**Python 3.8+** 和 **Git**。FTB 使用项目内的 Gradle Wrapper，GSLC 与 NewEarth 使用共用 GalaxySpace Wrapper，无需安装全局 Gradle 或 Maven。访问本私有仓库需要相应的 GitHub 权限和本机 Git 凭据。
