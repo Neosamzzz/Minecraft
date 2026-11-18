@@ -23,6 +23,7 @@
 | Saplanting | `saplanting-forge-1.12.2-0.2-serverfix.jar` | [落苗生根服务端修复](../project/Saplanting/README.md)，关闭多线程 |
 | FTB Ultimine | `ftb-ultimine-1202.3.5.jar` | 连锁挖掘，客户端与服务端安装 |
 | Advanced XRay | `xray-1.12.2-1.6.0.jar` | 矿物透视，仅客户端 |
+| Infinity with Mending | `infwithmend-1.12.2-1.0.0.jar` | 允许弓的无限与经验修补共存，客户端与服务端安装 |
 
 
 ## 配置入口
