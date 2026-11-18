@@ -43,3 +43,7 @@
 | `newearth-worldgen.cfg` | 主世界孤岛布局开关与尺寸 |
 
 固定太阳系组合由 `ExtraPlanets.cfg` 与 `GalaxySpace/dimensions.conf` 共同定义；NewEarth 启动时校验，不自动重写。OTG 预设覆盖和客户端光影参数随 `NewEarth-BiomeBundle-<版本>.zip` 分发。
+
+## 服务器存档副本
+
+正式服务器每 6 小时在实例内的 `backups/` 生成一份 `world-日期-时间.tar.gz`，保留最近 12 份。归档前先将世界保存到磁盘，归档结束后恢复世界自动保存。运行记录见 `backups/backup.log`。
