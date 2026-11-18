@@ -68,6 +68,20 @@ public final class DrawerAutoRefillProbe {
         }
         check(input != null, "Installed Inventory Tweaks class found");
         InventoryTweaksTransformer transformer = new InventoryTweaksTransformer();
+        String refillTask = "invtweaks.InvTweaksHandlerAutoRefill$1";
+        try (ZipFile jar = new ZipFile(inventoryJar.toFile());
+             java.io.InputStream stream = jar.getInputStream(jar.getEntry(refillTask.replace('.', '/') + ".class"))) {
+            byte[] originalTask = com.google.common.io.ByteStreams.toByteArray(stream);
+            byte[] patchedTask = transformer.transform(refillTask, refillTask, originalTask);
+            check(patchedTask != originalTask, "Installed delayed refill task receives the single-swap hook");
+            check(transformer.transform(refillTask, refillTask, patchedTask) == patchedTask, "Delayed refill patch is idempotent");
+            ClassNode taskNode = new ClassNode();
+            new ClassReader(patchedTask).accept(taskNode, 0);
+            for (MethodNode method : taskNode.methods) {
+                new Analyzer<BasicValue>(new BasicVerifier()).analyze(taskNode.name, method);
+            }
+            check(true, "Patched delayed refill passes JVM stack and local-variable checks");
+        }
         check(transformer.transform("unrelated", "unrelated", input) == input, "Other classes unchanged");
         check(transformer.transform("invtweaks.InvTweaksHandlerAutoRefill", "invtweaks.InvTweaksHandlerAutoRefill", null) == null,
                 "Missing optional mod is harmless");

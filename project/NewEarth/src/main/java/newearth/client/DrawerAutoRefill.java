@@ -3,6 +3,11 @@ package newearth.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -81,6 +86,38 @@ public final class DrawerAutoRefill {
         pending.observe(player, mc.world, player.inventory.currentItem, held.isEmpty() ? null
                 : held.getItem().getRegistryName().toString(), held.isEmpty() ? 0 : held.getItemDamage(), System.nanoTime());
         return pending.consume(slot, item, damage, held.isEmpty());
+    }
+
+    /** Return true when the queued action was completed or is no longer valid. */
+    public static boolean refillEmptyHand(Object queuedContainer, int source, int target, String expectedItem, boolean beforeBreak) {
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer player = mc.player;
+        if (player == null || mc.playerController == null || mc.currentScreen != null || player.isSpectator()
+                || player.openContainer != queuedContainer || player.openContainer != player.inventoryContainer
+                || player.openContainer.getClass() != ContainerPlayer.class) return true;
+        int hotbar = target - 27;
+        if (hotbar < 0 || hotbar >= 9 || hotbar != player.inventory.currentItem || !player.inventory.getItemStack().isEmpty()) return true;
+        ItemStack held = player.getHeldItemMainhand();
+        if (!held.isEmpty()) {
+            // Soup and the opt-in tool replacement can legitimately target an occupied slot.
+            return !(beforeBreak || (held.getItem() == Items.BOWL && "minecraft:mushroom_stew".equals(expectedItem)));
+        }
+        Container container = player.inventoryContainer;
+        int sourceSlot = refillSourceSlot(container, player.inventory, source, target, expectedItem);
+        if (sourceSlot >= 0) mc.playerController.windowClick(container.windowId, sourceSlot, hotbar, ClickType.SWAP, player);
+        return true;
+    }
+
+    static int refillSourceSlot(Container container, net.minecraft.entity.player.InventoryPlayer inventory,
+            int source, int target, String expectedItem) {
+        if (source < 0 || source >= 36 || source == target || expectedItem == null) return -1;
+        // Inventory Tweaks' inventory section is vanilla slots 9 through 44.
+        int sourceSlot = source + 9;
+        Slot slot = container.getSlot(sourceSlot);
+        ItemStack stack = slot.getStack();
+        if (slot.inventory != inventory || stack.isEmpty()
+                || !expectedItem.equals(String.valueOf(stack.getItem().getRegistryName()))) return -1;
+        return sourceSlot;
     }
 
     static final class PendingDeposit {
