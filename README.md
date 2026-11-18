@@ -13,7 +13,22 @@
 
 ## TODO
 
+### 抽屉与物流
+
+- [ ] [缺料时闪烁提示对应材料（#53）](https://github.com/Neosamzzz/Minecraft/issues/53)。
+- [ ] [适配所有机器的输出（#54）](https://github.com/Neosamzzz/Minecraft/issues/54)。
+- [ ] [手动整组取料首次保留一个，再取清空（#55）](https://github.com/Neosamzzz/Minecraft/issues/55)。
+- [ ] [通用管道方块：接收输出、向输入供料（#56）](https://github.com/Neosamzzz/Minecraft/issues/56)。
+
+### 运行维护
+
+- [ ] [Disenchanter Table 服务端崩溃处理（#57）](https://github.com/Neosamzzz/Minecraft/issues/57)。
+- [ ] [整合包全部模组的性能排查与优化（#58）](https://github.com/Neosamzzz/Minecraft/issues/58)。
 - [ ] [简单自动存档副本（#52）](https://github.com/Neosamzzz/Minecraft/issues/52)：定时保存到服务器实例内的 `saves/`，按时间命名。
+
+### 内容扩展
+
+- [ ] [高版本内容移植模组与 GC／GS 兼容评估（#59）](https://github.com/Neosamzzz/Minecraft/issues/59)。
 
 ## 快速开始
 
