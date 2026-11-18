@@ -16,6 +16,7 @@ public final class ManufacturingProbe {
     private static int checks;
     private static void check(boolean value,String message) {if(!value)throw new AssertionError(message);checks++;}
     static void run() throws Exception {
+        hopperOutputs();
         try (Reader reader=new InputStreamReader(ManufacturingProbe.class.getResourceAsStream(
                 "/assets/newearth/models/item/engine_station.json"), java.nio.charset.StandardCharsets.UTF_8)) {
             net.minecraft.client.renderer.block.model.ModelBlock model=
@@ -370,6 +371,51 @@ public final class ManufacturingProbe {
         if(directory!=null) verifyInstalled(new File(directory),recipes);
         else System.out.println("Manufacturing installed binary checks skipped: NEWEARTH_RUNTIME_MODS unset");
         System.out.println("NewEarth manufacturing: "+checks+" checks passed (isolated; no world or flight)");
+    }
+
+    private static void hopperOutputs() throws Exception {
+        String gc = "micdoodle8.mods.galacticraft.core.tile.";
+        String gs = "galaxyspace.systems.SolarSystem.planets.overworld.tile.";
+        verifyHopperOutput(new ManufacturingTile(), 0, ManufacturingTile.OUTPUT_SLOT);
+        verifyHopperOutput(new AssemblyStationTile(), 0, AssemblyStationTile.OUTPUT_SLOT);
+        verifyHopperOutput(new DisassemblyStationTile(), 0, 1, 10);
+        verifyHopperOutput(machine(gc + "TileEntityIngotCompressor"), 2, 1);
+        verifyHopperOutput(machine(gc + "TileEntityElectricIngotCompressor"), 3, 1, 2);
+        verifyHopperOutput(machine(gc + "TileEntityCircuitFabricator"), 1, 6);
+        verifyHopperOutput(machine(gc + "TileEntityElectricFurnace"), 1, 2);
+        verifyHopperOutput(machine(gc + "TileEntityDeconstructor"), 1, 2, 10);
+        verifyHopperOutput(machine(gs + "TileEntityAssembler"), 2, 1);
+        verifyHopperOutput(machine(gs + "TileEntityAdvCircuitFabricator"), 1, 6);
+        verifyHopperOutput(machine(gs + "TileEntityRocketAssembler"), 2, 1);
+        verifyHopperOutput(machine(gs + "TileEntityUniversalRecycler"), 1, 3);
+    }
+
+    private static net.minecraft.inventory.ISidedInventory machine(String name) throws Exception {
+        return (net.minecraft.inventory.ISidedInventory) Class.forName(name).getConstructor().newInstance();
+    }
+
+    private static void verifyHopperOutput(net.minecraft.inventory.ISidedInventory machine, int input, int... outputs) throws Exception {
+        String name = machine.getClass().getSimpleName();
+        net.minecraft.util.EnumFacing down = net.minecraft.util.EnumFacing.DOWN;
+        java.lang.reflect.Method pull = net.minecraft.tileentity.TileEntityHopper.class.getDeclaredMethod("pullItemFromSlot",
+                net.minecraft.tileentity.IHopper.class, net.minecraft.inventory.IInventory.class, int.class, net.minecraft.util.EnumFacing.class);
+        pull.setAccessible(true);
+        machine.setInventorySlotContents(input, new ItemStack(Items.CLAY_BALL, 2));
+        net.minecraft.tileentity.TileEntityHopper hopper = new net.minecraft.tileentity.TileEntityHopper();
+        check(!(Boolean) pull.invoke(null, hopper, machine, input, down)
+                && machine.getStackInSlot(input).getCount() == 2, name + " keeps raw material in the input slot");
+        for (int output : outputs) {
+            check(Arrays.stream(machine.getSlotsForFace(down)).anyMatch(slot -> slot == output), name + " exposes output " + output + " on the bottom");
+            machine.setInventorySlotContents(output, new ItemStack(Items.IRON_INGOT, 2));
+            check((Boolean) pull.invoke(null, hopper, machine, output, down)
+                    && machine.getStackInSlot(output).getCount() == 1, name + " lets a hopper pull one finished item");
+            check(hopper.getStackInSlot(0).getItem() == Items.IRON_INGOT && hopper.getStackInSlot(0).getCount() == 1,
+                    name + " gives the exact item to the hopper");
+            for (int slot = 0; slot < hopper.getSizeInventory(); slot++) hopper.setInventorySlotContents(slot, new ItemStack(Items.BRICK, 64));
+            check(!(Boolean) pull.invoke(null, hopper, machine, output, down)
+                    && machine.getStackInSlot(output).getCount() == 1, name + " retains its product when the hopper is full");
+            for (int slot = 0; slot < hopper.getSizeInventory(); slot++) hopper.setInventorySlotContents(slot, ItemStack.EMPTY);
+        }
     }
     private static void verifyModels() throws Exception {
         net.minecraft.client.resources.IResourceManager manager=new net.minecraft.client.resources.IResourceManager() {
