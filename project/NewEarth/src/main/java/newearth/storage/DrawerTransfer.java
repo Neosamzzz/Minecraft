@@ -10,6 +10,10 @@ import net.minecraftforge.oredict.OreDictionary;
 
 /** Server-thread transaction. Drawer withdrawals are reversible; target/player slots change only after allocation. */
 public final class DrawerTransfer {
+    public static int manualStackAmount(int requested, int stored) {
+        return stored > 1 && requested >= stored ? stored - 1 : requested;
+    }
+
     public static final class Request {
         public final int slot;
         public final List<ItemStack> alternatives;

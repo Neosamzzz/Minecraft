@@ -124,6 +124,7 @@ public final class DrawerTransferProbe {
         check(Class.forName("newearth.client.DrawerTransferJei$Bridge").newInstance() instanceof TransferNetwork.ClientBridge,
                 "Client network proxy loads without optional JEI classes on the test runtime");
         installedJei();
+        manualStackTake();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
     }
     private static void maximumTransfers() {
@@ -348,6 +349,53 @@ public final class DrawerTransferProbe {
         public ItemStack extractItem(int slot,int count,boolean simulate){int n=Math.min(count,units/(slot==0?9:1));if(n==0)return ItemStack.EMPTY;if(!simulate)units-=n*(slot==0?9:1);return slot==0?new ItemStack(Blocks.IRON_BLOCK,n):new ItemStack(Items.IRON_INGOT,n);}
         public ItemStack insertItem(int slot,ItemStack stack,boolean simulate){if(!simulate)units+=stack.getCount()*(slot==0?9:1);return ItemStack.EMPTY;}
     }
+    private static void manualStackTake() throws Exception {
+        check(DrawerTransfer.manualStackAmount(64, 80) == 64, "Bulk withdrawal leaves stock above one stack alone");
+        check(DrawerTransfer.manualStackAmount(64, 64) == 63, "A full stack leaves one item");
+        check(DrawerTransfer.manualStackAmount(64, 2) == 1, "A partial stack leaves one item");
+        check(DrawerTransfer.manualStackAmount(64, 1) == 64, "Native extraction can take the final item");
+        check(DrawerTransfer.manualStackAmount(16, 16) == 15, "The selected item's stack limit is honored");
+        check(DrawerTransfer.manualStackAmount(1, 2) == 1, "Nonstackable items still take one at a time");
+
+        String directory = System.getenv("NEWEARTH_RUNTIME_MODS");
+        if (directory == null) return;
+        String target = "com.jaquadro.minecraft.storagedrawers.block.BlockDrawers";
+        String entryName = target.replace('.', '/') + ".class";
+        byte[] original = null;
+        try (java.util.stream.Stream<Path> files = Files.list(Paths.get(directory))) {
+            for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".jar"))::iterator) {
+                try (ZipFile jar = new ZipFile(file.toFile())) {
+                    java.util.zip.ZipEntry entry = jar.getEntry(entryName);
+                    if (entry == null) continue;
+                    check(original == null, "Only one Storage Drawers JAR is installed");
+                    try (java.io.InputStream input = jar.getInputStream(entry)) {
+                        original = com.google.common.io.ByteStreams.toByteArray(input);
+                    }
+                }
+            }
+        }
+        check(original != null, "Found the installed Storage Drawers manual extraction class");
+        newearth.DrawerManualTakeTransformer transformer = new newearth.DrawerManualTakeTransformer();
+        byte[] patched = transformer.transform(target, target, original);
+        check(patched != original, "Patched the installed manual extraction class");
+        check(transformer.transform(target, target, patched) == patched, "Repeated transformation does not add another adjustment");
+        ClassNode node = new ClassNode();
+        new ClassReader(patched).accept(node, 0);
+        int bulk = 0, single = 0;
+        for (MethodNode method : node.methods) {
+            if (!"extractItem".equals(method.name)) continue;
+            new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name, method);
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (!(instruction instanceof MethodInsnNode) || !"takeItemsFromSlot".equals(((MethodInsnNode) instruction).name)) continue;
+                AbstractInsnNode amount = instruction.getPrevious();
+                while (amount != null && amount.getOpcode() < 0) amount = amount.getPrevious();
+                if (amount instanceof MethodInsnNode && "manualStackAmount".equals(((MethodInsnNode) amount).name)) bulk++;
+                if (amount != null && amount.getOpcode() == Opcodes.ICONST_1) single++;
+            }
+        }
+        check(bulk == 1 && single == 1, "Only bulk extraction is adjusted, and single-item extraction remains native");
+    }
+
     private static void installedJei()throws Exception {
         String directory=System.getenv("NEWEARTH_RUNTIME_MODS");if(directory==null){System.out.println("Set NEWEARTH_RUNTIME_MODS for installed JEI checks");return;}
         Path instance=Paths.get(directory).getParent();Path vanilla=instance.resolve(instance.getFileName()+".jar");
