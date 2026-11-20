@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["III", " G ", "III"],
+  "pattern": ["I", "W", "I"],
   "key": {
-    "I": {"item": "minecraft:iron_ingot"},
-    "G": {"item": "minecraft:glass"}
+    "I": {"item": "galacticraftcore:basic_item", "data": 11},
+    "W": {"item": "minecraft:wool", "data": 32767}
   },
-  "result": {"item": "newearth:storage_pipe", "count": 8}
+  "result": {"item": "newearth:storage_pipe", "count": 6}
 }

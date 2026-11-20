@@ -52,11 +52,14 @@ public final class Manufacturing {
         BLOCKS.put("disassembly_station", disassembly);
         event.getRegistry().register(disassembly);
         GameRegistry.registerTileEntity(DisassemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "disassembly_station"));
-        Block pipe = new StoragePipe().setRegistryName(NewEarth.MOD_ID, StoragePipe.ID)
-                .setTranslationKey("newearth." + StoragePipe.ID);
-        BLOCKS.put(StoragePipe.ID, pipe);
-        event.getRegistry().register(pipe);
-        GameRegistry.registerTileEntity(StoragePipe.PipeTile.class, pipe.getRegistryName());
+        for (String id : new String[] {StoragePipe.ID, StoragePipe.SEALED_ID}) {
+            Block pipe = (id.equals(StoragePipe.SEALED_ID) ? new StoragePipe.Sealed() : new StoragePipe())
+                    .setRegistryName(NewEarth.MOD_ID, id)
+                    .setTranslationKey("newearth." + id);
+            BLOCKS.put(id, pipe);
+            event.getRegistry().register(pipe);
+        }
+        GameRegistry.registerTileEntity(StoragePipe.PipeTile.class, new ResourceLocation(NewEarth.MOD_ID, StoragePipe.ID));
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {

@@ -110,4 +110,5 @@ gui.module.ion_engine=离子引擎
 gui.module.ion_engine.desc=六阶火箭的离子推进。
 gui.module.passive=被动模块
 gui.module.count=剩余改装槽位: 
-tile.newearth.storage_pipe.name=仓储管道
+tile.newearth.storage_pipe.name=传输管道
+tile.newearth.sealed_storage_pipe.name=气密传输管道

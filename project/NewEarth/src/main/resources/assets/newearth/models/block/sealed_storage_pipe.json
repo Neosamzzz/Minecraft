@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "newearth:blocks/transfer_pipe/interface"
+  }
+}

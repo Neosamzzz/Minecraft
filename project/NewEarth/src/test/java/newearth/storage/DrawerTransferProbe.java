@@ -3,11 +3,22 @@ package newearth.storage;
 import java.util.*;
 import java.util.zip.ZipFile;
 import java.nio.file.*;
+import java.io.InputStreamReader;
+import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import io.netty.buffer.Unpooled;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelBlockDefinition;
+import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.renderer.block.model.multipart.Selector;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
 import net.minecraft.inventory.*;
 import net.minecraft.item.*;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.items.*;
 import newearth.DrawerJeiTransformer;
 import org.objectweb.asm.*;
@@ -37,6 +48,7 @@ public final class DrawerTransferProbe {
     public static void main(String[] args)throws Exception {
         net.minecraft.launchwrapper.Launch.blackboard=new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment",true);Bootstrap.register();
+        pipeAppearance();
         pipeOutput();
         Bench bench=new Bench(2);ItemStack[] inventory=player();inventory[0]=stone(3);
         ItemStackHandler drawers=new ItemStackHandler(1);drawers.setStackInSlot(0,stone(10));
@@ -128,6 +140,70 @@ public final class DrawerTransferProbe {
         manualStackTake();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
     }
+    private static void pipeAppearance() throws Exception {
+        StoragePipe pipe = new StoragePipe();
+        StoragePipe sealed = new StoragePipe.Sealed();
+        BlockPos center = new BlockPos(0, 64, 0);
+        Map<BlockPos, IBlockState> blocks = new HashMap<>();
+        Map<BlockPos, TileEntity> tiles = new HashMap<>();
+        IBlockAccess world = (IBlockAccess) Proxy.newProxyInstance(IBlockAccess.class.getClassLoader(),
+                new Class<?>[] {IBlockAccess.class}, (proxy, method, args) -> {
+                    if (method.getName().equals("getBlockState")) return blocks.getOrDefault(args[0], Blocks.AIR.getDefaultState());
+                    if (method.getName().equals("getTileEntity")) return tiles.get(args[0]);
+                    throw new UnsupportedOperationException(method.getName());
+                });
+        List<Selector> selectors;
+        try (InputStreamReader resource = new InputStreamReader(DrawerTransferProbe.class.getResourceAsStream(
+                "/assets/newearth/blockstates/storage_pipe.json"), StandardCharsets.UTF_8)) {
+            selectors = ModelBlockDefinition.parseFromReader(resource).getMultipartData().getSelectors();
+        }
+        for (EnumFacing side : EnumFacing.values()) {
+            BlockPos neighbor = center.offset(side);
+            blocks.put(neighbor, Blocks.FURNACE.getDefaultState());
+            tiles.put(neighbor, new net.minecraft.tileentity.TileEntityFurnace());
+            List<Variant> parts = pipeParts(pipe, world, center, selectors);
+            check(parts.size() == 2 && hasPart(parts, "import_bus", side), "The actual model shows a rotated import bus on " + side
+                    + ": " + parts.stream().map(part -> part.getModelLocation() + "="
+                    + part.getRotation().rotateFace(EnumFacing.NORTH)).collect(java.util.stream.Collectors.toList()));
+            blocks.put(neighbor, sealed.getDefaultState());
+            tiles.remove(neighbor);
+            parts = pipeParts(pipe, world, center, selectors);
+            check(parts.size() == 2 && hasPart(parts, "connection", side), "Sealed pipe connects as a cable without a bus on " + side);
+            blocks.clear();
+        }
+        blocks.put(center.east(), sealed.getDefaultState());
+        blocks.put(center.west(), pipe.getDefaultState());
+        List<Variant> straight = pipeParts(pipe, world, center, selectors);
+        check(straight.size() == 1 && hasPart(straight, "straight", EnumFacing.EAST), "Mixed pipes share a straight run model");
+        blocks.put(center.up(), pipe.getDefaultState());
+        check(pipeParts(pipe, world, center, selectors).size() == 4, "A branch switches back to the core and three arms");
+        blocks.clear();
+        blocks.put(center.north(), Blocks.HOPPER.getDefaultState());
+        tiles.put(center.north(), new net.minecraft.tileentity.TileEntityHopper());
+        check(pipeParts(pipe, world, center, selectors).size() == 1, "An unsupported hopper gets no visual connection");
+        check(pipe.getStateFromMeta(0) == pipe.getDefaultState() && pipe.getMetaFromState(pipe.getDefaultState()) == 0,
+                "Existing pipe metadata still loads");
+        check(!pipe.isFullCube(pipe.getDefaultState()) && !pipe.isSealed(null, center, EnumFacing.UP)
+                        && sealed.isFullCube(sealed.getDefaultState()) && sealed.isSealed(null, center, EnumFacing.UP),
+                "Only the full block is sealed for Galacticraft");
+        check(pipe.createTileEntity(null, pipe.getDefaultState()).getClass()
+                        == sealed.createTileEntity(null, sealed.getDefaultState()).getClass(),
+                "Both blocks use the existing transfer tile type");
+    }
+
+    private static List<Variant> pipeParts(StoragePipe pipe, IBlockAccess world, BlockPos pos, List<Selector> selectors) {
+        IBlockState state = pipe.getActualState(pipe.getDefaultState(), world, pos);
+        List<Variant> parts = new ArrayList<>();
+        for (Selector selector : selectors)
+            if (selector.getPredicate(pipe.getBlockState()).apply(state)) parts.addAll(selector.getVariantList().getVariantList());
+        return parts;
+    }
+
+    private static boolean hasPart(List<Variant> parts, String model, EnumFacing face) {
+        return parts.stream().anyMatch(part -> part.getModelLocation().getPath().equals("block/transfer_pipe/" + model)
+                && part.getRotation().rotateFace(EnumFacing.NORTH) == face);
+    }
+
     private static void pipeOutput() {
         ISidedInventory circuit = new micdoodle8.mods.galacticraft.core.tile.TileEntityCircuitFabricator();
         ItemStack product = new ItemStack(Items.IRON_INGOT, 3);
