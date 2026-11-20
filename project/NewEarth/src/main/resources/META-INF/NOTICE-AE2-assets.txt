@@ -9,5 +9,6 @@ licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unporte
 https://creativecommons.org/licenses/by-nc-sa/3.0/
 
 Textures are unchanged. The models use NewEarth resource paths and the default
-Fluix cable color. The import bus uses the unpowered status texture. NewEarth
+Fluix cable color. The cable core is also used for breaking particles. The import
+bus uses the unpowered status texture. NewEarth
 combines the models based on neighboring blocks and uses its own transfer logic.

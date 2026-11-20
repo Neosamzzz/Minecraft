@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 import micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock;
+import newearth.client.PipeParticles;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -17,6 +18,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -36,6 +38,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 
 /** The pipe has no inventory. The drawer controller is the only automatic destination. */
@@ -189,6 +193,24 @@ public class StoragePipe extends Block implements IPartialSealableBlock {
                 nearest = hit;
         }
         return nearest;
+    }
+
+    @Override @SideOnly(Side.CLIENT)
+    public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager effects) {
+        return !sealed && PipeParticles.hit(world, target, getDefaultState(), deviceConnections(world, target.getBlockPos()), effects);
+    }
+
+    @Override @SideOnly(Side.CLIENT)
+    public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager effects) {
+        return !sealed && PipeParticles.destroy(world, pos, getDefaultState(), deviceConnections(world, pos), effects);
+    }
+
+    private int deviceConnections(IBlockAccess world, BlockPos pos) {
+        IBlockState state = getActualState(getDefaultState(), world, pos);
+        int count = 0;
+        for (EnumFacing side : SIDES)
+            if (state.getValue(property(side)) == Connection.DEVICE) count++;
+        return count;
     }
 
     private static AxisAlignedBB box(int x1, int y1, int z1, int x2, int y2, int z2) {
