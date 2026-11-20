@@ -37,6 +37,7 @@ public final class DrawerTransferProbe {
     public static void main(String[] args)throws Exception {
         net.minecraft.launchwrapper.Launch.blackboard=new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment",true);Bootstrap.register();
+        pipeOutput();
         Bench bench=new Bench(2);ItemStack[] inventory=player();inventory[0]=stone(3);
         ItemStackHandler drawers=new ItemStackHandler(1);drawers.setStackInSlot(0,stone(10));
         check(run(bench,inventory,Arrays.asList(request(0,stone(4)),request(1,stone(2))),drawers)==null,"Backpack and drawers fill one batch");
@@ -126,6 +127,35 @@ public final class DrawerTransferProbe {
         installedJei();
         manualStackTake();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
+    }
+    private static void pipeOutput() {
+        ISidedInventory circuit = new micdoodle8.mods.galacticraft.core.tile.TileEntityCircuitFabricator();
+        ItemStack product = new ItemStack(Items.IRON_INGOT, 3);
+        product.setStackDisplayName("Tagged output");
+        circuit.setInventorySlotContents(1, new ItemStack(Items.DIAMOND, 2));
+        circuit.setInventorySlotContents(6, product);
+        ItemStackHandler drawer = new ItemStackHandler(1);
+        check(Arrays.stream(circuit.getSlotsForFace(net.minecraft.util.EnumFacing.NORTH)).noneMatch(slot -> slot == 6),
+                "Circuit fabricator does not expose its product slot from the side");
+        check(StoragePipe.moveOne(circuit, drawer) && drawer.getStackInSlot(0).getCount() == 1
+                        && ItemStack.areItemStackTagsEqual(product, drawer.getStackInSlot(0)),
+                "Pipe can use the machine's output port from any touching side and keeps item tags");
+        check(circuit.getStackInSlot(1).getCount() == 2 && circuit.getStackInSlot(6).getCount() == 2,
+                "Pipe extracts exactly one product and leaves ingredients in place");
+        drawer.setStackInSlot(0, new ItemStack(Items.GOLD_INGOT, 64));
+        check(!StoragePipe.moveOne(circuit, drawer) && circuit.getStackInSlot(6).getCount() == 2,
+                "A drawer with no room leaves the product in the machine");
+        ItemStackHandler rejectingDrawer = new ItemStackHandler(1) {
+            @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+                return simulate ? ItemStack.EMPTY : stack;
+            }
+        };
+        check(!StoragePipe.moveOne(circuit, rejectingDrawer) && circuit.getStackInSlot(6).getCount() == 2,
+                "Unexpected insertion refusal restores the source slot");
+        net.minecraft.tileentity.TileEntityHopper hopper = new net.minecraft.tileentity.TileEntityHopper();
+        hopper.setInventorySlotContents(0, new ItemStack(Items.DIAMOND));
+        check(TransferProfiles.outputs(hopper) == null && hopper.getStackInSlot(0).getCount() == 1,
+                "A vanilla hopper is not a pipe source");
     }
     private static void maximumTransfers() {
         Bench bench=new Bench(5);ItemStack[] inventory=player();

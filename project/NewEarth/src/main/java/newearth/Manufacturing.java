@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
+import newearth.storage.StoragePipe;
 
 /** Pack manufacturing data and the two reusable processing stations. */
 @Mod.EventBusSubscriber(modid = NewEarth.MOD_ID)
@@ -51,6 +52,11 @@ public final class Manufacturing {
         BLOCKS.put("disassembly_station", disassembly);
         event.getRegistry().register(disassembly);
         GameRegistry.registerTileEntity(DisassemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "disassembly_station"));
+        Block pipe = new StoragePipe().setRegistryName(NewEarth.MOD_ID, StoragePipe.ID)
+                .setTranslationKey("newearth." + StoragePipe.ID);
+        BLOCKS.put(StoragePipe.ID, pipe);
+        event.getRegistry().register(pipe);
+        GameRegistry.registerTileEntity(StoragePipe.PipeTile.class, pipe.getRegistryName());
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {

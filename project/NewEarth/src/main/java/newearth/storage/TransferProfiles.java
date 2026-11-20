@@ -14,6 +14,31 @@ public final class TransferProfiles {
     private static final String GC = "micdoodle8.mods.galacticraft.";
     private static final String GS = "galaxyspace.systems.SolarSystem.planets.overworld.inventory.";
     private static final Map<String, Profile> PROFILES = new LinkedHashMap<>();
+    private static final Map<String, int[]> OUTPUTS = new LinkedHashMap<>();
+    static {
+        String gc = GC + "core.tile.";
+        String gs = "galaxyspace.systems.SolarSystem.planets.overworld.tile.";
+        String ep = "com.mjr.extraplanets.tileEntities.machines.";
+        OUTPUTS.put(gc + "TileEntityIngotCompressor", range(1, 1));
+        OUTPUTS.put(gc + "TileEntityElectricIngotCompressor", range(1, 2));
+        OUTPUTS.put(gc + "TileEntityCircuitFabricator", range(6, 1));
+        OUTPUTS.put(gc + "TileEntityElectricFurnace", range(2, 2));
+        OUTPUTS.put(gc + "TileEntityDeconstructor", range(2, 9));
+        OUTPUTS.put(gs + "TileEntityAssembler", range(1, 1));
+        OUTPUTS.put(gs + "TileEntityAdvCircuitFabricator", range(6, 1));
+        OUTPUTS.put(gs + "TileEntityRocketAssembler", range(1, 1));
+        OUTPUTS.put(gs + "TileEntityUniversalRecycler", range(3, 1));
+        OUTPUTS.put(ep + "TileEntityBasicSmasher", range(2, 1));
+        OUTPUTS.put(ep + "TileEntityBasicChemicalInjector", range(3, 1));
+        OUTPUTS.put(ep + "TileEntityBasicSolarEvaporationChamber", range(2, 1));
+        OUTPUTS.put("newearth.ManufacturingTile", range(9, 1));
+        OUTPUTS.put("newearth.AssemblyStationTile", range(10, 1));
+        OUTPUTS.put("newearth.DisassemblyStationTile", range(1, 10));
+        OUTPUTS.put("net.minecraft.tileentity.TileEntityFurnace", range(2, 1));
+    }
+
+    /** Inventory access alone cannot distinguish a finished product from a battery or empty container. */
+    static int[] outputs(Object machine) { return OUTPUTS.get(machine.getClass().getName()); }
     static {
         add("net.minecraft.inventory.ContainerWorkbench", "minecraft.crafting", range(1, 9), range(1, 9));
         add(GC + "core.inventory.ContainerCrafting", "minecraft.crafting", range(1, 9), range(1, 9));

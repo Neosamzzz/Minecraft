@@ -181,7 +181,7 @@ public final class TransferNetwork {
             if (anchor==null || player.getDistanceSq(anchor)>64 || !player.world.isBlockLoaded(anchor)) return;
             net.minecraft.tileentity.TileEntity controller=DrawerNetwork.controller(player.world,anchor);
             if(controller==null&&DrawerNetwork.hasEndpoint(player.world,anchor))
-                throw new IllegalArgumentException("传动方块尚未连接有效的抽屉控制器");
+                throw new IllegalArgumentException("尚未连接有效的抽屉控制器");
             List<DrawerTransfer.Source> sources=DrawerNetwork.sources(player,controller);
             ItemStack[] inventory=new ItemStack[36];
             for (int i=0;i<36;i++) inventory[i]=player.inventory.getStackInSlot(i).copy();
