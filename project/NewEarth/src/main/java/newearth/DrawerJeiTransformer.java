@@ -4,9 +4,12 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-/** JEI chooses vanilla and mod handlers in one place; wrapping here avoids plugin registration order conflicts. */
+/** Hooks for JEI's transfer handler and its initial ingredient list. */
 public final class DrawerJeiTransformer implements IClassTransformer,Opcodes {
     public byte[] transform(String name,String transformedName,byte[] bytes) {
+        if (bytes != null && ("mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory".equals(transformedName)
+                || "mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory".equals(transformedName)))
+            return orderItems(bytes);
         if (bytes==null || !"mezz.jei.recipes.RecipeRegistry".equals(transformedName)) return bytes;
         ClassNode node=new ClassNode();new ClassReader(bytes).accept(node,0);int patched=0;
         for (MethodNode method:node.methods) if (method.name.equals("getRecipeTransferHandler")
@@ -23,5 +26,26 @@ public final class DrawerJeiTransformer implements IClassTransformer,Opcodes {
         }
         if (patched==0) throw new IllegalStateException("Unsupported JEI recipe transfer registry");
         ClassWriter writer=new ClassWriter(ClassWriter.COMPUTE_MAXS);node.accept(writer);return writer.toByteArray();
+    }
+
+    private static byte[] orderItems(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        for (MethodNode method : node.methods) {
+            if (!method.name.equals("create") || !method.desc.endsWith(")Ljava/util/List;")) continue;
+            AbstractInsnNode[] instructions = method.instructions.toArray();
+            for (AbstractInsnNode instruction : instructions)
+                if (instruction instanceof MethodInsnNode && ((MethodInsnNode) instruction).owner.equals("newearth/ItemCatalogue"))
+                    return bytes;
+            for (AbstractInsnNode instruction : instructions) {
+                if (instruction.getOpcode() == ARETURN)
+                    method.instructions.insertBefore(instruction, new MethodInsnNode(INVOKESTATIC, "newearth/ItemCatalogue",
+                            "orderJei", "(Ljava/util/List;)Ljava/util/List;", false));
+            }
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            node.accept(writer);
+            return writer.toByteArray();
+        }
+        return bytes;
     }
 }

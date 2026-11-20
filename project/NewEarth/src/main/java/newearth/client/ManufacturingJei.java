@@ -1,6 +1,7 @@
 package newearth.client;
 
 import java.util.*;
+import newearth.ItemCatalogue;
 import newearth.Manufacturing;
 import mezz.jei.api.*;
 import mezz.jei.api.gui.*;
@@ -26,6 +27,7 @@ public final class ManufacturingJei implements IModPlugin {
             List<Wrapper> recipes = new ArrayList<>();
             for (Manufacturing.Batch batch : Manufacturing.batches())
                 if (batch.machine.equals(id)) recipes.add(new Wrapper(batch));
+            recipes.sort(Comparator.comparingInt(recipe -> ItemCatalogue.rank(recipe.batch.output)));
             registry.addRecipes(recipes, "newearth." + id);
             registry.addRecipeCatalyst(Manufacturing.own(id), "newearth." + id);
         }
@@ -40,6 +42,9 @@ public final class ManufacturingJei implements IModPlugin {
         registry.addRecipeCatalyst(Manufacturing.own("assembly_station"), "newearth.assembly_station");
         registry.addRecipes(disassemblyRecipes, "newearth.disassembly_station");
         registry.addRecipeCatalyst(Manufacturing.own("disassembly_station"), "newearth.disassembly_station");
+        for (String id : new String[] {"storage_pipe", "sealed_storage_pipe", "material_station",
+                "engine_station", "assembly_station", "disassembly_station"})
+            registry.addIngredientInfo(Manufacturing.own(id), ItemStack.class, "jei.newearth.info." + id);
     }
 
     private static final class Wrapper implements IRecipeWrapper {
@@ -52,7 +57,7 @@ public final class ManufacturingJei implements IModPlugin {
     }
 
     private static final class Category implements IRecipeCategory<Wrapper> {
-        final String id; final IDrawable background, slot;
+        final String id; final IDrawable background, slot, icon;
         Category(String id, IGuiHelper helper) {
             this.id = id;
             this.background = id.equals("engine_station")
@@ -60,11 +65,13 @@ public final class ManufacturingJei implements IModPlugin {
                             .setTextureSize(176, 212).build()
                     : helper.createBlankDrawable(160, 80);
             this.slot = helper.getSlotDrawable();
+            this.icon = helper.createDrawableIngredient(Manufacturing.own(id));
         }
         @Override public String getUid() { return "newearth." + id; }
         @Override public String getTitle() { return Manufacturing.own(id).getDisplayName(); }
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
+        @Override public IDrawable getIcon() { return icon; }
         @Override public void drawExtras(Minecraft mc) {
             if (id.equals("material_station")) {
                 for (int i = 0; i < 9; i++) slot.draw(mc, 19 + (i % 3) * 18, 18 + (i / 3) * 18);
@@ -107,7 +114,7 @@ public final class ManufacturingJei implements IModPlugin {
 
     /** The same GS texture and coordinates as the real assembly container. */
     private static final class AssemblyCategory implements IRecipeCategory<AssemblyWrapper> {
-        final IDrawable background, slot, resultSlot;
+        final IDrawable background, slot, resultSlot, icon;
         final IDrawable progressTrack;
         final IDrawableAnimated progress;
         AssemblyCategory(IGuiHelper helper) {
@@ -115,6 +122,7 @@ public final class ManufacturingJei implements IModPlugin {
             this.background = helper.createDrawable(texture, 0, 0, 204, 150);
             this.slot = helper.createDrawable(texture, 204, 75, 20, 20);
             this.resultSlot = helper.createDrawable(texture, 215, 144, 34, 34);
+            this.icon = helper.createDrawableIngredient(Manufacturing.own("assembly_station"));
             this.progressTrack = helper.createDrawable(texture, 204, 96, 52, 9);
             this.progress = helper.createAnimatedDrawable(helper.createDrawable(texture, 206, 230, 50, 7),
                     newearth.AssemblyStationTile.processingTime(), IDrawableAnimated.StartDirection.LEFT, false);
@@ -123,6 +131,7 @@ public final class ManufacturingJei implements IModPlugin {
         @Override public String getTitle() { return Manufacturing.own("assembly_station").getDisplayName(); }
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
+        @Override public IDrawable getIcon() { return icon; }
         @Override public void drawExtras(Minecraft mc) {
             for (int[] pos : newearth.AssemblyStationContainer.INPUT_POS)
                 slot.draw(mc, pos[0] - 2, pos[1] - 2);
@@ -159,15 +168,17 @@ public final class ManufacturingJei implements IModPlugin {
 
     /** JEI category for the disassembly station (1 input + 9 outputs). */
     private static final class DisassemblyCategory implements IRecipeCategory<DisassemblyWrapper> {
-        final IDrawable background, slot;
+        final IDrawable background, slot, icon;
         DisassemblyCategory(IGuiHelper helper) {
             this.background = helper.createDrawable(AssemblyStationGui.TEXTURE, 0, 0, 204, 150);
             this.slot = helper.createDrawable(AssemblyStationGui.TEXTURE, 204, 75, 20, 20);
+            this.icon = helper.createDrawableIngredient(Manufacturing.own("disassembly_station"));
         }
         @Override public String getUid() { return "newearth.disassembly_station"; }
         @Override public String getTitle() { return Manufacturing.own("disassembly_station").getDisplayName(); }
         @Override public String getModName() { return "NewEarth"; }
         @Override public IDrawable getBackground() { return background; }
+        @Override public IDrawable getIcon() { return icon; }
         @Override public void drawExtras(Minecraft mc) {
             int[] rocket = newearth.DisassemblyStationContainer.ROCKET_POS;
             slot.draw(mc, rocket[0] - 2, rocket[1] - 2);

@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import galaxyspace.core.prefab.items.rockets.ItemTier6Rocket;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -38,24 +39,24 @@ public final class Manufacturing {
     @SubscribeEvent public static void blocks(RegistryEvent.Register<Block> event) {
         for (String id : new String[] {"material_station", "engine_station"}) {
             Block block = new Station(id).setRegistryName(NewEarth.MOD_ID, id)
-                    .setTranslationKey("newearth." + id).setCreativeTab(CreativeTabs.MISC).setHardness(3F);
+                    .setTranslationKey("newearth." + id).setCreativeTab(ItemCatalogue.TAB).setHardness(3F);
             BLOCKS.put(id, block); event.getRegistry().register(block);
         }
         // Tier 7/9 Assembly Station (reuses GC NASA Workbench model)
-        Block assembly = new AssemblyStationBlock();
+        Block assembly = new AssemblyStationBlock().setCreativeTab(ItemCatalogue.TAB);
         BLOCKS.put("assembly_station", assembly);
         event.getRegistry().register(assembly);
         GameRegistry.registerTileEntity(ManufacturingTile.class, new ResourceLocation(NewEarth.MOD_ID, "manufacturing"));
         GameRegistry.registerTileEntity(AssemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "assembly_station"));
         // Disassembly Station
-        Block disassembly = new DisassemblyStationBlock();
+        Block disassembly = new DisassemblyStationBlock().setCreativeTab(ItemCatalogue.TAB);
         BLOCKS.put("disassembly_station", disassembly);
         event.getRegistry().register(disassembly);
         GameRegistry.registerTileEntity(DisassemblyStationTile.class, new ResourceLocation(NewEarth.MOD_ID, "disassembly_station"));
         for (String id : new String[] {StoragePipe.ID, StoragePipe.SEALED_ID}) {
             Block pipe = (id.equals(StoragePipe.SEALED_ID) ? new StoragePipe.Sealed() : new StoragePipe())
                     .setRegistryName(NewEarth.MOD_ID, id)
-                    .setTranslationKey("newearth." + id);
+                    .setTranslationKey("newearth." + id).setCreativeTab(ItemCatalogue.TAB);
             BLOCKS.put(id, pipe);
             event.getRegistry().register(pipe);
         }
@@ -63,22 +64,19 @@ public final class Manufacturing {
     }
 
     @SubscribeEvent public static void items(RegistryEvent.Register<Item> event) {
-        for (String id : PARTS) register(event, id, id.equals("control_panel") ? new ControlPanelItem() : new Item().setCreativeTab(CreativeTabs.MISC));
+        for (String id : PARTS) register(event, id, id.equals("control_panel") ? new ControlPanelItem() : new Item());
         for (Map.Entry<String, Block> block : BLOCKS.entrySet()) register(event, block.getKey(), new ItemBlock(block.getValue()));
-        try {
-            // Reuse GS's placement and modification interfaces; the transformer
-            // preserves the new item identity on the existing rocket entity.
-            Item rocket = (Item) Class.forName("galaxyspace.core.prefab.items.rockets.ItemTier6Rocket")
-                    .getConstructor(String.class).newInstance("newearth.tier7_rocket");
-            register(event, "tier7_rocket", rocket);
-        } catch (ReflectiveOperationException e) { throw new IllegalStateException("GS T6 item API changed", e); }
+        // GS's item hardcodes its tab. Override only that choice for NewEarth's own rocket.
+        register(event, "tier7_rocket", new ItemTier6Rocket("newearth.tier7_rocket") {
+            @Override public CreativeTabs getCreativeTab() { return ItemCatalogue.TAB; }
+        });
         // T9/T10 multi-seat rockets (6 seats)
         register(event, "tier9_rocket", new ItemTier9Rocket());
         register(event, "tier10_rocket", new ItemTier10Rocket());
     }
 
     private static void register(RegistryEvent.Register<Item> event, String id, Item item) {
-        item.setRegistryName(NewEarth.MOD_ID, id).setTranslationKey("newearth." + id);
+        item.setRegistryName(NewEarth.MOD_ID, id).setTranslationKey("newearth." + id).setCreativeTab(ItemCatalogue.TAB);
         ITEMS.put(id, item); event.getRegistry().register(item);
     }
     public static ItemStack own(String id) { return new ItemStack(ITEMS.get(id)); }

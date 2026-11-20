@@ -540,6 +540,22 @@ public final class DrawerTransferProbe {
                     for(AbstractInsnNode instruction:method.instructions.toArray())if(instruction instanceof MethodInsnNode&&((MethodInsnNode)instruction).owner.equals("newearth/client/DrawerTransferJei"))hooks++;
                 }
                 check(hooks>0,"Every actual JEI handler return can reach the integration");
+                java.util.zip.ZipEntry factory = jar.getEntry("mezz/jei/plugins/vanilla/ingredients/item/ItemStackListFactory.class");
+                if (factory == null) factory = jar.getEntry("mezz/jei/plugins/vanilla/ingredients/ItemStackListFactory.class");
+                check(factory != null, "Installed JEI has a supported item list factory");
+                String target = factory.getName().replace('/', '.').replace(".class", "");
+                try (java.io.InputStream input = jar.getInputStream(factory)) { bytes = com.google.common.io.ByteStreams.toByteArray(input); }
+                result = transformer.transform(target, target, bytes);
+                check(bytes != result && transformer.transform(target, target, result) == result, "Installed JEI catalogue hook is applied once");
+                node = new ClassNode();
+                new ClassReader(result).accept(node, 0);
+                hooks = 0;
+                for (MethodNode method : node.methods) if (method.name.equals("create")) {
+                    new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name, method);
+                    for (AbstractInsnNode instruction : method.instructions.toArray())
+                        if (instruction instanceof MethodInsnNode && ((MethodInsnNode) instruction).owner.equals("newearth/ItemCatalogue")) hooks++;
+                }
+                check(hooks == 1, "The NewEarth ordering is applied to the actual JEI creation return");
             }
         }
         check(found,"Installed JEI binary was checked");

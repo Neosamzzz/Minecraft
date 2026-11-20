@@ -17,6 +17,7 @@ public final class ManufacturingProbe {
     private static void check(boolean value,String message) {if(!value)throw new AssertionError(message);checks++;}
     static void run() throws Exception {
         hopperOutputs();
+        catalogueDisplay();
         try (Reader reader=new InputStreamReader(ManufacturingProbe.class.getResourceAsStream(
                 "/assets/newearth/models/item/engine_station.json"), java.nio.charset.StandardCharsets.UTF_8)) {
             net.minecraft.client.renderer.block.model.ModelBlock model=
@@ -371,6 +372,38 @@ public final class ManufacturingProbe {
         if(directory!=null) verifyInstalled(new File(directory),recipes);
         else System.out.println("Manufacturing installed binary checks skipped: NEWEARTH_RUNTIME_MODS unset");
         System.out.println("NewEarth manufacturing: "+checks+" checks passed (isolated; no world or flight)");
+    }
+
+    private static void catalogueDisplay() {
+        net.minecraft.item.Item pipe = new net.minecraft.item.Item().setRegistryName("newearth:storage_pipe").setCreativeTab(ItemCatalogue.TAB);
+        net.minecraft.item.Item material = new net.minecraft.item.Item().setRegistryName("newearth:composite_plate").setCreativeTab(ItemCatalogue.TAB);
+        net.minecraft.item.Item rocket = new net.minecraft.item.Item().setRegistryName("newearth:tier7_rocket").setCreativeTab(ItemCatalogue.TAB);
+        ItemStack iron = new ItemStack(Items.IRON_INGOT), stick = new ItemStack(Items.STICK);
+        List<ItemStack> ingredients = new ArrayList<>(Arrays.asList(iron, new ItemStack(rocket), stick, new ItemStack(material), new ItemStack(pipe)));
+        ItemCatalogue.orderJei(ingredients);
+        check(ingredients.get(0) == iron && ingredients.get(2) == stick, "NewEarth sorting keeps other JEI ingredients in place");
+        check(ingredients.get(1).getItem() == pipe && ingredients.get(3).getItem() == material
+                && ingredients.get(4).getItem() == rocket, "JEI follows equipment, materials, then ship tiers");
+        Map<String, net.minecraft.item.Item> previous = new LinkedHashMap<>(Manufacturing.ITEMS);
+        try {
+            Manufacturing.ITEMS.clear();
+            Manufacturing.ITEMS.put("tier7_rocket", rocket);
+            Manufacturing.ITEMS.put("composite_plate", material);
+            Manufacturing.ITEMS.put("storage_pipe", pipe);
+            net.minecraft.util.NonNullList<ItemStack> tab = net.minecraft.util.NonNullList.create();
+            ItemCatalogue.TAB.displayAllRelevantItems(tab);
+            check(tab.size() == 3 && tab.get(0).getItem() == pipe && tab.get(1).getItem() == material && tab.get(2).getItem() == rocket,
+                    "NewEarth creative order is independent of registry order");
+        } finally {
+            Manufacturing.ITEMS.clear();
+            Manufacturing.ITEMS.putAll(previous);
+        }
+        net.minecraft.creativetab.CreativeTabs otherTab = new net.minecraft.creativetab.CreativeTabs("catalogue_probe") {
+            @Override public ItemStack createIcon() { return stick; }
+        };
+        check(otherTab.getIcon() == stick, "The old icon can already be cached");
+        ItemCatalogue.setCachedIcon(otherTab, iron);
+        check(otherTab.getIcon() == iron, "Repair replaces a cached third-party tab icon");
     }
 
     private static void hopperOutputs() throws Exception {
