@@ -10,6 +10,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
         if ("appeng.core.AEConfig".equals(transformedName)) return filterAe2Features(bytes);
+        if ("appeng.tile.misc.TileSecurityStation".equals(transformedName)) return disableAe2Permissions(bytes);
         if ("com.mjr.extraplanets.recipes.ExtraPlanets_Recipes".equals(transformedName)
                 || "com.mjr.extraplanets.ExtraPlanets".equals(transformedName))
             return unifyMaterials(bytes, transformedName);
@@ -155,12 +156,30 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         return writer.toByteArray();
     }
 
+    private static byte[] disableAe2Permissions(byte[] bytes) {
+        ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node,0);
+        for (MethodNode method : node.methods) if (method.name.equals("isSecurityEnabled") && method.desc.equals("()Z")) {
+            if (method.instructions.size() == 2 && method.instructions.getFirst().getOpcode() == ICONST_0) return bytes;
+            method.instructions.clear(); method.tryCatchBlocks.clear();
+            if (method.localVariables != null) method.localVariables.clear();
+            method.instructions.add(new InsnNode(ICONST_0)); method.instructions.add(new InsnNode(IRETURN));
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
+        }
+        throw new IllegalStateException("Unsupported AE2 permission-provider method");
+    }
+
     public static <F extends Enum<F>> boolean addAe2Feature(EnumSet<F> features, F feature) {
         return !retiredAe2Feature(feature.name()) && features.add(feature);
     }
 
     public static boolean retiredAe2Feature(String feature) {
         switch (feature) {
+            case "CERTUS_ORE":
+            case "CHARGED_CERTUS_ORE":
+            case "CERTUS_QUARTZ_WORLD_GEN":
+            case "METEORITE_WORLD_GEN":
+            case "SPAWN_PRESSES_IN_METEORITES":
+            case "METEORITE_COMPASS":
             case "QUANTUM_NETWORK_BRIDGE":
             case "QUANTUM_LINKING_CARD":
             case "SPATIAL_IO":

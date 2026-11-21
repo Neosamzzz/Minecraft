@@ -18,7 +18,7 @@ python3 tools/build.py --target newearth
 
 配置属于整合包固定玩法，逐项维护；禁止用原版默认、旧备份或测试实例配置整份覆盖。实例调整需比较差异后合入正式配置。
 
-抽屉取料、Inventory Tweaks、Disenchanter 和 AE2 兼容专项检查使用本地实例的实际模组包，不修改实例或存档：
+抽屉取料、Inventory Tweaks、Disenchanter 和 AE2 专项检查不修改实例或存档。`NEWEARTH_RUNTIME_MODS` 指向实际模组目录；AE2 未装入实例时，可另设 `NEWEARTH_AE2_JAR` 指向官方 UEL v0.56.6 JAR。
 
 ```powershell
 $env:NEWEARTH_RUNTIME_MODS = '<游戏实例>/mods'

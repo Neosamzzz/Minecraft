@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Mod;
@@ -19,6 +20,10 @@ import newearth.NewEarth;
 
 @Mod.EventBusSubscriber(modid = NewEarth.MOD_ID, value = Side.CLIENT)
 public final class Ae2Client {
+    @SubscribeEvent public static void open(GuiOpenEvent event) {
+        if (event.getGui() != null && event.getGui().getClass().getName().equals("appeng.client.gui.implementations.GuiSecurityStation"))
+            event.setGui(new GuiWirelessPairing(((GuiContainer) event.getGui()).inventorySlots));
+    }
     @SubscribeEvent public static void itemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack(); ResourceLocation id = stack.getItem().getRegistryName();
         if (id == null || !"appliedenergistics2".equals(id.getNamespace())) return;

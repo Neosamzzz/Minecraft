@@ -72,6 +72,7 @@ public final class Ae2Integration {
         if (path.equals("material")) return meta == 59 || meta >= 32 && meta <= 34;
         if (path.startsWith("spatial_")) return true;
         return Arrays.asList("controller", "portable_cell", "matter_cannon", "charged_staff",
+                "biometric_card",
                 "entropy_manipulator", "color_applicator", "paint_ball", "quantum_ring", "quantum_link",
                 "vibration_chamber", "crafting_monitor").contains(path);
     }

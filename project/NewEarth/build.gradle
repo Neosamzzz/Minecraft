@@ -187,7 +187,9 @@ tasks.register('ae2Check', JavaExec) {
     doFirst { workingDir.mkdirs() }
 }
 def ae2RuntimeMods = System.getenv('NEWEARTH_RUNTIME_MODS')
-if (ae2RuntimeMods && new File(ae2RuntimeMods, 'ae2-uel-v0.56.6.jar').isFile()) check.dependsOn 'ae2Check'
+def ae2RuntimeJar = System.getenv('NEWEARTH_AE2_JAR')
+if ((ae2RuntimeJar && file(ae2RuntimeJar).isFile())
+        || (ae2RuntimeMods && new File(ae2RuntimeMods, 'ae2-uel-v0.56.6.jar').isFile())) check.dependsOn 'ae2Check'
 
 // A separate server-only artifact; the ordinary NewEarth client/server JAR is unchanged.
 sourceSets {
