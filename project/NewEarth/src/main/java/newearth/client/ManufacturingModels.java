@@ -1,8 +1,13 @@
 package newearth.client;
 
+import micdoodle8.mods.galacticraft.planets.asteroids.blocks.AsteroidBlocks;
+import micdoodle8.mods.galacticraft.planets.asteroids.items.AsteroidsItems;
 import newearth.Manufacturing;
 import newearth.NewEarth;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -52,6 +57,18 @@ public final class ManufacturingModels {
     }
     @SubscribeEvent public static void tooltip(net.minecraftforge.event.entity.player.ItemTooltipEvent event) {
         net.minecraft.item.ItemStack stack=event.getItemStack();
+        Item item = stack.getItem();
+        boolean miner = item == AsteroidsItems.astroMiner;
+        if (miner || item == Item.getItemFromBlock(AsteroidBlocks.blockMinerBase)) {
+            Minecraft client = Minecraft.getMinecraft();
+            if (GameSettings.isKeyDown(client.gameSettings.keyBindSneak)) {
+                String key = miner ? "newearth.miner.tooltip.miner_chunks" : "newearth.miner.tooltip.dock_chunks";
+                event.getToolTip().addAll(client.fontRenderer.listFormattedStringToWidth(I18n.format(key), 150));
+            } else if (miner) {
+                String sneakKey = GameSettings.getKeyDisplayString(client.gameSettings.keyBindSneak.getKeyCode());
+                event.getToolTip().add(I18n.format("item_desc.shift.name", sneakKey));
+            }
+        }
         if("extraplanets:wafer".equals(String.valueOf(stack.getItem().getRegistryName())) && stack.getMetadata()==0) {
             String unused=net.minecraft.client.resources.I18n.format("currently.unused.name");
             java.util.List<String> tip=event.getToolTip();

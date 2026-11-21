@@ -129,3 +129,5 @@ newearth.miner.fault.base=基站损坏
 newearth.miner.fault.energy=电量不足
 newearth.miner.fault.path=返航受阻
 newearth.miner.fault.link=绑定冲突
+newearth.miner.tooltip.miner_chunks=部署后常加载自身所在区块和前方相邻区块，最多 2 个。移动或转向后会释放用不到的区块。
+newearth.miner.tooltip.dock_chunks=组装成基站后，常加载以基站为中心的 3×3 区块。
