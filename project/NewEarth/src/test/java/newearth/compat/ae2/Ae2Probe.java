@@ -194,6 +194,19 @@ public final class Ae2Probe {
         try (Reader reader = Files.newBufferedReader(resources.resolve("assets/appliedenergistics2/lang/zh_cn.lang"),java.nio.charset.StandardCharsets.UTF_8)) { expected.load(reader); }
         for (String key : expected.stringPropertyNames())
             check(locale.formatMessage(key,new Object[0]).equals(expected.getProperty(key)), "Actual Minecraft Locale loads AE2 override: " + key);
+        Set<String> ae2Keys = new HashSet<>(expected.stringPropertyNames());
+        try (ZipFile jar = new ZipFile(ae2)) {
+            for (String language : Arrays.asList("en_us", "zh_cn")) {
+                ae2Keys.addAll(keys(new String(read(jar, "assets/appliedenergistics2/lang/" + language + ".lang"), "UTF-8")));
+            }
+        }
+        try (java.util.stream.Stream<String> lines = Files.lines(resources.resolve("assets/newearth/lang/zh_cn.lang"))) {
+            lines.filter(line -> line.startsWith("newearth.ae2.") && line.contains("="))
+                    .map(line -> line.substring(0, line.indexOf('='))).forEach(ae2Keys::add);
+        }
+        for (String key : ae2Keys)
+            check(locale.formatMessage(key, new Object[0]).indexOf(0x4e0d) < 0,
+                    "Merged Chinese AE2 text contains no disallowed wording: " + key);
     }
     private static Set<String> keys(String text) {
         Set<String> keys = new HashSet<>();
