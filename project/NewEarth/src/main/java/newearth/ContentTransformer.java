@@ -286,14 +286,25 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean readAe2Feature(Property option, boolean defaultValue, Enum<?> feature) {
-        switch (feature.name()) {
-            case "INSCRIBER":
-            case "PRINTED_CIRCUITS":
-            case "PROCESSORS":
-                option.set(true);
+        String name = feature.name();
+        if (defaultValue && !retiredAe2Feature(name) && !configurableAe2Feature(name)) {
+            option.set(true);
+            return true;
+        }
+        return option.getBoolean(defaultValue);
+    }
+
+    private static boolean configurableAe2Feature(String name) {
+        switch (name) {
+            case "ALPHA_PASS":
+            case "CRAFTING_TOASTS":
+            case "LOGGING":
+            case "UPDATE_LOGGING":
+            case "MASS_CANNON_BLOCK_DAMAGE":
+            case "TINY_TNT_BLOCK_DAMAGE":
                 return true;
             default:
-                return option.getBoolean(defaultValue);
+                return false;
         }
     }
 
