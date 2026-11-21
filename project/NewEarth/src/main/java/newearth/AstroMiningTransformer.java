@@ -129,7 +129,7 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
             AbstractInsnNode distance = previousOpcode(call);
             AbstractInsnNode limit = previousOpcode(distance);
             if (distance != null && limit != null && distance.getOpcode() == ICONST_2 && limit.getOpcode() == ICONST_1) {
-                method.instructions.set(limit, new InsnNode(ICONST_4));
+                method.instructions.set(limit, new IntInsnNode(BIPUSH, 12));
                 changes++;
             }
         }

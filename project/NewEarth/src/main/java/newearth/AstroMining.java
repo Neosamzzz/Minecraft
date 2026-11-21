@@ -30,11 +30,11 @@ public final class AstroMining {
     private AstroMining() { }
 
     public static double movementSpeed(EntityAstroMiner miner, double speed) {
-        return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? speed * 1.75D : speed;
+        return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? speed * 2.5D : speed;
     }
 
     public static int nextSliceDelay(EntityAstroMiner miner) {
-        return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? 1 : 3;
+        return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? 0 : 3;
     }
 
     public static void addShafts(EntityAstroMiner miner, List<BlockVec3> points, EnumFacing facing) {
