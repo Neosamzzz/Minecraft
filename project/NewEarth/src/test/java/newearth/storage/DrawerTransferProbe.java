@@ -31,7 +31,7 @@ public final class DrawerTransferProbe {
     private static String run(Bench bench,ItemStack[] player,List<DrawerTransfer.Request> requests,IItemHandler... handlers) {
         List<DrawerTransfer.Source> sources=new ArrayList<>();
         for(IItemHandler handler:handlers) {
-            if(handler instanceof AliasDrawer)sources.addAll(DrawerTransfer.reservedSources(handler,0,new int[]{1,9}));
+            if(handler instanceof AliasDrawer)sources.addAll(DrawerTransfer.automationSources(handler,0,new int[]{1,9}));
             else for(int i=0;i<handler.getSlots();i++)sources.add(new DrawerTransfer.Source(handler,i));
         }
         return DrawerTransfer.transfer(bench,requests,player,sources,stack->{throw new AssertionError("Unexpected recovery "+stack);});
@@ -127,6 +127,7 @@ public final class DrawerTransferProbe {
                 "Client network proxy loads without optional JEI classes on the test runtime");
         installedJei();
         manualStackTake();
+        automationReserve();
         System.out.println("Drawer recipe transfer: "+checks+" checks passed (isolated; no game or save modified)");
     }
     private static void maximumTransfers() {
@@ -172,7 +173,7 @@ public final class DrawerTransferProbe {
         check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,stone(2))),inventory,Collections.emptyList(),s->{throw new AssertionError();})==null
                 &&bench.input.getStackInSlot(0).getCount()==16&&inventory[0].getCount()==24,"Machine slot limits and per-batch counts constrain Shift");
         AliasDrawer compact=new AliasDrawer(19);bench=new Bench(2);
-        sources=DrawerTransfer.reservedSources(compact,0,new int[]{1,9});
+        sources=DrawerTransfer.automationSources(compact,0,new int[]{1,9});
         check(DrawerTransfer.transferMaximum(bench,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK)),request(1,new ItemStack(Items.IRON_INGOT))),
                 player(),sources,s->{throw new AssertionError();})==null&&compact.units==9,"Shift respects the shared compacting reserve");
         drawers=new ItemStackHandler(1);drawers.setStackInSlot(0,stone(1));bench=new Bench(1);sources=Arrays.asList(new DrawerTransfer.Source(drawers,0));
@@ -202,7 +203,7 @@ public final class DrawerTransferProbe {
         check(DrawerTransfer.preview(bench,Arrays.asList(request(0,stone(64))),inventory,sources)==null&&inventory[0].getCount()==1,
                 "Preview combines backpack and surplus without consuming the backpack");
         AliasDrawer compact=new AliasDrawer(19);bench=new Bench(2);
-        sources=DrawerTransfer.reservedSources(compact,0,new int[]{1,9});
+        sources=DrawerTransfer.automationSources(compact,0,new int[]{1,9});
         check(DrawerTransfer.preview(bench,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK)),request(1,new ItemStack(Items.IRON_INGOT,2))),player(),sources)!=null,
                 "Preview accounts for shared compacting stock and its reserved block");
         check(DrawerTransfer.preview(bench,Arrays.asList(request(0,new ItemStack(Blocks.IRON_BLOCK)),request(1,new ItemStack(Items.IRON_INGOT))),player(),sources)==null,
@@ -346,9 +347,9 @@ public final class DrawerTransferProbe {
     private static final class AliasDrawer implements IItemHandler {
         int units;AliasDrawer(int units){this.units=units;}
         public int getSlots(){return 2;}
-        public ItemStack getStackInSlot(int slot){int count=units/(slot==0?9:1);return count==0?ItemStack.EMPTY:slot==0?new ItemStack(Blocks.IRON_BLOCK,count):new ItemStack(Items.IRON_INGOT,count);}
+        public ItemStack getStackInSlot(int slot){int count=DrawerAutomation.fractionalAvailable(units,new int[]{9,1},slot);return count==0?ItemStack.EMPTY:slot==0?new ItemStack(Blocks.IRON_BLOCK,count):new ItemStack(Items.IRON_INGOT,count);}
         public int getSlotLimit(int slot){return 64;}
-        public ItemStack extractItem(int slot,int count,boolean simulate){int n=Math.min(count,units/(slot==0?9:1));if(n==0)return ItemStack.EMPTY;if(!simulate)units-=n*(slot==0?9:1);return slot==0?new ItemStack(Blocks.IRON_BLOCK,n):new ItemStack(Items.IRON_INGOT,n);}
+        public ItemStack extractItem(int slot,int count,boolean simulate){int n=Math.min(count,DrawerAutomation.fractionalAvailable(units,new int[]{9,1},slot));if(n==0)return ItemStack.EMPTY;if(!simulate)units-=n*(slot==0?9:1);return slot==0?new ItemStack(Blocks.IRON_BLOCK,n):new ItemStack(Items.IRON_INGOT,n);}
         public ItemStack insertItem(int slot,ItemStack stack,boolean simulate){if(!simulate)units+=stack.getCount()*(slot==0?9:1);return ItemStack.EMPTY;}
     }
     private static void manualStackTake() throws Exception {
@@ -377,7 +378,7 @@ public final class DrawerTransferProbe {
             }
         }
         check(original != null, "Found the installed Storage Drawers manual extraction class");
-        newearth.DrawerManualTakeTransformer transformer = new newearth.DrawerManualTakeTransformer();
+        newearth.DrawerTakeTransformer transformer = new newearth.DrawerTakeTransformer();
         byte[] patched = transformer.transform(target, target, original);
         check(patched != original, "Patched the installed manual extraction class");
         check(transformer.transform(target, target, patched) == patched, "Repeated transformation does not add another adjustment");
@@ -396,6 +397,70 @@ public final class DrawerTransferProbe {
             }
         }
         check(bulk == 1 && single == 1, "Only bulk extraction is adjusted, and single-item extraction remains native");
+    }
+
+    private static void automationReserve() throws Exception {
+        int[] rates = {81, 9, 1};
+        check(DrawerAutomation.fractionalAvailable(100, rates, 2) == 19, "Smaller forms preserve a stocked block");
+        check(DrawerAutomation.fractionalAvailable(100, rates, 1) == 2, "Intermediate form shares the same stock");
+        check(DrawerAutomation.fractionalAvailable(81, rates, 2) == 0, "The last block cannot be drained as nuggets");
+        check(DrawerAutomation.fractionalAvailable(8, rates, 2) == 7, "Loose stock keeps one nugget");
+
+        String directory = System.getenv("NEWEARTH_RUNTIME_MODS");
+        if (directory == null) return;
+        String prefix = "com.jaquadro.minecraft.storagedrawers.";
+        String[] targets = {"capabilities.DrawerItemHandler", "capabilities.DrawerItemRepository",
+                "block.tile.TileEntityController$ItemRepository"};
+        int[] expected = {4, 5, 4};
+        Path storageDrawers;
+        try (java.util.stream.Stream<Path> files = Files.list(Paths.get(directory))) {
+            storageDrawers = files.filter(path -> path.getFileName().toString().contains("StorageDrawers-"))
+                    .findFirst().orElseThrow(() -> new AssertionError("Missing Storage Drawers for reserve validation"));
+        }
+        try (ZipFile jar = new ZipFile(storageDrawers.toFile())) {
+            newearth.DrawerTakeTransformer transformer = new newearth.DrawerTakeTransformer();
+            for (int i = 0; i < targets.length; i++) {
+                String target = prefix + targets[i];
+                byte[] original;
+                try (java.io.InputStream input = jar.getInputStream(jar.getEntry(target.replace('.', '/') + ".class"))) {
+                    original = com.google.common.io.ByteStreams.toByteArray(input);
+                }
+                byte[] patched = transformer.transform(target, target, original);
+                check(patched != original && transformer.transform(target, target, patched) == patched,
+                        "Automation reserve is applied once: " + target);
+                ClassNode node = new ClassNode();
+                new ClassReader(patched).accept(node, 0);
+                int hooks = 0;
+                for (MethodNode method : node.methods) {
+                    boolean modified = false;
+                    for (AbstractInsnNode instruction : method.instructions.toArray())
+                        if (instruction instanceof MethodInsnNode && "newearth/storage/DrawerAutomation".equals(((MethodInsnNode) instruction).owner)) {
+                            hooks++;
+                            modified = true;
+                        }
+                    if (modified) new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name, method);
+                }
+                check(hooks == expected[i], "Automation read and extraction paths covered: " + target);
+            }
+        }
+        try (java.net.URLClassLoader upstream = new java.net.URLClassLoader(
+                new java.net.URL[]{storageDrawers.toUri().toURL()}, DrawerTransferProbe.class.getClassLoader())) {
+            Class<?> type = Class.forName(prefix + "api.storage.IDrawer", false, upstream);
+            int[] stock = {64};
+            Object drawer = java.lang.reflect.Proxy.newProxyInstance(upstream, new Class<?>[]{type}, (object, method, arguments) -> {
+                if (method.getName().equals("getStoredItemCount")) return stock[0];
+                if (method.getName().equals("adjustStoredItemCount")) {
+                    stock[0] += (Integer) arguments[0];
+                    return 0;
+                }
+                throw new AssertionError(method);
+            });
+            check(DrawerAutomation.available(drawer, stock[0]) == 63, "Automation sees exactly 63 available");
+            check(DrawerAutomation.extract(drawer, -64) == 1 && stock[0] == 1,
+                    "Real extraction reports the shortfall and preserves the final item");
+            check(DrawerAutomation.extract(drawer, -1) == 1 && stock[0] == 1,
+                    "Repeated extraction cannot consume the reserve");
+        }
     }
 
     private static void installedJei()throws Exception {

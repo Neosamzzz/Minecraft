@@ -88,7 +88,7 @@ public final class DrawerNetwork {
                             Object drawer=groupType.getMethod("getDrawer",int.class).invoke(group,order[i]);
                             if(fractional.isInstance(drawer))rates[i]=((Number)fractional.getMethod("getConversionRate").invoke(drawer)).intValue();
                         }
-                        List<DrawerTransfer.Source> cells=DrawerTransfer.reservedSources(handler,1,rates);
+                        List<DrawerTransfer.Source> cells=DrawerTransfer.automationSources(handler,1,rates);
                         for(int i=0;i<cells.size()&&i<order.length;i++){cells.get(i).origin=tile;cells.get(i).drawerIndex=order[i];}
                         result.addAll(cells);
                     }

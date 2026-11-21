@@ -31,17 +31,14 @@ public final class DrawerTransfer {
             return available==0?ItemStack.EMPTY:handler.extractItem(slot,Math.min(amount,available),true);
         }
     }
-    /** Rates use Storage Drawers' items-per-most-compressed-item convention; ordinary cells use 1. */
-    static List<Source> reservedSources(IItemHandler handler,int first,int[] rates) {
-        int smallestRate=Integer.MAX_VALUE,maxRate=0;boolean fractional=false;
-        for(int rate:rates){maxRate=Math.max(maxRate,rate);fractional|=rate>1;}
-        for(int i=0;i<rates.length;i++)if(rates[i]>0&&!handler.extractItem(first+i,1,true).isEmpty())
-            smallestRate=Math.min(smallestRate,rates[i]);
-        List<Source> sources=new ArrayList<>();
-        for(int i=0;i<rates.length;i++) {
-            // Preserve one of the largest currently stocked compacting forms across all aliases.
-            int reserve=smallestRate==Integer.MAX_VALUE?1:(int)Math.max(1,((long)rates[i]+smallestRate-1)/smallestRate);
-            sources.add(new Source(handler,first+i,reserve,fractional&&rates[i]>0?maxRate/rates[i]:0));
+    static List<Source> automationSources(IItemHandler handler, int first, int[] rates) {
+        int maxRate = 0;
+        for (int rate : rates) maxRate = Math.max(maxRate, rate);
+        List<Source> sources = new ArrayList<>();
+        for (int i = 0; i < rates.length; i++) {
+            // The handler has already deducted the reserve. Keep the unit ratios for shared stock.
+            int unit = maxRate > 1 && rates[i] > 0 ? maxRate / rates[i] : 0;
+            sources.add(new Source(handler, first + i, 0, unit));
         }
         return sources;
     }
