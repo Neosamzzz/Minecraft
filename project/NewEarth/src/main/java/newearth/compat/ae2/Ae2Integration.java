@@ -50,7 +50,27 @@ public final class Ae2Integration {
 
     public static void rewriteRecipe(JsonElement json, String domain) {
         if (!"appliedenergistics2".equals(domain)) return;
+        if (json.isJsonObject()) {
+            JsonObject object = json.getAsJsonObject();
+            if (object.has("name") && object.has("ingredient") && object.get("ingredient").isJsonArray()) {
+                String name = object.get("name").getAsString();
+                if (name.equals("appliedenergistics2:knife")) {
+                    removeConstantOption(object, "item", "appliedenergistics2:certus_quartz_cutting_knife");
+                } else if (name.equals("appliedenergistics2:cable")) {
+                    removeConstantOption(object, "part", "cable_smart");
+                }
+            }
+        }
         rewriteInputs(json);
+    }
+
+    private static void removeConstantOption(JsonObject object, String key, String value) {
+        Iterator<JsonElement> options = object.getAsJsonArray("ingredient").iterator();
+        while (options.hasNext()) {
+            JsonElement option = options.next();
+            if (option.isJsonObject() && option.getAsJsonObject().has(key)
+                    && value.equals(option.getAsJsonObject().get(key).getAsString())) options.remove();
+        }
     }
 
     private static void rewriteInputs(JsonElement json) {
@@ -152,9 +172,19 @@ public final class Ae2Integration {
     public static boolean removedMaterialOutput(JsonObject recipe, String domain) {
         if (!"appliedenergistics2".equals(domain) || !recipe.has("result") || !recipe.get("result").isJsonObject()) return false;
         JsonObject result = recipe.getAsJsonObject("result");
-        if (result.has("item") && replacement(result.get("item").getAsString()) != null) return true;
+        if (result.has("item")) {
+            String id = result.get("item").getAsString();
+            if (replacement(id) != null) return true;
+            String prefix = "appliedenergistics2:";
+            if (id.startsWith(prefix)) {
+                String path = id.substring(prefix.length());
+                if (path.equals("crank") || retired(path, result.has("data") ? result.get("data").getAsInt() : 0))
+                    return true;
+            }
+        }
         if (result.has("part")) {
             String part = result.get("part").getAsString();
+            if (part.startsWith("paint_ball.") || part.startsWith("lumen_paint_ball.")) return true;
             if (part.startsWith("material.")) return !part.startsWith("material.card_")
                     && !part.equals("material.blank_pattern") && !part.equals("material.wireless_booster");
         }

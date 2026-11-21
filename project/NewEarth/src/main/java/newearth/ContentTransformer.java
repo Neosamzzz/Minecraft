@@ -10,6 +10,9 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
         if ("appeng.items.materials.ItemMaterial".equals(transformedName)) return filterAe2Materials(bytes);
+        // All upstream processing recipes belong to the retired material chain or its machines.
+        if ("appeng.recipes.AERecipeLoader".equals(transformedName))
+            return disableBooleanMethod(bytes, "loadProcessingRecipes", "()Z");
         if ("appeng.core.AEConfig".equals(transformedName)) return filterAe2Features(bytes);
         if ("appeng.items.storage.AbstractStorageCell".equals(transformedName))
             return disableBooleanMethod(bytes, "disassembleDrive", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Z");

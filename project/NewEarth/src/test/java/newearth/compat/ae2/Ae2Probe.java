@@ -85,6 +85,24 @@ public final class Ae2Probe {
                 Ae2Integration.rewriteRecipe(other,"other_mod");
                 check(other.toString().contains("itemIlluminatedPanel"), "Unrelated mod recipes not rewritten");
             }
+            for (String name : new String[]{"network/blocks/controller", "misc/grindstone_crank", "tools/paintballs_lumen_pink"}) {
+                com.google.gson.JsonObject recipe = new com.google.gson.JsonParser().parse(new String(
+                        read(jar, "assets/appliedenergistics2/recipes/" + name + ".json"), "UTF-8")).getAsJsonObject();
+                check(Ae2Integration.removedMaterialOutput(recipe, "appliedenergistics2"),
+                        "Retired recipe is skipped before ingredient lookup: " + name);
+            }
+            com.google.gson.JsonArray constants = new com.google.gson.JsonParser().parse(new String(
+                    read(jar, "assets/appliedenergistics2/recipes/_constants.json"), "UTF-8")).getAsJsonArray();
+            for (com.google.gson.JsonElement constant : constants) {
+                com.google.gson.JsonObject definition = constant.getAsJsonObject();
+                Ae2Integration.rewriteRecipe(definition, "appliedenergistics2");
+                if ("appliedenergistics2:knife".equals(definition.get("name").getAsString())) {
+                    com.google.gson.JsonArray knives = definition.getAsJsonArray("ingredient");
+                    check(knives.size() == 1 && "appliedenergistics2:nether_quartz_cutting_knife".equals(
+                            knives.get(0).getAsJsonObject().get("item").getAsString()),
+                            "Constants only resolve the registered cutting knife");
+                }
+            }
             Set<String> originalKeys = keys(new String(read(jar, "assets/appliedenergistics2/lang/en_us.lang"), "UTF-8"));
             Path resource = Paths.get(System.getProperty("newearth.resourceRoot"));
             String chinese = new String(Files.readAllBytes(resource.resolve("assets/appliedenergistics2/lang/zh_cn.lang")), "UTF-8");
@@ -97,6 +115,16 @@ public final class Ae2Probe {
             checkOreDefinitions(jar);
             checkPairingPermissions(jar,transformer);
             checkReplacementRecipes(resource);
+            String loader = "appeng.recipes.AERecipeLoader";
+            byte[] processing = read(jar, loader.replace('.', '/') + ".class");
+            byte[] disabled = transformer.transform(loader, loader, processing);
+            MethodNode entry = node(disabled).methods.stream()
+                    .filter(m -> m.name.equals("loadProcessingRecipes") && m.desc.equals("()Z"))
+                    .findFirst().get();
+            check(entry.instructions.size() == 2 && entry.instructions.getFirst().getOpcode() == Opcodes.ICONST_0
+                    && entry.instructions.getLast().getOpcode() == Opcodes.IRETURN,
+                    "AE2's separate processing loader cannot register removed ingredients");
+            new Analyzer<BasicValue>(new BasicVerifier()).analyze(loader, entry);
             String materialType = "appeng.items.materials.ItemMaterial";
             byte[] patchedMaterials = transformer.transform(materialType, materialType, read(jar, materialType.replace('.', '/') + ".class"));
             check(transformer.transform(materialType, materialType, patchedMaterials) == patchedMaterials, "Subtype filter installed once");

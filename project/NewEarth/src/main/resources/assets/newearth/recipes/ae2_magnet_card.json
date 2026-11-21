@@ -1,0 +1,11 @@
+{
+  "conditions": [{"type": "minecraft:item_exists", "item": "appliedenergistics2:material"}],
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["R", "W", "L"],
+  "key": {
+    "R": {"item": "minecraft:redstone_block"},
+    "W": {"item": "galacticraftcore:basic_item", "data": 13},
+    "L": {"item": "minecraft:lapis_block"}
+  },
+  "result": {"item": "appliedenergistics2:material", "data": 60}
+}
