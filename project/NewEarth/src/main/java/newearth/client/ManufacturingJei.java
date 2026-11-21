@@ -42,7 +42,7 @@ public final class ManufacturingJei implements IModPlugin {
         registry.addRecipeCatalyst(Manufacturing.own("assembly_station"), "newearth.assembly_station");
         registry.addRecipes(disassemblyRecipes, "newearth.disassembly_station");
         registry.addRecipeCatalyst(Manufacturing.own("disassembly_station"), "newearth.disassembly_station");
-        for (String id : new String[] {"storage_pipe", "sealed_storage_pipe", "material_station",
+        for (String id : new String[] {"material_station",
                 "engine_station", "assembly_station", "disassembly_station"})
             registry.addIngredientInfo(Manufacturing.own(id), ItemStack.class, "jei.newearth.info." + id);
     }

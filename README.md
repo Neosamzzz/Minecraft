@@ -15,7 +15,6 @@
 
 ### 抽屉与物流
 
-- [ ] [通用管道方块：接收输出、向输入供料（#56）](https://github.com/Neosamzzz/Minecraft/issues/56)。
 
 ### 运行维护
 

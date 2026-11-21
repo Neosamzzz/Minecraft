@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["TPT"],
-  "key": {
-    "T": {"item": "galacticraftcore:basic_block_core", "data": 4},
-    "P": {"item": "newearth:storage_pipe"}
-  },
-  "result": {"item": "newearth:sealed_storage_pipe"}
-}

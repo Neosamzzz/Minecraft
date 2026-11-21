@@ -14,39 +14,41 @@ import net.minecraftforge.items.IItemHandler;
 /** Optional Storage Drawers bridge. Traversal follows its six-neighbour network and controller bounds. */
 public final class DrawerNetwork {
     private static final String PREFIX = "com.jaquadro.minecraft.storagedrawers.";
+    /** Client preview cannot rely on the controller's server-only network cache or remote chunks. */
     public static boolean hasEndpoint(World world,BlockPos anchor) {
         if(anchor==null)return false;
         for(EnumFacing side:EnumFacing.values()) {
             BlockPos pos=anchor.offset(side);if(!world.isBlockLoaded(pos))continue;
             TileEntity tile=world.getTileEntity(pos);
-            if (isEndpoint(tile) || tile instanceof StoragePipe.PipeTile) return true;
+            if(tile!=null&&(is(tile,"block.tile.TileEntityController")||is(tile,"block.tile.TileEntitySlave")))return true;
         }
         return false;
     }
     public static TileEntity controller(World world, BlockPos anchor) {
         if (anchor == null) return null;
-        StoragePipe.Route route = StoragePipe.scan(world, anchor, false);
-        if (route.multiple) throw new IllegalArgumentException("连接了多个抽屉网络，请只保留一个网络");
-        if (route.incomplete) throw new IllegalArgumentException("管道线路未完整加载或传动方块未连接");
-        return route.controller;
-    }
-
-    static boolean isEndpoint(TileEntity tile) {
-        return tile != null && (is(tile, "block.tile.TileEntityController") || is(tile, "block.tile.TileEntitySlave"));
-    }
-
-    static TileEntity resolveEndpoint(World world, TileEntity tile) {
-        if (is(tile, "block.tile.TileEntityController")) return tile;
-        try {
-            Object linkedPos = tile.getClass().getMethod("getControllerPos").invoke(tile);
-            if (!(linkedPos instanceof BlockPos) || !world.isBlockLoaded((BlockPos) linkedPos)) return null;
-            Object linked = tile.getClass().getMethod("getController").invoke(tile);
-            if (!(linked instanceof TileEntity) || !(Boolean) linked.getClass()
-                    .getMethod("isValidSlave", BlockPos.class).invoke(linked, tile.getPos())) return null;
-            return (TileEntity) linked;
-        } catch (ReflectiveOperationException error) {
-            throw new IllegalStateException("无法读取抽屉控制器", error);
+        TileEntity found = null;
+        for (EnumFacing side : EnumFacing.values()) {
+            BlockPos pos = anchor.offset(side);
+            if (!world.isBlockLoaded(pos)) continue;
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile == null) continue;
+            try {
+                if (is(tile, "block.tile.TileEntitySlave")) {
+                    Object linkedPos=tile.getClass().getMethod("getControllerPos").invoke(tile);
+                    if (!(linkedPos instanceof BlockPos) || !world.isBlockLoaded((BlockPos)linkedPos)) continue;
+                    Object linked = tile.getClass().getMethod("getController").invoke(tile);
+                    if (!(linked instanceof TileEntity) || !(Boolean) linked.getClass()
+                            .getMethod("isValidSlave", BlockPos.class).invoke(linked, pos)) continue;
+                    tile = (TileEntity) linked;
+                }
+                if (!is(tile, "block.tile.TileEntityController")) continue;
+                if (found != null && found != tile) throw new IllegalArgumentException("工作台旁连接了多个抽屉网络，请只保留一个入口");
+                found = tile;
+            } catch (ReflectiveOperationException error) {
+                throw new IllegalStateException("无法读取抽屉控制器", error);
+            }
         }
+        return found;
     }
     public static List<DrawerTransfer.Source> sources(EntityPlayer player, TileEntity controller) {
         List<DrawerTransfer.Source> result = new ArrayList<>();

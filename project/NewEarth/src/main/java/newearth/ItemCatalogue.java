@@ -19,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public final class ItemCatalogue {
     private static final List<String> ORDER = Arrays.asList(
             "material_station", "engine_station", "assembly_station", "disassembly_station",
-            "storage_pipe", "sealed_storage_pipe", "blueprint_material_station", "blueprint_engine_station",
+            "blueprint_material_station", "blueprint_engine_station",
             "composite_plate", "thermal_liner", "avionics", "connector",
             "blueprint_t7", "blueprint_sublight", "nose_cone", "rocket_body", "rocket_engine", "booster", "fin", "tier7_rocket",
             "amethyst_fragment", "amethyst_ingot", "amethyst_plate", "amethyst_component", "control_panel", "blueprint_plasma",
