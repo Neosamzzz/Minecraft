@@ -12,6 +12,8 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
     private static final String DOCK = ASTEROIDS + "tile/TileEntityMinerBase";
     private static final String GUI = ASTEROIDS + "client/gui/GuiAstroMinerDock";
     private static final String HOOKS = "newearth/AstroMining";
+    private static final String FACING = "Lnet/minecraft/util/EnumFacing;";
+    private static final String VECTOR = "Lmicdoodle8/mods/galacticraft/api/vector/BlockVec3;";
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
@@ -26,16 +28,8 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
                 if (instruction instanceof MethodInsnNode && ((MethodInsnNode) instruction).owner.equals(HOOKS)) return bytes;
             }
             if (target.equals(MINER)) changes += patchMiner(node, method);
-            else if (target.equals(DOCK) && method.name.equals("updateGUIstate") && method.desc.equals("()V")) {
-                for (AbstractInsnNode instruction : method.instructions.toArray()) {
-                    if (instruction.getOpcode() != GETFIELD || !(instruction instanceof FieldInsnNode)) continue;
-                    FieldInsnNode field = (FieldInsnNode) instruction;
-                    if (field.owner.equals(MINER) && field.name.equals("AIstate") && field.desc.equals("I")) {
-                        method.instructions.set(field, hook("dockState", "(L" + MINER + ";)I"));
-                        changes++;
-                    }
-                }
-            } else if (target.equals(GUI) && method.name.equals("getStatus") && method.desc.equals("()Ljava/lang/String;")) {
+            else if (target.equals(DOCK)) changes += patchDock(method);
+            else if (method.name.equals("getStatus") && method.desc.equals("()Ljava/lang/String;")) {
                 LabelNode ordinary = new LabelNode();
                 InsnList code = new InsnList();
                 code.add(new VarInsnNode(ALOAD, 0));
@@ -54,15 +48,89 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
                 changes++;
             }
         }
-        if (changes != (target.equals(MINER) ? 12 : 1))
+        if (changes != (target.equals(MINER) ? 15 : target.equals(DOCK) ? 5 : 1))
             throw new IllegalStateException("Unsupported Galacticraft Astro Miner class " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
         return writer.toByteArray();
     }
 
+    private static int patchDock(MethodNode method) {
+        if (method.desc.equals("()V")) {
+            switch (method.name) {
+                case "findTargetPoints":
+                    method.instructions.clear();
+                    method.tryCatchBlocks.clear();
+                    if (method.localVariables != null) method.localVariables.clear();
+                    method.instructions.add(routeHook("startRoute"));
+                    method.instructions.add(new InsnNode(RETURN));
+                    return 1;
+                case "update":
+                case "func_73660_a":
+                    return prependOwnerHook(method, DOCK, "tickDock");
+                case "invalidate":
+                case "func_145843_s":
+                    return prependOwnerHook(method, DOCK, "releaseDock");
+                case "updateGUIstate":
+                    for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                        if (!(instruction instanceof FieldInsnNode) || instruction.getOpcode() != GETFIELD) continue;
+                        FieldInsnNode field = (FieldInsnNode) instruction;
+                        if (field.owner.equals(MINER) && field.name.equals("AIstate") && field.desc.equals("I")) {
+                            method.instructions.set(field, hook("dockState", "(L" + MINER + ";)I"));
+                            return 1;
+                        }
+                    }
+                    return 0;
+                default: return 0;
+            }
+        }
+        if (method.name.equals("findNextTarget") && method.desc.equals("()" + VECTOR)) {
+            method.instructions.insert(routeHook("refillRoute"));
+            return 1;
+        }
+        return 0;
+    }
+
+    private static InsnList routeHook(String name) {
+        InsnList code = new InsnList();
+        code.add(new VarInsnNode(ALOAD, 0));
+        code.add(new VarInsnNode(ALOAD, 0));
+        code.add(new FieldInsnNode(GETFIELD, DOCK, "targetPoints", "Ljava/util/LinkedList;"));
+        code.add(new VarInsnNode(ALOAD, 0));
+        code.add(new FieldInsnNode(GETFIELD, DOCK, "facing", FACING));
+        code.add(hook(name, "(L" + DOCK + ";Ljava/util/List;" + FACING + ")V"));
+        return code;
+    }
+
+    private static int prependOwnerHook(MethodNode method, String owner, String name) {
+        InsnList code = new InsnList();
+        code.add(new VarInsnNode(ALOAD, 0));
+        code.add(hook(name, "(L" + owner + ";)V"));
+        method.instructions.insert(code);
+        return 1;
+    }
+
+    private static void prependMinerFacingHook(MethodNode method, String name) {
+        InsnList code = new InsnList();
+        code.add(new VarInsnNode(ALOAD, 0));
+        code.add(new VarInsnNode(ALOAD, 0));
+        code.add(new FieldInsnNode(GETFIELD, MINER, "facingAI", FACING));
+        code.add(hook(name, "(L" + MINER + ";" + FACING + ")V"));
+        method.instructions.insert(code);
+    }
+
     private static int patchMiner(ClassNode node, MethodNode method) {
+        int stateHook = 0;
         switch (method.name) {
+            case "onUpdate":
+            case "func_70071_h_":
+                if (!method.desc.equals("()V")) return 0;
+                prependMinerFacingHook(method, "tickMiner");
+                stateHook = 1;
+                break;
+            case "setDead":
+            case "func_70106_y":
+                return method.desc.equals("()V") ? prependOwnerHook(method, MINER, "releaseMiner") : 0;
             case "<init>":
                 int speeds = 0;
                 for (AbstractInsnNode instruction : method.instructions.toArray()) {
@@ -90,21 +158,26 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
                 points.add(new VarInsnNode(ALOAD, 0));
                 points.add(new FieldInsnNode(GETFIELD, node.name, "minePoints", "Ljava/util/LinkedList;"));
                 points.add(new VarInsnNode(ALOAD, 0));
-                points.add(new FieldInsnNode(GETFIELD, node.name, "baseFacing", "Lnet/minecraft/util/EnumFacing;"));
-                points.add(hook("addShafts", "(L" + MINER + ";Ljava/util/List;Lnet/minecraft/util/EnumFacing;)V"));
+                points.add(new FieldInsnNode(GETFIELD, node.name, "baseFacing", FACING));
+                points.add(new VarInsnNode(ALOAD, 0));
+                points.add(new FieldInsnNode(GETFIELD, node.name, "posTarget", VECTOR));
+                points.add(hook("addShafts", "(L" + MINER + ";Ljava/util/List;" + FACING + VECTOR + ")V"));
                 method.instructions.insertBefore(done, points);
                 return 1;
             case "emptyInventory":
                 return patchUnload(method);
             case "prepareMove":
-                return patchSliceDelay(method);
+                if (!method.desc.equals("(II)Z")) return 0;
+                prependMinerFacingHook(method, "updateMinerFacing");
+                return patchSliceDelay(method) + 1;
             case "moveToPosX":
             case "moveToPosY":
             case "moveToPosZ":
                 return patchMovementSpeed(method);
             default:
-                return patchDrilling(method);
+                break;
         }
+        return patchDrilling(method) + stateHook;
     }
 
     private static int patchUnload(MethodNode method) {

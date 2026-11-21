@@ -3,7 +3,6 @@ package newearth;
 import java.util.List;
 import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
 import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
-import micdoodle8.mods.galacticraft.planets.asteroids.dimension.WorldProviderAsteroids;
 import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
 import micdoodle8.mods.galacticraft.planets.asteroids.tile.TileEntityMinerBase;
 import net.minecraft.item.ItemStack;
@@ -12,7 +11,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
@@ -37,25 +35,27 @@ public final class AstroMining {
         return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? 0 : 3;
     }
 
-    public static void addShafts(EntityAstroMiner miner, List<BlockVec3> points, EnumFacing facing) {
-        int y = MathHelper.floor(miner.posY + 1.5D);
-        BlockVec3 origin = new BlockVec3(MathHelper.floor(miner.posX + 0.5D), y,
-                MathHelper.floor(miner.posZ + 0.5D));
-        int length = miner.world.provider instanceof WorldProviderAsteroids ? EntityAstroMiner.MINE_LENGTH_AST
-                : EntityAstroMiner.MINE_LENGTH;
-        EnumFacing side = facing.rotateY();
-        addShaft(points, origin.clone().modifyPositionFromSide(side, 8), facing, length);
-        addShaft(points, origin.clone().modifyPositionFromSide(side.getOpposite(), 8), facing, length);
-        if (y + 8 < miner.world.getActualHeight() - 2)
-            addShaft(points, origin.clone().modifyPositionFromSide(EnumFacing.UP, 8), facing, length);
-        if (y - 8 >= 4)
-            addShaft(points, origin.clone().modifyPositionFromSide(EnumFacing.DOWN, 8), facing, length);
+    public static void addShafts(EntityAstroMiner miner, List<BlockVec3> points, EnumFacing facing, BlockVec3 target) {
+        AstroMiningRoutes.addAsteroidFaces(miner, points, facing, target);
     }
 
-    private static void addShaft(List<BlockVec3> points, BlockVec3 start, EnumFacing facing, int length) {
-        points.add(start);
-        points.add(start.clone().modifyPositionFromSide(facing, length));
+    public static void startRoute(TileEntityMinerBase dock, List<BlockVec3> points, EnumFacing facing) {
+        AstroMiningRoutes.start(dock, points, facing);
     }
+
+    public static void refillRoute(TileEntityMinerBase dock, List<BlockVec3> points, EnumFacing facing) {
+        AstroMiningRoutes.refill(dock, points, facing);
+    }
+
+    public static void tickDock(TileEntityMinerBase dock) { AstroMiningChunks.tickDock(dock); }
+
+    public static void releaseDock(TileEntityMinerBase dock) { AstroMiningChunks.releaseDock(dock); }
+
+    public static void tickMiner(EntityAstroMiner miner, EnumFacing facing) { AstroMiningChunks.tickMiner(miner, facing, true); }
+
+    public static void updateMinerFacing(EntityAstroMiner miner, EnumFacing facing) { AstroMiningChunks.tickMiner(miner, facing, false); }
+
+    public static void releaseMiner(EntityAstroMiner miner) { AstroMiningChunks.releaseMiner(miner); }
 
     public static boolean unload(TileEntityMinerBase dock, ItemStack stack) {
         if (findSample(samples(dock), stack) < 0) return dock.addToInventory(stack);

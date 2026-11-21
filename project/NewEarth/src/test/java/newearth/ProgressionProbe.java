@@ -137,6 +137,32 @@ public final class ProgressionProbe {
     }
 
     private static void checkAstroMining() throws Exception {
+        List<micdoodle8.mods.galacticraft.api.vector.BlockVec3> matrix = AstroMiningRoutes.matrixOffsets();
+        check(matrix.get(0).x == 0 && matrix.get(0).z == 0, "Miner matrix starts at its centre");
+        int previousDistance = -1;
+        java.util.Set<String> distinct = new java.util.HashSet<>();
+        for (micdoodle8.mods.galacticraft.api.vector.BlockVec3 point : matrix) {
+            int distance = point.x * point.x + point.z * point.z;
+            check(distance >= previousDistance && distance <= 500 * 500, "Miner matrix uses centre-to-centre XZ radius");
+            check(distinct.add(point.x + ":" + point.z), "Miner matrix never repeats a cell on a layer");
+            previousDistance = distance;
+        }
+        net.minecraft.util.math.ChunkPos centre = new net.minecraft.util.math.ChunkPos(-2, 3);
+        net.minecraft.util.math.ChunkPos next = new net.minecraft.util.math.ChunkPos(-1, 3);
+        check(AstroMiningChunks.dockChunks(centre).size() == 9 && AstroMiningChunks.dockChunks(centre).contains(next),
+                "Dock retains its surrounding 3 by 3 chunks");
+        check(AstroMiningChunks.minerChunks(centre, net.minecraft.util.EnumFacing.EAST)
+                .equals(new java.util.HashSet<>(Arrays.asList(centre, next))), "Miner retains itself and its forward chunk");
+        check(AstroMiningChunks.minerChunks(next, net.minecraft.util.EnumFacing.EAST).size() == 2
+                && !AstroMiningChunks.minerChunks(next, net.minecraft.util.EnumFacing.EAST).contains(centre), "Miner releases the chunk behind");
+        check(AstroMiningChunks.minerChunks(centre, net.minecraft.util.EnumFacing.UP).equals(java.util.Collections.singleton(centre)),
+                "Vertical motion retains only the miner's own XZ chunk");
+        int rockCore = new micdoodle8.mods.galacticraft.planets.asteroids.world.gen.SpecialAsteroidBlock(
+                net.minecraft.init.Blocks.STONE, (byte) 0, 1, .3D).index;
+        int oreCore = new micdoodle8.mods.galacticraft.planets.asteroids.world.gen.SpecialAsteroidBlock(
+                net.minecraft.init.Blocks.DIAMOND_ORE, (byte) 0, 1, .3D).index;
+        check(!AstroMiningRoutes.mineralCore(-1) && !AstroMiningRoutes.mineralCore(rockCore)
+                && AstroMiningRoutes.mineralCore(oreCore), "Asteroid filter rejects hollow and rock cores");
         net.minecraft.nbt.NBTTagList samples = new net.minecraft.nbt.NBTTagList();
         ItemStack sample = new ItemStack(Items.COAL);
         samples.appendTag(sample.writeToNBT(new net.minecraft.nbt.NBTTagCompound()));
