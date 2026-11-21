@@ -68,20 +68,6 @@ public final class DrawerAutoRefillProbe {
         }
         check(input != null, "Installed Inventory Tweaks class found");
         InventoryTweaksTransformer transformer = new InventoryTweaksTransformer();
-        String refillTask = "invtweaks.InvTweaksHandlerAutoRefill$1";
-        try (ZipFile jar = new ZipFile(inventoryJar.toFile());
-             java.io.InputStream stream = jar.getInputStream(jar.getEntry(refillTask.replace('.', '/') + ".class"))) {
-            byte[] originalTask = com.google.common.io.ByteStreams.toByteArray(stream);
-            byte[] patchedTask = transformer.transform(refillTask, refillTask, originalTask);
-            check(patchedTask != originalTask, "Installed delayed refill task receives the single-swap hook");
-            check(transformer.transform(refillTask, refillTask, patchedTask) == patchedTask, "Delayed refill patch is idempotent");
-            ClassNode taskNode = new ClassNode();
-            new ClassReader(patchedTask).accept(taskNode, 0);
-            for (MethodNode method : taskNode.methods) {
-                new Analyzer<BasicValue>(new BasicVerifier()).analyze(taskNode.name, method);
-            }
-            check(true, "Patched delayed refill passes JVM stack and local-variable checks");
-        }
         check(transformer.transform("unrelated", "unrelated", input) == input, "Other classes unchanged");
         check(transformer.transform("invtweaks.InvTweaksHandlerAutoRefill", "invtweaks.InvTweaksHandlerAutoRefill", null) == null,
                 "Missing optional mod is harmless");
@@ -91,12 +77,23 @@ public final class DrawerAutoRefillProbe {
                 "Repeated transformation does not duplicate the guard");
         ClassNode node = new ClassNode(); new ClassReader(output).accept(node, ClassReader.EXPAND_FRAMES);
         int guards = 0;
+        int swaps = 0;
         for (MethodNode method : node.methods) {
             if ((method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE)) == 0)
                 new Analyzer<BasicValue>(new BasicVerifier()).analyze(node.name, method);
             for (AbstractInsnNode instruction : method.instructions.toArray())
                 if (instruction instanceof MethodInsnNode) {
                     MethodInsnNode call = (MethodInsnNode) instruction;
+                    if (call.owner.equals("newearth/client/DrawerAutoRefill") && call.name.equals("refillSelectedStack")) {
+                        swaps++;
+                        check(method.name.equals("autoRefillSlot") && call.desc.equals("(IIZ)Z"),
+                                "Atomic swap runs in the dispatcher");
+                        JumpInsnNode handled = (JumpInsnNode) call.getNext();
+                        AbstractInsnNode exit = handled.label.getNext();
+                        while (exit.getOpcode() < 0) exit = exit.getNext();
+                        check(handled.getOpcode() == Opcodes.IFNE && exit.getOpcode() == Opcodes.RETURN,
+                                "Handled refill skips creating and queuing the legacy task");
+                    }
                     if (call.owner.equals("newearth/client/DrawerAutoRefill") && call.name.equals("suppress")) {
                         guards++;
                         check(method.name.equals("autoRefillSlot"), "Guard precedes refill scheduling only");
@@ -104,6 +101,7 @@ public final class DrawerAutoRefillProbe {
                 }
         }
         check(guards == 1, "Exactly one suppression guard installed");
+        check(swaps == 1, "Actual Inventory Tweaks dispatcher receives exactly one atomic swap hook");
         // Load and execute the actual patched class with a true guard, without creating a game or inventory.
         ClassWriter hook = new ClassWriter(0);
         hook.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "newearth/client/DrawerAutoRefill", null, "java/lang/Object", null);

@@ -9,12 +9,10 @@ import org.objectweb.asm.tree.*;
 /** Optional client compatibility; Inventory Tweaks is not a build or runtime dependency. */
 public final class InventoryTweaksTransformer implements IClassTransformer, Opcodes {
     private static final String HOOK = "newearth/client/DrawerAutoRefill";
-    private static final String REFILL_TASK = "invtweaks.InvTweaksHandlerAutoRefill$1";
-    private static final String MANAGER = "invtweaks/container/ContainerSectionManager";
+    private static final String REFILL_TASK = "invtweaks/InvTweaksHandlerAutoRefill$1";
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
-        if (bytes != null && REFILL_TASK.equals(transformedName)) return patchRefillTask(bytes);
         if (bytes == null || !"invtweaks.InvTweaksHandlerAutoRefill".equals(transformedName)) return bytes;
         ClassNode node = new ClassNode();
         new ClassReader(bytes).accept(node, ClassReader.EXPAND_FRAMES);
@@ -37,6 +35,9 @@ public final class InventoryTweaksTransformer implements IClassTransformer, Opco
             guard.add(proceed);
             guard.add(new FrameNode(F_NEW, 4, new Object[] {node.name, INTEGER, "java/lang/String", INTEGER}, 0, new Object[0]));
             method.instructions.insert(guard);
+            if (!patchRefillDispatch(method)) {
+                System.err.println("[NewEarth] Unsupported Inventory Tweaks refill dispatch; atomic swap not installed");
+            }
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
             node.accept(writer);
             System.out.println("[NewEarth] Inventory Tweaks drawer auto-refill guard installed");
@@ -46,54 +47,48 @@ public final class InventoryTweaksTransformer implements IClassTransformer, Opco
         return bytes;
     }
 
-    private static byte[] patchRefillTask(byte[] bytes) {
-        ClassNode node = new ClassNode();
-        new ClassReader(bytes).accept(node, ClassReader.EXPAND_FRAMES);
-        if (!hasField(node, "containerMgr", "L" + MANAGER + ";") || !hasField(node, "i", "I")
-                || !hasField(node, "targetedSlot", "I") || !hasField(node, "expectedItemId", "Ljava/lang/String;")
-                || !hasField(node, "refillBeforeBreak", "Z")) return bytes;
-        for (MethodNode method : node.methods) {
-            if (!"run".equals(method.name) || !"()V".equals(method.desc)) continue;
-            boolean hasLegacyMove = false;
-            for (AbstractInsnNode instruction : method.instructions.toArray()) {
-                if (!(instruction instanceof MethodInsnNode)) continue;
-                MethodInsnNode call = (MethodInsnNode) instruction;
-                if (HOOK.equals(call.owner)) return bytes;
-                hasLegacyMove |= MANAGER.equals(call.owner) && "move".equals(call.name) && "(II)Z".equals(call.desc);
+    private static boolean patchRefillDispatch(MethodNode method) {
+        MethodInsnNode dispatch = null;
+        MethodInsnNode queue = null;
+        for (AbstractInsnNode instruction : method.instructions.toArray()) {
+            if (!(instruction instanceof MethodInsnNode)) continue;
+            MethodInsnNode call = (MethodInsnNode) instruction;
+            if ("invtweaks/InvTweaks".equals(call.owner)) {
+                if ("getInstance".equals(call.name) && "()Linvtweaks/InvTweaks;".equals(call.desc)) dispatch = call;
+                if ("addScheduledTask".equals(call.name) && "(Ljava/lang/Runnable;)V".equals(call.desc)) queue = call;
             }
-            if (!hasLegacyMove) return bytes;
-
-            LabelNode legacy = new LabelNode();
-            InsnList guard = new InsnList();
-            loadField(guard, node, "containerMgr", "L" + MANAGER + ";");
-            guard.add(new MethodInsnNode(INVOKEVIRTUAL, MANAGER, "getContainer", "()Lnet/minecraft/inventory/Container;", false));
-            loadField(guard, node, "i", "I");
-            loadField(guard, node, "targetedSlot", "I");
-            loadField(guard, node, "expectedItemId", "Ljava/lang/String;");
-            loadField(guard, node, "refillBeforeBreak", "Z");
-            guard.add(new MethodInsnNode(INVOKESTATIC, HOOK, "refillEmptyHand",
-                    "(Ljava/lang/Object;IILjava/lang/String;Z)Z", false));
-            guard.add(new JumpInsnNode(IFEQ, legacy));
-            guard.add(new InsnNode(RETURN));
-            guard.add(legacy);
-            guard.add(new FrameNode(F_NEW, 1, new Object[]{node.name}, 0, new Object[0]));
-            method.instructions.insert(guard);
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            node.accept(writer);
-            return writer.toByteArray();
         }
-        return bytes;
-    }
-
-    private static boolean hasField(ClassNode owner, String name, String descriptor) {
-        for (FieldNode field : owner.fields) {
-            if (name.equals(field.name) && descriptor.equals(field.desc) && (field.access & ACC_STATIC) == 0) return true;
+        if (dispatch == null || queue == null) return false;
+        AbstractInsnNode init = previousInstruction(queue);
+        if (!(init instanceof MethodInsnNode)) return false;
+        MethodInsnNode task = (MethodInsnNode) init;
+        if (!REFILL_TASK.equals(task.owner) || !"init".equals(task.name)
+                || !"(IIZ)Ljava/lang/Runnable;".equals(task.desc)) return false;
+        AbstractInsnNode beforeBreak = previousInstruction(task);
+        AbstractInsnNode target = previousInstruction(beforeBreak);
+        AbstractInsnNode source = previousInstruction(target);
+        if (beforeBreak.getOpcode() != ILOAD || target.getOpcode() != ILOAD || source.getOpcode() != ILOAD) return false;
+        // The existing final return is already a branch target with a stack-map frame.
+        LabelNode exit = null;
+        AbstractInsnNode last = queue.getNext();
+        while (last != null && last.getOpcode() < 0) {
+            if (exit == null && last instanceof LabelNode) exit = (LabelNode) last;
+            last = last.getNext();
         }
-        return false;
-    }
+        if (exit == null || last == null || last.getOpcode() != RETURN) return false;
 
-    private static void loadField(InsnList code, ClassNode owner, String name, String descriptor) {
-        code.add(new VarInsnNode(ALOAD, 0));
-        code.add(new FieldInsnNode(GETFIELD, owner.name, name, descriptor));
+        InsnList swap = new InsnList();
+        swap.add(new VarInsnNode(ILOAD, ((VarInsnNode) source).var));
+        swap.add(new VarInsnNode(ILOAD, ((VarInsnNode) target).var));
+        swap.add(new VarInsnNode(ILOAD, ((VarInsnNode) beforeBreak).var));
+        swap.add(new MethodInsnNode(INVOKESTATIC, HOOK, "refillSelectedStack", "(IIZ)Z", false));
+        swap.add(new JumpInsnNode(IFNE, exit));
+        method.instructions.insertBefore(dispatch, swap);
+        return true;
+    }
+    private static AbstractInsnNode previousInstruction(AbstractInsnNode at) {
+        AbstractInsnNode previous = at.getPrevious();
+        while (previous != null && previous.getOpcode() < 0) previous = previous.getPrevious();
+        return previous;
     }
 }
