@@ -68,7 +68,7 @@ public final class Ae2Probe {
             for (String feature : new String[]{"CHANNELS","QUANTUM_NETWORK_BRIDGE","QUANTUM_LINKING_CARD","SPATIAL_IO",
                     "CERTUS_ORE","CHARGED_CERTUS_ORE","CERTUS_QUARTZ_WORLD_GEN","METEORITE_WORLD_GEN","SPAWN_PRESSES_IN_METEORITES","METEORITE_COMPASS",
                     "SMART_CABLES","DENSE_CABLES","PORTABLE_CELL","MATTER_CANNON","CHARGED_STAFF","ENTROPY_MANIPULATOR",
-                    "COLOR_APPLICATOR","PAINT_BALLS","POWER_GEN","PANELS","STORAGE_MONITOR","PART_CONVERSION_MONITOR"}) {
+                    "COLOR_APPLICATOR","PAINT_BALLS","POWER_GEN","PANELS"}) {
                 check(features.contains(feature), "Retired feature exists in pinned version: " + feature);
                 check(newearth.ContentTransformer.retiredAe2Feature(feature), "Selected feature disabled: " + feature);
             }
@@ -111,6 +111,29 @@ public final class Ae2Probe {
                 if (key.endsWith(".newearth.desc")) {
                     check(originalKeys.contains(key.replace(".newearth.desc", ".name")), "Hover refers to an existing UEL item " + key);
                 } else check(originalKeys.contains(key), "Name or GUI translation exists in UEL " + key);
+            }
+            for (String feature : new String[]{"INSCRIBER","PRINTED_CIRCUITS","STORAGE_MONITOR","PART_CONVERSION_MONITOR"})
+                check(features.contains(feature) && !newearth.ContentTransformer.retiredAe2Feature(feature),
+                        "Restored feature: " + feature);
+            check(!Ae2Integration.retired("part", 400) && !Ae2Integration.retired("part", 420)
+                    && !Ae2Integration.retired("crafting_monitor", 0), "Three monitors remain obtainable");
+            com.google.gson.JsonObject monitor = new com.google.gson.JsonParser().parse(new String(read(jar,
+                    "assets/appliedenergistics2/recipes/network/parts/monitors_storage.json"), "UTF-8")).getAsJsonObject();
+            Ae2Integration.rewriteRecipe(monitor, "appliedenergistics2");
+            check(monitor.get("ingredients").toString().contains("material.silicon_print"), "Silicon plate has a monitor recipe");
+            net.minecraft.init.Bootstrap.register();
+            try (java.net.URLClassLoader upstream = new java.net.URLClassLoader(
+                    new java.net.URL[]{runtimeJar.toURI().toURL()}, Ae2Probe.class.getClassLoader())) {
+                net.minecraft.item.ItemStack input = new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT);
+                net.minecraft.item.ItemStack output = new net.minecraft.item.ItemStack(net.minecraft.init.Items.GOLD_INGOT);
+                Object recipe = Ae2Integration.siliconPressingRecipe(upstream, input, output);
+                Class<?> recipeType = recipe.getClass();
+                check(((List<?>) recipeType.getMethod("getInputs").invoke(recipe)).equals(Collections.singletonList(input)),
+                        "Inscriber receives one ingredient");
+                check(((List<?>) recipeType.getMethod("getTopInputs").invoke(recipe)).isEmpty()
+                        && ((List<?>) recipeType.getMethod("getBottomInputs").invoke(recipe)).isEmpty(),
+                        "Inscriber leaves both mold slots empty");
+                check(recipeType.getMethod("getOutput").invoke(recipe) == output, "Inscriber recipe records its output");
             }
             checkOreDefinitions(jar);
             checkPairingPermissions(jar,transformer);

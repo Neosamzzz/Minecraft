@@ -1,9 +1,11 @@
 package newearth.compat.ae2;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -61,7 +63,24 @@ public final class Ae2Integration {
                 }
             }
         }
+        if (json.isJsonObject()) useSiliconPlateInMonitorRecipe(json.getAsJsonObject());
         rewriteInputs(json);
+    }
+
+    private static void useSiliconPlateInMonitorRecipe(JsonObject recipe) {
+        JsonElement result = recipe.get("result");
+        if (result == null || !result.isJsonObject() || !result.getAsJsonObject().has("part")
+                || !"part.storage_monitor".equals(result.getAsJsonObject().get("part").getAsString())) return;
+        for (JsonElement ingredient : recipe.getAsJsonArray("ingredients")) {
+            if (ingredient.isJsonObject() && ingredient.getAsJsonObject().has("ore")
+                    && "itemIlluminatedPanel".equals(ingredient.getAsJsonObject().get("ore").getAsString())) {
+                JsonObject panel = ingredient.getAsJsonObject();
+                panel.remove("ore");
+                panel.addProperty("type", "appliedenergistics2:part");
+                panel.addProperty("part", "material.silicon_print");
+                return;
+            }
+        }
     }
 
     private static void removeConstantOption(JsonObject object, String key, String value) {
@@ -200,13 +219,13 @@ public final class Ae2Integration {
 
     public static boolean retired(String path, int meta) {
         if (path.equals("part")) return meta >= 40 && meta <= 76 || meta >= 500 && meta <= 516
-                || meta == 160 || meta == 180 || meta == 200 || meta == 400 || meta == 420;
+                || meta == 160 || meta == 180 || meta == 200;
         if (path.equals("material")) return meta == 59 || meta >= 32 && meta <= 34;
         if (path.startsWith("spatial_")) return true;
         return Arrays.asList("controller", "portable_cell", "matter_cannon", "charged_staff",
                 "biometric_card",
                 "entropy_manipulator", "color_applicator", "paint_ball", "quantum_ring", "quantum_link",
-                "vibration_chamber", "crafting_monitor").contains(path);
+                "vibration_chamber").contains(path);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -217,5 +236,33 @@ public final class Ae2Integration {
         for (IRecipe recipe : registry.getValuesCollection())
             if (retired(recipe.getRecipeOutput())) removed.add(recipe.getRegistryName());
         for (ResourceLocation id : removed) registry.remove(id);
+        registerSiliconPressing();
+    }
+
+    private static void registerSiliconPressing() {
+        Item gc = Item.getByNameOrId("galacticraftcore:basic_item");
+        Item material = Item.getByNameOrId("appliedenergistics2:material");
+        if (gc == null || material == null) throw new IllegalStateException("Missing silicon pressing ingredients");
+        try {
+            Object api = Class.forName("appeng.api.AEApi").getMethod("instance").invoke(null);
+            Object registries = Class.forName("appeng.api.IAppEngApi").getMethod("registries").invoke(api);
+            Object inscriber = Class.forName("appeng.api.features.IRegistryContainer").getMethod("inscriber").invoke(registries);
+            Class<?> recipeType = Class.forName("appeng.api.features.IInscriberRecipe");
+            Object recipe = siliconPressingRecipe(Ae2Integration.class.getClassLoader(),
+                    new ItemStack(gc, 1, 2), new ItemStack(material, 1, 20));
+            Class.forName("appeng.api.features.IInscriberRegistry").getMethod("addRecipe", recipeType).invoke(inscriber, recipe);
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Cannot register the NewEarth GC silicon pressing recipe", error);
+        }
+    }
+
+    static Object siliconPressingRecipe(ClassLoader loader, ItemStack input, ItemStack output) throws ReflectiveOperationException {
+        Class<?> modeType = Class.forName("appeng.api.features.InscriberProcessType", true, loader);
+        Object press = modeType.getField("PRESS").get(null);
+        // The upstream builder requires an occupied plate slot. The machine can match empty plate lists.
+        Constructor<?> recipe = Class.forName("appeng.core.features.registries.inscriber.InscriberRecipe", true, loader)
+                .getDeclaredConstructor(Collection.class, ItemStack.class, List.class, List.class, modeType);
+        recipe.setAccessible(true);
+        return recipe.newInstance(Collections.singletonList(input), output, Collections.emptyList(), Collections.emptyList(), press);
     }
 }

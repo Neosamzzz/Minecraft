@@ -134,7 +134,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
 
     public static boolean allowAe2Material(Enum<?> material) {
         String name = material.name();
-        return name.equals("BLANK_PATTERN") || name.equals("WIRELESS_BOOSTER")
+        return name.equals("SILICON_PRINT") || name.equals("BLANK_PATTERN") || name.equals("WIRELESS_BOOSTER")
                 || name.startsWith("CARD_") && !name.equals("CARD_QUANTUM_LINK");
     }
 
@@ -215,12 +215,10 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
             case "PURE_CRYSTALS":
             case "CRYSTAL_SEEDS":
             case "PROCESSORS":
-            case "PRINTED_CIRCUITS":
             case "PRESSES":
             case "MATTER_BALL":
             case "CORES":
             case "GRIND_STONE":
-            case "INSCRIBER":
             case "CRYSTAL_GROWTH_ACCELERATOR":
             case "DECORATIVE_BLOCKS":
             case "DECORATIVE_LIGHTS":
@@ -253,8 +251,6 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
             case "PAINT_BALLS":
             case "POWER_GEN":
             case "PANELS":
-            case "STORAGE_MONITOR":
-            case "PART_CONVERSION_MONITOR":
                 return true;
             default:
                 return false;
