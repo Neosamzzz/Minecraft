@@ -122,6 +122,7 @@ public final class Ae2Probe {
             Ae2Integration.rewriteRecipe(monitor, "appliedenergistics2");
             check(monitor.get("ingredients").toString().contains("material.silicon_print"), "Silicon plate has a monitor recipe");
             net.minecraft.init.Bootstrap.register();
+            checkBusPorts(jar, transformer);
             try (java.net.URLClassLoader upstream = new java.net.URLClassLoader(
                     new java.net.URL[]{runtimeJar.toURI().toURL()}, Ae2Probe.class.getClassLoader())) {
                 net.minecraft.item.ItemStack input = new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT);
@@ -158,6 +159,72 @@ public final class Ae2Probe {
         }
         System.out.println("AE2: " + checks + " checks passed (actual UEL v0.56.6; no game or save modified)");
     }
+    private static void checkBusPorts(ZipFile jar, newearth.ContentTransformer transformer) throws Exception {
+        for (String target : Arrays.asList("appeng.parts.automation.PartSharedItemBus",
+                "appeng.fluids.parts.PartFluidImportBus", "appeng.fluids.parts.PartFluidExportBus")) {
+            byte[] original = read(jar, target.replace('.', '/') + ".class");
+            byte[] patched = transformer.transform(target, target, original);
+            check(patched != original && transformer.transform(target, target, patched) == patched,
+                    "Port routing is installed once: " + target);
+            ClassNode type = node(patched);
+            for (MethodNode method : type.methods)
+                if (method.name.equals("getHandler") || method.name.equals("doBusWork"))
+                    new Analyzer<BasicValue>(new BasicVerifier()).analyze(type.name, method);
+        }
+
+        net.minecraft.item.ItemStack[] stacks = {
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.COAL, 4),
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT, 3)};
+        net.minecraft.inventory.ISidedInventory inventory = (net.minecraft.inventory.ISidedInventory) java.lang.reflect.Proxy.newProxyInstance(
+                Ae2Probe.class.getClassLoader(), new Class<?>[]{net.minecraft.inventory.ISidedInventory.class}, (proxy, method, args) -> {
+                    switch (method.getName()) {
+                        case "getSizeInventory": return stacks.length;
+                        case "getInventoryStackLimit": return 64;
+                        case "getSlotsForFace": return args[0] == net.minecraft.util.EnumFacing.DOWN ? new int[]{1} : new int[]{0};
+                        case "getStackInSlot": return stacks[(Integer) args[0]];
+                        case "canExtractItem": return (Integer) args[0] == 1;
+                        case "isItemValidForSlot":
+                        case "canInsertItem": return (Integer) args[0] == 0 && ((net.minecraft.item.ItemStack) args[1]).getItem() == net.minecraft.init.Items.COAL;
+                        case "decrStackSize": return stacks[(Integer) args[0]].splitStack((Integer) args[1]);
+                        case "setInventorySlotContents": stacks[(Integer) args[0]] = (net.minecraft.item.ItemStack) args[1]; return null;
+                        case "markDirty": return null;
+                        default: throw new AssertionError(method.getName());
+                    }
+                });
+        net.minecraft.tileentity.TileEntity machine = new net.minecraft.tileentity.TileEntity() {
+            @SuppressWarnings("unchecked")
+            @Override public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability,
+                                                  net.minecraft.util.EnumFacing side) {
+                if (net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == capability)
+                    return (T) new net.minecraftforge.items.wrapper.SidedInvWrapper(inventory, side);
+                return null;
+            }
+        };
+        net.minecraft.util.EnumFacing[] sides = net.minecraft.util.EnumFacing.VALUES;
+        Ae2BusPorts.SidedItems intake = new Ae2BusPorts.SidedItems(machine, inventory, sides, true);
+        check(intake.getSlots() == 2 && intake.getStackInSlot(0).isEmpty(), "Input aliases stay hidden from the item collector");
+        check(intake.extractItem(1, 6, true).getCount() == 3 && stacks[1].getCount() == 3,
+                "Another face can simulate extraction from the one physical output slot");
+        check(intake.extractItem(1, 2, false).getCount() == 2 && stacks[1].getCount() == 1 && stacks[0].getCount() == 4,
+                "Actual extraction leaves the input untouched");
+        Ae2BusPorts.SidedItems feeder = new Ae2BusPorts.SidedItems(machine, inventory, sides, false);
+        check(feeder.insertItem(1, stacks[0].copy(), true).getCount() == 4
+                && feeder.insertItem(0, stacks[0].copy(), true).isEmpty(), "Delivery respects the machine's slot permissions");
+
+        net.minecraftforge.fluids.FluidTank water = new net.minecraftforge.fluids.FluidTank(net.minecraftforge.fluids.FluidRegistry.WATER, 800, 1000);
+        net.minecraftforge.fluids.FluidTank lava = new net.minecraftforge.fluids.FluidTank(net.minecraftforge.fluids.FluidRegistry.LAVA, 900, 1000);
+        net.minecraftforge.fluids.FluidTank filter = new net.minecraftforge.fluids.FluidTank(net.minecraftforge.fluids.FluidRegistry.LAVA, 1, 1000);
+        Ae2BusPorts.FluidPorts fluidPorts = new Ae2BusPorts.FluidPorts(Arrays.asList(water, lava), filter);
+        net.minecraftforge.fluids.FluidStack fluid = fluidPorts.drain(500, false);
+        check(fluid != null && fluid.getFluid() == net.minecraftforge.fluids.FluidRegistry.LAVA
+                && water.getFluidAmount() == 800 && lava.getFluidAmount() == 900, "Fluid filter selects an alternate output port without withdrawing");
+        fluid.amount = 300;
+        check(fluidPorts.drain(fluid, true).amount == 300 && lava.getFluidAmount() == 600 && water.getFluidAmount() == 800,
+                "Commit drains the sampled port and only the accepted amount");
+        check(fluidPorts.fill(new net.minecraftforge.fluids.FluidStack(net.minecraftforge.fluids.FluidRegistry.LAVA, 150), true) == 150
+                && lava.getFluidAmount() == 750 && water.getFluidAmount() == 800, "Delivery chooses the port that accepts the fluid");
+    }
+
     private static void checkOreDefinitions(ZipFile jar) throws Exception {
         ClassNode blocks = node(read(jar,"appeng/core/api/definitions/ApiBlocks.class"));
         Map<String,Set<String>> guards = new HashMap<>(); String current = null;

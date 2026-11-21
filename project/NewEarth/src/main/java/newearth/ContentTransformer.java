@@ -9,6 +9,10 @@ import org.objectweb.asm.tree.*;
 public final class ContentTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
+        if ("appeng.parts.automation.PartSharedItemBus".equals(transformedName)
+                || "appeng.fluids.parts.PartFluidImportBus".equals(transformedName)
+                || "appeng.fluids.parts.PartFluidExportBus".equals(transformedName))
+            return routeAe2BusPorts(bytes, transformedName);
         if ("appeng.items.materials.ItemMaterial".equals(transformedName)) return filterAe2Materials(bytes);
         // All upstream processing recipes belong to the retired material chain or its machines.
         if ("appeng.recipes.AERecipeLoader".equals(transformedName))
@@ -130,6 +134,60 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 && net.minecraftforge.fml.relauncher.FMLLaunchHandler.side() == net.minecraftforge.fml.relauncher.Side.SERVER) return bytes;
         if (blocks ? changes == 0 : changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
+    }
+
+    private static byte[] routeAe2BusPorts(byte[] bytes, String type) {
+        final String hook = "newearth/compat/ae2/Ae2BusPorts";
+        final String targetSide = "Lnet/minecraft/tileentity/TileEntity;Lnet/minecraft/util/EnumFacing;";
+        final String capabilitySide = "Lnet/minecraftforge/common/capabilities/Capability;Lnet/minecraft/util/EnumFacing;";
+        final String fluidHandler = "Lnet/minecraftforge/fluids/capability/IFluidHandler;";
+        boolean items = type.endsWith("PartSharedItemBus");
+        boolean importFluids = type.endsWith("PartFluidImportBus");
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        int changed = 0;
+        for (MethodNode method : node.methods) {
+            if (!method.name.equals(items ? "getHandler" : "doBusWork")) continue;
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (!(instruction instanceof MethodInsnNode)) continue;
+                MethodInsnNode call = (MethodInsnNode) instruction;
+                if (call.owner.equals(hook)) return bytes;
+                if (items && call.owner.equals("appeng/util/InventoryAdaptor") && call.name.equals("getAdaptor")
+                        && call.desc.equals("(" + targetSide + ")Lappeng/util/InventoryAdaptor;")) {
+                    InsnList direction = new InsnList();
+                    direction.add(new VarInsnNode(ALOAD, 0));
+                    direction.add(new TypeInsnNode(INSTANCEOF, "appeng/parts/automation/PartImportBus"));
+                    method.instructions.insertBefore(call, direction);
+                    MethodInsnNode route = new MethodInsnNode(INVOKESTATIC, hook, "itemAdaptor",
+                            "(" + targetSide + "Z)Ljava/lang/Object;", false);
+                    method.instructions.set(call, route);
+                    method.instructions.insert(route, new TypeInsnNode(CHECKCAST, "appeng/util/InventoryAdaptor"));
+                    changed++;
+                } else if (!items && call.owner.equals("net/minecraft/tileentity/TileEntity")) {
+                    if (call.name.equals("hasCapability") && call.desc.equals("(" + capabilitySide + ")Z")) {
+                        method.instructions.set(call, new MethodInsnNode(INVOKESTATIC, hook, "hasFluidPort",
+                                "(Lnet/minecraft/tileentity/TileEntity;" + capabilitySide + ")Z", false));
+                        changed++;
+                    } else if (call.name.equals("getCapability") && call.desc.equals("(" + capabilitySide + ")Ljava/lang/Object;")) {
+                        InsnList filter = new InsnList();
+                        if (importFluids) {
+                            filter.add(new VarInsnNode(ALOAD, 0));
+                            filter.add(new LdcInsnNode("config"));
+                            filter.add(new MethodInsnNode(INVOKEVIRTUAL, "appeng/fluids/parts/PartSharedFluidBus",
+                                    "getFluidInventoryByName", "(Ljava/lang/String;)" + fluidHandler, false));
+                        } else filter.add(new InsnNode(ACONST_NULL));
+                        method.instructions.insertBefore(call, filter);
+                        method.instructions.set(call, new MethodInsnNode(INVOKESTATIC, hook, "fluidPort",
+                                "(Lnet/minecraft/tileentity/TileEntity;" + capabilitySide + fluidHandler + ")" + fluidHandler, false));
+                        changed++;
+                    }
+                }
+            }
+        }
+        if (changed != (items ? 1 : 2)) throw new IllegalStateException("Unsupported AE2 bus " + type);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        node.accept(writer);
+        return writer.toByteArray();
     }
 
     public static boolean allowAe2Material(Enum<?> material) {
