@@ -3,6 +3,10 @@ package newearth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.jar.JarFile;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Moon;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
@@ -19,6 +23,11 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.analysis.Analyzer;
+import org.objectweb.asm.tree.analysis.BasicVerifier;
 
 /** Exercises manufacturing retirement and retained resources using real recipe registries. */
 public final class ProgressionProbe {
@@ -43,6 +52,7 @@ public final class ProgressionProbe {
         net.minecraft.launchwrapper.Launch.blackboard = new HashMap<>();
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
+        checkAstroMining();
         check(!ContentPruning.retiredOutput(null), "Null unlock stack is not a retired item");
         check(ContentPruning.allowSchematic(new micdoodle8.mods.galacticraft.core.schematic.SchematicRocketT1()),
                 "GC built-in T1 page with null required item must register");
@@ -124,6 +134,46 @@ public final class ProgressionProbe {
         check(proxima.getTierRequirement() == 7 && barnarda.getTierRequirement() == 7 && moon.getTierRequirement() == 7, "Preserve exoplanet T7 gates");
         check(kepler.getTierRequirement() == 9, "Custom T9 reaches Kepler before final core manufacture");
         System.out.println("NewEarth progression: " + checks + " checks passed (isolated; no Forge server or flight)");
+    }
+
+    private static void checkAstroMining() throws Exception {
+        net.minecraft.nbt.NBTTagList samples = new net.minecraft.nbt.NBTTagList();
+        ItemStack sample = new ItemStack(Items.COAL);
+        samples.appendTag(sample.writeToNBT(new net.minecraft.nbt.NBTTagCompound()));
+        check(AstroMining.findSample(samples, new ItemStack(Items.COAL, 32, 0)) == 0, "Discard samples ignore stack size");
+        check(AstroMining.findSample(samples, new ItemStack(Items.COAL, 32, 1)) < 0, "Discard samples respect subtypes");
+        ItemStack named = sample.copy().setStackDisplayName("Keep me");
+        check(AstroMining.findSample(samples, named) < 0, "Discard samples respect tags");
+
+        String runtime = System.getenv("NEWEARTH_RUNTIME_MODS");
+        if (runtime == null || runtime.isEmpty()) return;
+        File[] jars = new File(runtime).listFiles((directory, name) -> name.endsWith(".jar"));
+        if (jars == null) throw new IllegalArgumentException("Missing runtime mods directory " + runtime);
+        String root = "micdoodle8/mods/galacticraft/planets/asteroids/";
+        String[] targets = {"entities/EntityAstroMiner", "tile/TileEntityMinerBase", "client/gui/GuiAstroMinerDock"};
+        AstroMiningTransformer transformer = new AstroMiningTransformer();
+        int verified = 0;
+        for (File file : jars) try (JarFile jar = new JarFile(file)) {
+            for (String target : targets) {
+                java.util.jar.JarEntry entry = jar.getJarEntry(root + target + ".class");
+                if (entry == null) continue;
+                byte[] original;
+                try (InputStream input = jar.getInputStream(entry); java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream()) {
+                    byte[] buffer = new byte[8192];
+                    for (int count; (count = input.read(buffer)) != -1;) output.write(buffer, 0, count);
+                    original = output.toByteArray();
+                }
+                String type = (root + target).replace('/', '.');
+                byte[] patched = transformer.transform(type, type, original);
+                check(!Arrays.equals(original, patched), "Astro Miner patch installed: " + target);
+                check(transformer.transform(type, type, patched) == patched, "Astro Miner patch idempotent: " + target);
+                ClassNode node = new ClassNode();
+                new ClassReader(patched).accept(node, ClassReader.EXPAND_FRAMES);
+                for (MethodNode method : node.methods) new Analyzer<>(new BasicVerifier()).analyze(node.name, method);
+                verified++;
+            }
+        }
+        check(verified == targets.length, "All installed Astro Miner classes were verified");
     }
 
     public static final class PendingFixture {
