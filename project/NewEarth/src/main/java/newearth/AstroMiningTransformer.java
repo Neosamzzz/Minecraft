@@ -67,7 +67,7 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
                 int speeds = 0;
                 for (AbstractInsnNode instruction : method.instructions.toArray()) {
                     if (instruction instanceof LdcInsnNode && Double.valueOf(0.022D).equals(((LdcInsnNode) instruction).cst)) {
-                        ((LdcInsnNode) instruction).cst = 0.0275D;
+                        ((LdcInsnNode) instruction).cst = 0.044D;
                         speeds++;
                     }
                 }

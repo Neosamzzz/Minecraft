@@ -170,6 +170,13 @@ public final class ProgressionProbe {
                 ClassNode node = new ClassNode();
                 new ClassReader(patched).accept(node, ClassReader.EXPAND_FRAMES);
                 for (MethodNode method : node.methods) new Analyzer<>(new BasicVerifier()).analyze(node.name, method);
+                if (target.equals("entities/EntityAstroMiner")) {
+                    check(node.methods.stream().filter(method -> method.name.equals("<init>"))
+                            .flatMap(method -> Arrays.stream(method.instructions.toArray()))
+                            .anyMatch(instruction -> instruction instanceof org.objectweb.asm.tree.LdcInsnNode
+                                    && Double.valueOf(0.044D).equals(((org.objectweb.asm.tree.LdcInsnNode) instruction).cst)),
+                            "Installed Astro Miner uses twice the stock base speed");
+                }
                 verified++;
             }
         }
