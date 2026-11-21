@@ -54,7 +54,7 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
                 changes++;
             }
         }
-        if (changes != (target.equals(MINER) ? 5 : 1))
+        if (changes != (target.equals(MINER) ? 12 : 1))
             throw new IllegalStateException("Unsupported Galacticraft Astro Miner class " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
@@ -96,6 +96,12 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
                 return 1;
             case "emptyInventory":
                 return patchUnload(method);
+            case "prepareMove":
+                return patchSliceDelay(method);
+            case "moveToPosX":
+            case "moveToPosY":
+            case "moveToPosZ":
+                return patchMovementSpeed(method);
             default:
                 return patchDrilling(method);
         }
@@ -123,9 +129,40 @@ public final class AstroMiningTransformer implements IClassTransformer, Opcodes 
             AbstractInsnNode distance = previousOpcode(call);
             AbstractInsnNode limit = previousOpcode(distance);
             if (distance != null && limit != null && distance.getOpcode() == ICONST_2 && limit.getOpcode() == ICONST_1) {
-                method.instructions.set(limit, new InsnNode(ICONST_2));
+                method.instructions.set(limit, new InsnNode(ICONST_4));
                 changes++;
             }
+        }
+        return changes;
+    }
+
+    private static int patchMovementSpeed(MethodNode method) {
+        int changes = 0;
+        for (AbstractInsnNode instruction : method.instructions.toArray()) {
+            if (instruction.getOpcode() != GETFIELD || !(instruction instanceof FieldInsnNode)) continue;
+            FieldInsnNode field = (FieldInsnNode) instruction;
+            if (!field.owner.equals(MINER) || !field.name.equals("speed") || !field.desc.equals("D")) continue;
+            method.instructions.insertBefore(field, new InsnNode(DUP));
+            method.instructions.insert(field, hook("movementSpeed", "(L" + MINER + ";D)D"));
+            changes++;
+        }
+        return changes;
+    }
+
+    private static int patchSliceDelay(MethodNode method) {
+        int changes = 0;
+        for (AbstractInsnNode instruction : method.instructions.toArray()) {
+            if (instruction.getOpcode() != PUTFIELD || !(instruction instanceof FieldInsnNode)) continue;
+            FieldInsnNode field = (FieldInsnNode) instruction;
+            AbstractInsnNode delay = previousOpcode(field);
+            if (!field.owner.equals(MINER) || !field.name.equals("mineCountDown")
+                    || delay == null || delay.getOpcode() != ICONST_3) continue;
+            InsnList code = new InsnList();
+            code.add(new InsnNode(DUP));
+            code.add(hook("nextSliceDelay", "(L" + MINER + ";)I"));
+            method.instructions.insertBefore(delay, code);
+            method.instructions.remove(delay);
+            changes++;
         }
         return changes;
     }

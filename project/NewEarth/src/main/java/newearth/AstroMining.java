@@ -29,6 +29,14 @@ public final class AstroMining {
 
     private AstroMining() { }
 
+    public static double movementSpeed(EntityAstroMiner miner, double speed) {
+        return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? speed * 1.75D : speed;
+    }
+
+    public static int nextSliceDelay(EntityAstroMiner miner) {
+        return miner.AIstate == EntityAstroMiner.AISTATE_MINING ? 1 : 3;
+    }
+
     public static void addShafts(EntityAstroMiner miner, List<BlockVec3> points, EnumFacing facing) {
         int y = MathHelper.floor(miner.posY + 1.5D);
         BlockVec3 origin = new BlockVec3(MathHelper.floor(miner.posX + 0.5D), y,
