@@ -130,9 +130,9 @@ newearth.miner.tooltip.dock_chunks=Once assembled, the dock keeps a 3×3 area of
 
 # AE2 integration
 newearth.ae2.retired=Retired from this pack and hidden from crafting and JEI.
-newearth.ae2.more=Hold for installation and requirements:
+newearth.ae2.slot.accepts_upgrades=Supported upgrades
 newearth.ae2.pair.title=Wireless Pairing
 newearth.ae2.pair.input=Input
 newearth.ae2.pair.output=Paired
-newearth.ae2.pair.input_tip=Insert a wireless terminal to bind it to this network. No player permissions are configured.
+newearth.ae2.pair.input_tip=Insert a wireless terminal to bind it to this network.
 newearth.ae2.pair.output_tip=Take the paired terminal and use it within wireless coverage in this dimension.
