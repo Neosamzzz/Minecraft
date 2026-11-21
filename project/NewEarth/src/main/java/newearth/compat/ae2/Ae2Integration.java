@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
+import newearth.ContentTransformer;
 import newearth.NewEarth;
 
 /** Optional AE2 UEL configuration and acquisition rules; early feature filtering lives in ContentTransformer. */
@@ -148,14 +150,10 @@ public final class Ae2Integration {
             case "dustEnderPearl":
                 return "ender_pearl";
             case "material.basic_card":
-            case "material.logic_processor":
             case "material.formation_core":
             case "material.cell1k_part":
                 return "gc/13";
-            case "material.calculation_processor":
-                return "comparator";
             case "material.advanced_card":
-            case "material.engineering_processor":
             case "material.fluix_pearl":
             case "material.annihilation_core":
             case "material.cell4k_part":
@@ -204,8 +202,10 @@ public final class Ae2Integration {
         if (result.has("part")) {
             String part = result.get("part").getAsString();
             if (part.startsWith("paint_ball.") || part.startsWith("lumen_paint_ball.")) return true;
-            if (part.startsWith("material.")) return !part.startsWith("material.card_")
-                    && !part.equals("material.blank_pattern") && !part.equals("material.wireless_booster");
+            if (part.startsWith("material.")) {
+                String name = part.substring("material.".length()).toUpperCase(Locale.ROOT);
+                return !ContentTransformer.allowAe2MaterialName(name);
+            }
         }
         return false;
     }
@@ -236,33 +236,58 @@ public final class Ae2Integration {
         for (IRecipe recipe : registry.getValuesCollection())
             if (retired(recipe.getRecipeOutput())) removed.add(recipe.getRegistryName());
         for (ResourceLocation id : removed) registry.remove(id);
-        registerSiliconPressing();
+        registerPressing();
     }
 
-    private static void registerSiliconPressing() {
-        Item gc = Item.getByNameOrId("galacticraftcore:basic_item");
-        Item material = Item.getByNameOrId("appliedenergistics2:material");
-        if (gc == null || material == null) throw new IllegalStateException("Missing silicon pressing ingredients");
+    private static void registerPressing() {
         try {
+            Class<?> configType = Class.forName("appeng.core.AEConfig");
+            Class<?> featureType = Class.forName("appeng.core.features.AEFeature");
+            Object config = configType.getMethod("instance").invoke(null);
+            java.lang.reflect.Method enabled = configType.getMethod("isFeatureEnabled", featureType);
+            if (!(Boolean) enabled.invoke(config, featureType.getField("INSCRIBER").get(null))
+                    || !(Boolean) enabled.invoke(config, featureType.getField("PRINTED_CIRCUITS").get(null))) return;
+            boolean processors = (Boolean) enabled.invoke(config, featureType.getField("PROCESSORS").get(null));
+            Item gc = Item.getByNameOrId("galacticraftcore:basic_item");
+            Item material = Item.getByNameOrId("appliedenergistics2:material");
+            if (gc == null || material == null) throw new IllegalStateException("Missing inscriber ingredients");
             Object api = Class.forName("appeng.api.AEApi").getMethod("instance").invoke(null);
             Object registries = Class.forName("appeng.api.IAppEngApi").getMethod("registries").invoke(api);
             Object inscriber = Class.forName("appeng.api.features.IRegistryContainer").getMethod("inscriber").invoke(registries);
             Class<?> recipeType = Class.forName("appeng.api.features.IInscriberRecipe");
-            Object recipe = siliconPressingRecipe(Ae2Integration.class.getClassLoader(),
-                    new ItemStack(gc, 1, 2), new ItemStack(material, 1, 20));
-            Class.forName("appeng.api.features.IInscriberRegistry").getMethod("addRecipe", recipeType).invoke(inscriber, recipe);
+            java.lang.reflect.Method addRecipe = Class.forName("appeng.api.features.IInscriberRegistry")
+                    .getMethod("addRecipe", recipeType);
+            for (Object recipe : pressingRecipes(Ae2Integration.class.getClassLoader(), new ItemStack(gc, 1, 2), material, processors))
+                addRecipe.invoke(inscriber, recipe);
         } catch (ReflectiveOperationException error) {
-            throw new IllegalStateException("Cannot register the NewEarth GC silicon pressing recipe", error);
+            throw new IllegalStateException("Cannot register the NewEarth inscriber recipes", error);
         }
     }
 
-    static Object siliconPressingRecipe(ClassLoader loader, ItemStack input, ItemStack output) throws ReflectiveOperationException {
+    static List<Object> pressingRecipes(ClassLoader loader, ItemStack gcSilicon, Item material, boolean processors)
+            throws ReflectiveOperationException {
         Class<?> modeType = Class.forName("appeng.api.features.InscriberProcessType", true, loader);
         Object press = modeType.getField("PRESS").get(null);
+        Object inscribe = modeType.getField("INSCRIBE").get(null);
         // The upstream builder requires an occupied plate slot. The machine can match empty plate lists.
         Constructor<?> recipe = Class.forName("appeng.core.features.registries.inscriber.InscriberRecipe", true, loader)
                 .getDeclaredConstructor(Collection.class, ItemStack.class, List.class, List.class, modeType);
         recipe.setAccessible(true);
-        return recipe.newInstance(Collections.singletonList(input), output, Collections.emptyList(), Collections.emptyList(), press);
+        ItemStack siliconPlate = new ItemStack(material, 1, 20);
+        List<Object> recipes = new ArrayList<>();
+        List<ItemStack> empty = Collections.emptyList();
+        recipes.add(recipe.newInstance(Collections.singletonList(gcSilicon), siliconPlate, empty, empty, inscribe));
+        Item[] boardInputs = {Items.GOLD_INGOT, Items.QUARTZ, Items.DIAMOND};
+        int[] boardTypes = {18, 16, 17};
+        for (int i = 0; i < boardInputs.length; i++) {
+            ItemStack board = new ItemStack(material, 1, boardTypes[i]);
+            recipes.add(recipe.newInstance(Collections.singletonList(new ItemStack(boardInputs[i])), board, empty, empty, inscribe));
+            if (processors) {
+                recipes.add(recipe.newInstance(Collections.singletonList(new ItemStack(Items.REDSTONE)),
+                        new ItemStack(material, 1, 22 + i), Collections.singletonList(board.copy()),
+                        Collections.singletonList(siliconPlate.copy()), press));
+            }
+        }
+        return recipes;
     }
 }

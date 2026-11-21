@@ -191,8 +191,14 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean allowAe2Material(Enum<?> material) {
-        String name = material.name();
+        return allowAe2MaterialName(material.name());
+    }
+
+    public static boolean allowAe2MaterialName(String name) {
         return name.equals("SILICON_PRINT") || name.equals("BLANK_PATTERN") || name.equals("WIRELESS_BOOSTER")
+                || name.equals("LOGIC_PROCESSOR_PRINT") || name.equals("LOGIC_PROCESSOR")
+                || name.equals("CALCULATION_PROCESSOR_PRINT") || name.equals("CALCULATION_PROCESSOR")
+                || name.equals("ENGINEERING_PROCESSOR_PRINT") || name.equals("ENGINEERING_PROCESSOR")
                 || name.startsWith("CARD_") && !name.equals("CARD_QUANTUM_LINK");
     }
 
@@ -272,7 +278,6 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
             case "SKY_STONE":
             case "PURE_CRYSTALS":
             case "CRYSTAL_SEEDS":
-            case "PROCESSORS":
             case "PRESSES":
             case "MATTER_BALL":
             case "CORES":

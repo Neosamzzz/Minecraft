@@ -1,5 +1,8 @@
 package newearth.compat.ae2;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+
 import java.nio.file.*;
 import java.io.*;
 import java.util.*;
@@ -112,9 +115,22 @@ public final class Ae2Probe {
                     check(originalKeys.contains(key.replace(".newearth.desc", ".name")), "Hover refers to an existing UEL item " + key);
                 } else check(originalKeys.contains(key), "Name or GUI translation exists in UEL " + key);
             }
-            for (String feature : new String[]{"INSCRIBER","PRINTED_CIRCUITS","STORAGE_MONITOR","PART_CONVERSION_MONITOR"})
+            for (String feature : new String[]{"INSCRIBER","PRINTED_CIRCUITS","PROCESSORS","STORAGE_MONITOR","PART_CONVERSION_MONITOR"})
                 check(features.contains(feature) && !newearth.ContentTransformer.retiredAe2Feature(feature),
                         "Restored feature: " + feature);
+            String[][] consumers = {
+                {"network/parts/terminals", "logic"},
+                {"network/parts/terminals_crafting", "calculation"},
+                {"network/blocks/storage_drive", "engineering"}
+            };
+            for (String[] consumer : consumers) {
+                com.google.gson.JsonObject recipe = new com.google.gson.JsonParser().parse(new String(read(jar,
+                        "assets/appliedenergistics2/recipes/" + consumer[0] + ".json"), "UTF-8")).getAsJsonObject();
+                Ae2Integration.rewriteRecipe(recipe, "appliedenergistics2");
+                com.google.gson.JsonElement ingredients = recipe.has("key") ? recipe.get("key") : recipe.get("ingredients");
+                check(ingredients.toString().contains("material." + consumer[1] + "_processor"),
+                        "Original processor ingredient retained: " + consumer[0]);
+            }
             check(!Ae2Integration.retired("part", 400) && !Ae2Integration.retired("part", 420)
                     && !Ae2Integration.retired("crafting_monitor", 0), "Three monitors remain obtainable");
             com.google.gson.JsonObject monitor = new com.google.gson.JsonParser().parse(new String(read(jar,
@@ -125,16 +141,7 @@ public final class Ae2Probe {
             checkBusPorts(jar, transformer);
             try (java.net.URLClassLoader upstream = new java.net.URLClassLoader(
                     new java.net.URL[]{runtimeJar.toURI().toURL()}, Ae2Probe.class.getClassLoader())) {
-                net.minecraft.item.ItemStack input = new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT);
-                net.minecraft.item.ItemStack output = new net.minecraft.item.ItemStack(net.minecraft.init.Items.GOLD_INGOT);
-                Object recipe = Ae2Integration.siliconPressingRecipe(upstream, input, output);
-                Class<?> recipeType = recipe.getClass();
-                check(((List<?>) recipeType.getMethod("getInputs").invoke(recipe)).equals(Collections.singletonList(input)),
-                        "Inscriber receives one ingredient");
-                check(((List<?>) recipeType.getMethod("getTopInputs").invoke(recipe)).isEmpty()
-                        && ((List<?>) recipeType.getMethod("getBottomInputs").invoke(recipe)).isEmpty(),
-                        "Inscriber leaves both mold slots empty");
-                check(recipeType.getMethod("getOutput").invoke(recipe) == output, "Inscriber recipe records its output");
+                checkPressingRecipes(upstream);
             }
             checkOreDefinitions(jar);
             checkPairingPermissions(jar,transformer);
@@ -158,6 +165,38 @@ public final class Ae2Probe {
             actualLocale(runtimeJar, resource);
         }
         System.out.println("AE2: " + checks + " checks passed (actual UEL v0.56.6; no game or save modified)");
+    }
+
+    private static void checkPressingRecipes(ClassLoader upstream) throws Exception {
+        ItemStack gcSilicon = new ItemStack(Items.COAL, 1, 2);
+        List<Object> recipes = Ae2Integration.pressingRecipes(upstream, gcSilicon, Items.STICK, true);
+        check(recipes.size() == 7 && Ae2Integration.pressingRecipes(upstream, gcSilicon, Items.STICK, false).size() == 4,
+                "Inscriber restores four boards and three optional processors");
+        ItemStack[] inputs = {gcSilicon, new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.REDSTONE),
+                new ItemStack(Items.QUARTZ), new ItemStack(Items.REDSTONE), new ItemStack(Items.DIAMOND), new ItemStack(Items.REDSTONE)};
+        int[] outputs = {20, 18, 22, 16, 23, 17, 24};
+        Class<?> type = recipes.get(0).getClass();
+        for (int i = 0; i < recipes.size(); i++) {
+            Object recipe = recipes.get(i);
+            List<?> middle = (List<?>) type.getMethod("getInputs").invoke(recipe);
+            List<?> top = (List<?>) type.getMethod("getTopInputs").invoke(recipe);
+            List<?> bottom = (List<?>) type.getMethod("getBottomInputs").invoke(recipe);
+            check(middle.size() == 1 && ItemStack.areItemStacksEqual(inputs[i], (ItemStack) middle.get(0)),
+                    "Inscriber middle ingredient for output " + outputs[i]);
+            check(ItemStack.areItemStacksEqual(new ItemStack(Items.STICK, 1, outputs[i]),
+                    (ItemStack) type.getMethod("getOutput").invoke(recipe)), "Inscriber output " + outputs[i]);
+            String mode = type.getMethod("getProcessType").invoke(recipe).toString();
+            if (outputs[i] < 22) {
+                check(top.isEmpty() && bottom.isEmpty(), "Board pressing has no mold inputs");
+                check(mode.equals("INSCRIBE"), "Board pressing preserves a stray stack in a side slot");
+            } else {
+                check(mode.equals("PRESS"), "Processor assembly consumes both boards");
+                check(top.size() == 1 && ItemStack.areItemStacksEqual(new ItemStack(Items.STICK, 1, outputs[i - 1]),
+                        (ItemStack) top.get(0)), "Processor uses its board");
+                check(bottom.size() == 1 && ItemStack.areItemStacksEqual(new ItemStack(Items.STICK, 1, 20),
+                        (ItemStack) bottom.get(0)), "Processor uses a silicon plate");
+            }
+        }
     }
     private static void checkBusPorts(ZipFile jar, newearth.ContentTransformer transformer) throws Exception {
         for (String target : Arrays.asList("appeng.parts.automation.PartSharedItemBus",
