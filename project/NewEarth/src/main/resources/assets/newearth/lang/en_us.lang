@@ -131,3 +131,7 @@ newearth.miner.fault.path=Path blocked
 newearth.miner.fault.link=Link conflict
 newearth.miner.tooltip.miner_chunks=Once deployed, keeps its own chunk and the adjacent chunk ahead loaded (up to 2). Releases chunks it no longer needs after moving or turning.
 newearth.miner.tooltip.dock_chunks=Once assembled, the dock keeps a 3×3 area of chunks centered on itself loaded.
+
+# AE2 integration
+newearth.ae2.retired=Retired from this pack and hidden from crafting and JEI.
+newearth.ae2.more=Hold for installation and requirements:

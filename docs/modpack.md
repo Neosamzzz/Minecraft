@@ -19,7 +19,8 @@
 | FTB Quests | `FTBQuests-1202.9.6.jar` | 公共团队与任务书 |
 | FTB Library | `[FTB Library（旧版）] FTBLib-5.4.7.0.jar` | 文件名标 5.4.7.0，内部元数据与启动日志为 5.4.7.2 |
 | Item Filters | `[物品过滤器] ItemFilters-1.0.4.2.jar` | |
-| NewEarth | `NewEarth-1.1.7.jar` | 当前仓库构建版本；太阳系整合、七／九／十阶制造与终章 |
+| NewEarth | `NewEarth-2.0.0.jar` | 当前仓库构建版本；太阳系整合、制造、终章与可选 AE2 整合 |
+| AE2 Unofficial Extended Life | `ae2-uel-v0.56.6.jar` | 可选；仓储配置和用法见 [AE2 仓储](../project/NewEarth/items/README.md#ae2-仓储)，不代表正式服已安装 |
 | Saplanting | `saplanting-forge-1.12.2-0.2-serverfix.jar` | [落苗生根服务端修复](../project/Saplanting/README.md)，关闭多线程 |
 | FTB Ultimine | `ftb-ultimine-1202.3.5.jar` | 连锁挖掘，客户端与服务端安装 |
 | Advanced XRay | `xray-1.12.2-1.6.0.jar` | 矿物透视，仅客户端 |
@@ -52,6 +53,7 @@
 | `ftbquests/normal/` | 默认任务定义；游戏规则或 PackMode 可改变模式目录，进度另存在 Library 团队数据中 |
 | `newearth-dimension.cfg` | 终章维度配置，默认维度 ID 为 1020 |
 | `newearth-worldgen.cfg` | 主世界孤岛布局开关与尺寸 |
+| `AppliedEnergistics2/AppliedEnergistics2.cfg` | 功能裁剪、无频道与关闭放置预览；启动时按项合入，不覆盖其他设置 |
 
 固定太阳系组合由 `ExtraPlanets.cfg` 与 `GalaxySpace/dimensions.conf` 共同定义；NewEarth 启动时校验，不自动重写。OTG 预设覆盖和客户端光影参数随 `NewEarth-BiomeBundle-<版本>.zip` 分发。
 

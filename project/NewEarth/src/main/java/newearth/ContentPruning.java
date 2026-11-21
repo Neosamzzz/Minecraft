@@ -55,6 +55,7 @@ public final class ContentPruning {
     }
 
     public static boolean skipRecipe(JsonObject json, String domain) {
+        newearth.compat.ae2.Ae2Integration.rewriteRecipe(json, domain);
         if (MaterialUnification.storageRecipe(json, domain)) return true;
         MaterialUnification.rewrite(json, domain);
         // The retained machine filter originally consumed EP spacesuit cloth.

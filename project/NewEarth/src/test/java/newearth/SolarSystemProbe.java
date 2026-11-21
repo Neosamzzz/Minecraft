@@ -94,6 +94,7 @@ public final class SolarSystemProbe {
         check(PlanetHooks.hasReachableMoonCounterpart("rheya"), "GS Rheya alias matches reachable EP Rhea");
         check(!PlanetHooks.hasReachableMoonCounterpart("charon"), "Charon remains when no reachable replacement exists");
         checkNames();
+        checkAe2FeaturePolicy();
 
         String runtime = System.getenv("NEWEARTH_RUNTIME_MODS");
         if (runtime != null && !runtime.isEmpty()) transformRuntime(new File(runtime));
@@ -101,6 +102,38 @@ public final class SolarSystemProbe {
         String summary = "NewEarth solar system: " + checks + " checks passed (isolated; no world or flight)";
         System.out.println(summary);
         java.nio.file.Files.write(java.nio.file.Paths.get("result.txt"), (summary + "\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    private enum Ae2Feature {
+        QUANTUM_NETWORK_BRIDGE, QUANTUM_LINKING_CARD, SPATIAL_IO, CHANNELS, WIRELESS_ACCESS_TERMINAL
+    }
+
+    private static void checkAe2FeaturePolicy() {
+        EnumSet<Ae2Feature> enabled = EnumSet.noneOf(Ae2Feature.class);
+        for (Ae2Feature feature : Ae2Feature.values()) ContentTransformer.addAe2Feature(enabled, feature);
+        check(enabled.equals(EnumSet.of(Ae2Feature.WIRELESS_ACCESS_TERMINAL)),
+                "Quantum, spatial and channel features are disabled; local wireless is retained");
+    }
+
+    private static void checkAe2Bytecode(JarFile jar) throws Exception {
+        String target = "appeng.core.AEConfig";
+        JarEntry entry = jar.getJarEntry("appeng/core/AEConfig.class");
+        if (entry == null) return;
+        ContentTransformer transformer = new ContentTransformer();
+        byte[] original = readEntry(jar, entry);
+        byte[] patched = transformer.transform(target, target, original);
+        check(!Arrays.equals(original, patched), "Installed AE2 feature initialization is patched");
+        check(transformer.transform(target, target, patched) == patched, "AE2 feature patch is idempotent");
+        ClassNode node = new ClassNode();
+        new ClassReader(patched).accept(node, ClassReader.EXPAND_FRAMES);
+        MethodNode constructor = node.methods.stream().filter(method -> method.name.equals("<init>")
+                && method.desc.equals("(Ljava/io/File;)V")).findFirst().get();
+        new Analyzer<>(new BasicVerifier()).analyze(node.name, constructor);
+        long hooks = Arrays.stream(constructor.instructions.toArray()).filter(instruction -> instruction instanceof MethodInsnNode
+                && ((MethodInsnNode) instruction).owner.equals("newearth/ContentTransformer")
+                && ((MethodInsnNode) instruction).name.equals("addAe2Feature")).count();
+        check(hooks == 2, "Both paths into AE2's in-memory feature set are filtered");
+        System.out.println("Verified installed AE2 feature initialization: " + jar.getName());
     }
 
     private static Moon moon(String name, Planet parent, int tier) {
@@ -130,6 +163,7 @@ public final class SolarSystemProbe {
         Set<String> teleportTypes = new HashSet<>();
         int untouched = 0;
         for (File file : jars) try (JarFile jar = new JarFile(file)) {
+            checkAe2Bytecode(jar);
             if (jar.getJarEntry("com/mjr/extraplanets/ExtraPlanets.class") != null) epFile = file;
             // A target-only test missed TeleportTypeSaturnOrbit being intercepted.
             // Sweep every non-target class, including all four sibling teleport types.

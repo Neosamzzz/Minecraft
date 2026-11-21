@@ -178,6 +178,17 @@ tasks.register('disenchanterCheck', JavaExec) {
 }
 check.dependsOn disenchanterCheck
 
+tasks.register('ae2Check', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'newearth.compat.ae2.Ae2Probe'
+    workingDir = rootProject.file('../../build/checks/newearth/ae2')
+    systemProperty 'newearth.resourceRoot', file('src/main/resources').absolutePath
+    doFirst { workingDir.mkdirs() }
+}
+def ae2RuntimeMods = System.getenv('NEWEARTH_RUNTIME_MODS')
+if (ae2RuntimeMods && new File(ae2RuntimeMods, 'ae2-uel-v0.56.6.jar').isFile()) check.dependsOn 'ae2Check'
+
 // A separate server-only artifact; the ordinary NewEarth client/server JAR is unchanged.
 sourceSets {
     server {

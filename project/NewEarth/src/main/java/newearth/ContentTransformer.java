@@ -1,13 +1,15 @@
 package newearth;
 
+import java.util.EnumSet;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-/** Prevent retired IDs from entering EP's registry, and skip JSON before item resolution. */
+/** Apply pack content rules before optional mods register their features. */
 public final class ContentTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
+        if ("appeng.core.AEConfig".equals(transformedName)) return filterAe2Features(bytes);
         if ("com.mjr.extraplanets.recipes.ExtraPlanets_Recipes".equals(transformedName)
                 || "com.mjr.extraplanets.ExtraPlanets".equals(transformedName))
             return unifyMaterials(bytes, transformedName);
@@ -121,6 +123,64 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 && net.minecraftforge.fml.relauncher.FMLLaunchHandler.side() == net.minecraftforge.fml.relauncher.Side.SERVER) return bytes;
         if (blocks ? changes == 0 : changes != (client ? 2 : 1)) throw new IllegalStateException("Unsupported content pruning target " + transformedName + ": " + changes);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
+    }
+
+    private static byte[] filterAe2Features(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        int replaced = 0;
+        int installed = 0;
+        for (MethodNode method : node.methods) {
+            if (!method.name.equals("<init>") || !method.desc.equals("(Ljava/io/File;)V")) continue;
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (!(instruction instanceof MethodInsnNode)) continue;
+                MethodInsnNode call = (MethodInsnNode) instruction;
+                if (call.owner.equals("java/util/EnumSet") && call.name.equals("add")
+                        && call.desc.equals("(Ljava/lang/Object;)Z")
+                        && call.getPrevious().getPrevious() instanceof FieldInsnNode) {
+                    FieldInsnNode field = (FieldInsnNode) call.getPrevious().getPrevious();
+                    if (!field.owner.equals(node.name) || !field.name.equals("featureFlags")) continue;
+                    method.instructions.set(call, new MethodInsnNode(INVOKESTATIC, "newearth/ContentTransformer",
+                            "addAe2Feature", "(Ljava/util/EnumSet;Ljava/lang/Enum;)Z", false));
+                    replaced++;
+                } else if (call.owner.equals("newearth/ContentTransformer") && call.name.equals("addAe2Feature")) {
+                    installed++;
+                }
+            }
+        }
+        if (installed == 2 && replaced == 0) return bytes;
+        if (replaced != 2 || installed != 0) throw new IllegalStateException("Unsupported AE2 feature initialization");
+        ClassWriter writer = new ClassWriter(0);
+        node.accept(writer);
+        return writer.toByteArray();
+    }
+
+    public static <F extends Enum<F>> boolean addAe2Feature(EnumSet<F> features, F feature) {
+        return !retiredAe2Feature(feature.name()) && features.add(feature);
+    }
+
+    public static boolean retiredAe2Feature(String feature) {
+        switch (feature) {
+            case "QUANTUM_NETWORK_BRIDGE":
+            case "QUANTUM_LINKING_CARD":
+            case "SPATIAL_IO":
+            case "CHANNELS":
+            case "SMART_CABLES":
+            case "DENSE_CABLES":
+            case "PORTABLE_CELL":
+            case "MATTER_CANNON":
+            case "CHARGED_STAFF":
+            case "ENTROPY_MANIPULATOR":
+            case "COLOR_APPLICATOR":
+            case "PAINT_BALLS":
+            case "POWER_GEN":
+            case "PANELS":
+            case "STORAGE_MONITOR":
+            case "PART_CONVERSION_MONITOR":
+                return true;
+            default:
+                return false;
+        }
     }
 
     private static byte[] unifyMaterials(byte[] bytes, String name) {

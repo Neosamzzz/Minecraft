@@ -14,11 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NewEarth.MOD_ID, name = "NewEarth", version = NewEarth.VERSION,
-        dependencies = "required-after:galacticraftcore;required-after:galaxyspace;required-after:extraplanets",
+        dependencies = "required-after:galacticraftcore;required-after:galaxyspace;required-after:extraplanets;after:appliedenergistics2",
         acceptableRemoteVersions = NewEarth.VERSION)
 public final class NewEarth {
     public static final String MOD_ID = "newearth";
-    public static final String VERSION = "1.1.7";
+    public static final String VERSION = "2.0.0";
     static final Logger LOG = LogManager.getLogger("NewEarth");
 
     @Mod.Instance(MOD_ID)
@@ -26,6 +26,7 @@ public final class NewEarth {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        newearth.compat.ae2.Ae2Integration.configure();
         AstroMiningChunks.register(this);
         EndDimension.configure(event.getModConfigurationDirectory());
         newearth.worldgen.WorldGenConfig.load(event.getModConfigurationDirectory());
