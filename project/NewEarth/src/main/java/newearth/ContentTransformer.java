@@ -2,6 +2,7 @@ package newearth;
 
 import java.util.EnumSet;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.common.config.Property;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
@@ -226,12 +227,26 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         new ClassReader(bytes).accept(node, 0);
         int replaced = 0;
         int installed = 0;
+        int configReads = 0;
+        int installedConfigReads = 0;
         for (MethodNode method : node.methods) {
             if (!method.name.equals("<init>") || !method.desc.equals("(Ljava/io/File;)V")) continue;
             for (AbstractInsnNode instruction : method.instructions.toArray()) {
                 if (!(instruction instanceof MethodInsnNode)) continue;
                 MethodInsnNode call = (MethodInsnNode) instruction;
-                if (call.owner.equals("java/util/EnumSet") && call.name.equals("add")
+                if (call.owner.equals("net/minecraftforge/common/config/Property") && call.name.equals("getBoolean")
+                        && call.desc.equals("(Z)Z") && call.getPrevious() instanceof MethodInsnNode
+                        && call.getPrevious().getPrevious() instanceof VarInsnNode) {
+                    MethodInsnNode defaultValue = (MethodInsnNode) call.getPrevious();
+                    VarInsnNode feature = (VarInsnNode) defaultValue.getPrevious();
+                    if (!defaultValue.owner.equals("appeng/core/features/AEFeature")
+                            || !defaultValue.name.equals("isEnabled") || feature.getOpcode() != ALOAD) continue;
+                    method.instructions.insertBefore(call, new VarInsnNode(ALOAD, feature.var));
+                    method.instructions.set(call, new MethodInsnNode(INVOKESTATIC, "newearth/ContentTransformer",
+                            "readAe2Feature", "(Lnet/minecraftforge/common/config/Property;ZLjava/lang/Enum;)Z", false));
+                    method.maxStack++;
+                    configReads++;
+                } else if (call.owner.equals("java/util/EnumSet") && call.name.equals("add")
                         && call.desc.equals("(Ljava/lang/Object;)Z")
                         && call.getPrevious().getPrevious() instanceof FieldInsnNode) {
                     FieldInsnNode field = (FieldInsnNode) call.getPrevious().getPrevious();
@@ -241,11 +256,14 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                     replaced++;
                 } else if (call.owner.equals("newearth/ContentTransformer") && call.name.equals("addAe2Feature")) {
                     installed++;
+                } else if (call.owner.equals("newearth/ContentTransformer") && call.name.equals("readAe2Feature")) {
+                    installedConfigReads++;
                 }
             }
         }
-        if (installed == 2 && replaced == 0) return bytes;
-        if (replaced != 2 || installed != 0) throw new IllegalStateException("Unsupported AE2 feature initialization");
+        if (installed == 2 && installedConfigReads == 1 && replaced == 0 && configReads == 0) return bytes;
+        if (replaced != 2 || configReads != 1 || installed != 0 || installedConfigReads != 0)
+            throw new IllegalStateException("Unsupported AE2 feature initialization");
         ClassWriter writer = new ClassWriter(0);
         node.accept(writer);
         return writer.toByteArray();
@@ -265,6 +283,18 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
 
     public static <F extends Enum<F>> boolean addAe2Feature(EnumSet<F> features, F feature) {
         return !retiredAe2Feature(feature.name()) && features.add(feature);
+    }
+
+    public static boolean readAe2Feature(Property option, boolean defaultValue, Enum<?> feature) {
+        switch (feature.name()) {
+            case "INSCRIBER":
+            case "PRINTED_CIRCUITS":
+            case "PROCESSORS":
+                option.set(true);
+                return true;
+            default:
+                return option.getBoolean(defaultValue);
+        }
     }
 
     public static boolean retiredAe2Feature(String feature) {
