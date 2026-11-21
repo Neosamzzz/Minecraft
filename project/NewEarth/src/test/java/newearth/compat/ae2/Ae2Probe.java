@@ -97,6 +97,12 @@ public final class Ae2Probe {
             checkOreDefinitions(jar);
             checkPairingPermissions(jar,transformer);
             checkReplacementRecipes(resource);
+            String materialType = "appeng.items.materials.ItemMaterial";
+            byte[] patchedMaterials = transformer.transform(materialType, materialType, read(jar, materialType.replace('.', '/') + ".class"));
+            check(transformer.transform(materialType, materialType, patchedMaterials) == patchedMaterials, "Subtype filter installed once");
+            for (MethodNode method : node(patchedMaterials).methods) if (method.name.equals("createMaterial"))
+                new Analyzer<BasicValue>(new BasicVerifier()).analyze(materialType, method);
+
             actualLocale(runtimeJar, resource);
         }
         System.out.println("AE2: " + checks + " checks passed (actual UEL v0.56.6; no game or save modified)");
@@ -142,13 +148,7 @@ public final class Ae2Probe {
     }
     private static void checkReplacementRecipes(Path resources) throws Exception {
         for (String name : new String[]{"certus_crystal","fluix_crystal","logic_processor","calculation_processor","engineering_processor"}) {
-            com.google.gson.JsonObject json = new com.google.gson.JsonParser().parse(new String(Files.readAllBytes(resources.resolve("assets/newearth/recipes/ae2_"+name+".json")),"UTF-8")).getAsJsonObject();
-            check(json.get("type").getAsString().equals("minecraft:crafting_shapeless"),"Replacement uses ordinary crafting: "+name);
-            for (com.google.gson.JsonElement ingredient : json.getAsJsonArray("ingredients")) {
-                String id = ingredient.getAsJsonObject().get("item").getAsString();
-                check(id.startsWith("minecraft:")||id.equals("galacticraftcore:basic_item"),"Replacement source is available without AE2 mining: "+name);
-            }
-            check(json.has("conditions"),"Optional AE2 recipe safely skipped when mod absent");
+            check(!Files.exists(resources.resolve("assets/newearth/recipes/ae2_"+name+".json")), "Obsolete material recipe removed: "+name);
         }
     }
     private static void actualLocale(File ae2, Path resources) throws Exception {

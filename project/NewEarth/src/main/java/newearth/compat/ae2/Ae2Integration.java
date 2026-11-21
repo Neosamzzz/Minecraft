@@ -50,13 +50,115 @@ public final class Ae2Integration {
 
     public static void rewriteRecipe(JsonElement json, String domain) {
         if (!"appliedenergistics2".equals(domain)) return;
-        if (json.isJsonObject()) {
-            JsonObject object = json.getAsJsonObject();
-            if (object.has("ore") && "itemIlluminatedPanel".equals(object.get("ore").getAsString())) {
-                object.remove("ore"); object.remove("type"); object.addProperty("item", "minecraft:glass");
-            }
-            for (Map.Entry<String,JsonElement> entry : object.entrySet()) rewriteRecipe(entry.getValue(), domain);
-        } else if (json.isJsonArray()) for (JsonElement entry : json.getAsJsonArray()) rewriteRecipe(entry,domain);
+        rewriteInputs(json);
+    }
+
+    private static void rewriteInputs(JsonElement json) {
+        if (json.isJsonArray()) {
+            for (JsonElement entry : json.getAsJsonArray()) rewriteInputs(entry);
+            return;
+        }
+        if (!json.isJsonObject()) return;
+        JsonObject object = json.getAsJsonObject();
+        for (String key : Arrays.asList("ore", "part", "material", "item")) {
+            if (!object.has(key) || !object.get(key).isJsonPrimitive()) continue;
+            String replacement = replacement(object.get(key).getAsString());
+            if (replacement == null) continue;
+            boolean condition = object.has("type") && object.get("type").getAsString().endsWith("_exists");
+            object.remove(key);
+            object.remove("type");
+            if (condition) object.addProperty("type", "minecraft:item_exists");
+            if (replacement.startsWith("gc/")) {
+                object.addProperty("item", "galacticraftcore:basic_item");
+                if (!condition) object.addProperty("data", Integer.parseInt(replacement.substring(3)));
+            } else object.addProperty("item", "minecraft:" + replacement);
+            return;
+        }
+        for (Map.Entry<String,JsonElement> entry : object.entrySet())
+            if (!entry.getKey().equals("result")) rewriteInputs(entry.getValue());
+    }
+
+    private static String replacement(String name) {
+        switch (name) {
+            case "itemIlluminatedPanel":
+            case "appliedenergistics2:quartz_glass":
+                return "glass";
+            case "appliedenergistics2:quartz_vibrant_glass":
+                return "glowstone";
+            case "#appliedenergistics2:certusCrystal":
+            case "#appliedenergistics2:crystalQuartz":
+            case "#appliedenergistics2:dustQuartz":
+            case "#appliedenergistics2:netherCrystal":
+            case "crystalCertusQuartz":
+            case "dustCertusQuartz":
+            case "dustNetherQuartz":
+            case "material.certus_quartz_crystal":
+            case "material.certus_quartz_crystal_charged":
+            case "material.purified_certus_quartz_crystal":
+            case "material.purified_nether_quartz_crystal":
+                return "quartz";
+            case "#appliedenergistics2:fluixCrystal":
+            case "crystalFluix":
+            case "material.fluix_crystal":
+            case "material.purified_fluix_crystal":
+                return "gc/8";
+            case "dustFluix":
+                return "redstone";
+            case "#appliedenergistics2:dustEnder":
+            case "dustEnder":
+            case "dustEnderPearl":
+                return "ender_pearl";
+            case "material.basic_card":
+            case "material.logic_processor":
+            case "material.formation_core":
+            case "material.cell1k_part":
+                return "gc/13";
+            case "material.calculation_processor":
+                return "comparator";
+            case "material.advanced_card":
+            case "material.engineering_processor":
+            case "material.fluix_pearl":
+            case "material.annihilation_core":
+            case "material.cell4k_part":
+                return "gc/14";
+            case "material.cell16k_part":
+                return "diamond";
+            case "material.cell64k_part":
+                return "diamond_block";
+            case "material.empty_storage_cell":
+                return "gc/9";
+            case "material.wireless":
+                return "gc/19";
+            case "material.wooden_gear":
+            case "gearWood":
+                return "planks";
+            case "appliedenergistics2:sky_stone_block":
+            case "appliedenergistics2:smooth_sky_stone_block":
+                return "stonebrick";
+            case "appliedenergistics2:fluix_block":
+                return "iron_block";
+            case "material.fluid_cell1k_part":
+                return "bucket";
+            case "material.fluid_cell4k_part":
+                return "gold_block";
+            case "material.fluid_cell16k_part":
+                return "emerald";
+            case "material.fluid_cell64k_part":
+                return "emerald_block";
+            default: return null;
+        }
+    }
+
+    public static boolean removedMaterialOutput(JsonObject recipe, String domain) {
+        if (!"appliedenergistics2".equals(domain) || !recipe.has("result") || !recipe.get("result").isJsonObject()) return false;
+        JsonObject result = recipe.getAsJsonObject("result");
+        if (result.has("item") && replacement(result.get("item").getAsString()) != null) return true;
+        if (result.has("part")) {
+            String part = result.get("part").getAsString();
+            if (part.startsWith("material.")) return !part.startsWith("material.card_")
+                    && !part.equals("material.blank_pattern") && !part.equals("material.wireless_booster");
+        }
+        return false;
     }
 
     public static boolean retired(ItemStack stack) {

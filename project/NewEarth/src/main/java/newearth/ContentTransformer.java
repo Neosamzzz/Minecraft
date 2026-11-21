@@ -9,8 +9,11 @@ import org.objectweb.asm.tree.*;
 public final class ContentTransformer implements IClassTransformer, Opcodes {
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
+        if ("appeng.items.materials.ItemMaterial".equals(transformedName)) return filterAe2Materials(bytes);
         if ("appeng.core.AEConfig".equals(transformedName)) return filterAe2Features(bytes);
-        if ("appeng.tile.misc.TileSecurityStation".equals(transformedName)) return disableAe2Permissions(bytes);
+        if ("appeng.items.storage.AbstractStorageCell".equals(transformedName))
+            return disableBooleanMethod(bytes, "disassembleDrive", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Z");
+        if ("appeng.tile.misc.TileSecurityStation".equals(transformedName)) return disableBooleanMethod(bytes, "isSecurityEnabled", "()Z");
         if ("com.mjr.extraplanets.recipes.ExtraPlanets_Recipes".equals(transformedName)
                 || "com.mjr.extraplanets.ExtraPlanets".equals(transformedName))
             return unifyMaterials(bytes, transformedName);
@@ -126,6 +129,31 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
     }
 
+    public static boolean allowAe2Material(Enum<?> material) {
+        String name = material.name();
+        return name.equals("BLANK_PATTERN") || name.equals("WIRELESS_BOOSTER")
+                || name.startsWith("CARD_") && !name.equals("CARD_QUANTUM_LINK");
+    }
+
+    private static byte[] filterAe2Materials(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        for (MethodNode method : node.methods) if (method.name.equals("createMaterial")) {
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (instruction instanceof MethodInsnNode && ((MethodInsnNode) instruction).name.equals("allowAe2Material")) return bytes;
+                if (instruction.getOpcode() == ICONST_1 && instruction.getNext().getOpcode() == ISTORE) {
+                    method.instructions.insertBefore(instruction, new VarInsnNode(ALOAD, 1));
+                    method.instructions.set(instruction, new MethodInsnNode(INVOKESTATIC, "newearth/ContentTransformer",
+                            "allowAe2Material", "(Ljava/lang/Enum;)Z", false));
+                    ClassWriter writer = new ClassWriter(0);
+                    node.accept(writer);
+                    return writer.toByteArray();
+                }
+            }
+        }
+        throw new IllegalStateException("Unsupported AE2 material registration");
+    }
+
     private static byte[] filterAe2Features(byte[] bytes) {
         ClassNode node = new ClassNode();
         new ClassReader(bytes).accept(node, 0);
@@ -156,16 +184,16 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         return writer.toByteArray();
     }
 
-    private static byte[] disableAe2Permissions(byte[] bytes) {
+    private static byte[] disableBooleanMethod(byte[] bytes, String name, String descriptor) {
         ClassNode node = new ClassNode(); new ClassReader(bytes).accept(node,0);
-        for (MethodNode method : node.methods) if (method.name.equals("isSecurityEnabled") && method.desc.equals("()Z")) {
+        for (MethodNode method : node.methods) if (method.name.equals(name) && method.desc.equals(descriptor)) {
             if (method.instructions.size() == 2 && method.instructions.getFirst().getOpcode() == ICONST_0) return bytes;
             method.instructions.clear(); method.tryCatchBlocks.clear();
             if (method.localVariables != null) method.localVariables.clear();
             method.instructions.add(new InsnNode(ICONST_0)); method.instructions.add(new InsnNode(IRETURN));
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); node.accept(writer); return writer.toByteArray();
         }
-        throw new IllegalStateException("Unsupported AE2 permission-provider method");
+        throw new IllegalStateException("Unsupported AE2 method " + name);
     }
 
     public static <F extends Enum<F>> boolean addAe2Feature(EnumSet<F> features, F feature) {
@@ -174,6 +202,34 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
 
     public static boolean retiredAe2Feature(String feature) {
         switch (feature) {
+            case "CERTUS":
+            case "FLUIX":
+            case "SILICON":
+            case "DUSTS":
+            case "NUGGETS":
+            case "QUARTZ_GLASS":
+            case "SKY_STONE":
+            case "PURE_CRYSTALS":
+            case "CRYSTAL_SEEDS":
+            case "PROCESSORS":
+            case "PRINTED_CIRCUITS":
+            case "PRESSES":
+            case "MATTER_BALL":
+            case "CORES":
+            case "GRIND_STONE":
+            case "INSCRIBER":
+            case "CRYSTAL_GROWTH_ACCELERATOR":
+            case "DECORATIVE_BLOCKS":
+            case "DECORATIVE_LIGHTS":
+            case "SKY_STONE_CHESTS":
+            case "FLOUR":
+            case "TINY_TNT":
+            case "IN_WORLD_FLUIX":
+            case "IN_WORLD_PURIFICATION":
+            case "IN_WORLD_SINGULARITY":
+            case "ENABLE_DISASSEMBLY_CRAFTING":
+            case "CONDENSER":
+            case "CERTUS_QUARTZ_TOOLS":
             case "CERTUS_ORE":
             case "CHARGED_CERTUS_ORE":
             case "CERTUS_QUARTZ_WORLD_GEN":

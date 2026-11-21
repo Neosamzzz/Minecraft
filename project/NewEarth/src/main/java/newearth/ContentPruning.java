@@ -55,6 +55,7 @@ public final class ContentPruning {
     }
 
     public static boolean skipRecipe(JsonObject json, String domain) {
+        if (newearth.compat.ae2.Ae2Integration.removedMaterialOutput(json, domain)) return true;
         newearth.compat.ae2.Ae2Integration.rewriteRecipe(json, domain);
         if (MaterialUnification.storageRecipe(json, domain)) return true;
         MaterialUnification.rewrite(json, domain);
