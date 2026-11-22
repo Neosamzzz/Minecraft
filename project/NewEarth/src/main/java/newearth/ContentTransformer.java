@@ -149,6 +149,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         int changed = 0;
         for (MethodNode method : node.methods) {
             if (!method.name.equals(items ? "getHandler" : "doBusWork")) continue;
+            LabelNode fluidMissing = null;
             for (AbstractInsnNode instruction : method.instructions.toArray()) {
                 if (!(instruction instanceof MethodInsnNode)) continue;
                 MethodInsnNode call = (MethodInsnNode) instruction;
@@ -166,10 +167,12 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                     changed++;
                 } else if (!items && call.owner.equals("net/minecraft/tileentity/TileEntity")) {
                     if (call.name.equals("hasCapability") && call.desc.equals("(" + capabilitySide + ")Z")) {
-                        method.instructions.set(call, new MethodInsnNode(INVOKESTATIC, hook, "hasFluidPort",
-                                "(Lnet/minecraft/tileentity/TileEntity;" + capabilitySide + ")Z", false));
+                        fluidMissing = removeFluidCapabilityCheck(method, call);
                         changed++;
                     } else if (call.name.equals("getCapability") && call.desc.equals("(" + capabilitySide + ")Ljava/lang/Object;")) {
+                        AbstractInsnNode store = call.getNext().getNext();
+                        if (fluidMissing == null || call.getNext().getOpcode() != CHECKCAST || store.getOpcode() != ASTORE)
+                            throw new IllegalStateException("Unsupported AE2 fluid handler local in " + type);
                         InsnList filter = new InsnList();
                         if (importFluids) {
                             filter.add(new VarInsnNode(ALOAD, 0));
@@ -180,6 +183,10 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                         method.instructions.insertBefore(call, filter);
                         method.instructions.set(call, new MethodInsnNode(INVOKESTATIC, hook, "fluidPort",
                                 "(Lnet/minecraft/tileentity/TileEntity;" + capabilitySide + fluidHandler + ")" + fluidHandler, false));
+                        InsnList skipMissing = new InsnList();
+                        skipMissing.add(new VarInsnNode(ALOAD, ((VarInsnNode) store).var));
+                        skipMissing.add(new JumpInsnNode(IFNULL, fluidMissing));
+                        method.instructions.insert(store, skipMissing);
                         changed++;
                     }
                 }
@@ -189,6 +196,29 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
         return writer.toByteArray();
+    }
+
+    private static LabelNode removeFluidCapabilityCheck(MethodNode method, MethodInsnNode call) {
+        AbstractInsnNode start = call;
+        int[] inputs = {INVOKEVIRTUAL, INVOKEVIRTUAL, INVOKEVIRTUAL, ALOAD, GETSTATIC, ALOAD};
+        for (int opcode : inputs) {
+            start = start.getPrevious();
+            if (start == null || start.getOpcode() != opcode)
+                throw new IllegalStateException("Unsupported AE2 fluid capability check");
+        }
+        AbstractInsnNode tileCheck = start.getPrevious();
+        AbstractInsnNode capabilityCheck = call.getNext();
+        if (tileCheck == null || tileCheck.getOpcode() != IFNULL || capabilityCheck.getOpcode() != IFEQ
+                || ((JumpInsnNode) tileCheck).label != ((JumpInsnNode) capabilityCheck).label)
+            throw new IllegalStateException("Unsupported AE2 fluid capability branch");
+        LabelNode missing = ((JumpInsnNode) capabilityCheck).label;
+        AbstractInsnNode end = capabilityCheck.getNext();
+        while (start != end) {
+            AbstractInsnNode next = start.getNext();
+            method.instructions.remove(start);
+            start = next;
+        }
+        return missing;
     }
 
     public static boolean allowAe2Material(Enum<?> material) {

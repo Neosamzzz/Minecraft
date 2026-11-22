@@ -265,15 +265,43 @@ public final class Ae2Probe {
         net.minecraftforge.fluids.FluidTank water = new net.minecraftforge.fluids.FluidTank(net.minecraftforge.fluids.FluidRegistry.WATER, 800, 1000);
         net.minecraftforge.fluids.FluidTank lava = new net.minecraftforge.fluids.FluidTank(net.minecraftforge.fluids.FluidRegistry.LAVA, 900, 1000);
         net.minecraftforge.fluids.FluidTank filter = new net.minecraftforge.fluids.FluidTank(net.minecraftforge.fluids.FluidRegistry.LAVA, 1, 1000);
-        Ae2BusPorts.FluidPorts fluidPorts = new Ae2BusPorts.FluidPorts(Arrays.asList(water, lava), filter);
+        int[] fluidQueries = new int[2];
+        net.minecraft.tileentity.TileEntity tanks = new net.minecraft.tileentity.TileEntity() {
+            @Override public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability,
+                                                   net.minecraft.util.EnumFacing side) {
+                fluidQueries[0]++;
+                return side == net.minecraft.util.EnumFacing.NORTH || side == net.minecraft.util.EnumFacing.DOWN;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability,
+                                                  net.minecraft.util.EnumFacing side) {
+                fluidQueries[1]++;
+                return (T) (side == net.minecraft.util.EnumFacing.NORTH ? water : lava);
+            }
+        };
+        net.minecraftforge.common.capabilities.Capability<?> fluidCapability =
+                net.minecraftforge.fluids.capability.CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+        for (int i = 0; i < 256; i++) {
+            net.minecraftforge.fluids.capability.IFluidHandler port =
+                    Ae2BusPorts.fluidPort(tanks, fluidCapability, net.minecraft.util.EnumFacing.NORTH, null);
+            check(port.fill(new net.minecraftforge.fluids.FluidStack(net.minecraftforge.fluids.FluidRegistry.WATER, 100), false) == 100,
+                    "Repeated fluid delivery uses the preferred port");
+        }
+        check(fluidQueries[0] == 256 && fluidQueries[1] == 256, "Preferred success performs one capability check and one lookup per bus operation");
+        Arrays.fill(fluidQueries, 0);
+        net.minecraftforge.fluids.capability.IFluidHandler fluidPorts =
+                Ae2BusPorts.fluidPort(tanks, fluidCapability, net.minecraft.util.EnumFacing.NORTH, filter);
         net.minecraftforge.fluids.FluidStack fluid = fluidPorts.drain(500, false);
         check(fluid != null && fluid.getFluid() == net.minecraftforge.fluids.FluidRegistry.LAVA
                 && water.getFluidAmount() == 800 && lava.getFluidAmount() == 900, "Fluid filter selects an alternate output port without withdrawing");
         fluid.amount = 300;
         check(fluidPorts.drain(fluid, true).amount == 300 && lava.getFluidAmount() == 600 && water.getFluidAmount() == 800,
                 "Commit drains the sampled port and only the accepted amount");
+        check(fluidQueries[0] == 2 && fluidQueries[1] == 2, "Fallback checks only the needed faces and reuses the sampled handler on commit");
         check(fluidPorts.fill(new net.minecraftforge.fluids.FluidStack(net.minecraftforge.fluids.FluidRegistry.LAVA, 150), true) == 150
                 && lava.getFluidAmount() == 750 && water.getFluidAmount() == 800, "Delivery chooses the port that accepts the fluid");
+        check(fluidQueries[0] == 2 && fluidQueries[1] == 2, "Resolved ports reuse their handlers within the same bus operation");
     }
 
     private static void checkOreDefinitions(ZipFile jar) throws Exception {

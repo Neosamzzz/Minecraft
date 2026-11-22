@@ -19,7 +19,7 @@
 | FTB Quests | `FTBQuests-1202.9.6.jar` | 公共团队与任务书 |
 | FTB Library | `[FTB Library（旧版）] FTBLib-5.4.7.0.jar` | 文件名标 5.4.7.0，内部元数据与启动日志为 5.4.7.2 |
 | Item Filters | `[物品过滤器] ItemFilters-1.0.4.2.jar` | |
-| NewEarth | `NewEarth-2.0.13.jar` | 当前仓库构建版本；太阳系整合、制造、终章与可选 AE2 整合 |
+| NewEarth | `NewEarth-2.0.14.jar` | 当前仓库构建版本；太阳系整合、制造、终章与可选 AE2 整合 |
 | AE2 Unofficial Extended Life | `ae2-uel-v0.56.6.jar` | 可选；仓储配置和用法见 [AE2 仓储](../project/NewEarth/items/README.md#ae2-仓储)，不代表正式服已安装 |
 | Saplanting | `saplanting-forge-1.12.2-0.2-serverfix.jar` | [落苗生根服务端修复](../project/Saplanting/README.md)，关闭多线程 |
 | FTB Ultimine | `ftb-ultimine-1202.3.5.jar` | 连锁挖掘，客户端与服务端安装 |

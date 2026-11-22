@@ -161,42 +161,45 @@ public final class Ae2BusPorts {
         }
     }
 
-    public static boolean hasFluidPort(TileEntity tile, Capability<?> capability, EnumFacing preferred) {
-        for (EnumFacing face : faces(tile, preferred)) if (tile.hasCapability(capability, face)) return true;
-        return false;
-    }
-
     @Nullable
     public static IFluidHandler fluidPort(TileEntity tile, Capability<?> capability, EnumFacing preferred,
                                            @Nullable IFluidHandler filter) {
-        IFluidHandler first = null;
-        List<IFluidHandler> ports = null;
-        for (EnumFacing face : faces(tile, preferred)) {
-            if (!tile.hasCapability(capability, face)) continue;
-            Object handler = tile.getCapability(capability, face);
-            if (!(handler instanceof IFluidHandler)) continue;
-            if (first == null) first = (IFluidHandler) handler;
-            else if (!handler.equals(first)) {
-                if (ports == null) {
-                    ports = new ArrayList<>();
-                    ports.add(first);
-                }
-                if (!ports.contains(handler)) ports.add((IFluidHandler) handler);
-            }
+        EnumFacing[] sides = faces(tile, preferred);
+        for (int i = 0; i < sides.length; i++) {
+            IFluidHandler handler = fluidHandler(tile, capability, sides[i]);
+            if (handler == null) continue;
+            if (i + 1 == sides.length && filter == null) return handler;
+            return new FluidPorts(tile, capability, sides, i + 1, handler, filter);
         }
-        if (ports != null) return new FluidPorts(ports, filter);
-        if (first == null || filter == null) return first;
-        return new FluidPorts(Collections.singletonList(first), filter);
+        return null;
     }
 
-    static final class FluidPorts implements IFluidHandler {
-        private final List<IFluidHandler> ports;
+    @Nullable
+    private static IFluidHandler fluidHandler(TileEntity tile, Capability<?> capability, EnumFacing side) {
+        if (!tile.hasCapability(capability, side)) return null;
+        Object handler = tile.getCapability(capability, side);
+        return handler instanceof IFluidHandler ? (IFluidHandler) handler : null;
+    }
+
+    /** Port discovery is scoped to a single bus call and stops when a transfer succeeds. */
+    private static final class FluidPorts implements IFluidHandler {
+        private final TileEntity tile;
+        private final Capability<?> capability;
+        private final EnumFacing[] sides;
+        private final IFluidHandler first;
+        private int nextSide;
+        private List<IFluidHandler> alternatives;
         private final List<FluidStack> filter;
         private IFluidHandler sampledPort;
         private FluidStack sampledFluid;
 
-        FluidPorts(List<IFluidHandler> ports, @Nullable IFluidHandler settings) {
-            this.ports = ports;
+        FluidPorts(TileEntity tile, Capability<?> capability, EnumFacing[] sides, int nextSide,
+                   IFluidHandler first, @Nullable IFluidHandler settings) {
+            this.tile = tile;
+            this.capability = capability;
+            this.sides = sides;
+            this.nextSide = nextSide;
+            this.first = first;
             List<FluidStack> configured = null;
             if (settings != null) for (IFluidTankProperties property : settings.getTankProperties()) {
                 FluidStack fluid = property.getContents();
@@ -208,12 +211,34 @@ public final class Ae2BusPorts {
             this.filter = configured == null ? Collections.emptyList() : configured;
         }
 
+        @Nullable
+        private IFluidHandler port(int index) {
+            if (index == 0) return first;
+            int alternative = index - 1;
+            if (alternatives != null && alternative < alternatives.size()) return alternatives.get(alternative);
+            while (nextSide < sides.length) {
+                IFluidHandler handler = fluidHandler(tile, capability, sides[nextSide++]);
+                if (handler == null || handler.equals(first)) continue;
+                if (alternatives == null) alternatives = new ArrayList<>();
+                if (!alternatives.contains(handler)) {
+                    alternatives.add(handler);
+                    return handler;
+                }
+            }
+            return null;
+        }
+
         @Override public IFluidTankProperties[] getTankProperties() {
-            return ports.stream().flatMap(port -> Arrays.stream(port.getTankProperties())).toArray(IFluidTankProperties[]::new);
+            List<IFluidTankProperties> properties = new ArrayList<>();
+            IFluidHandler port;
+            for (int index = 0; (port = port(index)) != null; index++)
+                Collections.addAll(properties, port.getTankProperties());
+            return properties.toArray(new IFluidTankProperties[0]);
         }
 
         @Override public int fill(FluidStack resource, boolean execute) {
-            for (IFluidHandler port : ports) {
+            IFluidHandler port;
+            for (int index = 0; (port = port(index)) != null; index++) {
                 int amount = port.fill(resource, execute);
                 if (amount > 0) return amount;
             }
@@ -224,7 +249,8 @@ public final class Ae2BusPorts {
             if (resource == null || resource.amount <= 0) return null;
             if (sampledPort != null && sampledFluid.isFluidEqual(resource))
                 return sampledPort.drain(resource, execute);
-            for (IFluidHandler port : ports) {
+            IFluidHandler port;
+            for (int index = 0; (port = port(index)) != null; index++) {
                 FluidStack fluid = port.drain(resource, execute);
                 if (fluid != null && fluid.amount > 0) return fluid;
             }
@@ -235,7 +261,8 @@ public final class Ae2BusPorts {
             sampledPort = null;
             sampledFluid = null;
             if (maxAmount <= 0) return null;
-            for (IFluidHandler port : ports) {
+            IFluidHandler port;
+            for (int index = 0; (port = port(index)) != null; index++) {
                 FluidStack sample = null;
                 if (filter.isEmpty()) sample = port.drain(maxAmount, execute);
                 else for (FluidStack configured : filter) {
