@@ -131,6 +131,10 @@ newearth.miner.tooltip.dock_chunks=Once assembled, the dock keeps a 3×3 area of
 # AE2 integration
 newearth.ae2.retired=Retired from this pack and hidden from crafting and JEI.
 newearth.ae2.slot.accepts_upgrades=Supported upgrades
+newearth.ae2.slot.fluid_filter=Left-click with a filled container to set the fluid filter.
+newearth.ae2.slot.fluid_stock_config=Left-click with a filled container to set the fluid to stock.
+newearth.ae2.slot.fluid_stock_tank=Fluid held in the interface for external devices to extract.
+newearth.ae2.slot.fluid_capacity_upgrade=Capacity cards increase stock per tank: 4, 16, or 64 buckets.
 newearth.ae2.pair.title=Wireless Pairing
 newearth.ae2.pair.input=Input
 newearth.ae2.pair.output=Paired

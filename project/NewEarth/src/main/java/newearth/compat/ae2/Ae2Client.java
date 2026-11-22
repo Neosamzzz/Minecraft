@@ -59,29 +59,87 @@ public final class Ae2Client {
     @SubscribeEvent public static void guiTooltip(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (!(event.getGui() instanceof GuiContainer)) return;
         GuiContainer gui = (GuiContainer) event.getGui();
-        if (!gui.getClass().getName().startsWith("appeng.client.gui.")) return;
+        if (!supportsGuiHints(gui.getClass().getName())) return;
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.player == null || !mc.player.inventory.getItemStack().isEmpty()) return;
-        Slot slot = gui.getSlotUnderMouse();
-        if (slot == null || slot.getHasStack() || slot.inventory == mc.player.inventory) return;
         String screen = gui.getClass().getSimpleName();
-        String key = slotHint(screen, slot.getClass().getSimpleName());
+        Slot slot = gui.getSlotUnderMouse();
+        String key = null;
         List<String> lines = Collections.emptyList();
-        Method slotType = key == null ? SLOT_TYPE.get(slot.getClass()).orElse(null) : null;
-        if (slotType != null) {
-            try {
-                String kind = String.valueOf(slotType.invoke(slot));
-                if (kind.equals("UPGRADES")) {
-                    lines = upgradeHints(gui, slot);
-                } else {
-                    if (kind.equals("ENCODED_PATTERN") && screen.contains("PatternTerm")) kind = "EDITED_PATTERN";
-                    key = "newearth.ae2.slot." + kind;
+        try {
+            if (slot == null) {
+                key = FluidWidgets.hoverKey(gui, screen, event.getMouseX(), event.getMouseY());
+            } else if (!slot.getHasStack() && slot.inventory != mc.player.inventory) {
+                key = slotHint(screen, slot.getClass().getSimpleName());
+                Method slotType = key == null ? SLOT_TYPE.get(slot.getClass()).orElse(null) : null;
+                if (slotType != null) {
+                    String kind = String.valueOf(slotType.invoke(slot));
+                    if (kind.equals("UPGRADES")) {
+                        lines = upgradeHints(gui, slot);
+                    } else {
+                        if (kind.equals("ENCODED_PATTERN") && screen.contains("PatternTerm")) kind = "EDITED_PATTERN";
+                        key = "newearth.ae2.slot." + kind;
+                    }
                 }
-            } catch (ReflectiveOperationException error) { throw new IllegalStateException("Unsupported AE2 slot API", error); }
+            }
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Unsupported AE2 slot API", error);
         }
         if (key != null && I18n.hasKey(key)) lines = Collections.singletonList(I18n.format(key));
         if (!lines.isEmpty()) GuiUtils.drawHoveringText(lines,
                 event.getMouseX(), event.getMouseY(), gui.width, gui.height, 260, mc.fontRenderer);
+    }
+
+    static boolean supportsGuiHints(String className) {
+        return className.startsWith("appeng.client.gui.") || className.startsWith("appeng.fluids.client.gui.");
+    }
+
+    private static final class FluidWidgets {
+        private static final Method SLOTS, X, Y, WIDTH, HEIGHT, ENABLED, MESSAGE;
+        private static final Class<?> FILTER_SLOT, TANK_SLOT;
+
+        static {
+            try {
+                Class<?> slot = Class.forName("appeng.client.gui.widgets.GuiCustomSlot");
+                SLOTS = Class.forName("appeng.client.gui.AEBaseGui").getMethod("getGuiSlots");
+                X = slot.getMethod("xPos");
+                Y = slot.getMethod("yPos");
+                WIDTH = slot.getMethod("getWidth");
+                HEIGHT = slot.getMethod("getHeight");
+                ENABLED = slot.getMethod("isSlotEnabled");
+                MESSAGE = slot.getMethod("getMessage");
+                FILTER_SLOT = Class.forName("appeng.fluids.client.gui.widgets.GuiFluidSlot");
+                TANK_SLOT = Class.forName("appeng.fluids.client.gui.widgets.GuiFluidTank");
+            } catch (ReflectiveOperationException error) {
+                throw new IllegalStateException("Unsupported AE2 fluid widget API", error);
+            }
+        }
+
+        private static String hoverKey(GuiContainer gui, String screen, int mouseX, int mouseY) throws ReflectiveOperationException {
+            if (!screen.equals("GuiFluidIO") && !screen.equals("GuiFluidStorageBus") && !screen.equals("GuiFluidInterface")) return null;
+            int x = mouseX - gui.getGuiLeft();
+            int y = mouseY - gui.getGuiTop();
+            for (Object widget : (Iterable<?>) SLOTS.invoke(gui)) {
+                boolean filter = FILTER_SLOT.isInstance(widget);
+                String key = fluidSlotHint(screen, filter, TANK_SLOT.isInstance(widget));
+                if (key == null || !(Boolean) ENABLED.invoke(widget)) continue;
+                int left = (Integer) X.invoke(widget);
+                int top = (Integer) Y.invoke(widget);
+                if (x >= left && y >= top && x < left + (Integer) WIDTH.invoke(widget)
+                        && y < top + (Integer) HEIGHT.invoke(widget) && MESSAGE.invoke(widget) == null) return key;
+            }
+            return null;
+        }
+    }
+
+    static String fluidSlotHint(String screen, boolean filter, boolean tank) {
+        if (screen.equals("GuiFluidInterface")) {
+            if (filter) return "newearth.ae2.slot.fluid_stock_config";
+            if (tank) return "newearth.ae2.slot.fluid_stock_tank";
+        }
+        if (filter && (screen.equals("GuiFluidIO") || screen.equals("GuiFluidStorageBus")))
+            return "newearth.ae2.slot.fluid_filter";
+        return null;
     }
 
     private static List<String> upgradeHints(GuiContainer gui, Slot slot) throws ReflectiveOperationException {
@@ -94,7 +152,11 @@ public final class Ae2Client {
             int limit = Math.min((Integer) UpgradeCards.MAX_INSTALLED.invoke(inventory, card.getValue()), slots);
             if (limit > 0) lines.add(card.getKey().getDisplayName() + " ×" + limit);
         }
-        if (!lines.isEmpty()) lines.add(0, I18n.format("newearth.ae2.slot.accepts_upgrades"));
+        if (!lines.isEmpty()) {
+            lines.add(0, I18n.format("newearth.ae2.slot.accepts_upgrades"));
+            if (gui.getClass().getSimpleName().equals("GuiFluidInterface"))
+                lines.add(I18n.format("newearth.ae2.slot.fluid_capacity_upgrade"));
+        }
         return lines;
     }
 
@@ -127,7 +189,7 @@ public final class Ae2Client {
     }
 
     static String slotHint(String gui, String slot) {
-        if (gui.equals("GuiInterface") || gui.equals("GuiFluidInterface")) {
+        if (gui.equals("GuiInterface")) {
             if (slot.equals("SlotFake")) return "newearth.ae2.slot.stock_config";
             if (slot.equals("SlotOversized")) return "newearth.ae2.slot.stock_inventory";
         }

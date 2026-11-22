@@ -128,6 +128,7 @@ item.appliedenergistics2.multi_part.fluid_export_bus.newearth.desc=按筛选向�
 tile.appliedenergistics2.interface.newearth.desc=接到制作订单时，向相邻机器交料。也可设置接口自己的常备库存。
 item.appliedenergistics2.multi_part.interface.newearth.desc=朝机器输入面安装，接到制作订单时交料。
 tile.appliedenergistics2.fluid_interface.newearth.desc=在接口内备好指定流体，供相邻设备取用。
+item.appliedenergistics2.multi_part.fluid_interface.newearth.desc=在接口内备好指定流体，供相邻设备取用。
 item.appliedenergistics2.multi_part.interface_terminal.newearth.desc=在一处更换各个物品接口里的配方卡。
 item.appliedenergistics2.multi_part.interface_configuration_terminal.newearth.desc=在一处设置各个物品接口的常备库存。
 item.appliedenergistics2.multi_part.fluid_interface_configuration_terminal.newearth.desc=在一处设置各个流体接口的常备库存。

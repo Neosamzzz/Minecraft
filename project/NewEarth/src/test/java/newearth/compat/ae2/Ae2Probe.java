@@ -159,6 +159,7 @@ public final class Ae2Probe {
             }
             checkOreDefinitions(jar);
             checkPairingPermissions(jar,transformer);
+            checkFluidHover(jar);
             checkReplacementRecipes(resource);
             String loader = "appeng.recipes.AERecipeLoader";
             byte[] processing = read(jar, loader.replace('.', '/') + ".class");
@@ -387,6 +388,26 @@ public final class Ae2Probe {
                     "Actual AE2 player slot lands on the matching inventory tile: " + index);
         }
         check(input.xPos == 53 && output.xPos == 107, "Pairing input and output remain in the encoder area");
+    }
+
+    private static void checkFluidHover(ZipFile jar) throws IOException {
+        String prefix = "appeng/fluids/client/gui/";
+        String[][] screens = {
+                {"GuiFluidIO", "fluid_filter"},
+                {"GuiFluidStorageBus", "fluid_filter"},
+                {"GuiFluidInterface", "fluid_stock_config"}
+        };
+        for (String[] screen : screens) {
+            ClassNode gui = node(read(jar, prefix + screen[0] + ".class"));
+            check(Ae2Client.supportsGuiHints(gui.name.replace('/', '.')), "Actual fluid GUI exposes standard upgrade hover: " + screen[0]);
+            check(Ae2Client.fluidSlotHint(screen[0], true, false).equals("newearth.ae2.slot." + screen[1]),
+                    "Fluid setting widget has an action hint: " + screen[0]);
+        }
+        check("newearth.ae2.slot.fluid_stock_tank".equals(Ae2Client.fluidSlotHint("GuiFluidInterface", false, true)),
+                "The interface's tank and configuration widget have different hints");
+        ClassNode base = node(read(jar, "appeng/client/gui/AEBaseGui.class"));
+        check(base.methods.stream().anyMatch(m -> m.name.equals("getGuiSlots") && m.desc.equals("()Ljava/util/List;")),
+                "Actual AE2 GUI exposes its custom fluid widgets");
     }
     private static void checkReplacementRecipes(Path resources) throws Exception {
         for (String name : new String[]{"certus_crystal","fluix_crystal","logic_processor","calculation_processor","engineering_processor"}) {
