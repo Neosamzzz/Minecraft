@@ -164,6 +164,29 @@ def oss_error(error):
     ) if value is not None)
 
 
+def oss_credentials():
+    names = ("ALIYUN_OSS_AK", "ALIYUN_OSS_SK")
+    current = tuple(os.environ.get(name) for name in names)
+    if all(current) or os.name != "nt":
+        return current
+
+    # A desktop process opened before the variables were set may have an older environment.
+    import winreg
+
+    for hive, path in (
+        (winreg.HKEY_CURRENT_USER, r"Environment"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"),
+    ):
+        try:
+            with winreg.OpenKey(hive, path) as key:
+                pair = tuple(winreg.QueryValueEx(key, name)[0] for name in names)
+        except FileNotFoundError:
+            continue
+        if all(isinstance(value, str) and value.strip() for value in pair):
+            return pair
+    return current
+
+
 def summarize(files, pending, removed):
     total = sum(item["size"] for item in pending) / MB
     log(
@@ -209,8 +232,7 @@ def publish_local_run(instance, out_dir):
 def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
     import oss2
 
-    ak = os.environ.get("ALIYUN_OSS_AK")
-    sk = os.environ.get("ALIYUN_OSS_SK")
+    ak, sk = oss_credentials()
     if not ak or not sk:
         if dry_run:
             files = collect(instance)
@@ -269,9 +291,11 @@ def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
                         log("  上传 %d/%d（%.1f MB）" % (done, total, done_bytes / MB))
 
     manifest = build_manifest(files, removed)
+    key = prefix + MANIFEST_NAME
+    payload = json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8")
     bucket.put_object(
-        prefix + MANIFEST_NAME,
-        json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"),
+        key,
+        payload,
         headers={
             "Content-Type": "application/json",
             "Cache-Control": "no-cache",
@@ -279,6 +303,11 @@ def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
         },
     )
     log("manifest 已更新")
+    public = oss2.Bucket(oss2.AnonymousAuth(), endpoint, bucket_name)
+    with public.get_object(key, headers={"Cache-Control": "no-cache"}) as response:
+        if response.read() != payload:
+            raise RuntimeError("已写入清单，但公开地址读回的内容不一致")
+    log("公开清单校验通过")
     scheme, host = endpoint.rstrip("/").split("://", 1)
     log("OSS 地址：%s://%s.%s/%s%s" % (scheme, bucket_name, host, prefix, MANIFEST_NAME))
 
@@ -302,7 +331,12 @@ def main():
     if args.local:
         publish_local_run(instance, args.local.resolve())
     else:
-        import oss2
+        try:
+            import oss2
+        except ModuleNotFoundError as error:
+            if error.name != "oss2":
+                raise
+            sys.exit("缺少 OSS SDK，请先运行 py -3 -m pip install oss2")
 
         try:
             publish_oss(instance, args.bucket, args.endpoint, args.prefix, args.jobs, args.dry_run)

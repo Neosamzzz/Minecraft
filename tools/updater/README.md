@@ -6,8 +6,9 @@
 
 ```
 tools/updater/
-├── publish.py   发布：扫描本机 mods/ → 上传 OSS → 写 manifest.json
-├── update.ps1   客户端：读 manifest → 暂存并校验整套 mods → 切换目录
+├── publish_one_click.py   双击发布
+├── publish.py             发布命令和参数
+├── update.ps1             客户端同步
 └── README.md
 ```
 
@@ -30,7 +31,9 @@ $env:ALIYUN_OSS_SK = "<AccessKeySecret>"
 
 bucket 设为公共读，RAM 子账号只给 `newearth/` 前缀的读写权限。AK/SK 只放环境变量，不进仓库。
 
-发布：
+双击 `publish_one_click.py` 可直接发布，窗口会保留结果。脚本先读取当前进程的 OSS 凭据，再查 Windows 用户和系统环境变量。上传完成后会从公开地址读回清单校验。
+
+也可在终端发布：
 
 ```powershell
 py -3 tools/updater/publish.py
