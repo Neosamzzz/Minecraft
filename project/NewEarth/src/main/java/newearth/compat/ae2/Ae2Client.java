@@ -3,6 +3,7 @@ package newearth.compat.ae2;
 import java.lang.reflect.Method;
 import java.util.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -49,11 +50,15 @@ public final class Ae2Client {
             event.getToolTip().add(TextFormatting.DARK_GRAY + I18n.format("newearth.ae2.retired"));
             return;
         }
-        String key = stack.getItem().getTranslationKey(stack) + ".newearth.desc";
-        if (I18n.hasKey(key)) {
-            event.getToolTip().addAll(Minecraft.getMinecraft().fontRenderer
-                    .listFormattedStringToWidth(TextFormatting.GRAY + I18n.format(key), 260));
-        }
+        String key = stack.getItem().getTranslationKey(stack) + ".newearth.";
+        addItemHint(event, key + "desc");
+        if (I18n.hasKey(key + "detail"))
+            addItemHint(event, GuiScreen.isShiftKeyDown() ? key + "detail" : "newearth.ae2.item.more_details");
+    }
+
+    private static void addItemHint(ItemTooltipEvent event, String key) {
+        if (I18n.hasKey(key)) event.getToolTip().addAll(Minecraft.getMinecraft().fontRenderer
+                .listFormattedStringToWidth(TextFormatting.GRAY + I18n.format(key), 260));
     }
 
     @SubscribeEvent public static void guiTooltip(GuiScreenEvent.DrawScreenEvent.Post event) {

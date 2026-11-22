@@ -194,7 +194,7 @@ public final class Ae2Integration {
         if (path.equals("part")) return meta >= 40 && meta <= 76 || meta >= 500 && meta <= 516
                 || meta == 160 || meta == 180 || meta == 200;
         if (path.equals("material")) return meta == 59 || meta >= 32 && meta <= 34;
-        if (path.startsWith("spatial_")) return true;
+        if (path.startsWith("spatial_") || !ContentTransformer.allowAe2ItemDefinition(true, path)) return true;
         switch (path) {
             case "controller":
             case "portable_cell":

@@ -15,6 +15,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
                 || "appeng.fluids.parts.PartFluidExportBus".equals(transformedName))
             return routeAe2BusPorts(bytes, transformedName);
         if ("appeng.items.materials.ItemMaterial".equals(transformedName)) return filterAe2Materials(bytes);
+        if ("appeng.bootstrap.ItemDefinitionBuilder".equals(transformedName)) return filterAe2ItemDefinitions(bytes);
         // All upstream processing recipes belong to the retired material chain or its machines.
         if ("appeng.recipes.AERecipeLoader".equals(transformedName))
             return disableBooleanMethod(bytes, "loadProcessingRecipes", "()Z");
@@ -226,6 +227,33 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         return allowAe2MaterialName(material.name());
     }
 
+    public static boolean allowAe2ItemDefinition(boolean featureEnabled, String id) {
+        return featureEnabled && !id.equals("storage_cell_4k") && !id.equals("storage_cell_16k")
+                && !id.equals("storage_cell_64k");
+    }
+
+    private static byte[] filterAe2ItemDefinitions(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        for (MethodNode method : node.methods) if (method.name.equals("build")) {
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (!(instruction instanceof MethodInsnNode)) continue;
+                MethodInsnNode call = (MethodInsnNode) instruction;
+                if (!call.owner.equals("appeng/core/AEConfig") || !call.name.equals("areFeaturesEnabled")) continue;
+                InsnList filter = new InsnList();
+                filter.add(new VarInsnNode(ALOAD, 0));
+                filter.add(new FieldInsnNode(GETFIELD, node.name, "registryName", "Ljava/lang/String;"));
+                filter.add(new MethodInsnNode(INVOKESTATIC, "newearth/ContentTransformer", "allowAe2ItemDefinition",
+                        "(ZLjava/lang/String;)Z", false));
+                method.instructions.insert(call, filter);
+                ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+                node.accept(writer);
+                return writer.toByteArray();
+            }
+        }
+        throw new IllegalStateException("Unsupported AE2 item definition registration");
+    }
+
     public static boolean allowAe2MaterialName(String name) {
         return name.equals("SILICON_PRINT") || name.equals("BLANK_PATTERN") || name.equals("WIRELESS_BOOSTER")
                 || name.equals("LOGIC_PROCESSOR_PRINT") || name.equals("LOGIC_PROCESSOR")
@@ -374,6 +402,7 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
             case "QUANTUM_LINKING_CARD":
             case "SPATIAL_IO":
             case "CHANNELS":
+            case "P2P_TUNNEL":
             case "SMART_CABLES":
             case "DENSE_CABLES":
             case "PORTABLE_CELL":

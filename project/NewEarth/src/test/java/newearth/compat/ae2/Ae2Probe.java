@@ -59,6 +59,12 @@ public final class Ae2Probe {
         check(Ae2Integration.retired("material",59), "Quantum wireless card retired");
         check(!Ae2Integration.retired("material",53), "Crafting card retained until replacement exists");
         check(Ae2Integration.retired("biometric_card",0), "Identity card removed from acquisition");
+        check(!Ae2Integration.retired("storage_cell_1k", 0), "Basic item disk remains obtainable");
+        for (String tier : new String[]{"4k", "16k", "64k"}) {
+            check(Ae2Integration.retired("storage_cell_" + tier, 0), "High-capacity item disk retired: " + tier);
+            check(!Ae2Integration.retired("fluid_storage_cell_" + tier, 0), "Fluid disk retained: " + tier);
+            check(!Ae2Integration.retired("crafting_storage_" + tier, 0), "Crafting CPU retained: " + tier);
+        }
         byte[] absent = {1,2,3};
         newearth.ContentTransformer transformer = new newearth.ContentTransformer();
         check(transformer.transform("unrelated","unrelated",absent) == absent, "Optional mod absence leaves unrelated classes unchanged");
@@ -79,9 +85,16 @@ public final class Ae2Probe {
                     .findFirst().get();
             check(preview.instructions.size() == 2 && preview.instructions.getFirst().getOpcode() == Opcodes.ICONST_0,
                     "Placement preview is disabled by its runtime getter");
+            String itemBuilder = "appeng.bootstrap.ItemDefinitionBuilder";
+            ClassNode definitions = node(transformer.transform(itemBuilder, itemBuilder,
+                    read(jar, itemBuilder.replace('.', '/') + ".class")));
+            MethodNode buildItem = definitions.methods.stream().filter(m -> m.name.equals("build")).findFirst().get();
+            new Analyzer<BasicValue>(new BasicVerifier()).analyze(definitions.name, buildItem);
+            check(Arrays.stream(buildItem.instructions.toArray()).anyMatch(i -> i instanceof MethodInsnNode
+                    && ((MethodInsnNode) i).name.equals("allowAe2ItemDefinition")), "High-capacity disks filtered before registration");
             Set<String> features = new HashSet<>();
             for (FieldNode field : node(read(jar,"appeng/core/features/AEFeature.class")).fields) features.add(field.name);
-            for (String feature : new String[]{"CHANNELS","QUANTUM_NETWORK_BRIDGE","QUANTUM_LINKING_CARD","SPATIAL_IO",
+            for (String feature : new String[]{"CHANNELS","P2P_TUNNEL","QUANTUM_NETWORK_BRIDGE","QUANTUM_LINKING_CARD","SPATIAL_IO",
                     "CERTUS_ORE","CHARGED_CERTUS_ORE","CERTUS_QUARTZ_WORLD_GEN","METEORITE_WORLD_GEN","SPAWN_PRESSES_IN_METEORITES","METEORITE_COMPASS",
                     "SMART_CABLES","DENSE_CABLES","PORTABLE_CELL","MATTER_CANNON","CHARGED_STAFF","ENTROPY_MANIPULATOR",
                     "COLOR_APPLICATOR","PAINT_BALLS","POWER_GEN","PANELS"}) {
@@ -107,6 +120,15 @@ public final class Ae2Probe {
                 check(Ae2Integration.removedMaterialOutput(recipe, "appliedenergistics2"),
                         "Retired recipe is skipped before ingredient lookup: " + name);
             }
+            for (String tier : new String[]{"1k", "4k", "16k", "64k"}) {
+                for (String suffix : new String[]{"", "_storage"}) {
+                    String name = "storage_cell_" + tier + suffix;
+                    com.google.gson.JsonObject recipe = new com.google.gson.JsonParser().parse(new String(
+                            read(jar, "assets/appliedenergistics2/recipes/network/cells/" + name + ".json"), "UTF-8")).getAsJsonObject();
+                    check(Ae2Integration.removedMaterialOutput(recipe, "appliedenergistics2") == !tier.equals("1k"),
+                            "Only the basic item disk recipe remains: " + name);
+                }
+            }
             com.google.gson.JsonArray constants = new com.google.gson.JsonParser().parse(new String(
                     read(jar, "assets/appliedenergistics2/recipes/_constants.json"), "UTF-8")).getAsJsonArray();
             for (com.google.gson.JsonElement constant : constants) {
@@ -124,8 +146,9 @@ public final class Ae2Probe {
             String chinese = new String(Files.readAllBytes(resource.resolve("assets/appliedenergistics2/lang/zh_cn.lang")), "UTF-8");
             Set<String> translated = keys(chinese);
             for (String key : translated) {
-                if (key.endsWith(".newearth.desc")) {
-                    check(originalKeys.contains(key.replace(".newearth.desc", ".name")), "Hover refers to an existing UEL item " + key);
+                if (key.endsWith(".newearth.desc") || key.endsWith(".newearth.detail")) {
+                    check(originalKeys.contains(key.substring(0, key.lastIndexOf(".newearth.")) + ".name"),
+                            "Hover refers to an existing UEL item " + key);
                 } else check(originalKeys.contains(key), "Name or GUI translation exists in UEL " + key);
             }
             for (String feature : new String[]{"INSCRIBER","PRINTED_CIRCUITS","PROCESSORS","STORAGE_MONITOR","PART_CONVERSION_MONITOR"})
