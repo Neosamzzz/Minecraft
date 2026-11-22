@@ -58,11 +58,11 @@ python3 tools/build.py --target all
 > [!NOTE]
 > 首次构建需要联网下载工具、依赖并处理 Minecraft 开发类库。已安装的游戏实例与这套开发缓存分开管理；缓存默认位于用户目录的 `.gradle/`，后续构建会复用。
 
-成功后，按命令打印的 `Built:` 路径取包。GSLC 当前为 1.4.8；FTB 文件名以 `project/FTB/gradle.properties` 中的 `mod_version` 为准，不以本文的本机安装版本推定：
+成功后，按命令打印的 `Built:` 路径取包。GSLC 当前为 1.4.9；FTB 文件名以 `project/FTB/gradle.properties` 中的 `mod_version` 为准，不以本文的本机安装版本推定：
 
 ```text
 build/libs/
-├── GSLaunchCompat-1.4.8.jar
+├── GSLaunchCompat-1.4.9.jar
 ├── FTBQuests-<mod_version>.jar
 └── NewEarth-<mod_version>.jar
 ```

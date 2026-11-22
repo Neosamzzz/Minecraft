@@ -73,20 +73,27 @@ public final class ScreenSurfaceMap {
         BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos();
         for (int row = firstRow; row < firstRow + rows; row++) {
             int z = centre.getZ() - size / 2 + row;
+            Chunk chunk = null, north = null;
+            int chunkTop = 0;
             for (int column = 0; column < size; column++) {
                 int x = centre.getX() - size / 2 + column;
                 int index = row * size + column;
-                Chunk chunk = provider.getLoadedChunk(x >> 4, z >> 4);
-                if (chunk == null || chunk.isEmpty()) continue;
+                if (column == 0 || (x & 15) == 0) {
+                    chunk = provider.getLoadedChunk(x >> 4, z >> 4);
+                    if (chunk != null && chunk.isEmpty()) chunk = null;
+                    if (chunk != null) {
+                        chunkTop = Math.min(world.getHeight() - 1, chunk.getTopFilledSegment() + 15);
+                        north = (z & 15) == 0 ? provider.getLoadedChunk(x >> 4, (z - 1) >> 4) : chunk;
+                    }
+                }
+                if (chunk == null) continue;
                 // Unavailable chunks retain their last known pixels; loaded void may clear them.
                 pixels[index] = UNKNOWN;
-                int top = Math.min(world.getHeight() - 1, chunk.getTopFilledSegment() + 15);
-                for (int y = top; y >= 0; y--) {
+                for (int y = chunkTop; y >= 0; y--) {
                     IBlockState state = chunk.getBlockState(x & 15, y, z & 15);
                     position.setPos(x, y, z);
                     MapColor colour = state.getMapColor(world, position);
                     if (colour == MapColor.AIR) continue;
-                    Chunk north = (z & 15) == 0 ? provider.getLoadedChunk(x >> 4, (z - 1) >> 4) : chunk;
                     int northHeight = north == null ? y : north.getHeightValue(x & 15, (z - 1) & 15) - 1;
                     int shade = y > northHeight ? 2 : y < northHeight ? 0 : 1;
                     pixels[index] = colour.getMapColor(shade);

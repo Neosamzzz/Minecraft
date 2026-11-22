@@ -7,9 +7,12 @@ base, compiled, output = map(Path, sys.argv[1:4])
 version = sys.argv[4] if len(sys.argv) == 5 else (Path(__file__).resolve().parents[2] / 'version.txt').read_text(encoding='utf-8').strip()
 if not re.fullmatch(r'\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?', version):
     sys.exit('Invalid addon version: ' + version)
+controller = 'galaxyspace/core/mixins/MixinTileEntityLaunchConroller.class'
 with zipfile.ZipFile(base) as old, zipfile.ZipFile(compiled) as gs, zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as out:
     for name in old.namelist():
-        if name not in ('mixins.gslaunchcompat.json','META-INF/MANIFEST.MF','mixins.galaxyspace.refmap.json'):out.writestr(name,old.read(name))
+        if name == controller:
+            out.writestr(name, gs.read(name))
+        elif name not in ('mixins.gslaunchcompat.json','META-INF/MANIFEST.MF','mixins.galaxyspace.refmap.json'):out.writestr(name,old.read(name))
     manifest=old.read('META-INF/MANIFEST.MF').decode().rstrip('\r\n')+'\r\nFMLCorePluginContainsFMLMod: true\r\nImplementation-Version: '+version+'\r\n\r\n'
     out.writestr('META-INF/MANIFEST.MF',manifest)
     out.writestr('pack.mcmeta',json.dumps({'pack':{'pack_format':3,'description':'GSLaunchCompat telemetry resources'}}))
@@ -35,7 +38,7 @@ with zipfile.ZipFile(output) as out,zipfile.ZipFile(base) as old:
     assert 'gslc.dimension.line=所在维度：%s' in out.read('assets/gslaunchtelemetry/lang/zh_cn.lang').decode('utf8')
     assert b'FMLCorePluginContainsFMLMod: true' in out.read('META-INF/MANIFEST.MF')
     for name in old.namelist():
-        if name not in ('mixins.gslaunchcompat.json','META-INF/MANIFEST.MF','mixins.galaxyspace.refmap.json'):assert out.read(name)==old.read(name),name
+        if name not in (controller,'mixins.gslaunchcompat.json','META-INF/MANIFEST.MF','mixins.galaxyspace.refmap.json'):assert out.read(name)==old.read(name),name
     old_refmap=json.loads(old.read('mixins.galaxyspace.refmap.json'))
     new_refmap=json.loads(out.read('mixins.galaxyspace.refmap.json'))
     for name,value in old_refmap['mappings'].items():assert new_refmap['mappings'][name]==value

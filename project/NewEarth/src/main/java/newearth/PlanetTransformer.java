@@ -8,9 +8,37 @@ import org.objectweb.asm.tree.*;
 public final class PlanetTransformer implements IClassTransformer, Opcodes {
     private static final String HOOKS = "newearth/PlanetHooks";
 
+    private static byte[] patchDynamicPacket(byte[] bytes) {
+        ClassNode node = new ClassNode();
+        new ClassReader(bytes).accept(node, 0);
+        int replaced = 0;
+        for (MethodNode method : node.methods) {
+            if (!method.name.equals("decodeInto") || !method.desc.equals("(Lio/netty/buffer/ByteBuf;)V")) continue;
+            for (AbstractInsnNode instruction : method.instructions.toArray()) {
+                if (!(instruction instanceof MethodInsnNode) || !(instruction.getNext() instanceof MethodInsnNode)) continue;
+                MethodInsnNode read = (MethodInsnNode) instruction;
+                MethodInsnNode copy = (MethodInsnNode) instruction.getNext();
+                if (read.owner.equals("io/netty/buffer/ByteBuf") && read.name.equals("readBytes")
+                        && read.desc.equals("(I)Lio/netty/buffer/ByteBuf;")
+                        && copy.owner.equals("io/netty/buffer/Unpooled") && copy.name.equals("copiedBuffer")
+                        && copy.desc.equals("(Lio/netty/buffer/ByteBuf;)Lio/netty/buffer/ByteBuf;")) {
+                    // copiedBuffer takes its own copy before the incoming packet can be released.
+                    read.name = "readSlice";
+                    replaced++;
+                }
+            }
+        }
+        if (replaced != 2) return bytes;
+        ClassWriter writer = new ClassWriter(0);
+        node.accept(writer);
+        return writer.toByteArray();
+    }
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if (bytes == null) return null;
+        if ("micdoodle8.mods.galacticraft.core.network.PacketDynamic".equals(transformedName))
+            return patchDynamicPacket(bytes);
         String n = transformedName;
         boolean registry = "micdoodle8.mods.galacticraft.api.GalacticraftRegistry".equals(n);
         boolean core = "micdoodle8.mods.galacticraft.core.GalacticraftCore".equals(n);

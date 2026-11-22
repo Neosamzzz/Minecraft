@@ -112,20 +112,26 @@ public final class DrawerTransfer {
         Map<IItemHandler,SnapshotHandler> snapshots=new IdentityHashMap<>();List<Source> copied=new ArrayList<>();
         for(Source source:sources) {
             SnapshotHandler handler=snapshots.get(source.handler);
-            if(handler==null){handler=new SnapshotHandler(source.handler,sources);snapshots.put(source.handler,handler);}
+            if(handler==null){handler=new SnapshotHandler(source.handler);snapshots.put(source.handler,handler);}
+            handler.capture(source);
             copied.add(new Source(handler,source.slot,source.reserve,source.unit));
         }
         return transfer(container,requests,inventory,copied,stack->{throw new IllegalStateException("Snapshot rollback failed");},false,missing);
     }
     private static final class SnapshotHandler implements IItemHandler {
         final ItemStack[] prototypes;final long[] counts;final int[] units;long shared;boolean fractional;
-        SnapshotHandler(IItemHandler original,List<Source> sources) {
+        SnapshotHandler(IItemHandler original) {
             prototypes=new ItemStack[original.getSlots()];Arrays.fill(prototypes,ItemStack.EMPTY);
             counts=new long[prototypes.length];units=new int[prototypes.length];
-            for(Source source:sources)if(source.handler==original) {
-                ItemStack stack=original.extractItem(source.slot,Integer.MAX_VALUE,true).copy();
-                prototypes[source.slot]=stack;counts[source.slot]=stack.getCount();units[source.slot]=source.unit;
-                if(source.unit>0){fractional=true;shared=Math.max(shared,counts[source.slot]*source.unit);}
+        }
+        void capture(Source source) {
+            ItemStack stack = source.handler.extractItem(source.slot, Integer.MAX_VALUE, true).copy();
+            prototypes[source.slot] = stack;
+            counts[source.slot] = stack.getCount();
+            units[source.slot] = source.unit;
+            if (source.unit > 0) {
+                fractional = true;
+                shared = Math.max(shared, counts[source.slot] * source.unit);
             }
         }
         public int getSlots(){return prototypes.length;}

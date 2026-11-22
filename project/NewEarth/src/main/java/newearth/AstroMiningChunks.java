@@ -27,7 +27,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public final class AstroMiningChunks {
     private static final String DOCK_POS = "AstroMinerDock";
     private static final Map<World, Map<BlockPos, Ticket>> DOCKS = new IdentityHashMap<>();
-    private static final Map<World, Map<EntityAstroMiner, Ticket>> MINERS = new IdentityHashMap<>();
+    private static final Map<World, Map<EntityAstroMiner, MinerTicket>> MINERS = new IdentityHashMap<>();
+
+    private static final class MinerTicket {
+        final Ticket ticket;
+        int chunkX, chunkZ;
+        EnumFacing facing;
+        boolean initialized;
+
+        MinerTicket(Ticket ticket) { this.ticket = ticket; }
+    }
 
     private AstroMiningChunks() { }
 
@@ -51,18 +60,25 @@ public final class AstroMiningChunks {
     static void tickMiner(EntityAstroMiner miner, EnumFacing facing, boolean create) {
         World world = miner.world;
         if (world == null || world.isRemote || miner.isDead) return;
-        Map<EntityAstroMiner, Ticket> tickets = MINERS.computeIfAbsent(world, key -> new IdentityHashMap<>());
-        Ticket ticket = tickets.get(miner);
-        if (ticket == null) {
+        Map<EntityAstroMiner, MinerTicket> tickets = MINERS.computeIfAbsent(world, key -> new IdentityHashMap<>());
+        MinerTicket state = tickets.get(miner);
+        if (state == null) {
             if (!create || (miner.ticksExisted > 1 && miner.ticksExisted % 20 != 0)) return;
-            ticket = ForgeChunkManager.requestTicket(NewEarth.instance, world, Type.ENTITY);
+            Ticket ticket = ForgeChunkManager.requestTicket(NewEarth.instance, world, Type.ENTITY);
             if (ticket == null) return;
             ticket.bindEntity(miner);
-            tickets.put(miner, ticket);
+            state = new MinerTicket(ticket);
+            tickets.put(miner, state);
         }
-        ChunkPos current = new ChunkPos(MathHelper.floor(miner.posX) >> 4, MathHelper.floor(miner.posZ) >> 4);
-        Set<ChunkPos> needed = minerChunks(current, facing);
-        if (!ticket.getChunkList().equals(needed)) retain(world, ticket, needed);
+        int x = MathHelper.floor(miner.posX) >> 4, z = MathHelper.floor(miner.posZ) >> 4;
+        if (state.initialized && x == state.chunkX && z == state.chunkZ && facing == state.facing
+                && miner.ticksExisted % 20 != 0) return;
+        Set<ChunkPos> needed = minerChunks(new ChunkPos(x, z), facing);
+        if (!state.ticket.getChunkList().equals(needed)) retain(world, state.ticket, needed);
+        state.chunkX = x;
+        state.chunkZ = z;
+        state.facing = facing;
+        state.initialized = true;
     }
 
     static void releaseDock(TileEntityMinerBase dock) {
@@ -73,10 +89,10 @@ public final class AstroMiningChunks {
     }
 
     static void releaseMiner(EntityAstroMiner miner) {
-        Map<EntityAstroMiner, Ticket> tickets = MINERS.get(miner.world);
+        Map<EntityAstroMiner, MinerTicket> tickets = MINERS.get(miner.world);
         if (tickets == null) return;
-        Ticket ticket = tickets.remove(miner);
-        if (ticket != null) ForgeChunkManager.releaseTicket(ticket);
+        MinerTicket state = tickets.remove(miner);
+        if (state != null) ForgeChunkManager.releaseTicket(state.ticket);
     }
 
     @SubscribeEvent
@@ -129,11 +145,11 @@ public final class AstroMiningChunks {
 
     private static void restore(List<Ticket> saved, World world) {
         Map<BlockPos, Ticket> docks = DOCKS.computeIfAbsent(world, key -> new HashMap<>());
-        Map<EntityAstroMiner, Ticket> miners = MINERS.computeIfAbsent(world, key -> new IdentityHashMap<>());
+        Map<EntityAstroMiner, MinerTicket> miners = MINERS.computeIfAbsent(world, key -> new IdentityHashMap<>());
         for (Ticket ticket : saved) {
             if (ticket.getEntity() instanceof EntityAstroMiner) {
                 EntityAstroMiner miner = (EntityAstroMiner) ticket.getEntity();
-                if (miners.putIfAbsent(miner, ticket) == null) {
+                if (miners.putIfAbsent(miner, new MinerTicket(ticket)) == null) {
                     tickMiner(miner, null, false);
                     continue;
                 }

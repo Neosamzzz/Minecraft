@@ -68,7 +68,7 @@ final class ArrivalDistantLoading {
             // Lower duty cycle first when backing off, before resizing the worker pool.
             if (level < appliedLevel) override(runtimeRatio, ratio);
             override(threadCount, threads);
-            override(runtimeRatio, ratio);
+            if (level >= appliedLevel) override(runtimeRatio, ratio);
             appliedLevel = level;
         } catch (Exception error) {
             LogManager.getLogger("NewEarth").warn("Could not adjust DH arrival load; restoring normal settings", error);
@@ -86,6 +86,7 @@ final class ArrivalDistantLoading {
     }
 
     static void stop() {
+        if (!attempted && lastFrame == 0 && PREVIOUS.isEmpty()) return;
         for (Map.Entry<Object, Object> entry : PREVIOUS.entrySet()) try {
             if (entry.getValue() == null) valueType.getMethod("clearValue").invoke(entry.getKey());
             else valueType.getMethod("setValue", Object.class, String.class).invoke(entry.getKey(), entry.getValue(), "NewEarth arrival restore");

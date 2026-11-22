@@ -52,13 +52,17 @@ public class MixinTileEntityLaunchConroller {
 
     @Unique
     private void galaxyspace$trackPadChunks(TileEntityLaunchController controller, ForgeChunkManager.Ticket ticket, boolean placed) {
-        ChunkPos controllerChunk = new ChunkPos(controller.getPos());
+        BlockPos origin = controller.getPos();
+        int chunkX = origin.getX() >> 4, chunkZ = origin.getZ() >> 4;
+        // Only cross-border pads need another ticket entry.
+        if (((origin.getX() - 3) >> 4) == ((origin.getX() + 3) >> 4)
+                && ((origin.getZ() - 3) >> 4) == ((origin.getZ() + 3) >> 4)) return;
         for (int x = -3; x <= 3; x++) {
             for (int z = -3; z <= 3; z++) {
-                BlockPos pos = controller.getPos().add(x, 0, z);
-                if (new ChunkPos(pos).equals(controllerChunk)
-                        // Restored tickets must also discover pads across unloaded chunk borders.
-                        || (placed && !controller.getWorld().isBlockLoaded(pos))
+                if (((origin.getX() + x) >> 4) == chunkX && ((origin.getZ() + z) >> 4) == chunkZ) continue;
+                BlockPos pos = origin.add(x, 0, z);
+                // Restored tickets must also discover pads across unloaded chunk borders.
+                if ((placed && !controller.getWorld().isBlockLoaded(pos))
                         || !LaunchControllerCompatibility.canAttachToPad(controller.getWorld(), pos)) {
                     continue;
                 }
@@ -92,6 +96,7 @@ public class MixinTileEntityLaunchConroller {
         }
         // Pads can be built after their controller has received its ticket.
         this.galaxyspace$trackPadChunks(controller, this.chunkLoadTicket, true);
+        if (this.galaxyspace$connectedPads.isEmpty()) return;
         List<ChunkPos> removedChunks = new ArrayList<>();
         Iterator<BlockPos> iterator = this.galaxyspace$connectedPads.iterator();
         while (iterator.hasNext()) {

@@ -145,6 +145,7 @@ public final class SolarSystemProbe {
                 "galaxyspace.systems.SolarSystem.SolarSystemBodies",
                 "com.mjr.extraplanets.client.gui.screen.CustomCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.GalacticraftCore",
+                "micdoodle8.mods.galacticraft.core.network.PacketDynamic",
                 "micdoodle8.mods.galacticraft.api.GalacticraftRegistry",
                 "micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection",
                 "micdoodle8.mods.galacticraft.core.util.WorldUtil",

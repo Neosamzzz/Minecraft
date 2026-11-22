@@ -169,8 +169,12 @@ public final class ArrivalSession extends WorldSavedData {
                 int x = (center.getX() >> 4) + offset.getX(), z = (center.getZ() >> 4) + offset.getZ();
                 if (!world.getWorldBorder().contains(new BlockPos(x * 16, 64, z * 16))) continue;
                 boolean loaded = world.getChunkProvider().getLoadedChunk(x, z) != null;
-                world.getChunkProvider().provideChunk(x, z);
-                if (!loaded && !world.getPlayerChunkMap().contains(x, z)) group.extra.add(new ChunkPos(x, z));
+                if (!loaded) {
+                    world.getChunkProvider().provideChunk(x, z);
+                    if (!world.getPlayerChunkMap().contains(x, z)) group.extra.add(new ChunkPos(x, z));
+                    // Allow one synchronous load per tick; already loaded positions still use the normal budget.
+                    remaining = 0;
+                }
             }
             if (group.landing == null && group.cursor >= 121) group.landing = EndDimension.landing(world);
             if (group.ticks % 100 == 0) { saved.markDirty(); releaseChunks(world, group, false); }
@@ -230,7 +234,7 @@ public final class ArrivalSession extends WorldSavedData {
     }
 
     private static void releaseChunks(WorldServer world, Group group, boolean all) {
-        if (group.center == null) return;
+        if (group.center == null || group.extra.isEmpty()) return;
         BlockPos offset = preparationOffset(Math.max(0, group.cursor - 1));
         int radius = Math.max(Math.abs(offset.getX()), Math.abs(offset.getZ()));
         Iterator<ChunkPos> iterator = group.extra.iterator();

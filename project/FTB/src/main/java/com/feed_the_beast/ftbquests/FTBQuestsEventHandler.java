@@ -321,18 +321,7 @@ public class FTBQuestsEventHandler
 				return;
 			}
 
-			QuestData data = ServerQuestFile.INSTANCE.getData(event.player);
-
-			if (data == null)
-			{
-				return;
-			}
-
-			if (autoSubmitTasks == null || autoSubmitTasks.isEmpty())
-			{
-				return;
-			}
-
+			QuestData data = null;
 			long t = event.player.world.getTotalWorldTime();
 
 			for (Task task : autoSubmitTasks)
@@ -341,6 +330,11 @@ public class FTBQuestsEventHandler
 
 				if (d > 0L && t % d == 0L)
 				{
+					if (data == null)
+					{
+						data = ServerQuestFile.INSTANCE.getData(event.player);
+						if (data == null) return;
+					}
 					TaskData taskData = data.getTaskData(task);
 
 					if (!taskData.isComplete() && task.quest.canStartTasks(data))

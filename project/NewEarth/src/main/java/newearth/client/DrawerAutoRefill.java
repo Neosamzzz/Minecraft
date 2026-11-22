@@ -70,7 +70,7 @@ public final class DrawerAutoRefill {
 
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+        if (event.phase != TickEvent.Phase.END || pending.item == null) return;
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.player == null || mc.world == null || mc.currentScreen != null) { pending.clear(); return; }
         ItemStack held = mc.player.getHeldItemMainhand();

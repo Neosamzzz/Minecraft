@@ -53,6 +53,7 @@ public final class ProgressionProbe {
         net.minecraft.launchwrapper.Launch.blackboard.put("fml.deobfuscatedEnvironment", true);
         Bootstrap.register();
         checkAstroMining();
+        verifyDynamicPackets();
         check(!ContentPruning.retiredOutput(null), "Null unlock stack is not a retired item");
         check(ContentPruning.allowSchematic(new micdoodle8.mods.galacticraft.core.schematic.SchematicRocketT1()),
                 "GC built-in T1 page with null required item must register");
@@ -207,6 +208,37 @@ public final class ProgressionProbe {
             }
         }
         check(verified == targets.length, "All installed Astro Miner classes were verified");
+    }
+
+    private static void verifyDynamicPackets() throws Exception {
+        String name = "micdoodle8.mods.galacticraft.core.network.PacketDynamic";
+        byte[] original;
+        try (InputStream stream = ProgressionProbe.class.getResourceAsStream("/" + name.replace('.', '/') + ".class")) {
+            original = read(stream);
+        }
+        PlanetTransformer transformer = new PlanetTransformer();
+        final byte[] patched = transformer.transform(name, name, original);
+        check(patched != original && transformer.transform(name, name, patched) == patched, "GC packet patch applied once");
+        Class<?> type = new ClassLoader(ProgressionProbe.class.getClassLoader()) {
+            Class<?> packet() { return defineClass(name, patched, 0, patched.length); }
+        }.packet();
+        java.lang.reflect.Field field = type.getDeclaredField("payloadData");
+        field.setAccessible(true);
+        for (int kind = 0; kind <= 1; kind++) {
+            Object packet = type.getConstructor().newInstance();
+            io.netty.buffer.ByteBuf wire = io.netty.buffer.Unpooled.directBuffer();
+            try {
+                wire.writeInt(7).writeInt(kind).writeInt(23);
+                if (kind == 1) wire.writeInt(31).writeInt(-9);
+                wire.writeInt(4).writeInt(54321).writeByte(42);
+                type.getMethod("decodeInto", io.netty.buffer.ByteBuf.class).invoke(packet, wire);
+                check(wire.readableBytes() == 1 && wire.readByte() == 42, "GC decoder consumes exactly the payload");
+                wire.setZero(0, wire.writerIndex());
+            } finally { wire.release(); }
+            io.netty.buffer.ByteBuf payload = (io.netty.buffer.ByteBuf) field.get(packet);
+            try { check(payload.readInt() == 54321, "Payload survives input reuse and release"); }
+            finally { payload.release(); }
+        }
     }
 
     public static final class PendingFixture {
