@@ -155,6 +155,7 @@ public final class Ae2Probe {
             try (java.net.URLClassLoader upstream = new java.net.URLClassLoader(
                     new java.net.URL[]{runtimeJar.toURI().toURL()}, Ae2Probe.class.getClassLoader())) {
                 checkPressingRecipes(upstream);
+                checkPairingPlayerSlots(upstream);
             }
             checkOreDefinitions(jar);
             checkPairingPermissions(jar,transformer);
@@ -356,6 +357,37 @@ public final class Ae2Probe {
                 if (i instanceof MethodInsnNode && ((MethodInsnNode)i).name.equals("isSecurityEnabled")) cacheUsesProvider=true;
         check(cacheUsesProvider,"Actual security grid consults the disabled provider");
     }
+    private static void checkPairingPlayerSlots(ClassLoader upstream) throws Exception {
+        net.minecraft.inventory.Container container = new net.minecraft.inventory.Container() {
+            @Override public boolean canInteractWith(net.minecraft.entity.player.EntityPlayer player) { return true; }
+        };
+        String prefix = "appeng.container.slot.";
+        Class<?> handler = net.minecraftforge.items.IItemHandler.class;
+        net.minecraftforge.items.IItemHandler player = new net.minecraftforge.items.ItemStackHandler(36);
+        for (int index = 0; index < 36; index++) {
+            String type = index < 9 ? "SlotPlayerHotBar" : "SlotPlayerInv";
+            Class<?> slot = Class.forName(prefix + type, true, upstream);
+            container.inventorySlots.add((net.minecraft.inventory.Slot) slot.getConstructor(handler, int.class, int.class, int.class)
+                    .newInstance(player, index, 0, 0));
+        }
+        Class<?> restricted = Class.forName(prefix + "SlotRestrictedInput", true, upstream);
+        Class<?> placeable = Class.forName(prefix + "SlotRestrictedInput$PlacableItemType", true, upstream);
+        net.minecraftforge.items.IItemHandler encoder = new net.minecraftforge.items.ItemStackHandler(2);
+        net.minecraft.inventory.Slot input = (net.minecraft.inventory.Slot) restricted
+                .getConstructor(placeable, handler, int.class, int.class, int.class, net.minecraft.entity.player.InventoryPlayer.class)
+                .newInstance(placeable.getField("ENCODABLE_ITEM").get(null), encoder, 0, 0, 0, null);
+        net.minecraft.inventory.Slot output = (net.minecraft.inventory.Slot) Class.forName(prefix + "SlotOutput", true, upstream)
+                .getConstructor(handler, int.class, int.class, int.class, int.class).newInstance(encoder, 1, 0, 0, -1);
+        container.inventorySlots.add(input);
+        container.inventorySlots.add(output);
+        new GuiWirelessPairing(container);
+        for (int index = 0; index < 36; index++) {
+            net.minecraft.inventory.Slot slot = container.inventorySlots.get(index);
+            check(slot.xPos == 8 + index % 9 * 18 && slot.yPos == (index < 9 ? 142 : 84 + (index / 9 - 1) * 18),
+                    "Actual AE2 player slot lands on the matching inventory tile: " + index);
+        }
+        check(input.xPos == 53 && output.xPos == 107, "Pairing input and output remain in the encoder area");
+    }
     private static void checkReplacementRecipes(Path resources) throws Exception {
         for (String name : new String[]{"certus_crystal","fluix_crystal","logic_processor","calculation_processor","engineering_processor"}) {
             check(!Files.exists(resources.resolve("assets/newearth/recipes/ae2_"+name+".json")), "Obsolete material recipe removed: "+name);
@@ -378,6 +410,15 @@ public final class Ae2Probe {
             check(locale.formatMessage(key,new Object[0]).equals(expected.getProperty(key)), "Actual Minecraft Locale loads AE2 override: " + key);
         Set<String> ae2Keys = new HashSet<>(expected.stringPropertyNames());
         try (ZipFile jar = new ZipFile(ae2)) {
+            Properties upstreamChinese = new Properties();
+            upstreamChinese.load(new StringReader(new String(read(jar, "assets/appliedenergistics2/lang/zh_cn.lang"), "UTF-8")));
+            for (String key : upstreamChinese.stringPropertyNames()) {
+                if (key.matches("item\\.appliedenergistics2\\.multi_part\\..*(formation|annihilation)_plane\\.name")
+                        || key.matches("gui\\.appliedenergistics2\\.(Fluid)?FormationPlane")) {
+                    check(locale.formatMessage(key, new Object[0]).equals(upstreamChinese.getProperty(key)),
+                            "Formation and annihilation panels keep their upstream wording: " + key);
+                }
+            }
             for (String language : Arrays.asList("en_us", "zh_cn")) {
                 ae2Keys.addAll(keys(new String(read(jar, "assets/appliedenergistics2/lang/" + language + ".lang"), "UTF-8")));
             }

@@ -1,6 +1,5 @@
 package newearth.compat.ae2;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -14,7 +13,7 @@ public final class GuiWirelessPairing extends GuiContainer {
     public GuiWirelessPairing(Container container) {
         super(container); xSize = 176; ySize = 166;
         for (Slot slot : container.inventorySlots) {
-            if (slot.inventory == Minecraft.getMinecraft().player.inventory) {
+            if (isPlayerSlot(slot)) {
                 int index = slot.getSlotIndex();
                 slot.xPos = 8 + index % 9 * 18;
                 slot.yPos = index < 9 ? 142 : 84 + (index / 9 - 1) * 18;
@@ -26,6 +25,17 @@ public final class GuiWirelessPairing extends GuiContainer {
         }
         if (input == null || output == null) throw new IllegalStateException("Unsupported AE2 wireless pairing slots");
     }
+
+    private static boolean isPlayerSlot(Slot slot) {
+        try {
+            return (Boolean) slot.getClass().getMethod("isPlayerSide").invoke(slot);
+        } catch (NoSuchMethodException notAnAe2Slot) {
+            return false;
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Cannot identify AE2 player slot", error);
+        }
+    }
+
     private static String restrictedType(Slot slot) {
         try { return String.valueOf(slot.getClass().getMethod("getPlaceableItemType").invoke(slot)); }
         catch (NoSuchMethodException notRestricted) { return ""; }
