@@ -213,18 +213,25 @@ public final class Ae2Probe {
 
         net.minecraft.item.ItemStack[] stacks = {
                 new net.minecraft.item.ItemStack(net.minecraft.init.Items.COAL, 4),
-                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT, 3)};
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT, 3), ItemStack.EMPTY};
+        int[] faceQueries = {0};
+        boolean[] outputMoved = {false};
         net.minecraft.inventory.ISidedInventory inventory = (net.minecraft.inventory.ISidedInventory) java.lang.reflect.Proxy.newProxyInstance(
                 Ae2Probe.class.getClassLoader(), new Class<?>[]{net.minecraft.inventory.ISidedInventory.class}, (proxy, method, args) -> {
                     switch (method.getName()) {
                         case "getSizeInventory": return stacks.length;
                         case "getInventoryStackLimit": return 64;
-                        case "getSlotsForFace": return args[0] == net.minecraft.util.EnumFacing.DOWN ? new int[]{1} : new int[]{0};
+                        case "getSlotsForFace":
+                            faceQueries[0]++;
+                            return args[0] == net.minecraft.util.EnumFacing.DOWN ? new int[]{outputMoved[0] ? 2 : 1} : new int[]{0};
                         case "getStackInSlot": return stacks[(Integer) args[0]];
-                        case "canExtractItem": return (Integer) args[0] == 1;
+                        case "canExtractItem": return (Integer) args[0] != 0;
                         case "isItemValidForSlot":
                         case "canInsertItem": return (Integer) args[0] == 0 && ((net.minecraft.item.ItemStack) args[1]).getItem() == net.minecraft.init.Items.COAL;
-                        case "decrStackSize": return stacks[(Integer) args[0]].splitStack((Integer) args[1]);
+                        case "decrStackSize":
+                            ItemStack removed = stacks[(Integer) args[0]].splitStack((Integer) args[1]);
+                            outputMoved[0] = true;
+                            return removed;
                         case "setInventorySlotContents": stacks[(Integer) args[0]] = (net.minecraft.item.ItemStack) args[1]; return null;
                         case "markDirty": return null;
                         default: throw new AssertionError(method.getName());
@@ -241,11 +248,16 @@ public final class Ae2Probe {
         };
         net.minecraft.util.EnumFacing[] sides = net.minecraft.util.EnumFacing.VALUES;
         Ae2BusPorts.SidedItems intake = new Ae2BusPorts.SidedItems(machine, inventory, sides, true);
-        check(intake.getSlots() == 2 && intake.getStackInSlot(0).isEmpty(), "Input aliases stay hidden from the item collector");
+        for (int i = 0; i < 64; i++) check(intake.getStackInSlot(2).isEmpty(), "Unexposed physical slot stays hidden");
+        check(faceQueries[0] == sides.length, "Repeated empty-slot scans use six face queries instead of 384");
+        check(intake.getSlots() == 3 && intake.getStackInSlot(0).isEmpty(), "Input aliases stay hidden from the item collector");
         check(intake.extractItem(1, 6, true).getCount() == 3 && stacks[1].getCount() == 3,
                 "Another face can simulate extraction from the one physical output slot");
         check(intake.extractItem(1, 2, false).getCount() == 2 && stacks[1].getCount() == 1 && stacks[0].getCount() == 4,
                 "Actual extraction leaves the input untouched");
+        stacks[2] = new ItemStack(Items.IRON_INGOT, 2);
+        check(intake.getStackInSlot(1).isEmpty() && intake.extractItem(2, 2, true).getCount() == 2,
+                "Committed transfer refreshes the sided layout before the next transfer");
         Ae2BusPorts.SidedItems feeder = new Ae2BusPorts.SidedItems(machine, inventory, sides, false);
         check(feeder.insertItem(1, stacks[0].copy(), true).getCount() == 4
                 && feeder.insertItem(0, stacks[0].copy(), true).isEmpty(), "Delivery respects the machine's slot permissions");

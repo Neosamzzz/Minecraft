@@ -23,6 +23,8 @@ import newearth.NewEarth;
 /** Optional AE2 UEL configuration and acquisition rules; early feature filtering lives in ContentTransformer. */
 @Mod.EventBusSubscriber(modid = NewEarth.MOD_ID)
 public final class Ae2Integration {
+    private static final String[] RECIPE_INPUT_FIELDS = {"ore", "part", "material", "item"};
+
     private Ae2Integration() { }
 
     public static void configure() {
@@ -33,10 +35,12 @@ public final class Ae2Integration {
             // Channel behavior is filtered earlier by the existing ContentTransformer hook.
             applySettings(config);
             Class<?> featureType = Class.forName("appeng.core.features.AEFeature");
+            java.lang.reflect.Method categoryName = featureType.getMethod("category");
+            java.lang.reflect.Method configKey = featureType.getMethod("key");
             for (Object feature : featureType.getEnumConstants())
-                if (newearth.ContentTransformer.retiredAe2Feature(((Enum<?>) feature).name())) {
-                    String category = (String) featureType.getMethod("category").invoke(feature);
-                    String key = (String) featureType.getMethod("key").invoke(feature);
+                if (ContentTransformer.retiredAe2Feature(((Enum<?>) feature).name())) {
+                    String category = (String) categoryName.invoke(feature);
+                    String key = (String) configKey.invoke(feature);
                     config.get("features." + category, key, true).set(false);
                 }
             Field preview = type.getDeclaredField("showPlacementPreview"); preview.setAccessible(true);
@@ -101,7 +105,7 @@ public final class Ae2Integration {
         }
         if (!json.isJsonObject()) return;
         JsonObject object = json.getAsJsonObject();
-        for (String key : Arrays.asList("ore", "part", "material", "item")) {
+        for (String key : RECIPE_INPUT_FIELDS) {
             if (!object.has(key) || !object.get(key).isJsonPrimitive()) continue;
             String replacement = replacement(object.get(key).getAsString());
             if (replacement == null) continue;
@@ -222,10 +226,22 @@ public final class Ae2Integration {
                 || meta == 160 || meta == 180 || meta == 200;
         if (path.equals("material")) return meta == 59 || meta >= 32 && meta <= 34;
         if (path.startsWith("spatial_")) return true;
-        return Arrays.asList("controller", "portable_cell", "matter_cannon", "charged_staff",
-                "biometric_card",
-                "entropy_manipulator", "color_applicator", "paint_ball", "quantum_ring", "quantum_link",
-                "vibration_chamber").contains(path);
+        switch (path) {
+            case "controller":
+            case "portable_cell":
+            case "matter_cannon":
+            case "charged_staff":
+            case "biometric_card":
+            case "entropy_manipulator":
+            case "color_applicator":
+            case "paint_ball":
+            case "quantum_ring":
+            case "quantum_link":
+            case "vibration_chamber":
+                return true;
+            default:
+                return false;
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

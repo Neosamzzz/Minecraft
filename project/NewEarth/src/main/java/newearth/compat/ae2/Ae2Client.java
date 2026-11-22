@@ -24,6 +24,20 @@ import newearth.NewEarth;
 
 @Mod.EventBusSubscriber(modid = NewEarth.MOD_ID, value = Side.CLIENT)
 public final class Ae2Client {
+    private static final ClassValue<Optional<Method>> SLOT_TYPE = new ClassValue<Optional<Method>>() {
+        @Override protected Optional<Method> computeValue(Class<?> type) {
+            for (Class<?> current = type; current != null; current = current.getSuperclass()) {
+                if (!current.getName().equals("appeng.container.slot.SlotRestrictedInput")) continue;
+                try {
+                    return Optional.of(current.getMethod("getPlaceableItemType"));
+                } catch (NoSuchMethodException error) {
+                    throw new IllegalStateException("Unsupported AE2 slot API", error);
+                }
+            }
+            return Optional.empty();
+        }
+    };
+
     @SubscribeEvent public static void open(GuiOpenEvent event) {
         if (event.getGui() != null && event.getGui().getClass().getName().equals("appeng.client.gui.implementations.GuiSecurityStation"))
             event.setGui(new GuiWirelessPairing(((GuiContainer) event.getGui()).inventorySlots));
@@ -31,7 +45,7 @@ public final class Ae2Client {
     @SubscribeEvent public static void itemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack(); ResourceLocation id = stack.getItem().getRegistryName();
         if (id == null || !"appliedenergistics2".equals(id.getNamespace())) return;
-        if (Ae2Integration.retired(stack)) {
+        if (Ae2Integration.retired(id.getPath(), stack.getMetadata()) && !stack.isEmpty()) {
             event.getToolTip().add(TextFormatting.DARK_GRAY + I18n.format("newearth.ae2.retired"));
             return;
         }
@@ -53,9 +67,10 @@ public final class Ae2Client {
         String screen = gui.getClass().getSimpleName();
         String key = slotHint(screen, slot.getClass().getSimpleName());
         List<String> lines = Collections.emptyList();
-        if (key == null && restricted(slot.getClass())) {
+        Method slotType = key == null ? SLOT_TYPE.get(slot.getClass()).orElse(null) : null;
+        if (slotType != null) {
             try {
-                String kind = String.valueOf(slot.getClass().getMethod("getPlaceableItemType").invoke(slot));
+                String kind = String.valueOf(slotType.invoke(slot));
                 if (kind.equals("UPGRADES")) {
                     lines = upgradeHints(gui, slot);
                 } else {
@@ -70,35 +85,45 @@ public final class Ae2Client {
     }
 
     private static List<String> upgradeHints(GuiContainer gui, Slot slot) throws ReflectiveOperationException {
-        Object inventory = slot.getClass().getMethod("getItemHandler").invoke(slot);
-        Class<?> upgrades = Class.forName("appeng.parts.automation.UpgradeInventory");
-        if (gui.getClass().getSimpleName().equals("GuiCellWorkbench")) {
-            Object container = gui.inventorySlots;
-            inventory = container.getClass().getMethod("getCellUpgradeInventory").invoke(container);
-        }
-        if (!upgrades.isInstance(inventory)) return Collections.emptyList();
-
-        Item material = Item.getByNameOrId("appliedenergistics2:material");
-        if (material == null) return Collections.emptyList();
-        NonNullList<ItemStack> candidates = NonNullList.create();
-        material.getSubItems(CreativeTabs.SEARCH, candidates);
-        Method getType = material.getClass().getMethod("getType", ItemStack.class);
-        Method getMax = upgrades.getMethod("getMaxInstalled", getType.getReturnType());
+        Object inventory = gui.getClass().getSimpleName().equals("GuiCellWorkbench")
+                ? UpgradeCards.CELL_INVENTORY.invoke(gui.inventorySlots) : UpgradeCards.SLOT_INVENTORY.invoke(slot);
+        if (!UpgradeCards.INVENTORY.isInstance(inventory)) return Collections.emptyList();
+        int slots = ((IItemHandler) inventory).getSlots();
         List<String> lines = new ArrayList<>();
-        for (ItemStack card : candidates) {
-            Object type = getType.invoke(material, card);
-            if (type == null) continue;
-            int limit = Math.min((Integer) getMax.invoke(inventory, type), ((IItemHandler) inventory).getSlots());
-            if (limit > 0) lines.add(card.getDisplayName() + " ×" + limit);
+        for (Map.Entry<ItemStack, Object> card : UpgradeCards.TYPES.entrySet()) {
+            int limit = Math.min((Integer) UpgradeCards.MAX_INSTALLED.invoke(inventory, card.getValue()), slots);
+            if (limit > 0) lines.add(card.getKey().getDisplayName() + " ×" + limit);
         }
         if (!lines.isEmpty()) lines.add(0, I18n.format("newearth.ae2.slot.accepts_upgrades"));
         return lines;
     }
 
-    private static boolean restricted(Class<?> type) {
-        for (Class<?> current = type; current != null; current = current.getSuperclass())
-            if (current.getName().equals("appeng.container.slot.SlotRestrictedInput")) return true;
-        return false;
+    private static final class UpgradeCards {
+        static final Class<?> INVENTORY;
+        static final Method SLOT_INVENTORY, CELL_INVENTORY, MAX_INSTALLED;
+        static final Map<ItemStack, Object> TYPES = new LinkedHashMap<>();
+
+        static {
+            try {
+                INVENTORY = Class.forName("appeng.parts.automation.UpgradeInventory");
+                SLOT_INVENTORY = Class.forName("appeng.container.slot.AppEngSlot").getMethod("getItemHandler");
+                CELL_INVENTORY = Class.forName("appeng.container.implementations.ContainerCellWorkbench")
+                        .getMethod("getCellUpgradeInventory");
+                MAX_INSTALLED = INVENTORY.getMethod("getMaxInstalled", Class.forName("appeng.api.config.Upgrades"));
+                Item material = Item.getByNameOrId("appliedenergistics2:material");
+                if (material != null) {
+                    NonNullList<ItemStack> candidates = NonNullList.create();
+                    material.getSubItems(CreativeTabs.SEARCH, candidates);
+                    Method getType = material.getClass().getMethod("getType", ItemStack.class);
+                    for (ItemStack card : candidates) {
+                        Object type = getType.invoke(material, card);
+                        if (type != null) TYPES.put(card, type);
+                    }
+                }
+            } catch (ReflectiveOperationException error) {
+                throw new IllegalStateException("Unsupported AE2 upgrade API", error);
+            }
+        }
     }
 
     static String slotHint(String gui, String slot) {

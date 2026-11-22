@@ -17,7 +17,7 @@ public final class DrawerNetwork {
     /** Client preview cannot rely on the controller's server-only network cache or remote chunks. */
     public static boolean hasEndpoint(World world,BlockPos anchor) {
         if(anchor==null)return false;
-        for(EnumFacing side:EnumFacing.values()) {
+        for(EnumFacing side:EnumFacing.VALUES) {
             BlockPos pos=anchor.offset(side);if(!world.isBlockLoaded(pos))continue;
             TileEntity tile=world.getTileEntity(pos);
             if(tile!=null&&(is(tile,"block.tile.TileEntityController")||is(tile,"block.tile.TileEntitySlave")))return true;
@@ -27,7 +27,7 @@ public final class DrawerNetwork {
     public static TileEntity controller(World world, BlockPos anchor) {
         if (anchor == null) return null;
         TileEntity found = null;
-        for (EnumFacing side : EnumFacing.values()) {
+        for (EnumFacing side : EnumFacing.VALUES) {
             BlockPos pos = anchor.offset(side);
             if (!world.isBlockLoaded(pos)) continue;
             TileEntity tile = world.getTileEntity(pos);
@@ -61,8 +61,17 @@ public final class DrawerNetwork {
             int range = ((Number) config.getClass().getMethod("getControllerRange").invoke(config)).intValue();
             Class<?> networked = Class.forName(PREFIX + "api.storage.INetworked");
             Class<?> protectable = Class.forName(PREFIX + "api.storage.attribute.IProtectable");
+            Class<?> drawers = Class.forName(PREFIX + "block.tile.TileEntityDrawers");
+            Class<?> groupType = Class.forName(PREFIX + "api.storage.IDrawerGroup");
+            Class<?> fractional = Class.forName(PREFIX + "api.storage.IFractionalDrawer");
+            Method sealed = drawers.getMethod("isSealed");
+            Method getGroup = drawers.getMethod("getGroup");
+            Method drawerOrder = groupType.getMethod("getAccessibleDrawerSlots");
+            Method getDrawer = groupType.getMethod("getDrawer", int.class);
+            Method conversionRate = fractional.getMethod("getConversionRate");
             Method access = Class.forName(PREFIX + "security.SecurityManager").getMethod("hasAccess",
                     com.mojang.authlib.GameProfile.class, protectable);
+            com.mojang.authlib.GameProfile profile = player.getGameProfile();
             World world = controller.getWorld(); BlockPos root = controller.getPos();
             Set<BlockPos> seen = new HashSet<>(); Queue<BlockPos> queue = new ArrayDeque<>();
             queue.add(root); seen.add(root);
@@ -73,27 +82,24 @@ public final class DrawerNetwork {
                         || Math.abs(pos.getZ()-root.getZ()) > range || !world.isBlockLoaded(pos)) continue;
                 if (!networked.isInstance(world.getBlockState(pos).getBlock())) continue;
                 TileEntity tile = world.getTileEntity(pos);
-                if (tile != null && is(tile, "block.tile.TileEntityDrawers")
-                        && (Boolean) access.invoke(null, player.getGameProfile(), tile)
-                        && !(Boolean) tile.getClass().getMethod("isSealed").invoke(tile)) {
+                if (drawers.isInstance(tile) && (Boolean) access.invoke(null, profile, tile)
+                        && !(Boolean) sealed.invoke(tile)) {
                     IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
                     if (handler != null) {
                         // Slot zero is virtual insertion; fractional cells share one underlying stock.
-                        Class<?> groupType=Class.forName(PREFIX+"api.storage.IDrawerGroup");
-                        Class<?> fractional=Class.forName(PREFIX+"api.storage.IFractionalDrawer");
-                        Object group=tile.getClass().getMethod("getGroup").invoke(tile);
-                        int[] order=(int[])groupType.getMethod("getAccessibleDrawerSlots").invoke(group);
+                        Object group = getGroup.invoke(tile);
+                        int[] order = (int[]) drawerOrder.invoke(group);
                         int[] rates=new int[handler.getSlots()-1];Arrays.fill(rates,1);
                         for(int i=0;i<rates.length&&i<order.length;i++) {
-                            Object drawer=groupType.getMethod("getDrawer",int.class).invoke(group,order[i]);
-                            if(fractional.isInstance(drawer))rates[i]=((Number)fractional.getMethod("getConversionRate").invoke(drawer)).intValue();
+                            Object drawer = getDrawer.invoke(group, order[i]);
+                            if (fractional.isInstance(drawer)) rates[i] = ((Number) conversionRate.invoke(drawer)).intValue();
                         }
                         List<DrawerTransfer.Source> cells=DrawerTransfer.automationSources(handler,1,rates);
                         for(int i=0;i<cells.size()&&i<order.length;i++){cells.get(i).origin=tile;cells.get(i).drawerIndex=order[i];}
                         result.addAll(cells);
                     }
                 }
-                for (EnumFacing side : EnumFacing.values()) {
+                for (EnumFacing side : EnumFacing.VALUES) {
                     BlockPos next = pos.offset(side); if (seen.add(next)) queue.add(next);
                 }
             }

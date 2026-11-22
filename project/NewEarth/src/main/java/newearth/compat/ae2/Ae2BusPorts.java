@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.inventory.ISidedInventory;
@@ -20,15 +21,25 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 /** Resolves alternate ports on the same neighboring machine, using its existing sided handlers. */
 public final class Ae2BusPorts {
+    private static final EnumFacing[][] ALL_PORTS = new EnumFacing[EnumFacing.VALUES.length][];
+    private static final EnumFacing[][] NATIVE_PORT = new EnumFacing[EnumFacing.VALUES.length][];
+    private static final int[] NO_SLOTS = new int[0];
+
+    static {
+        for (EnumFacing preferred : EnumFacing.VALUES) {
+            int index = preferred.ordinal();
+            EnumFacing[] ordered = EnumFacing.values();
+            System.arraycopy(ordered, 0, ordered, 1, index);
+            ordered[0] = preferred;
+            ALL_PORTS[index] = ordered;
+            NATIVE_PORT[index] = new EnumFacing[]{preferred};
+        }
+    }
+
     private Ae2BusPorts() { }
 
     private static EnumFacing[] faces(TileEntity target, EnumFacing preferred) {
-        if (target.getClass().getName().startsWith("appeng.")) return new EnumFacing[]{preferred};
-        EnumFacing[] ordered = EnumFacing.values();
-        int index = preferred.ordinal();
-        System.arraycopy(ordered, 0, ordered, 1, index);
-        ordered[0] = preferred;
-        return ordered;
+        return (target.getClass().getName().startsWith("appeng.") ? NATIVE_PORT : ALL_PORTS)[preferred.ordinal()];
     }
 
     public static Object itemAdaptor(TileEntity tile, EnumFacing preferred, boolean extracting) {
@@ -67,6 +78,8 @@ public final class Ae2BusPorts {
         private final boolean extracting;
         private final EnumFacing[] sides;
         private final IItemHandler[] handlers;
+        // This adaptor is scoped to one bus operation. Clear the snapshot after a committed transfer.
+        private final int[][] exposedSlots;
         private final boolean anyPort;
 
         SidedItems(TileEntity tile, ISidedInventory inventory, EnumFacing[] sides, boolean extracting) {
@@ -74,6 +87,7 @@ public final class Ae2BusPorts {
             this.extracting = extracting;
             this.sides = sides;
             this.handlers = new IItemHandler[sides.length];
+            this.exposedSlots = new int[sides.length][];
             boolean found = false;
             for (int i = 0; i < sides.length; i++) {
                 IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, sides[i]);
@@ -92,8 +106,11 @@ public final class Ae2BusPorts {
 
         private int portSlot(int port, int slot) {
             if (handlers[port] == null) return -1;
-            int[] exposed = inventory.getSlotsForFace(sides[port]);
-            if (exposed == null) return -1;
+            int[] exposed = exposedSlots[port];
+            if (exposed == null) {
+                exposed = inventory.getSlotsForFace(sides[port]);
+                exposedSlots[port] = exposed = exposed == null ? NO_SLOTS : exposed;
+            }
             for (int i = 0; i < exposed.length; i++) if (exposed[i] == slot) return i;
             return -1;
         }
@@ -114,7 +131,10 @@ public final class Ae2BusPorts {
                 int index = portSlot(port, slot);
                 if (index < 0) continue;
                 ItemStack remaining = handlers[port].insertItem(index, stack, simulate);
-                if (remaining.getCount() < stack.getCount()) return remaining;
+                if (remaining.getCount() < stack.getCount()) {
+                    if (!simulate) Arrays.fill(exposedSlots, null);
+                    return remaining;
+                }
             }
             return stack;
         }
@@ -124,7 +144,10 @@ public final class Ae2BusPorts {
                 int index = portSlot(port, slot);
                 if (index < 0) continue;
                 ItemStack extracted = handlers[port].extractItem(index, amount, simulate);
-                if (!extracted.isEmpty()) return extracted;
+                if (!extracted.isEmpty()) {
+                    if (!simulate) Arrays.fill(exposedSlots, null);
+                    return extracted;
+                }
             }
             return ItemStack.EMPTY;
         }
@@ -146,27 +169,43 @@ public final class Ae2BusPorts {
     @Nullable
     public static IFluidHandler fluidPort(TileEntity tile, Capability<?> capability, EnumFacing preferred,
                                            @Nullable IFluidHandler filter) {
-        List<IFluidHandler> ports = new ArrayList<>();
+        IFluidHandler first = null;
+        List<IFluidHandler> ports = null;
         for (EnumFacing face : faces(tile, preferred)) {
             if (!tile.hasCapability(capability, face)) continue;
             Object handler = tile.getCapability(capability, face);
-            if (handler instanceof IFluidHandler && !ports.contains(handler)) ports.add((IFluidHandler) handler);
+            if (!(handler instanceof IFluidHandler)) continue;
+            if (first == null) first = (IFluidHandler) handler;
+            else if (!handler.equals(first)) {
+                if (ports == null) {
+                    ports = new ArrayList<>();
+                    ports.add(first);
+                }
+                if (!ports.contains(handler)) ports.add((IFluidHandler) handler);
+            }
         }
-        return ports.isEmpty() ? null : new FluidPorts(ports, filter);
+        if (ports != null) return new FluidPorts(ports, filter);
+        if (first == null || filter == null) return first;
+        return new FluidPorts(Collections.singletonList(first), filter);
     }
 
     static final class FluidPorts implements IFluidHandler {
         private final List<IFluidHandler> ports;
-        private final List<FluidStack> filter = new ArrayList<>();
+        private final List<FluidStack> filter;
         private IFluidHandler sampledPort;
         private FluidStack sampledFluid;
 
         FluidPorts(List<IFluidHandler> ports, @Nullable IFluidHandler settings) {
             this.ports = ports;
+            List<FluidStack> configured = null;
             if (settings != null) for (IFluidTankProperties property : settings.getTankProperties()) {
                 FluidStack fluid = property.getContents();
-                if (fluid != null) filter.add(fluid.copy());
+                if (fluid != null) {
+                    if (configured == null) configured = new ArrayList<>();
+                    configured.add(fluid.copy());
+                }
             }
+            this.filter = configured == null ? Collections.emptyList() : configured;
         }
 
         @Override public IFluidTankProperties[] getTankProperties() {
