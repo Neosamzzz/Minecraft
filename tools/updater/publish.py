@@ -28,7 +28,7 @@ from pathlib import Path
 
 INSTANCE_FILE = Path(__file__).resolve().parents[2] / ".local" / "test-instance.txt"
 DEFAULT_BUCKET = "java-studyweb"
-DEFAULT_ENDPOINT = "oss-cn-beijing.aliyuncs.com"
+DEFAULT_ENDPOINT = "https://oss-cn-beijing.aliyuncs.com"
 DEFAULT_PREFIX = "newearth/"
 MANIFEST_NAME = "manifest.json"
 MB = 1024 * 1024
@@ -219,6 +219,8 @@ def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
             return
         sys.exit("缺少 ALIYUN_OSS_AK / ALIYUN_OSS_SK 环境变量")
 
+    if "://" not in endpoint:
+        endpoint = "https://" + endpoint
     bucket = oss2.Bucket(oss2.Auth(ak, sk), endpoint, bucket_name)
     files = collect(instance)
     previous, previous_removed = load_previous_oss(bucket, prefix)
@@ -277,7 +279,8 @@ def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
         },
     )
     log("manifest 已更新")
-    log("OSS 地址：https://%s.%s/%s%s" % (bucket_name, endpoint, prefix, MANIFEST_NAME))
+    scheme, host = endpoint.rstrip("/").split("://", 1)
+    log("OSS 地址：%s://%s.%s/%s%s" % (scheme, bucket_name, host, prefix, MANIFEST_NAME))
 
 
 def main():
