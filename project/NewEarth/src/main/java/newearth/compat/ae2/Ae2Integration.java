@@ -1,7 +1,6 @@
 package newearth.compat.ae2;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -20,41 +18,12 @@ import net.minecraftforge.registries.IForgeRegistryModifiable;
 import newearth.ContentTransformer;
 import newearth.NewEarth;
 
-/** Optional AE2 UEL configuration and acquisition rules; early feature filtering lives in ContentTransformer. */
+/** Optional AE2 UEL acquisition rules. Feature policy lives in ContentTransformer. */
 @Mod.EventBusSubscriber(modid = NewEarth.MOD_ID)
 public final class Ae2Integration {
     private static final String[] RECIPE_INPUT_FIELDS = {"ore", "part", "material", "item"};
 
     private Ae2Integration() { }
-
-    public static void configure() {
-        if (!Loader.isModLoaded("appliedenergistics2")) return;
-        try {
-            Class<?> type = Class.forName("appeng.core.AEConfig");
-            Configuration config = (Configuration) type.getMethod("instance").invoke(null);
-            // Channel behavior is filtered earlier by the existing ContentTransformer hook.
-            applySettings(config);
-            Class<?> featureType = Class.forName("appeng.core.features.AEFeature");
-            java.lang.reflect.Method categoryName = featureType.getMethod("category");
-            java.lang.reflect.Method configKey = featureType.getMethod("key");
-            for (Object feature : featureType.getEnumConstants())
-                if (ContentTransformer.retiredAe2Feature(((Enum<?>) feature).name())) {
-                    String category = (String) categoryName.invoke(feature);
-                    String key = (String) configKey.invoke(feature);
-                    config.get("features." + category, key, true).set(false);
-                }
-            Field preview = type.getDeclaredField("showPlacementPreview"); preview.setAccessible(true);
-            preview.setBoolean(config, false);
-            config.save();
-        } catch (ReflectiveOperationException error) {
-            throw new IllegalStateException("NewEarth requires AE2 UEL v0.56.6 configuration API", error);
-        }
-    }
-
-    static void applySettings(Configuration config) {
-        config.get("features.networkfeatures", "Channels", true).set(false);
-        config.get("client", "showPlacementPreview", true).set(false);
-    }
 
     public static void rewriteRecipe(JsonElement json, String domain) {
         if (!"appliedenergistics2".equals(domain)) return;

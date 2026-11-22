@@ -26,7 +26,6 @@ public final class NewEarth {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        newearth.compat.ae2.Ae2Integration.configure();
         AstroMiningChunks.register(this);
         EndDimension.configure(event.getModConfigurationDirectory());
         newearth.worldgen.WorldGenConfig.load(event.getModConfigurationDirectory());

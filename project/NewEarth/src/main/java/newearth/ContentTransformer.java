@@ -18,7 +18,8 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
         // All upstream processing recipes belong to the retired material chain or its machines.
         if ("appeng.recipes.AERecipeLoader".equals(transformedName))
             return disableBooleanMethod(bytes, "loadProcessingRecipes", "()Z");
-        if ("appeng.core.AEConfig".equals(transformedName)) return filterAe2Features(bytes);
+        if ("appeng.core.AEConfig".equals(transformedName))
+            return disableBooleanMethod(filterAe2Features(bytes), "showPlacementPreview", "()Z");
         if ("appeng.items.storage.AbstractStorageCell".equals(transformedName))
             return disableBooleanMethod(bytes, "disassembleDrive", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)Z");
         if ("appeng.tile.misc.TileSecurityStation".equals(transformedName)) return disableBooleanMethod(bytes, "isSecurityEnabled", "()Z");
@@ -317,10 +318,8 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
 
     public static boolean readAe2Feature(Property option, boolean defaultValue, Enum<?> feature) {
         String name = feature.name();
-        if (defaultValue && !retiredAe2Feature(name) && !configurableAe2Feature(name)) {
-            option.set(true);
-            return true;
-        }
+        if (retiredAe2Feature(name)) return false;
+        if (defaultValue && !configurableAe2Feature(name)) return true;
         return option.getBoolean(defaultValue);
     }
 

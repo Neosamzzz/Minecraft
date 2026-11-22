@@ -8,12 +8,14 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.*;
 
 /** Configuration merging and pinned UEL bytecode regression; no game or save is opened. */
 public final class Ae2Probe {
+    private enum Feature { CHANNELS, PROCESSORS, CRAFTING_TOASTS }
     private static int checks;
     private static void check(boolean value, String label) {
         if (!value) throw new AssertionError(label); checks++;
@@ -24,18 +26,26 @@ public final class Ae2Probe {
         java.lang.reflect.Field home = net.minecraftforge.fml.relauncher.FMLInjectionData.class.getDeclaredField("minecraftHome");
         home.setAccessible(true); home.set(null, new File(".").getAbsoluteFile());
         Configuration config = new Configuration(new File("merge.cfg"));
-        config.get("features.networkfeatures", "Channels", true).set(true);
+        Property channels = config.get("features.networkfeatures", "Channels", true);
+        Property processors = config.get("features.craftingcomponents", "Processors", false);
+        Property toasts = config.get("features.craftingfeatures", "CraftingToasts", false);
         config.get("client", "showPlacementPreview", true).set(true);
         config.get("client", "SEARCH_MODE", "MANUAL_SEARCH").set("JEI_MANUAL_SEARCH");
         config.get("battery", "wirelessTerminal", 1600000).set(123456);
-        Ae2Integration.applySettings(config); config.save();
+        config.save();
+        byte[] originalConfig = Files.readAllBytes(Paths.get("merge.cfg"));
+        check(!newearth.ContentTransformer.readAe2Feature(channels, true, Feature.CHANNELS), "Runtime closes channels");
+        check(newearth.ContentTransformer.readAe2Feature(processors, true, Feature.PROCESSORS), "Runtime opens processors");
+        check(!newearth.ContentTransformer.readAe2Feature(toasts, true, Feature.CRAFTING_TOASTS), "Runtime keeps the toast preference");
+        config.save();
+        check(Arrays.equals(originalConfig, Files.readAllBytes(Paths.get("merge.cfg"))),
+                "Even a later AE2 save writes the same configuration values");
         Configuration reread = new Configuration(new File("merge.cfg")); reread.load();
-        check(!reread.get("features.networkfeatures", "Channels", true).getBoolean(), "Channel setting persists");
-        check(!reread.get("client", "showPlacementPreview", true).getBoolean(), "Preview setting persists");
+        check(reread.get("features.networkfeatures", "Channels", false).getBoolean(), "File keeps its original channel setting");
+        check(!reread.get("features.craftingcomponents", "Processors", true).getBoolean(), "File keeps its original processor setting");
+        check(reread.get("client", "showPlacementPreview", false).getBoolean(), "File keeps its original preview setting");
         check(reread.get("client", "SEARCH_MODE", "").getString().equals("JEI_MANUAL_SEARCH"), "Existing user search setting preserved");
         check(reread.get("battery", "wirelessTerminal", 0).getInt() == 123456, "Existing battery settings preserved");
-        Ae2Integration.applySettings(config);
-        check(!config.get("features.networkfeatures", "Channels", true).getBoolean(), "Applying policy twice is harmless");
         Files.delete(Paths.get("merge.cfg"));
         for (int color = 0; color < 17; color++) {
             check(!Ae2Integration.retired("part", color), "Basic cable retained " + color);
@@ -65,7 +75,10 @@ public final class Ae2Probe {
             ClassNode settings = node(patched);
             for (MethodNode method : settings.methods) if ((method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE)) == 0)
                 new Analyzer<BasicValue>(new BasicVerifier()).analyze(settings.name,method);
-            check(settings.fields.stream().anyMatch(f -> f.name.equals("showPlacementPreview") && f.desc.equals("Z")), "Installed preview field matches configuration hook");
+            MethodNode preview = settings.methods.stream().filter(m -> m.name.equals("showPlacementPreview") && m.desc.equals("()Z"))
+                    .findFirst().get();
+            check(preview.instructions.size() == 2 && preview.instructions.getFirst().getOpcode() == Opcodes.ICONST_0,
+                    "Placement preview is disabled by its runtime getter");
             Set<String> features = new HashSet<>();
             for (FieldNode field : node(read(jar,"appeng/core/features/AEFeature.class")).fields) features.add(field.name);
             for (String feature : new String[]{"CHANNELS","QUANTUM_NETWORK_BRIDGE","QUANTUM_LINKING_CARD","SPATIAL_IO",
