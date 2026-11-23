@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""把客户端实例的 mods/ 发布到 OSS，并生成 manifest.json。
+"""把客户端实例 mods/ 下的 JAR 发布到 OSS，并生成 manifest.json。
 
 用法：
     py -3 tools/updater/publish.py --local build/checks/updater/out
@@ -10,7 +10,7 @@ OSS 上传需要环境变量：
     ALIYUN_OSS_AK / ALIYUN_OSS_SK
 
 发布顺序固定为：先传文件，最后传 manifest.json。
-manifest 里的 removed 记录过往版本分发过、当前版本已移除的路径，
+manifest 里的 removed 记录过往版本分发过、当前版本已移除的 JAR 路径，
 客户端据此删除；玩家自己添加、从未进入清单的文件不受影响。
 """
 
@@ -35,15 +35,6 @@ MB = 1024 * 1024
 
 # 服务端专用或临时文件，客户端不需要。
 EXCLUDE_PREFIXES = ("NewEarth-Server-Pause", "newearth-server-admin")
-EXCLUDE_SUFFIXES = (".bak", ".disabled", ".old", ".tmp", ".log")
-
-CONTENT_TYPES = {
-    ".jar": "application/java-archive",
-    ".json": "application/json",
-    ".txt": "text/plain; charset=utf-8",
-    ".cfg": "text/plain; charset=utf-8",
-    ".toml": "text/plain; charset=utf-8",
-}
 
 
 def log(message):
@@ -71,7 +62,7 @@ def collect(instance):
             name for name in sorted(directories) if not name.startswith(".") and not is_link(parent / name)
         ]
         for name in sorted(names):
-            if name.startswith(".") or name.lower().endswith(EXCLUDE_SUFFIXES):
+            if name.startswith(".") or not name.lower().endswith(".jar"):
                 continue
             if name.startswith(EXCLUDE_PREFIXES):
                 continue
@@ -127,7 +118,11 @@ def load_previous_oss(bucket, prefix):
 def compute_removed(files, previous, previous_removed):
     """累积历史移除项，避免玩家跨版本升级时漏删。"""
     current = {item["path"].casefold() for item in files}
-    historical = {path.casefold(): path for path in [*previous_removed, *previous]}
+    historical = {
+        path.casefold(): path
+        for path in [*previous_removed, *previous]
+        if path.lower().endswith(".jar")
+    }
     return sorted(path for folded, path in historical.items() if folded not in current)
 
 
@@ -262,11 +257,10 @@ def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
         lock = threading.Lock()
 
         def upload(item):
-            source = instance / item["path"]
             key = prefix + item["key"]
             data = read_verified(instance, item)
             headers = {
-                "Content-Type": CONTENT_TYPES.get(source.suffix.lower(), "application/octet-stream"),
+                "Content-Type": "application/java-archive",
                 "Cache-Control": "public, max-age=31536000, immutable",
                 "x-oss-object-acl": "public-read",
             }
@@ -313,7 +307,7 @@ def publish_oss(instance, bucket_name, endpoint, prefix, jobs, dry_run):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="发布客户端 mods/ 到 OSS")
+    parser = argparse.ArgumentParser(description="发布客户端 mods/ 下的 JAR 到 OSS")
     parser.add_argument("--instance", type=Path, help="发布源，默认读取 .local/test-instance.txt")
     parser.add_argument("--local", type=Path, help="只写到本地目录，不上传")
     parser.add_argument("--bucket", default=DEFAULT_BUCKET)

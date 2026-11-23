@@ -4,7 +4,7 @@
     [switch]$DryRun
 )
 
-# 只补清单里的文件：缺了或哈希不符就下载，本地多出来的文件一律不动。
+# 旧清单可能含有配置和地形文件，更新和删除均只处理 JAR。
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch { }
@@ -129,6 +129,7 @@ function Invoke-Update {
         if ($null -eq $manifest -or $manifest.files -isnot [array]) { throw "清单缺少文件列表。" }
         $desired = @{}
         foreach ($file in $manifest.files) {
+            if ($file.path -notlike "*.jar") { continue }
             $relative = Get-ManagedPath $file.path
             if ($desired.ContainsKey($relative) -or $file.sha256 -notmatch '^[0-9a-f]{64}$') {
                 throw "清单文件条目无效：$($file.path)"
@@ -142,7 +143,7 @@ function Invoke-Update {
         }
         $removed = @{}
         foreach ($path in @($manifest.removed)) {
-            if ($null -eq $path) { continue }
+            if ($path -notlike "*.jar") { continue }
             $relative = Get-ManagedPath $path
             if ($desired.ContainsKey($relative)) { throw "同一路径同时出现在更新和删除清单：$path" }
             $removed[$relative] = $true
