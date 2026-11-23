@@ -60,9 +60,10 @@ public final class Ae2Probe {
         check(!Ae2Integration.retired("material",53), "Crafting card retained until replacement exists");
         check(Ae2Integration.retired("biometric_card",0), "Identity card removed from acquisition");
         check(!Ae2Integration.retired("storage_cell_1k", 0), "Basic item disk remains obtainable");
+        check(!Ae2Integration.retired("fluid_storage_cell_1k", 0), "Basic fluid disk remains obtainable");
         for (String tier : new String[]{"4k", "16k", "64k"}) {
             check(Ae2Integration.retired("storage_cell_" + tier, 0), "High-capacity item disk retired: " + tier);
-            check(!Ae2Integration.retired("fluid_storage_cell_" + tier, 0), "Fluid disk retained: " + tier);
+            check(Ae2Integration.retired("fluid_storage_cell_" + tier, 0), "High-capacity fluid disk retired: " + tier);
             check(!Ae2Integration.retired("crafting_storage_" + tier, 0), "Crafting CPU retained: " + tier);
         }
         byte[] absent = {1,2,3};
@@ -120,13 +121,15 @@ public final class Ae2Probe {
                 check(Ae2Integration.removedMaterialOutput(recipe, "appliedenergistics2"),
                         "Retired recipe is skipped before ingredient lookup: " + name);
             }
-            for (String tier : new String[]{"1k", "4k", "16k", "64k"}) {
-                for (String suffix : new String[]{"", "_storage"}) {
-                    String name = "storage_cell_" + tier + suffix;
-                    com.google.gson.JsonObject recipe = new com.google.gson.JsonParser().parse(new String(
-                            read(jar, "assets/appliedenergistics2/recipes/network/cells/" + name + ".json"), "UTF-8")).getAsJsonObject();
-                    check(Ae2Integration.removedMaterialOutput(recipe, "appliedenergistics2") == !tier.equals("1k"),
-                            "Only the basic item disk recipe remains: " + name);
+            for (String disk : new String[]{"storage_cell_", "fluid_storage_cell_"}) {
+                for (String tier : new String[]{"1k", "4k", "16k", "64k"}) {
+                    for (String suffix : new String[]{"", "_storage"}) {
+                        String name = disk + tier + suffix;
+                        com.google.gson.JsonObject recipe = new com.google.gson.JsonParser().parse(new String(
+                                read(jar, "assets/appliedenergistics2/recipes/network/cells/" + name + ".json"), "UTF-8")).getAsJsonObject();
+                        check(Ae2Integration.removedMaterialOutput(recipe, "appliedenergistics2") == !tier.equals("1k"),
+                                "Only the basic disk recipe remains: " + name);
+                    }
                 }
             }
             com.google.gson.JsonArray constants = new com.google.gson.JsonParser().parse(new String(

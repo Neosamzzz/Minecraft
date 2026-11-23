@@ -228,8 +228,17 @@ public final class ContentTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean allowAe2ItemDefinition(boolean featureEnabled, String id) {
-        return featureEnabled && !id.equals("storage_cell_4k") && !id.equals("storage_cell_16k")
-                && !id.equals("storage_cell_64k");
+        switch (id) {
+            case "storage_cell_4k":
+            case "storage_cell_16k":
+            case "storage_cell_64k":
+            case "fluid_storage_cell_4k":
+            case "fluid_storage_cell_16k":
+            case "fluid_storage_cell_64k":
+                return false;
+            default:
+                return featureEnabled;
+        }
     }
 
     private static byte[] filterAe2ItemDefinitions(byte[] bytes) {
